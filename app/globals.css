@@ -1,0 +1,417 @@
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;500;600;700&display=swap');
+
+/* =========================================================================
+   Lumière de Noël inc. — feuille de style globale
+   Typo : Bebas Neue (titres, MAJUSCULES) + Nunito Sans (corps)
+   ========================================================================= */
+
+:root {
+  --navy: #0B1B2B;
+  --navy-deep: #06121F;
+  --charcoal: #1C1C1C;
+  --off-white: #FAFAFA;
+  --gold: #E9DCC0;
+  --gold-text: #C7B68C;
+  --ivory: #F3E9D2;
+  --hero-scrim: rgba(5, 10, 20, 0.82);
+  --line: rgba(233, 220, 192, 0.22);
+  --maxw: 1180px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: 'Nunito Sans', system-ui, sans-serif;
+  color: var(--charcoal);
+  background: var(--off-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  line-height: 1.65;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
+  font-weight: 400;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  line-height: 1.04;
+}
+
+h1 { font-size: clamp(2.6rem, 6.5vw, 5rem); }
+h2 { font-size: clamp(2rem, 4.5vw, 3.4rem); }
+h3 { font-size: clamp(1.4rem, 2.6vw, 2rem); }
+
+p { max-width: 68ch; }
+
+a { color: inherit; }
+
+img { max-width: 100%; display: block; }
+
+section { padding: clamp(56px, 8vw, 104px) 24px; }
+
+.container { max-width: var(--maxw); margin: 0 auto; }
+
+/* --- Utilitaires de grille (breakpoints repris du pattern palencia) ------- */
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 56px; align-items: center; }
+
+.footer-grid { display: grid; grid-template-columns: 1.6fr 1fr 1.2fr; gap: 48px; }
+.footer-grid-seo { grid-template-columns: 1.4fr 1fr 1fr 1fr; }
+@media (max-width: 900px) {
+  .footer-grid-seo { grid-template-columns: 1fr 1fr !important; }
+}
+@media (max-width: 560px) {
+  .footer-grid-seo { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+  .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+}
+/* P1-6 : le numéro reste visible sur mobile (tap-to-call = forte conversion). */
+@media (max-width: 400px) {
+  .phone-label { font-size: 13px; }
+}
+
+@media (max-width: 960px) {
+  .grid-3, .grid-4, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; gap: 28px; }
+}
+@media (max-width: 600px) {
+  .grid-3, .grid-4, .gallery-grid { grid-template-columns: 1fr; }
+  body { font-size: 16px; }
+}
+
+/* --- Champs de formulaire ------------------------------------------------- */
+label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-bottom: 7px;
+  color: var(--charcoal);
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #d8d2c4;
+  border-radius: 10px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 15px;
+  background: #fff;
+  color: var(--charcoal);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+textarea { min-height: 120px; resize: vertical; }
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--charcoal);
+  box-shadow: 0 0 0 3px rgba(28, 28, 28, 0.12);
+}
+
+.radio-row { display: flex; flex-wrap: wrap; gap: 10px; }
+.radio-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border: 1px solid #d8d2c4; border-radius: 300px;
+  font-size: 14px; cursor: pointer; background: #fff; transition: all 0.18s;
+  text-transform: none; font-weight: 500; letter-spacing: 0;
+}
+.radio-chip input { width: auto; }
+.radio-chip.selected { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
+
+/* --- Sélecteur personnalisé (components/Select.jsx) ----------------------- */
+.ld-select { position: relative; width: 100%; }
+
+.ld-select__trigger {
+  width: 100%;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #d8d2c4;
+  border-radius: 10px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 15px;
+  color: var(--charcoal);
+  cursor: pointer;
+  text-align: left;
+  line-height: 1.3;
+  transition: border-color 0.18s, box-shadow 0.18s, background-color 0.18s;
+  outline: none;
+}
+.ld-select__trigger:hover { border-color: #b9b09c; background: #fcfaf5; }
+.ld-select__trigger.is-open {
+  border-color: var(--charcoal);
+  box-shadow: 0 0 0 3px rgba(28, 28, 28, 0.12);
+}
+.ld-select__value {
+  flex: 1; min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.ld-select__trigger:not(.has-value) .ld-select__value { color: #9a9486; }
+
+.ld-select__chevron {
+  flex-shrink: 0; color: var(--charcoal);
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.ld-select__trigger.is-open .ld-select__chevron { transform: rotate(180deg); }
+
+.ld-select__menu {
+  position: absolute; top: calc(100% + 6px); left: 0; right: 0;
+  z-index: 30;
+  background: #fff;
+  border: 1px solid #ece5d4;
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(11, 27, 43, 0.18),
+              0 2px 6px rgba(11, 27, 43, 0.06);
+  max-height: 280px; overflow-y: auto; overflow-x: hidden;
+  padding: 6px;
+  list-style: none;
+  animation: ldSelectIn 0.16s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+@keyframes ldSelectIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.ld-select__option {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 12px;
+  border-radius: 8px;
+  font-size: 15px; line-height: 1.3;
+  color: var(--charcoal);
+  cursor: pointer;
+  transition: background-color 0.12s;
+  user-select: none;
+}
+.ld-select__option + .ld-select__option { margin-top: 2px; }
+.ld-select__option.is-active { background: #faf4e6; }
+.ld-select__option.is-selected { font-weight: 600; }
+.ld-select__option.is-selected.is-active { background: #f4ead0; }
+.ld-select__label { flex: 1; min-width: 0; }
+
+.ld-select__bullet {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #e9dcc0;
+  flex-shrink: 0;
+  transition: background 0.18s, box-shadow 0.18s;
+}
+.ld-select__option.is-selected .ld-select__bullet {
+  background: radial-gradient(circle at 35% 30%, #FFEAB8, #E7B259);
+  box-shadow: 0 0 6px rgba(231, 178, 89, 0.7);
+}
+
+.ld-select__check {
+  color: var(--gold-text);
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ld-select__menu { animation: none; }
+  .ld-select__chevron { transition: none; }
+}
+
+/* --- Blog : grille article + sidebar -------------------------------------- */
+.blog-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 56px; align-items: start; }
+@media (max-width: 900px) {
+  .blog-grid { grid-template-columns: 1fr; gap: 40px; }
+  .blog-grid aside { position: static !important; }
+}
+
+/* --- Blog content (rendu des articles) ------------------------------------ */
+.blog-content { max-width: 720px; }
+.blog-content .blog-p,
+.blog-content .blog-cta { color: #2a2a2a; font-size: 18px; line-height: 1.75; margin: 0 0 22px; max-width: 68ch; }
+.blog-content .blog-h2 {
+  font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
+  font-size: clamp(1.7rem, 3vw, 2.2rem);
+  letter-spacing: 0.02em; text-transform: uppercase;
+  color: var(--charcoal); margin: 40px 0 16px;
+}
+.blog-content .blog-h3 {
+  font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
+  font-size: clamp(1.3rem, 2.2vw, 1.6rem);
+  letter-spacing: 0.02em; text-transform: uppercase;
+  color: var(--charcoal); margin: 26px 0 10px;
+}
+.blog-content .blog-ul { padding-left: 26px; margin: 0 0 24px; }
+.blog-content .blog-ul li { font-size: 17px; line-height: 1.7; margin-bottom: 8px; color: #2a2a2a; }
+.blog-content .blog-quote {
+  border-left: 4px solid var(--gold);
+  padding: 4px 0 4px 18px; margin: 26px 0; font-style: italic; color: #444;
+}
+.blog-content .blog-cta {
+  background: #faf4e6; border: 1px solid #ece5d4; border-radius: 12px;
+  padding: 18px 22px; font-weight: 600;
+}
+
+/* --- Accessibilité : focus visible ---------------------------------------- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.skip-link {
+  position: absolute; left: -9999px; top: 0; z-index: 1000;
+  background: var(--charcoal); color: var(--off-white);
+  padding: 12px 20px; border-radius: 0 0 8px 0; text-decoration: none;
+}
+.skip-link:focus { left: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  .fade-up { animation: none; }
+  /* Note : on NE neutralise pas toutes les animations — la démo de
+     l'application est une interaction volontaire de l'utilisateur. */
+}
+
+/* --- Animations légères --------------------------------------------------- */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.fade-up { animation: fadeUp 0.6s ease both; }
+
+/* --- DEL démo application (composant AppDemo) ------------------------------ */
+.led { transition: fill 0.25s ease; }
+/* Les effets ne descendent jamais sous ~0.5 : les lumières restent allumées. */
+@keyframes ledTwinkle { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+@keyframes ledChase   { 0% { opacity: 1; } 16%, 100% { opacity: 0.5; } }
+@keyframes ledBreathe { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+.led--twinkle { animation: ledTwinkle 1.9s ease-in-out infinite; }
+.led--chase   { animation: ledChase 2.6s linear infinite; }
+.led--breathe { animation: ledBreathe 2.8s ease-in-out infinite; }
+
+/* ===========================================================================
+   FESTIF — survol lumineux, guirlandes, ampoules chaudes
+   =========================================================================== */
+
+/* Cartes qui "s'allument" au survol — fond sombre */
+.glow-card {
+  transition: transform 0.28s ease, box-shadow 0.28s ease,
+              border-color 0.28s ease, background-color 0.28s ease;
+}
+.glow-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(233, 220, 192, 0.65) !important;
+  background-color: #14283b;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.45),
+              0 0 26px rgba(233, 220, 192, 0.28),
+              inset 0 0 0 1px rgba(233, 220, 192, 0.25);
+}
+/* Variante fond clair */
+.glow-card-light {
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+.glow-card-light:hover {
+  transform: translateY(-6px);
+  border-color: #E9DCC0 !important;
+  box-shadow: 0 18px 40px rgba(28, 28, 28, 0.12),
+              0 0 22px rgba(233, 220, 192, 0.55);
+}
+.glow-card:focus-within, .glow-card-light:focus-within { transform: translateY(-4px); }
+
+/* Guirlande lumineuse en haut d'une section (ampoules chaudes + halo) */
+.festoon { position: relative; }
+.festoon::before {
+  content: "";
+  position: absolute; top: 0; left: 0; right: 0; height: 16px;
+  background-image: radial-gradient(circle at 11px 9px,
+    #FFE2A0 0, #F2C879 2.7px, rgba(242, 200, 121, 0) 4px);
+  background-size: 30px 16px;
+  background-repeat: repeat-x;
+  filter: drop-shadow(0 0 3px rgba(242, 200, 121, 0.7));
+  opacity: 0.9;
+  pointer-events: none;
+  animation: festoonGlow 3.4s ease-in-out infinite;
+}
+@keyframes festoonGlow { 0%, 100% { opacity: 0.9; } 50% { opacity: 0.55; } }
+
+/* Petite ampoule chaude — remplace les ✦ "corporate" */
+.bulb {
+  display: inline-block; width: 10px; height: 10px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #FFEAB8, #E7B259);
+  box-shadow: 0 0 7px 1px rgba(231, 178, 89, 0.75);
+  vertical-align: middle; flex-shrink: 0;
+}
+.bulb--tw { animation: ledTwinkle 2.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .festoon::before, .bulb--tw { animation: none; }
+}
+
+/* Neige douce, subtile et professionnelle — globale (toutes les pages) */
+.snow { position: fixed; inset: 0; pointer-events: none; z-index: 45; overflow: hidden; }
+.flake {
+  position: absolute; top: -8vh; border-radius: 50%; background: #ffffff;
+  filter: blur(0.4px); will-change: transform, opacity;
+  animation-name: snowFall; animation-timing-function: linear;
+  animation-iteration-count: infinite;
+}
+@keyframes snowFall {
+  0%   { transform: translate3d(0, -8vh, 0); opacity: 0; }
+  12%  { opacity: var(--o, 0.5); }
+  88%  { opacity: var(--o, 0.5); }
+  100% { transform: translate3d(var(--dx, 14px), 110vh, 0); opacity: 0; }
+}
+
+/* Apparition en fondu au scroll — vivant mais sobre */
+.reveal { opacity: 0; transform: translateY(24px); }
+.reveal.is-visible {
+  opacity: 1; transform: none;
+  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .snow { display: none; }
+  .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
+}
+
+/* Guirlande réaliste (composant LightString) — vague lumineuse gauche→droite */
+@keyframes lsWave { 0%, 100% { opacity: 0.42; } 50% { opacity: 1; } }
+.ls-bulb { animation: lsWave 2s ease-in-out infinite; }
+
+/* Sections "enneigées" : grands flocons discrets en arrière-plan */
+.snowy {
+  position: relative; overflow: hidden;
+  /* profondeur : léger halo en haut, ombre en bas — fini le bleu plat */
+  background-image: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 24%,
+    rgba(0, 0, 0, 0.26) 100%);
+}
+/* grand flocon discret en arrière-plan */
+.snowy::before {
+  content: "❄"; position: absolute; pointer-events: none; line-height: 1;
+  color: rgba(243, 233, 210, 0.06); font-size: 230px; z-index: 0;
+  top: -48px; left: -26px; transform: rotate(-14deg);
+}
+/* SÉPARATEUR diagonal doré lumineux en haut de chaque section sombre */
+.snowy::after {
+  content: ""; position: absolute; top: 0; left: -4%; right: -4%; height: 2px;
+  background: linear-gradient(90deg, transparent,
+    rgba(233, 220, 192, 0.55) 16%, rgba(255, 236, 196, 0.9) 50%,
+    rgba(233, 220, 192, 0.55) 84%, transparent);
+  transform: skewY(-0.7deg); transform-origin: left center;
+  box-shadow: 0 0 14px rgba(233, 220, 192, 0.4);
+  pointer-events: none; z-index: 2;
+}
+.snowy > * { position: relative; z-index: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ls-bulb { animation: none; opacity: 1; }
+}
