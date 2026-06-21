@@ -3,7 +3,7 @@ import Script from "next/script";
 import { NavBar } from "./ClientLayout";
 import { ServerFooter } from "./ServerFooter";
 import FestiveLayer from "@/components/FestiveLayer";
-import { company, serviceArea } from "@/components/data";
+import { company, serviceArea, services } from "@/components/data";
 
 // TODO: remplacer par le vrai Meta Pixel ID, sinon laisser tel quel (inactif).
 const META_PIXEL_ID = "YOUR_PIXEL_ID";
@@ -46,32 +46,76 @@ export const metadata = {
     ],
     apple: "/apple-touch-icon.png",
   },
-  other: { "theme-color": "#0B1B2B" },
+  other: {
+    "theme-color": "#0B1B2B",
+    "geo.region": "CA-QC",
+    "geo.placename": "Grand Montréal, Québec",
+    "geo.position": "45.6722;-73.8736",
+    ICBM: "45.6722, -73.8736",
+  },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
+        {/* Polices : preconnect + stylesheet (remplace l'@import CSS bloquant) */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;500;600;700&display=swap"
+        />
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "LocalBusiness",
+              "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
+              "@id": `${BASE}/#business`,
               name: company.name,
               image: `${BASE}/images/hero-accueil.jpg`,
-              "@id": `${BASE}/`,
+              logo: `${BASE}/images/logo.png`,
               url: `${BASE}/`,
               telephone: "+14388656873",
               email: company.email,
               priceRange: "$$",
+              description:
+                "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel, commercial et municipal.",
+              slogan: "Votre propriété, illuminée — sans le tracas.",
+              knowsLanguage: ["fr-CA", "en"],
+              currenciesAccepted: "CAD",
+              paymentAccepted: "Comptant, Carte de crédit, Virement Interac",
               address: {
                 "@type": "PostalAddress",
                 addressRegion: "QC",
                 addressCountry: "CA",
               },
+              geo: { "@type": "GeoCoordinates", latitude: 45.6722, longitude: -73.8736 },
               areaServed: serviceArea.map((c) => ({ "@type": "City", name: c })),
+              openingHoursSpecification: [
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+                  opens: "08:00",
+                  closes: "18:00",
+                },
+                {
+                  "@type": "OpeningHoursSpecification",
+                  dayOfWeek: "Saturday",
+                  opens: "09:00",
+                  closes: "16:00",
+                },
+              ],
+              hasOfferCatalog: {
+                "@type": "OfferCatalog",
+                name: "Services d'éclairage",
+                itemListElement: services.map((s) => ({
+                  "@type": "Offer",
+                  itemOffered: { "@type": "Service", name: s.title, url: `${BASE}/services/${s.slug}` },
+                })),
+              },
               // sameAs omis volontairement : aucun réseau social pour l'instant.
             }),
           }}

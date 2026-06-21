@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;500;600;700&display=swap');
+/* Polices chargées via <link rel="preconnect"> + <link rel="stylesheet"> dans
+   app/layout.jsx (head) — plus rapide qu'un @import CSS (non bloquant au rendu). */
 
 /* =========================================================================
    Lumière de Noël inc. — feuille de style globale

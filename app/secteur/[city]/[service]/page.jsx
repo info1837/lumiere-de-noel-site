@@ -94,7 +94,12 @@ export default function CityServicePage({ params }) {
             <div>
               <SectionTag>Service à {c.name}</SectionTag>
               <SectionTitle>{s.h1 || s.title} — {c.name}</SectionTitle>
-              <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>{s.intro}</p>
+              {/* Contenu propre à CHAQUE combinaison ville × service (anti contenu mince).
+                  forCity() + le corps unique de la ville évitent les 24 pages quasi-identiques. */}
+              <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>
+                {s.forCity ? s.forCity(c.name) : s.intro}
+              </p>
+              <p style={{ color: "#444", fontSize: 17, marginBottom: 16 }}>{c.body}</p>
               <p style={{ color: "#444", fontSize: 17, marginBottom: 22 }}>{s.body}</p>
               <ul style={{ listStyle: "none" }}>
                 {s.bullets.map((b, i) => (

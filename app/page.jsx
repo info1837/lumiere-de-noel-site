@@ -34,9 +34,10 @@ export default function Home() {
             <SectionTitle>Votre propriété, illuminée — sans le tracas</SectionTitle>
             {/* DRAFT COPY — reconstruite dans la voix de marque */}
             <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>
-              Des centaines de résidences, commerces et municipalités nous confient leur éclairage
-              des Fêtes chaque année. On fournit le matériel professionnel, on l'installe en
-              sécurité, on l'entretient pendant la saison et on le retire après les Fêtes.
+              Résidences, commerces et municipalités de la Rive-Nord et du Grand Montréal nous
+              confient leur éclairage des Fêtes saison après saison. On fournit le matériel
+              professionnel, on l'installe en sécurité, on l'entretient pendant la saison et on
+              le retire après les Fêtes.
             </p>
             <p style={{ color: "#444", fontSize: 18, marginBottom: 26 }}>
               Vous, vous profitez du spectacle. Nous, on s'occupe de tout le reste.
