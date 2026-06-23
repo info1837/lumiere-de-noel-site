@@ -465,10 +465,9 @@ export const noelPage = {
 
 // --- Formulaire de soumission (7 champs, incl. groupe radio budget) ----------
 export const budgetOptions = [
-  "Moins de 500 $",
-  "500 $ – 1 000 $",
-  "1 000 $ – 2 500 $",
-  "2 500 $ et plus",
+  "1 000 $ et plus",
+  "2 000 $ et plus",
+  "4 000 $ et plus",
   "Je ne sais pas encore",
 ];
 
