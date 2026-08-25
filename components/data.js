@@ -21,16 +21,25 @@ export const line = "rgba(233,220,192,0.22)"; // séparateurs sur fond sombre
 export const textMuted = "#5A5A5A";
 
 // --- Coordonnées de l'entreprise ---------------------------------------------
+// Domaine de Solution Lumière de Noël Inc. — SOURCE UNIQUE.
+// Changement prévu : lumieredenoelinc.ca → lumieredenoelinc.com.
+// Quand le .com est prêt, changer cette ligne suffit.
+const DOMAIN = "lumieredenoelinc.ca";
+
 export const company = {
   name: "Lumière de Noël inc.",
   shortName: "Lumière de Noël",
   phoneDisplay: "(438) 865-6873",
   phoneHref: "tel:+14388656873",
-  email: "info@lumieredenoelinc.ca",
-  emailDisplay: "INFO@LUMIEREDENOELINC.CA",
-  emailHref: "mailto:info@lumieredenoelinc.ca",
+  // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
+  // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
+  // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se
+  // fait en changeant DOMAIN ci-dessus, et rien d'autre.
+  email: `info@${DOMAIN}`,
+  emailDisplay: `INFO@${DOMAIN.toUpperCase()}`,
+  emailHref: `mailto:info@${DOMAIN}`,
   region: "Grand Montréal & Estrie, Québec",
-  baseUrl: "https://lumieredenoelinc.ca", // canonical apex (Vercel redirige www → apex)
+  baseUrl: `https://${DOMAIN}`, // apex canonique (Vercel redirige www → apex)
   social: null, // aucun réseau social pour l'instant (pas de faux liens)
   // Tarif d'entrée réel fourni par le client.
   priceFrom: "1 000 $",
