@@ -486,7 +486,29 @@ export const serviceOptions = [
 // mais N'ENVOIE RIEN (clairement signalé en console).
 export const WEB3FORMS_ACCESS_KEY = "295b087c-0152-4a3c-854f-edadd1961418";
 
+// Relaie le lead vers le CRM via notre propre route serveur. La clé
+// d'intake vit côté serveur uniquement — jamais dans le bundle public.
+// Échoue en silence : le CRM ne doit jamais faire perdre un lead à
+// Web3Forms, qui reste le chemin de secours.
+async function sendLeadToCrm(payload) {
+  try {
+    const res = await fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok && typeof console !== "undefined") {
+      console.warn("[Lumière] CRM intake a répondu", res.status);
+    }
+  } catch (e) {
+    if (typeof console !== "undefined") console.warn("[Lumière] CRM intake indisponible:", e?.message);
+  }
+}
+
 export async function sendLead(payload) {
+  // Toujours tenter le CRM, même en mode démo Web3Forms.
+  void sendLeadToCrm(payload);
+
   if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY") {
     if (typeof console !== "undefined") {
       console.warn("[Lumière] WEB3FORMS_ACCESS_KEY non configurée — lead NON envoyé (mode démo).", payload);
