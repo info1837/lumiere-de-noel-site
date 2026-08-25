@@ -116,7 +116,7 @@ export default function Home() {
       <section className="snowy" style={{ background: navy, paddingTop: 56, paddingBottom: 56 }}>
         <div className="container" style={{ textAlign: "center" }}>
           <SectionTag dark>Zone de service</SectionTag>
-          <SectionTitle light style={{ margin: "0 auto 22px" }}>Du Grand Montréal à l'Estrie</SectionTitle>
+          <SectionTitle light style={{ margin: "0 auto 22px" }}>De la Rive-Sud à la Rive-Nord</SectionTitle>
           <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px 14px", maxWidth: 760, margin: "0 auto" }}>
             {serviceArea.map((c) => (
               <span key={c} style={{
@@ -189,7 +189,7 @@ export default function Home() {
             </p>
             <p style={{ color: "#444", fontSize: 16 }}>
               Vous préférez parler à quelqu'un ?{" "}
-              <a href={company.phoneHref || undefined} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
+              <a href={company.phoneHref} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
             </p>
           </div>
           <QuoteForm />

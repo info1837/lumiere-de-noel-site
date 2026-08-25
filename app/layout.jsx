@@ -18,7 +18,7 @@ export const metadata = {
     template: "%s | Lumière de Noël inc.",
   },
   description:
-    "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel, commercial et municipal. Soumission gratuite. Service du Grand Montréal à l'Estrie.",
+    "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel, commercial et municipal. Soumission gratuite. Service sur la Rive-Sud, à Montréal et sur la Rive-Nord.",
   keywords:
     "lumières de Noël, installation lumières de Noël, éclairage architectural, éclairage permanent DEL, décoration de Noël commerciale, Blainville, Terrebonne, Brossard, Montréal, Québec",
   authors: [{ name: company.name }],

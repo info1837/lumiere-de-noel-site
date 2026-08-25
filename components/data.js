@@ -29,13 +29,12 @@ const DOMAIN = "lumieredenoelinc.com";
 export const company = {
   name: "Lumière de Noël inc.",
   shortName: "Lumière de Noël",
-  // ⚠️ PLACEHOLDER — en attente du numéro Twilio de Lumière.
-  // Le (438) 865-6873 qui était ici est celui de PALENCIA : il ne doit
-  // jamais apparaître sur ce site. Aucun numéro n'a été inventé.
-  // Ce même numéro Twilio servira aussi de numéro à Sophie B.
-  // Quand il arrive : remplacer les deux lignes ci-dessous.
-  phoneDisplay: "Téléphone à venir",
-  phoneHref: null,   // pas de lien tel: tant qu'il n'y a pas de numéro
+  // Numéro Twilio de Solution Lumière de Noël Inc. (2026-08-25).
+  // Sert à la fois de numéro public sur le site ET de numéro à Sophie B.
+  // Ce n'est PAS celui de Palencia — les deux entreprises ont chacune le
+  // leur, et ils ne doivent jamais se croiser.
+  phoneDisplay: "(438) 812-6635",
+  phoneHref: "tel:+14388126635",
   // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
   // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
   // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se
@@ -43,7 +42,9 @@ export const company = {
   email: `info@${DOMAIN}`,
   emailDisplay: `INFO@${DOMAIN.toUpperCase()}`,
   emailHref: `mailto:info@${DOMAIN}`,
-  region: "Grand Montréal & Estrie, Québec",
+  // Territoire réel : PLUS LARGE que celui de Palencia (Rive-Nord seule).
+  // L'Estrie qui était ici était une erreur — elle attirait des leads hors zone.
+  region: "Rive-Sud, Montréal et Rive-Nord, Québec",
   baseUrl: `https://${DOMAIN}`, // apex canonique (Vercel redirige www → apex)
   social: null, // aucun réseau social pour l'instant (pas de faux liens)
   // Tarif d'entrée réel fourni par le client.
@@ -148,7 +149,7 @@ export const faqHome = [
   },
   {
     q: "Quelles régions desservez-vous ?",
-    a: "Le Grand Montréal et l'Estrie — voir la liste des villes desservies plus bas.",
+    a: "La Rive-Sud, Montréal et la Rive-Nord — voir la liste des villes desservies plus bas.",
   },
 ];
 

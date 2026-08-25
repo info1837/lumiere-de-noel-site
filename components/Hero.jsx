@@ -67,7 +67,7 @@ export default function Hero() {
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 28 }}>
             <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
-            <CTAButton href={company.phoneHref || "#soumission"} variant="outlineLight">{company.phoneHref ? `Appeler ${company.phoneDisplay}` : "Demander une soumission"}</CTAButton>
+            <CTAButton href={company.phoneHref} variant="outlineLight">Appeler {company.phoneDisplay}</CTAButton>
           </div>
           <div style={{
             display: "flex", flexWrap: "wrap", gap: "10px 22px",
@@ -133,7 +133,7 @@ export default function Hero() {
               </div>
               {status === "error" && (
                 <p style={{ color: "#b00020", fontSize: 13, marginTop: 10 }}>
-                  Erreur d'envoi. Réessayez ou écrivez-nous à {company.email}.
+                  Erreur d'envoi. Appelez-nous au {company.phoneDisplay}.
                 </p>
               )}
             </form>

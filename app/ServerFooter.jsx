@@ -21,7 +21,7 @@ export function ServerFooter() {
               résidentiel, commercial et municipal. {company.region}.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14 }}>
-              <a href={company.phoneHref || undefined} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
+              <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
                 {company.phoneDisplay}
               </a>
               <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.7)", textDecoration: "none" }}>
