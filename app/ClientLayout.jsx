@@ -50,7 +50,7 @@ export function NavBar() {
 
         <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
           {/* Tap-to-call persistant (AMÉLIORATION conversion mobile) */}
-          <a href={company.phoneHref} style={{
+          <a href={company.phoneHref || undefined} style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "10px 18px", borderRadius: 300,
             background: gold, color: charcoal, textDecoration: "none",
@@ -109,7 +109,7 @@ export function NavBar() {
               )
             )}
             <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-              <a href={company.phoneHref} style={{ ...overlayLink, color: charcoal, fontWeight: 700 }}>
+              <a href={company.phoneHref || undefined} style={{ ...overlayLink, color: charcoal, fontWeight: 700 }}>
                 {company.phoneDisplay}
               </a>
               <a href={company.emailHref} style={{ ...overlayLink, fontSize: 18 }}>

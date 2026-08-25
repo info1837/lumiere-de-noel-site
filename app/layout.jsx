@@ -78,7 +78,7 @@ export default function RootLayout({ children }) {
               image: `${BASE}/images/hero-accueil.jpg`,
               logo: `${BASE}/images/logo.png`,
               url: `${BASE}/`,
-              telephone: "+14388656873",
+              telephone: company.phoneHref ? company.phoneHref.replace("tel:", "") : undefined,
               email: company.email,
               priceRange: "$$",
               description:

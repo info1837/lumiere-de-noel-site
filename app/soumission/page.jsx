@@ -27,7 +27,7 @@ export default function Soumission() {
             gratuite et sans obligation.
           </p>
           <div style={{ display: "grid", gap: 14, color: "rgba(243,233,210,0.85)", fontSize: 16 }}>
-            <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700, fontSize: 22, fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.04em" }}>
+            <a href={company.phoneHref || undefined} style={{ color: gold, textDecoration: "none", fontWeight: 700, fontSize: 22, fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.04em" }}>
               {company.phoneDisplay}
             </a>
             <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.85)", textDecoration: "none" }}>

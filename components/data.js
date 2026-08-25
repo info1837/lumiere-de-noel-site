@@ -22,15 +22,20 @@ export const textMuted = "#5A5A5A";
 
 // --- Coordonnées de l'entreprise ---------------------------------------------
 // Domaine de Solution Lumière de Noël Inc. — SOURCE UNIQUE.
-// Changement prévu : lumieredenoelinc.ca → lumieredenoelinc.com.
+// Domaine actif depuis le 2026-08-25 (remplace lumieredenoelinc.ca).
 // Quand le .com est prêt, changer cette ligne suffit.
-const DOMAIN = "lumieredenoelinc.ca";
+const DOMAIN = "lumieredenoelinc.com";
 
 export const company = {
   name: "Lumière de Noël inc.",
   shortName: "Lumière de Noël",
-  phoneDisplay: "(438) 865-6873",
-  phoneHref: "tel:+14388656873",
+  // ⚠️ PLACEHOLDER — en attente du numéro Twilio de Lumière.
+  // Le (438) 865-6873 qui était ici est celui de PALENCIA : il ne doit
+  // jamais apparaître sur ce site. Aucun numéro n'a été inventé.
+  // Ce même numéro Twilio servira aussi de numéro à Sophie B.
+  // Quand il arrive : remplacer les deux lignes ci-dessous.
+  phoneDisplay: "Téléphone à venir",
+  phoneHref: null,   // pas de lien tel: tant qu'il n'y a pas de numéro
   // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
   // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
   // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se

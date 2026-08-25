@@ -189,7 +189,7 @@ export default function Home() {
             </p>
             <p style={{ color: "#444", fontSize: 16 }}>
               Vous préférez parler à quelqu'un ?{" "}
-              <a href="tel:+14388656873" style={{ color: goldText, fontWeight: 700 }}>(438) 865-6873</a>
+              <a href={company.phoneHref || undefined} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
             </p>
           </div>
           <QuoteForm />

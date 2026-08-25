@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
-import { sendLead, serviceOptions, navy, ivory, charcoal } from "@/components/data";
+import { sendLead, serviceOptions, navy, ivory, charcoal, company } from "@/components/data";
 
 const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "" };
 
@@ -67,7 +67,7 @@ export default function Hero() {
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 28 }}>
             <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
-            <CTAButton href="tel:+14388656873" variant="outlineLight">Appeler (438) 865-6873</CTAButton>
+            <CTAButton href={company.phoneHref || "#soumission"} variant="outlineLight">{company.phoneHref ? `Appeler ${company.phoneDisplay}` : "Demander une soumission"}</CTAButton>
           </div>
           <div style={{
             display: "flex", flexWrap: "wrap", gap: "10px 22px",
@@ -133,7 +133,7 @@ export default function Hero() {
               </div>
               {status === "error" && (
                 <p style={{ color: "#b00020", fontSize: 13, marginTop: 10 }}>
-                  Erreur d'envoi. Appelez-nous au (438) 865-6873.
+                  Erreur d'envoi. Réessayez ou écrivez-nous à {company.email}.
                 </p>
               )}
             </form>

@@ -28,7 +28,7 @@ export default function NotFound() {
         <CTAButton href="/" variant="outlineLight">Retour à l'accueil</CTAButton>
       </div>
       <p style={{ marginTop: 28 }}>
-        <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
+        <a href={company.phoneHref || undefined} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
           Ou appelez-nous : {company.phoneDisplay}
         </a>
       </p>

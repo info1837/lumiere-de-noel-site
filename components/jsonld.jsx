@@ -70,7 +70,7 @@ export function ServiceJsonLd({ service, areaServed, urlPath }) {
         provider: {
           "@type": "LocalBusiness",
           name: company.name,
-          telephone: "+14388656873",
+          telephone: company.phoneHref ? company.phoneHref.replace("tel:", "") : undefined,
           email: company.email,
           url: BASE,
         },
