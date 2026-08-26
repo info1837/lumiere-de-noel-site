@@ -1,13 +1,16 @@
 import "./globals.css";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import { NavBar, MobileBottomBar } from "./ClientLayout";
 import { ServerFooter } from "./ServerFooter";
+import TelemetryClient from "./TelemetryClient";
 import FestiveLayer from "@/components/FestiveLayer";
 import { company, serviceArea, services } from "@/components/data";
 
-// TODO: remplacer par le vrai Meta Pixel ID, sinon laisser tel quel (inactif).
-const META_PIXEL_ID = "YOUR_PIXEL_ID";
-const PIXEL_ENABLED = META_PIXEL_ID !== "YOUR_PIXEL_ID";
+// Meta Pixel piloté par variable d'environnement. Absent = pixel inactif.
+// Voir .env.example — NEXT_PUBLIC_META_PIXEL_ID.
+const META_PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "";
+const PIXEL_ENABLED = Boolean(META_PIXEL_ID);
 
 const BASE = company.baseUrl;
 
@@ -141,6 +144,8 @@ export default function RootLayout({ children }) {
         <main id="contenu">{children}</main>
         <ServerFooter />
         <MobileBottomBar />
+        <TelemetryClient />
+        <Analytics />
       </body>
     </html>
   );
