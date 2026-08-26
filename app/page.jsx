@@ -44,7 +44,7 @@ export default function Home() {
             <p style={{ color: "#444", fontSize: 18, marginBottom: 26 }}>
               Vous, vous profitez du spectacle. Nous, on s'occupe de tout le reste.
             </p>
-            <CTAButton href="/soumission">Demander une soumission</CTAButton>
+            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
             {/* TODO PHOTO : valeur-commercial.jpg */}
@@ -78,7 +78,7 @@ export default function Home() {
                     ))}
                   </ul>
                   <CTAButton href="/soumission" variant="outlineLight" style={{ padding: "13px 24px", fontSize: 13 }}>
-                    Soumission
+                    Soumission gratuite
                   </CTAButton>
                 </div>
               </article>
@@ -198,7 +198,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <CTAButton href="/soumission" variant="gold">Obtenir mon estimation gratuite</CTAButton>
+          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
         </div>
       </section>
 

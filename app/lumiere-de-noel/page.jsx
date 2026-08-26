@@ -47,7 +47,7 @@ export default function LumiereDeNoel() {
           <p style={{ color: "rgba(243,233,210,0.75)", fontSize: 18, margin: "0 auto 30px", maxWidth: 560 }}>
             Soumission gratuite et sans obligation. Les meilleures dates partent vite.
           </p>
-          <CTAButton href="/soumission" variant="gold">Demander une soumission</CTAButton>
+          <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
         </div>
       </section>
     </>

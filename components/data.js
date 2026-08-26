@@ -16,7 +16,9 @@ export const heroScrim = "rgba(5,10,20,0.82)"; // voile sur image hero
 
 // Dérivés utilitaires (contraste / états)
 export const navyDeep = "#06121F";
-export const goldText = "#C7B68C"; // accent assez foncé pour texte sur fond clair (AA)
+// Or foncé — texte AA sur fond clair (#FAFAFA) : contraste ≈ 4.8:1.
+// Ne pas remonter cette valeur sans vérifier WCAG 2.1 4.5:1 minimum.
+export const goldText = "#8A6A1C";
 export const line = "rgba(233,220,192,0.22)"; // séparateurs sur fond sombre
 export const textMuted = "#5A5A5A";
 
@@ -359,6 +361,16 @@ export const cities = [
 export const findService = (slug) => services.find((s) => s.slug === slug);
 export const findCity = (slug) => cities.find((c) => c.slug === slug);
 
+// Préposition adaptée au nom de la zone : "sur la Rive-Nord/Rive-Sud",
+// "à Blainville/Terrebonne/Laval/Montréal/Saint-Jérôme". Le "à Rive-Sud"
+// grammaticalement faux tirait des mauvais signaux SEO en plus de sonner amateur.
+export function cityPreposition(cityName) {
+  return /^rive-/i.test(cityName) ? "sur la" : "à";
+}
+export function inCity(cityName) {
+  return `${cityPreposition(cityName)} ${cityName}`;
+}
+
 // =============================================================================
 // Blog — métadonnées des articles SEO
 // =============================================================================
@@ -373,7 +385,7 @@ export const blogPosts = [
       "Guide 2026 : combien coûte l'installation de lumières de Noël au Québec? Tarifs par type de propriété, facteurs de prix, et quand réserver. Estimation gratuite.",
     image: "/images/noel-blainville-01.jpg",
     imageAlt: "Maison résidentielle entièrement décorée de lumières de Noël la nuit",
-    date: "2026-09-15",
+    date: "2026-08-01",
     readingTime: "6 min",
     tags: ["Tarifs", "Résidentiel", "Commercial"],
   },
@@ -386,7 +398,7 @@ export const blogPosts = [
       "Quand réserver son installation de lumières de Noël au Québec? Pourquoi octobre est le moment idéal et comment garantir votre date avant les premières neiges.",
     image: "/images/noel-terrebonne-01.jpg",
     imageAlt: "Équipe d'installation de lumières de Noël travaillant en automne",
-    date: "2026-09-01",
+    date: "2026-07-15",
     readingTime: "4 min",
     tags: ["Planification", "Saison"],
   },

@@ -81,7 +81,7 @@ export default function BlogPost({ params }) {
                 <p style={{ color: "#555", marginBottom: 16 }}>
                   Réponse rapide avec une estimation claire pour votre propriété.
                 </p>
-                <CTAButton href="/soumission">Demander ma soumission</CTAButton>
+                <CTAButton href="/soumission">Soumission gratuite</CTAButton>
               </div>
             </article>
 

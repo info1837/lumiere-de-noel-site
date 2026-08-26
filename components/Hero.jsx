@@ -141,7 +141,7 @@ export default function Hero() {
               </div>
               <div style={{ marginTop: 18 }}>
                 <CTAButton type="submit" style={{ width: "100%" }}>
-                  {status === "sending" ? "Envoi…" : "Réserver maintenant"}
+                  {status === "sending" ? "Envoi…" : "Réserver ma date"}
                 </CTAButton>
               </div>
               {status === "error" && (

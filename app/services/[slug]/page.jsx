@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
 import {
-  services, cities, findService, serviceArea,
+  services, cities, findService, serviceArea, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -75,7 +75,7 @@ export default function ServicePage({ params }) {
                 ))}
               </ul>
               <div style={{ marginTop: 26 }}>
-                <CTAButton href="/soumission">Demander une soumission</CTAButton>
+                <CTAButton href="/soumission">Soumission gratuite</CTAButton>
               </div>
             </div>
             <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
@@ -104,7 +104,7 @@ export default function ServicePage({ params }) {
                   {c.regionLabel}
                 </div>
                 <div style={{ color: ivory, fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, letterSpacing: "0.03em", marginBottom: 8 }}>
-                  {s.title} à {c.name}
+                  {s.title} {inCity(c.name)}
                 </div>
                 <div style={{ color: "rgba(243,233,210,0.65)", fontSize: 14 }}>
                   Voir les détails →
@@ -147,7 +147,7 @@ export default function ServicePage({ params }) {
         <div className="container" style={{ textAlign: "center" }}>
           <SectionTag dark>Prêt à commencer ?</SectionTag>
           <SectionTitle light style={{ margin: "0 auto 22px" }}>Soumission gratuite et sans obligation</SectionTitle>
-          <CTAButton href="/soumission" variant="gold">Obtenir mon estimation</CTAButton>
+          <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
         </div>
       </section>
     </>

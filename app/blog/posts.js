@@ -7,11 +7,11 @@
 
 export const postBodies = {
   "cout-installation-lumieres-de-noel-quebec": [
-    { type: "p", text: "Question revenue presque chaque semaine au téléphone : combien ça coûte, l'installation de lumières de Noël au Québec? La réponse honnête : ça dépend. Mais on peut quand même te donner des fourchettes réelles, vécues sur le terrain depuis plusieurs saisons, et surtout : t'expliquer ce qui fait varier le prix." },
+    { type: "p", text: "Question revenue presque chaque semaine au téléphone : combien ça coûte, l'installation de lumières de Noël au Québec? La réponse honnête : ça dépend. Mais on peut quand même vous donner des fourchettes réelles, vécues sur le terrain depuis plusieurs saisons, et surtout : vous expliquer ce qui fait varier le prix." },
 
     { type: "h2", text: "Tarif d'entrée résidentiel : à partir de 1 000 $" },
     { type: "p", text: "Pour une résidence québécoise typique — bungalow ou cottage avec une façade, quelques arbustes et une ou deux rangées de toiture — on est généralement entre 1 000 $ et 1 800 $ pour la première saison, matériel et main-d'œuvre inclus, retrait inclus." },
-    { type: "p", text: "Les années suivantes, le tarif baisse souvent : le design est déjà conçu, les attaches sont en place, et on connaît ta propriété. Beaucoup de clients reviennent à environ 70 à 80 % du prix initial." },
+    { type: "p", text: "Les années suivantes, le tarif baisse souvent : le design est déjà conçu, les attaches sont en place, et on connaît votre propriété. Beaucoup de clients reviennent à environ 70 à 80 % du prix initial." },
 
     { type: "h2", text: "Ce qui fait varier le prix" },
     { type: "ul", items: [
@@ -27,29 +27,29 @@ export const postBodies = {
     { type: "p", text: "Ce qui change le prix : la hauteur du bâtiment, l'accès à l'électricité, les exigences de conformité, et bien sûr l'envergure du design. La planification hors-heures (soir ou nuit) est aussi un facteur." },
 
     { type: "h2", text: "Pourquoi payer pour une installation pro?" },
-    { type: "p", text: "On comprend la tentation de tout faire soi-même — Costco vend des boîtes de lumières à 50 $. Mais voici ce que tu obtiens en plus avec une installation professionnelle :" },
+    { type: "p", text: "On comprend la tentation de tout faire soi-même — Costco vend des boîtes de lumières à 50 $. Mais voici ce que vous obtenez en plus avec une installation professionnelle :" },
     { type: "ul", items: [
       "Matériel DEL de qualité commerciale (durée de vie 5×+ supérieure aux lumières grand public).",
       "Équipe assurée pour le travail en hauteur — fini les chutes d'échelle.",
-      "Conception personnalisée pour ta propriété, pas une pose aléatoire.",
+      "Conception personnalisée pour votre propriété, pas une pose aléatoire.",
       "Service après-vente : si une lumière brûle pendant la saison, on revient sans frais.",
       "Retrait inclus en janvier + entreposage du matériel jusqu'à la prochaine saison.",
     ]},
 
     { type: "h2", text: "Quand réserver pour économiser?" },
-    { type: "p", text: "Plus tu réserves tôt (septembre, octobre), plus tu as de chances d'obtenir un tarif avant que la demande ne sature les équipes. À la dernière minute (mi-novembre), plusieurs entreprises chargent des suppléments d'urgence — quand elles acceptent encore des nouvelles installations." },
+    { type: "p", text: "Plus vous réservez tôt (septembre, octobre), plus vous avez de chances d'obtenir un tarif avant que la demande ne sature les équipes. À la dernière minute (mi-novembre), plusieurs entreprises chargent des suppléments d'urgence — quand elles acceptent encore des nouvelles installations." },
 
     { type: "cta", text: "Une estimation pour votre propriété — gratuite et sans obligation. Réponse en 48 h." },
   ],
 
   "quand-reserver-installation-lumieres-noel": [
-    { type: "p", text: "La saison de Noël semble loin en octobre. Mais sur le terrain, c'est exactement le moment idéal pour réserver ton installation de lumières. Voici pourquoi — et ce qui se passe quand tu attends trop." },
+    { type: "p", text: "La saison de Noël semble loin en octobre. Mais sur le terrain, c'est exactement le moment idéal pour réserver votre installation de lumières. Voici pourquoi — et ce qui se passe quand vous attendez trop." },
 
     { type: "h2", text: "La fenêtre idéale : octobre" },
     { type: "p", text: "Octobre est notre mois préféré pour les installations résidentielles. Les feuilles sont tombées (on voit ce qu'on installe), la météo est encore clémente (on travaille en sécurité), et les premières neiges importantes sont encore à 4-6 semaines." },
     { type: "p", text: "Les lumières restent éteintes jusqu'au moment opportun — généralement à la fin novembre. Mais elles sont déjà posées, fonctionnelles et prêtes." },
 
-    { type: "h2", text: "Ce qui se passe quand tu attends" },
+    { type: "h2", text: "Ce qui se passe quand vous attendez" },
     { type: "h3", text: "Mi-novembre : les agendas se remplissent" },
     { type: "p", text: "Quand la première neige tombe vers la mi-novembre, tout le monde se réveille en même temps. Les téléphones débordent. À ce moment-là, beaucoup d'entreprises sérieuses ont déjà fermé leurs livres pour la saison." },
 
@@ -60,7 +60,7 @@ export const postBodies = {
     { type: "p", text: "À ce stade, on n'accepte plus de nouveaux clients pour cette saison. Trop de risques de ne pas livrer à temps, ou de livrer dans des conditions qu'on ne juge pas acceptables." },
 
     { type: "h2", text: "Le réflexe à adopter" },
-    { type: "p", text: "Réserve dès septembre si tu peux. Sinon, octobre. Si tu lis ceci en novembre : appelle quand même — on garde toujours quelques fenêtres pour les clients réguliers et les urgences, mais ne tarde pas." },
+    { type: "p", text: "Réservez dès septembre si vous le pouvez. Sinon, octobre. Si vous lisez ceci en novembre : appelez quand même — on garde toujours quelques fenêtres pour les clients réguliers et les urgences, mais ne tardez pas." },
 
     { type: "ul", items: [
       "Septembre : meilleure sélection de dates, équipes disponibles, conditions parfaites.",
@@ -70,7 +70,7 @@ export const postBodies = {
     ]},
 
     { type: "h2", text: "Et pour le commercial?" },
-    { type: "p", text: "Pour les commerces, on suggère de réserver encore plus tôt — idéalement en août ou septembre. Les façades commerciales demandent souvent une planification (permis, accès, alimentation électrique) qui ne se fait pas du jour au lendemain." },
+    { type: "p", text: "Pour les commerces, nous suggérons de réserver encore plus tôt — idéalement en août ou septembre. Les façades commerciales demandent souvent une planification (permis, accès, alimentation électrique) qui ne se fait pas du jour au lendemain." },
 
     { type: "cta", text: "Réservez votre date maintenant — soumission gratuite, aucune obligation." },
   ],
@@ -79,7 +79,7 @@ export const postBodies = {
     { type: "p", text: "DEL ou incandescent? Pour les lumières de Noël, le débat est en réalité réglé depuis plusieurs années — mais beaucoup de gens hésitent encore à cause du « rendu visuel » qu'ils associent aux vieilles ampoules. Voici un comparatif honnête, basé sur ce qu'on installe vraiment chez nos clients." },
 
     { type: "h2", text: "Consommation : avantage massif aux DEL" },
-    { type: "p", text: "Une guirlande DEL commerciale consomme environ 8 à 12 % de l'électricité d'une guirlande incandescente équivalente. Sur une saison complète d'illumination — disons 6 semaines, 8 h/jour — la différence sur ta facture Hydro peut atteindre 60 à 150 $ pour une résidence moyennement décorée." },
+    { type: "p", text: "Une guirlande DEL commerciale consomme environ 8 à 12 % de l'électricité d'une guirlande incandescente équivalente. Sur une saison complète d'illumination — disons 6 semaines, 8 h/jour — la différence sur votre facture Hydro peut atteindre 60 à 150 $ pour une résidence moyennement décorée." },
 
     { type: "h2", text: "Durée de vie : 5 à 10× plus longue" },
     { type: "p", text: "Une DEL de qualité commerciale est conçue pour 25 000 à 50 000 heures d'utilisation. Une ampoule incandescente : 1 000 à 3 000 heures. En pratique, ça veut dire qu'on remplace les DEL aux 8-10 saisons, alors qu'on remplaçait l'incandescent presque chaque année." },

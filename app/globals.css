@@ -12,7 +12,8 @@
   --charcoal: #1C1C1C;
   --off-white: #FAFAFA;
   --gold: #E9DCC0;
-  --gold-text: #C7B68C;
+  /* Or foncé accessible : contraste ≥4.5:1 sur --off-white (WCAG AA). */
+  --gold-text: #8A6A1C;
   --ivory: #F3E9D2;
   --hero-scrim: rgba(5, 10, 20, 0.82);
   --line: rgba(233, 220, 192, 0.22);
