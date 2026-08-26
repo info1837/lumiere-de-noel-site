@@ -72,7 +72,6 @@ export const nav = [
   },
   { label: "Zones desservies", href: "/secteur" },
   { label: "Blog", href: "/blog" },
-  { label: "Renouvellement", href: "/renouvellement" },
   { label: "Soumission", href: "/soumission" },
 ];
 

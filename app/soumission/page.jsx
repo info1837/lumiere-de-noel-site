@@ -1,8 +1,7 @@
-import Link from "next/link";
 import QuoteForm from "@/components/QuoteForm";
 import Testimonials from "@/components/Testimonials";
 import { SectionTag } from "@/components/ui";
-import { company, homePortfolio, navy, ivory, gold, offWhite, charcoal } from "@/components/data";
+import { company, homePortfolio, navy, ivory, gold, charcoal } from "@/components/data";
 
 export const metadata = {
   title: "Soumission gratuite",
@@ -34,21 +33,6 @@ export default function Soumission() {
         <div className="container grid-2" style={{ alignItems: "start" }}>
           <div>
             <SectionTag dark>Soumission</SectionTag>
-            <div style={{ marginBottom: 16 }}>
-              <Link
-                href="/renouvellement"
-                style={{
-                  display: "inline-flex", alignItems: "center", gap: 8,
-                  padding: "8px 14px", borderRadius: 300,
-                  background: "rgba(233,220,192,0.14)",
-                  border: "1px solid rgba(233,220,192,0.4)",
-                  color: gold, textDecoration: "none",
-                  fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
-                }}
-              >
-                Client de l'an dernier ? Passez par le formulaire de renouvellement →
-              </Link>
-            </div>
             <h1 style={{ color: ivory, marginBottom: 18 }}>Demande de soumission</h1>
             <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 19, marginBottom: 20 }}>
               Décrivez votre projet — on vous rappelle en moins de 24 h avec une estimation claire,

@@ -10,7 +10,6 @@ export default function sitemap() {
     { url: `${BASE}/lumiere-de-noel`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/eclairage-architectural`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/soumission`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
-    { url: `${BASE}/renouvellement`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/secteur`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
