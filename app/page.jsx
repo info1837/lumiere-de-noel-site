@@ -2,6 +2,7 @@ import Link from "next/link";
 import Hero from "@/components/Hero";
 import QuoteForm from "@/components/QuoteForm";
 import HowItWorks from "@/components/HowItWorks";
+import Testimonials from "@/components/Testimonials";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
 import {
   serviceCards, whyUs, faqHome, serviceArea, company, homePortfolio,
@@ -27,6 +28,9 @@ export default function Home() {
         }}
       />
       <Hero />
+
+      {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
+      <Testimonials limit={3} variant="light" />
 
       {/* 2 — Proposition de valeur « Leader au Québec » */}
       <section style={{ background: offWhite }}>

@@ -6,6 +6,7 @@ import { ServerFooter } from "./ServerFooter";
 import TelemetryClient from "./TelemetryClient";
 import FestiveLayer from "@/components/FestiveLayer";
 import { company, serviceArea, services } from "@/components/data";
+import { aggregateRating, sameAs } from "@/components/reviews";
 
 // Meta Pixel piloté par variable d'environnement. Absent = pixel inactif.
 // Voir .env.example — NEXT_PUBLIC_META_PIXEL_ID.
@@ -119,7 +120,16 @@ export default function RootLayout({ children }) {
                   itemOffered: { "@type": "Service", name: s.title, url: `${BASE}/services/${s.slug}` },
                 })),
               },
-              // sameAs omis volontairement : aucun réseau social pour l'instant.
+              // aggregateRating + sameAs pilotés par components/reviews.js —
+              // émis seulement quand de vrais avis existent (pas de faux signal Google).
+              ...(aggregateRating ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: aggregateRating.value,
+                  reviewCount: aggregateRating.count,
+                },
+              } : {}),
+              ...(sameAs && sameAs.length ? { sameAs } : {}),
             }),
           }}
         />
