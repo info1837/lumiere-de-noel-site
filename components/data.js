@@ -157,13 +157,15 @@ export const faqHome = [
   },
 ];
 
-// --- « Vous demandez, on réalise » — 4 étapes (accueil, section 5) -----------
-// DRAFT COPY
+// --- « Comment ça marche » — 5 étapes datées (accueil + /services) -----------
+// Datées pour répondre à "qu'est-ce qui se passe après que j'envoie le formulaire"
+// dans les 3 premières secondes.
 export const processSteps = [
-  { num: "01", title: "Soumission", desc: "Vous remplissez le formulaire. On vous rappelle avec une estimation claire." },
-  { num: "02", title: "Conception", desc: "On planifie le design lumineux selon votre propriété et votre budget." },
-  { num: "03", title: "Installation", desc: "Notre équipe installe tout, en sécurité, avant la date convenue." },
-  { num: "04", title: "Retrait", desc: "Après les Fêtes, on désinstalle et on entrepose le matériel." },
+  { num: "01", title: "Soumission gratuite", when: "Aujourd'hui", desc: "Vous remplissez le formulaire ou vous appelez. Réponse en moins de 24 h avec une première fourchette." },
+  { num: "02", title: "Visite et design", when: "Sous 3–5 jours", desc: "On vient mesurer la propriété, comprendre votre vision et confirmer un prix ferme, écrit." },
+  { num: "03", title: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
+  { num: "04", title: "Entretien pendant la saison", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
+  { num: "05", title: "Retrait et entreposage", when: "Janvier", desc: "On désinstalle après les Fêtes et on garde le matériel chez nous jusqu'à la prochaine saison. Rien à ranger." },
 ];
 
 // (Pas de section témoignages : aucune avis client réel pour l'instant —

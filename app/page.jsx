@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import QuoteForm from "@/components/QuoteForm";
+import HowItWorks from "@/components/HowItWorks";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
 import {
   serviceCards, whyUs, faqHome, serviceArea, company,
@@ -84,6 +85,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      {/* Comment ça marche — 5 étapes datées (répond à "qu'est-ce qui se passe après ?") */}
+      <HowItWorks variant="light" />
 
       {/* 4 — Pourquoi nous choisir + FAQ */}
       <section style={{ background: offWhite }}>
