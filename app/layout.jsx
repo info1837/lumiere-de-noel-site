@@ -1,6 +1,6 @@
 import "./globals.css";
 import Script from "next/script";
-import { NavBar } from "./ClientLayout";
+import { NavBar, MobileBottomBar } from "./ClientLayout";
 import { ServerFooter } from "./ServerFooter";
 import FestiveLayer from "@/components/FestiveLayer";
 import { company, serviceArea, services } from "@/components/data";
@@ -140,6 +140,7 @@ export default function RootLayout({ children }) {
         <NavBar />
         <main id="contenu">{children}</main>
         <ServerFooter />
+        <MobileBottomBar />
       </body>
     </html>
   );
