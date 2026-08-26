@@ -12,7 +12,8 @@
   --charcoal: #1C1C1C;
   --off-white: #FAFAFA;
   --gold: #E9DCC0;
-  --gold-text: #C7B68C;
+  /* Or foncé accessible : contraste ≥4.5:1 sur --off-white (WCAG AA). */
+  --gold-text: #8A6A1C;
   --ivory: #F3E9D2;
   --hero-scrim: rgba(5, 10, 20, 0.82);
   --line: rgba(233, 220, 192, 0.22);
@@ -81,6 +82,82 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
   .phone-label { font-size: 13px; }
 }
 
+/* --- Header : nav responsive ----------------------------------------------- */
+/* Nav horizontale sortie du hamburger à partir de ≥1024px */
+.header-desktop-nav { display: none; }
+.header-hamburger { display: inline-flex; }
+
+@media (min-width: 1024px) {
+  .header-desktop-nav { display: inline-flex; align-items: center; gap: 26px; }
+  .header-hamburger { display: none; }
+}
+
+/* Bouton CTA persistant dans l'entête (à toutes les largeurs, à côté de la pastille) */
+.header-cta {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 300px;
+  background: var(--charcoal); color: #fff; text-decoration: none;
+  font-weight: 700; font-size: 14px; letter-spacing: 0.03em;
+  white-space: nowrap;
+  transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
+}
+.header-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.25); background: #000; }
+.header-cta .cta-icon { flex-shrink: 0; }
+
+/* Sur très petit écran (<420px) on cache le label pour laisser la place à la pastille tél. */
+@media (max-width: 420px) {
+  .header-cta .cta-label { display: none; }
+  .header-cta { padding: 10px 12px; }
+}
+
+/* Bouton SOUMISSION dans le menu overlay = plein bouton, pas un simple lien */
+.overlay-cta {
+  margin-top: 18px;
+  display: inline-flex; align-items: center; justify-content: center;
+  padding: 14px 26px; border-radius: 300px;
+  background: var(--gold); color: var(--charcoal);
+  font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
+  font-size: 26px; letter-spacing: 0.06em;
+  text-decoration: none; font-weight: 700;
+  box-shadow: 0 6px 20px rgba(11,27,43,0.14);
+}
+
+/* --- Barre fixe mobile (Appeler / Soumission) ------------------------------ */
+.mobile-bottom-bar {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  z-index: 95;
+  display: flex; gap: 10px;
+  padding: 10px 12px;
+  padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+  background: rgba(11,27,43,0.97);
+  border-top: 1px solid rgba(233,220,192,0.18);
+  box-shadow: 0 -6px 22px rgba(0,0,0,0.28);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+.mobile-bottom-bar a {
+  flex: 1;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 13px 14px; border-radius: 300px;
+  text-decoration: none; font-weight: 700; font-size: 15px;
+  letter-spacing: 0.02em;
+  min-height: 48px;
+}
+.mobile-bottom-bar .bottom-bar-call {
+  background: transparent; color: var(--ivory);
+  border: 1px solid rgba(233,220,192,0.5);
+}
+.mobile-bottom-bar .bottom-bar-quote {
+  background: var(--gold); color: var(--charcoal);
+}
+@media (min-width: 1024px) {
+  .mobile-bottom-bar { display: none; }
+}
+/* Réserve de l'espace en bas de page pour que la barre ne cache jamais le contenu */
+@media (max-width: 1023.98px) {
+  body { padding-bottom: 76px; }
+}
+
 @media (max-width: 960px) {
   .grid-3, .grid-4, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .grid-2 { grid-template-columns: 1fr; gap: 28px; }
@@ -107,7 +184,8 @@ input, textarea, select {
   border: 1px solid #d8d2c4;
   border-radius: 10px;
   font-family: 'Nunito Sans', sans-serif;
-  font-size: 15px;
+  /* 16px = seuil sous lequel Safari iOS force le zoom automatique sur le champ */
+  font-size: 16px;
   background: #fff;
   color: var(--charcoal);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -122,13 +200,16 @@ input:focus, textarea:focus, select:focus {
 
 .radio-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .radio-chip {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 16px; border: 1px solid #d8d2c4; border-radius: 300px;
-  font-size: 14px; cursor: pointer; background: #fff; transition: all 0.18s;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 18px; min-height: 48px;
+  border: 1px solid #d8d2c4; border-radius: 300px;
+  font-size: 15px; cursor: pointer; background: #fff; transition: all 0.18s;
   text-transform: none; font-weight: 500; letter-spacing: 0;
 }
-.radio-chip input { width: auto; }
+/* Cible tactile ≥20px pour le disque radio lui-même (WCAG 2.5.5) */
+.radio-chip input { width: 20px; height: 20px; margin: 0; accent-color: var(--charcoal); }
 .radio-chip.selected { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
+.radio-chip.selected input { accent-color: var(--gold); }
 
 /* --- Sélecteur personnalisé (components/Select.jsx) ----------------------- */
 .ld-select { position: relative; width: 100%; }
@@ -141,7 +222,7 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid #d8d2c4;
   border-radius: 10px;
   font-family: 'Nunito Sans', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--charcoal);
   cursor: pointer;
   text-align: left;
@@ -188,7 +269,7 @@ input:focus, textarea:focus, select:focus {
   display: flex; align-items: center; gap: 10px;
   padding: 11px 12px;
   border-radius: 8px;
-  font-size: 15px; line-height: 1.3;
+  font-size: 16px; line-height: 1.3;
   color: var(--charcoal);
   cursor: pointer;
   transition: background-color 0.12s;

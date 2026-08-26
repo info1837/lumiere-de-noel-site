@@ -16,14 +16,19 @@ export const heroScrim = "rgba(5,10,20,0.82)"; // voile sur image hero
 
 // Dérivés utilitaires (contraste / états)
 export const navyDeep = "#06121F";
-export const goldText = "#C7B68C"; // accent assez foncé pour texte sur fond clair (AA)
+// Or foncé — texte AA sur fond clair (#FAFAFA) : contraste ≈ 4.8:1.
+// Ne pas remonter cette valeur sans vérifier WCAG 2.1 4.5:1 minimum.
+export const goldText = "#8A6A1C";
 export const line = "rgba(233,220,192,0.22)"; // séparateurs sur fond sombre
 export const textMuted = "#5A5A5A";
 
 // --- Coordonnées de l'entreprise ---------------------------------------------
-// Domaine de Solution Lumière de Noël Inc. — SOURCE UNIQUE.
-// Domaine actif depuis le 2026-08-25 (remplace lumieredenoelinc.ca).
-// Quand le .com est prêt, changer cette ligne suffit.
+// Domaine de Solution Lumière de Noël Inc. — SOURCE UNIQUE pour les adresses
+// courriel. Domaine actif depuis le 2026-08-25 (remplace lumieredenoelinc.ca).
+// L'origine du site (baseUrl) est résolue via lib/site-url.js pour supporter
+// les previews Vercel et un override par variable d'environnement.
+import { getSiteUrl } from "@/lib/site-url";
+
 const DOMAIN = "lumieredenoelinc.com";
 
 export const company = {
@@ -45,7 +50,7 @@ export const company = {
   // Territoire réel : PLUS LARGE que celui de Palencia (Rive-Nord seule).
   // L'Estrie qui était ici était une erreur — elle attirait des leads hors zone.
   region: "Rive-Sud, Montréal et Rive-Nord, Québec",
-  baseUrl: `https://${DOMAIN}`, // apex canonique (Vercel redirige www → apex)
+  baseUrl: getSiteUrl(), // apex canonique — override via NEXT_PUBLIC_SITE_URL
   social: null, // aucun réseau social pour l'instant (pas de faux liens)
   // Tarif d'entrée réel fourni par le client.
   priceFrom: "1 000 $",
@@ -67,6 +72,7 @@ export const nav = [
   },
   { label: "Zones desservies", href: "/secteur" },
   { label: "Blog", href: "/blog" },
+  { label: "Renouvellement", href: "/renouvellement" },
   { label: "Soumission", href: "/soumission" },
 ];
 
@@ -153,13 +159,15 @@ export const faqHome = [
   },
 ];
 
-// --- « Vous demandez, on réalise » — 4 étapes (accueil, section 5) -----------
-// DRAFT COPY
+// --- « Comment ça marche » — 5 étapes datées (accueil + /services) -----------
+// Datées pour répondre à "qu'est-ce qui se passe après que j'envoie le formulaire"
+// dans les 3 premières secondes.
 export const processSteps = [
-  { num: "01", title: "Soumission", desc: "Vous remplissez le formulaire. On vous rappelle avec une estimation claire." },
-  { num: "02", title: "Conception", desc: "On planifie le design lumineux selon votre propriété et votre budget." },
-  { num: "03", title: "Installation", desc: "Notre équipe installe tout, en sécurité, avant la date convenue." },
-  { num: "04", title: "Retrait", desc: "Après les Fêtes, on désinstalle et on entrepose le matériel." },
+  { num: "01", title: "Soumission gratuite", when: "Aujourd'hui", desc: "Vous remplissez le formulaire ou vous appelez. Réponse en moins de 24 h avec une première fourchette." },
+  { num: "02", title: "Visite et design", when: "Sous 3–5 jours", desc: "On vient mesurer la propriété, comprendre votre vision et confirmer un prix ferme, écrit." },
+  { num: "03", title: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
+  { num: "04", title: "Entretien pendant la saison", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
+  { num: "05", title: "Retrait et entreposage", when: "Janvier", desc: "On désinstalle après les Fêtes et on garde le matériel chez nous jusqu'à la prochaine saison. Rien à ranger." },
 ];
 
 // (Pas de section témoignages : aucune avis client réel pour l'instant —
@@ -353,6 +361,16 @@ export const cities = [
 export const findService = (slug) => services.find((s) => s.slug === slug);
 export const findCity = (slug) => cities.find((c) => c.slug === slug);
 
+// Préposition adaptée au nom de la zone : "sur la Rive-Nord/Rive-Sud",
+// "à Blainville/Terrebonne/Laval/Montréal/Saint-Jérôme". Le "à Rive-Sud"
+// grammaticalement faux tirait des mauvais signaux SEO en plus de sonner amateur.
+export function cityPreposition(cityName) {
+  return /^rive-/i.test(cityName) ? "sur la" : "à";
+}
+export function inCity(cityName) {
+  return `${cityPreposition(cityName)} ${cityName}`;
+}
+
 // =============================================================================
 // Blog — métadonnées des articles SEO
 // =============================================================================
@@ -367,7 +385,7 @@ export const blogPosts = [
       "Guide 2026 : combien coûte l'installation de lumières de Noël au Québec? Tarifs par type de propriété, facteurs de prix, et quand réserver. Estimation gratuite.",
     image: "/images/noel-blainville-01.jpg",
     imageAlt: "Maison résidentielle entièrement décorée de lumières de Noël la nuit",
-    date: "2026-09-15",
+    date: "2026-08-01",
     readingTime: "6 min",
     tags: ["Tarifs", "Résidentiel", "Commercial"],
   },
@@ -380,7 +398,7 @@ export const blogPosts = [
       "Quand réserver son installation de lumières de Noël au Québec? Pourquoi octobre est le moment idéal et comment garantir votre date avant les premières neiges.",
     image: "/images/noel-terrebonne-01.jpg",
     imageAlt: "Équipe d'installation de lumières de Noël travaillant en automne",
-    date: "2026-09-01",
+    date: "2026-07-15",
     readingTime: "4 min",
     tags: ["Planification", "Saison"],
   },
@@ -447,6 +465,12 @@ export const eclairagePage = {
   ],
 };
 
+// Sélection de 6 photos de projets — représentative du territoire réel
+// (Rive-Nord + Grand Montréal + Rive-Sud). Utilisée pour l'aperçu accueil.
+// Les indices sont figés pour garder une sélection cohérente si la galerie
+// complète s'étoffe. Voir noelPage.gallery pour la source.
+const HOME_PORTFOLIO_INDICES = [0, 2, 4, 5, 7, 9];
+
 // --- Page : Lumière de Noël ---------------------------------------------------
 export const noelPage = {
   slug: "lumiere-de-noel",
@@ -477,6 +501,9 @@ export const noelPage = {
     { image: "/images/noel-magog-01.jpg", alt: "Installation de lumières de Noël à Magog", caption: "Magog" },
   ],
 };
+
+// 6 vignettes pour l'aperçu portfolio sur l'accueil.
+export const homePortfolio = HOME_PORTFOLIO_INDICES.map((i) => noelPage.gallery[i]);
 
 // --- Formulaire de soumission (7 champs, incl. groupe radio budget) ----------
 export const budgetOptions = [
@@ -520,7 +547,18 @@ async function sendLeadToCrm(payload) {
   }
 }
 
+// Champ honeypot : les bots remplissent tous les champs, y compris ceux
+// visuellement cachés. Si _website (ou payload.honeypot) est non vide,
+// on retourne "succès" côté client sans rien envoyer — le pourri disparaît
+// silencieusement sans alerter le bot.
+export const HONEYPOT_FIELD = "_website";
+
 export async function sendLead(payload) {
+  if (payload && (payload[HONEYPOT_FIELD] || payload.honeypot)) {
+    if (typeof console !== "undefined") console.warn("[Lumière] Honeypot déclenché — envoi ignoré.");
+    return true;
+  }
+
   // Toujours tenter le CRM, même en mode démo Web3Forms.
   void sendLeadToCrm(payload);
 

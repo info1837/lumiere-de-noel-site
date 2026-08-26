@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/jsonld";
 import {
-  services, cities, findCity,
+  services, cities, findCity, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -15,11 +15,11 @@ export function generateMetadata({ params }) {
   const c = findCity(params.city);
   if (!c) return {};
   return {
-    title: `Lumières de Noël à ${c.name}`,
+    title: `Lumières de Noël ${inCity(c.name)}`,
     description: c.metaDescription,
     alternates: { canonical: `/secteur/${c.slug}` },
     openGraph: {
-      title: `Installation de lumières de Noël à ${c.name} | Lumière de Noël inc.`,
+      title: `Installation de lumières de Noël ${inCity(c.name)} | Lumière de Noël inc.`,
       description: c.metaDescription,
       url: `/secteur/${c.slug}`,
       images: [c.image],
@@ -65,7 +65,7 @@ export default function CityPage({ params }) {
 
       <PageHero
         kicker={c.regionLabel}
-        title={`Lumières de Noël à ${c.name}`}
+        title={`Lumières de Noël ${inCity(c.name)}`}
         subtitle={c.intro}
         image={c.image}
         imageAlt={c.imageAlt}
@@ -83,9 +83,9 @@ export default function CityPage({ params }) {
           />
           <div style={{ maxWidth: 760 }}>
             <SectionTag>{c.regionLabel}</SectionTag>
-            <SectionTitle>Notre service à {c.name}</SectionTitle>
+            <SectionTitle>Notre service {inCity(c.name)}</SectionTitle>
             <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>{c.body}</p>
-            <CTAButton href="/soumission">Demander une soumission</CTAButton>
+            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
         </div>
       </section>
@@ -94,7 +94,7 @@ export default function CityPage({ params }) {
       <section className="snowy" style={{ background: navy }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <SectionTag dark>Nos services à {c.name}</SectionTag>
+            <SectionTag dark>Nos services {inCity(c.name)}</SectionTag>
             <SectionTitle light style={{ margin: "0 auto" }}>Pour chaque type de propriété</SectionTitle>
           </div>
           <div className="grid-2">
@@ -112,7 +112,7 @@ export default function CityPage({ params }) {
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
                     {s.kicker}
                   </div>
-                  <h3 style={{ color: ivory, marginBottom: 8, fontSize: 26 }}>{s.title} à {c.name}</h3>
+                  <h3 style={{ color: ivory, marginBottom: 8, fontSize: 26 }}>{s.title} {inCity(c.name)}</h3>
                   <p style={{ color: "rgba(243,233,210,0.7)", fontSize: 15, margin: 0 }}>
                     {s.forCity ? s.forCity(c.name) : s.intro}
                   </p>
@@ -132,6 +132,7 @@ export default function CityPage({ params }) {
           <div style={{ textAlign: "center", marginBottom: 26 }}>
             <SectionTag>FAQ — {c.name}</SectionTag>
             <SectionTitle style={{ margin: "0 auto" }}>Vos questions sur {c.name}</SectionTitle>
+            {/* "Vos questions sur X" reste grammatical pour toutes les zones. */}
           </div>
           {faqs.map((f, i) => (
             <details key={i} style={{ borderBottom: "1px solid #e5dfd0", padding: "20px 4px" }}>
@@ -142,7 +143,7 @@ export default function CityPage({ params }) {
             </details>
           ))}
           <div style={{ textAlign: "center", marginTop: 32 }}>
-            <CTAButton href="/soumission">Soumission gratuite pour {c.name}</CTAButton>
+            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
         </div>
       </section>

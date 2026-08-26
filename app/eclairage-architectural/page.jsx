@@ -58,7 +58,7 @@ export default function EclairageArchitectural() {
               ))}
             </ul>
             <div style={{ marginTop: 26 }}>
-              <CTAButton href="/soumission">Demander une soumission</CTAButton>
+              <CTAButton href="/soumission">Soumission gratuite</CTAButton>
             </div>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
@@ -117,7 +117,7 @@ export default function EclairageArchitectural() {
           </div>
           <FaqAccordion items={p.faq} dark />
           <div style={{ textAlign: "center", marginTop: 44 }}>
-            <CTAButton href="/soumission" variant="gold">Obtenir ma soumission gratuite</CTAButton>
+            <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
           </div>
         </div>
       </section>

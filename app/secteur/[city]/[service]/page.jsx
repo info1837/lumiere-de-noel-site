@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd, ServiceJsonLd, FaqJsonLd } from "@/components/jsonld";
 import {
-  services, cities, findCity, findService,
+  services, cities, findCity, findService, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -22,15 +22,16 @@ export function generateMetadata({ params }) {
   const c = findCity(params.city);
   const s = findService(params.service);
   if (!c || !s) return {};
-  const title = `${s.title} à ${c.name}`;
+  const cityIn = inCity(c.name);
+  const title = `${s.title} ${cityIn}`;
   return {
     title,
     description:
-      `${s.title} à ${c.name} — service clé en main avec matériel professionnel fourni. ${s.metaDescription.split(".")[0]}.`,
+      `${s.title} ${cityIn} — service clé en main avec matériel professionnel fourni. ${s.metaDescription.split(".")[0]}.`,
     alternates: { canonical: `/secteur/${c.slug}/${s.slug}` },
     openGraph: {
       title: `${title} | Lumière de Noël inc.`,
-      description: `Installation par notre équipe à ${c.name}. Retrait inclus. Soumission gratuite.`,
+      description: `Installation par notre équipe ${cityIn}. Retrait inclus. Soumission gratuite.`,
       url: `/secteur/${c.slug}/${s.slug}`,
       images: [s.heroImage],
     },
@@ -39,11 +40,11 @@ export function generateMetadata({ params }) {
 
 const buildFaq = (cityName, serviceTitle) => [
   {
-    q: `Faites-vous l'installation de ${serviceTitle.toLowerCase()} à ${cityName}?`,
+    q: `Faites-vous l'installation de ${serviceTitle.toLowerCase()} ${inCity(cityName)}?`,
     a: `Oui. ${cityName} fait partie de notre territoire principal — nos équipes y sont sur la route plusieurs jours par semaine en saison.`,
   },
   {
-    q: `Combien de temps prend l'installation à ${cityName}?`,
+    q: `Combien de temps prend l'installation ${inCity(cityName)}?`,
     a: `La plupart des résidences sont complétées en une journée. Pour les projets commerciaux ou les grandes propriétés, on planifie selon vos besoins.`,
   },
   {
@@ -74,7 +75,7 @@ export default function CityServicePage({ params }) {
 
       <PageHero
         kicker={`${c.regionLabel} — ${c.name}`}
-        title={`${s.title} à ${c.name}`}
+        title={`${s.title} ${inCity(c.name)}`}
         subtitle={s.forCity ? s.forCity(c.name) : s.intro}
         image={s.heroImage}
         imageAlt={s.heroImageAlt}
@@ -92,7 +93,7 @@ export default function CityServicePage({ params }) {
           />
           <div className="grid-2" style={{ alignItems: "start" }}>
             <div>
-              <SectionTag>Service à {c.name}</SectionTag>
+              <SectionTag>Service {inCity(c.name)}</SectionTag>
               <SectionTitle>{s.h1 || s.title} — {c.name}</SectionTitle>
               {/* Contenu propre à CHAQUE combinaison ville × service (anti contenu mince).
                   forCity() + le corps unique de la ville évitent les 24 pages quasi-identiques. */}
@@ -109,7 +110,7 @@ export default function CityServicePage({ params }) {
                 ))}
               </ul>
               <div style={{ marginTop: 26 }}>
-                <CTAButton href="/soumission">Soumission gratuite pour {c.name}</CTAButton>
+                <CTAButton href="/soumission">Soumission gratuite</CTAButton>
               </div>
             </div>
             <div>
@@ -133,7 +134,7 @@ export default function CityServicePage({ params }) {
         <div className="container" style={{ maxWidth: 820 }}>
           <div style={{ textAlign: "center", marginBottom: 26 }}>
             <SectionTag dark>FAQ</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>{s.title} à {c.name}</SectionTitle>
+            <SectionTitle light style={{ margin: "0 auto" }}>{s.title} {inCity(c.name)}</SectionTitle>
           </div>
           {faqs.map((f, i) => (
             <details key={i} style={{ borderBottom: "1px solid rgba(233,220,192,0.18)", padding: "20px 4px" }}>
@@ -144,7 +145,7 @@ export default function CityServicePage({ params }) {
             </details>
           ))}
           <div style={{ textAlign: "center", marginTop: 32 }}>
-            <CTAButton href="/soumission" variant="gold">Réserver mon installation à {c.name}</CTAButton>
+            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>
@@ -153,7 +154,7 @@ export default function CityServicePage({ params }) {
       <section style={{ background: offWhite }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <SectionTag>Aussi à {c.name}</SectionTag>
+            <SectionTag>Aussi {inCity(c.name)}</SectionTag>
             <SectionTitle style={{ margin: "0 auto" }}>Autres services disponibles</SectionTitle>
           </div>
           <div className="grid-3">
@@ -167,7 +168,7 @@ export default function CityServicePage({ params }) {
                   {o.kicker}
                 </div>
                 <div style={{ color: charcoal, fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: "0.03em", marginBottom: 6 }}>
-                  {o.title} à {c.name}
+                  {o.title} {inCity(c.name)}
                 </div>
                 <div style={{ color: "#555", fontSize: 14 }}>Voir les détails →</div>
               </Link>

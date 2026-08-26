@@ -74,7 +74,7 @@ export function ServerFooter() {
           borderTop: `1px solid ${line}`, paddingTop: 24,
           display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16, fontSize: 13,
         }}>
-          <div>© {new Date().getFullYear()} {company.name}. Tous droits réservés.</div>
+          <div>© {new Date().getFullYear()} {company.name} — Tous droits réservés.</div>
           <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Accueil</Link>
             <Link href="/services" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Services</Link>

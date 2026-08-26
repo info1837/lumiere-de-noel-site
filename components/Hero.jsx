@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
-import { sendLead, serviceOptions, navy, ivory, charcoal, company } from "@/components/data";
+import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
 
-const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "" };
+const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "", [HONEYPOT_FIELD]: "" };
 
 // Hero d'accueil : image plein écran + voile + carte de réservation rapide (5 champs).
 export default function Hero() {
@@ -26,12 +26,13 @@ export default function Hero() {
       ...data,
     });
     if (ok) {
-      setStatus("sent");
-      setData(empty);
       if (typeof window !== "undefined" && window.fbq) window.fbq("track", "Lead");
-    } else {
-      setStatus("error");
+      // Redirection vers /merci — page dédiée mesurable en conversion et
+      // qui donne au client une promesse claire ("Réponse en moins de 24 h").
+      window.location.assign("/merci?src=hero");
+      return;
     }
+    setStatus("error");
   };
 
   return (
@@ -55,7 +56,7 @@ export default function Hero() {
             fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
             textTransform: "uppercase", color: "#E9DCC0", marginBottom: 18,
           }}>
-            Leader au Québec — installation clé en main
+            Rive-Nord & Grand Montréal — installation clé en main
           </div>
           <h1 style={{ color: ivory }}>
             Des Fêtes éclatantes,<br />sans monter dans l'échelle
@@ -65,15 +66,28 @@ export default function Hero() {
             Conception, installation, entretien et retrait de vos lumières de Noël et de votre
             éclairage architectural. On s'occupe de tout — résidentiel, commercial et municipal.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 28 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
             <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
             <CTAButton href={company.phoneHref} variant="outlineLight">Appeler {company.phoneDisplay}</CTAButton>
           </div>
+          {/* Ligne datée — donne le QUAND dans les 3 premières secondes */}
+          <p style={{
+            color: "rgba(243,233,210,0.78)", fontSize: 14, lineHeight: 1.55,
+            margin: "0 0 26px", maxWidth: 560, fontWeight: 500,
+          }}>
+            Installations octobre–novembre 2026 · retrait et entreposage en janvier
+            · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>les dates de novembre partent en premier</strong>.
+          </p>
           <div style={{
             display: "flex", flexWrap: "wrap", gap: "10px 22px",
             color: "rgba(243,233,210,0.85)", fontSize: 14, fontWeight: 600,
           }}>
-            {["Installation + retrait inclus", "Matériel professionnel fourni", "Soumission gratuite, sans obligation"].map((t) => (
+            {[
+              "Installation + retrait inclus",
+              "Matériel professionnel fourni",
+              "On garde vos lumières chez nous — rien à ranger",
+              "Soumission gratuite, sans obligation",
+            ].map((t) => (
               <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
                 <span className="bulb bulb--tw" aria-hidden="true" />{t}
               </span>
@@ -86,13 +100,7 @@ export default function Hero() {
           background: "#fff", borderRadius: 18, padding: "clamp(22px, 3vw, 32px)",
           boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
         }}>
-          {status === "sent" ? (
-            <div style={{ textAlign: "center", padding: "24px 0" }}>
-              <div style={{ fontSize: 38 }}>✓</div>
-              <h3 style={{ color: charcoal, margin: "8px 0" }}>Merci !</h3>
-              <p style={{ color: "#555", margin: "0 auto" }}>On vous rappelle très bientôt.</p>
-            </div>
-          ) : (
+          {(
             <form onSubmit={submit} noValidate>
               <h3 style={{ color: charcoal, marginBottom: 4 }}>Réservez votre date</h3>
               <p style={{ fontSize: 14, color: "#666", marginBottom: 18 }}>
@@ -126,9 +134,14 @@ export default function Hero() {
                   />
                 </div>
               </div>
+              {/* Honeypot anti-bot — invisible et hors du flux de tabulation */}
+              <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: 1, height: 1, overflow: "hidden" }}>
+                <label htmlFor={`h-${HONEYPOT_FIELD}`}>Ne pas remplir</label>
+                <input id={`h-${HONEYPOT_FIELD}`} type="text" tabIndex={-1} autoComplete="off" value={data[HONEYPOT_FIELD]} onChange={set(HONEYPOT_FIELD)} />
+              </div>
               <div style={{ marginTop: 18 }}>
                 <CTAButton type="submit" style={{ width: "100%" }}>
-                  {status === "sending" ? "Envoi…" : "Réserver maintenant"}
+                  {status === "sending" ? "Envoi…" : "Réserver ma date"}
                 </CTAButton>
               </div>
               {status === "error" && (

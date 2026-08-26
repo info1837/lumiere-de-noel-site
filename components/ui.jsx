@@ -216,7 +216,7 @@ export function Gallery({ items }) {
 }
 
 // --- Carte de section sombre réutilisable (hero secondaire) -----------------
-export function PageHero({ kicker, title, subtitle, image, imageAlt, ctaHref = "/soumission", ctaLabel = "Demander une soumission" }) {
+export function PageHero({ kicker, title, subtitle, image, imageAlt, ctaHref = "/soumission", ctaLabel = "Soumission gratuite" }) {
   return (
     <section style={{ position: "relative", padding: 0, minHeight: "62vh", display: "flex", alignItems: "flex-end", background: navy }}>
       <img

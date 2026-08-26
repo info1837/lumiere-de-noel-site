@@ -1,4 +1,5 @@
 import Link from "next/link";
+import HowItWorks from "@/components/HowItWorks";
 import { SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { services, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
@@ -69,6 +70,8 @@ export default function ServicesIndex() {
           </div>
         </div>
       </section>
+
+      <HowItWorks variant="light" />
     </>
   );
 }

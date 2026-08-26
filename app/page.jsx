@@ -1,8 +1,11 @@
+import Link from "next/link";
 import Hero from "@/components/Hero";
 import QuoteForm from "@/components/QuoteForm";
-import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
+import HowItWorks from "@/components/HowItWorks";
+import Testimonials from "@/components/Testimonials";
+import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
 import {
-  serviceCards, whyUs, faqHome, serviceArea, company,
+  serviceCards, whyUs, faqHome, serviceArea, company, homePortfolio,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -26,6 +29,9 @@ export default function Home() {
       />
       <Hero />
 
+      {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
+      <Testimonials limit={3} variant="light" />
+
       {/* 2 — Proposition de valeur « Leader au Québec » */}
       <section style={{ background: offWhite }}>
         <div className="container grid-2">
@@ -42,7 +48,7 @@ export default function Home() {
             <p style={{ color: "#444", fontSize: 18, marginBottom: 26 }}>
               Vous, vous profitez du spectacle. Nous, on s'occupe de tout le reste.
             </p>
-            <CTAButton href="/soumission">Demander une soumission</CTAButton>
+            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
             {/* TODO PHOTO : valeur-commercial.jpg */}
@@ -76,11 +82,34 @@ export default function Home() {
                     ))}
                   </ul>
                   <CTAButton href="/soumission" variant="outlineLight" style={{ padding: "13px 24px", fontSize: 13 }}>
-                    Soumission
+                    Soumission gratuite
                   </CTAButton>
                 </div>
               </article>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Comment ça marche — 5 étapes datées (répond à "qu'est-ce qui se passe après ?") */}
+      <HowItWorks variant="light" />
+
+      {/* Aperçu portfolio — 6 vignettes tirées de /lumiere-de-noel (preuve visuelle plus près du hero) */}
+      <section style={{ background: navy, paddingTop: 72, paddingBottom: 72 }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: 34 }}>
+            <SectionTag dark>Réalisations</SectionTag>
+            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, saison après saison</SectionTitle>
+          </div>
+          <Gallery items={homePortfolio} />
+          <div style={{ textAlign: "center", marginTop: 30 }}>
+            <Link href="/lumiere-de-noel#realisations" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              color: gold, textDecoration: "none",
+              fontWeight: 700, fontSize: 14, letterSpacing: "0.06em", textTransform: "uppercase",
+            }}>
+              Voir toutes les réalisations →
+            </Link>
           </div>
         </div>
       </section>
@@ -173,7 +202,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <CTAButton href="/soumission" variant="gold">Obtenir mon estimation gratuite</CTAButton>
+          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
         </div>
       </section>
 

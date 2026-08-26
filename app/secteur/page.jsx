@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { SectionTag, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
-import { cities, navy, ivory, gold } from "@/components/data";
+import { cities, inCity, navy, ivory, gold } from "@/components/data";
 
 export const metadata = {
   title: "Zones desservies — Grand Montréal",
@@ -53,7 +53,7 @@ export default function SecteurIndex() {
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
                     {c.regionLabel}
                   </div>
-                  <h2 style={{ color: ivory, marginBottom: 8, fontSize: 26 }}>Lumières de Noël à {c.name}</h2>
+                  <h2 style={{ color: ivory, marginBottom: 8, fontSize: 26 }}>Lumières de Noël {inCity(c.name)}</h2>
                   <div style={{ color: gold, fontSize: 13, fontWeight: 700, marginTop: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>
                     Voir les détails →
                   </div>
