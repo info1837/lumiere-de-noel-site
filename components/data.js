@@ -21,9 +21,12 @@ export const line = "rgba(233,220,192,0.22)"; // séparateurs sur fond sombre
 export const textMuted = "#5A5A5A";
 
 // --- Coordonnées de l'entreprise ---------------------------------------------
-// Domaine de Solution Lumière de Noël Inc. — SOURCE UNIQUE.
-// Domaine actif depuis le 2026-08-25 (remplace lumieredenoelinc.ca).
-// Quand le .com est prêt, changer cette ligne suffit.
+// Domaine de Solution Lumière de Noël Inc. — SOURCE UNIQUE pour les adresses
+// courriel. Domaine actif depuis le 2026-08-25 (remplace lumieredenoelinc.ca).
+// L'origine du site (baseUrl) est résolue via lib/site-url.js pour supporter
+// les previews Vercel et un override par variable d'environnement.
+import { getSiteUrl } from "@/lib/site-url";
+
 const DOMAIN = "lumieredenoelinc.com";
 
 export const company = {
@@ -45,7 +48,7 @@ export const company = {
   // Territoire réel : PLUS LARGE que celui de Palencia (Rive-Nord seule).
   // L'Estrie qui était ici était une erreur — elle attirait des leads hors zone.
   region: "Rive-Sud, Montréal et Rive-Nord, Québec",
-  baseUrl: `https://${DOMAIN}`, // apex canonique (Vercel redirige www → apex)
+  baseUrl: getSiteUrl(), // apex canonique — override via NEXT_PUBLIC_SITE_URL
   social: null, // aucun réseau social pour l'instant (pas de faux liens)
   // Tarif d'entrée réel fourni par le client.
   priceFrom: "1 000 $",
