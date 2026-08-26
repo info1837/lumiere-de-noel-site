@@ -2,13 +2,13 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
-import { budgetOptions, serviceOptions, sendLead, charcoal } from "@/components/data";
+import { budgetOptions, serviceOptions, sendLead, charcoal, HONEYPOT_FIELD } from "@/components/data";
 
-const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", budget: "", message: "" };
+const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", budget: "", message: "", [HONEYPOT_FIELD]: "" };
 
 // Formulaire « Demande de soumission » — 7 champs, incl. groupe radio budget.
 // Envoi via sendLead() (Web3Forms) — même endpoint que le hero.
-export default function QuoteForm({ compact = false }) {
+export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote" }) {
   const [data, setData] = useState(empty);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
 
@@ -23,7 +23,7 @@ export default function QuoteForm({ compact = false }) {
     setStatus("sending");
     const ok = await sendLead({
       subject: "Nouveau lead — Demande de soumission",
-      source: "Formulaire de soumission (complet)",
+      source,
       nom: data.nom,
       telephone: data.telephone,
       courriel: data.courriel,
@@ -31,28 +31,16 @@ export default function QuoteForm({ compact = false }) {
       service: data.service,
       budget: data.budget,
       message: data.message,
+      [HONEYPOT_FIELD]: data[HONEYPOT_FIELD],
+      ...(extraPayload || {}),
     });
     if (ok) {
-      setStatus("sent");
-      setData(empty);
-      // Suivi conversion Meta Pixel (actif seulement si un Pixel ID est configuré)
       if (typeof window !== "undefined" && window.fbq) window.fbq("track", "Lead");
-    } else {
-      setStatus("error");
+      window.location.assign(`/merci?src=${encodeURIComponent(redirectSrc)}`);
+      return;
     }
+    setStatus("error");
   };
-
-  if (status === "sent") {
-    return (
-      <div style={{ background: "#fff", borderRadius: 18, padding: 40, textAlign: "center" }}>
-        <div style={{ fontSize: 40, marginBottom: 8 }}>✓</div>
-        <h3 style={{ color: charcoal, marginBottom: 8 }}>Demande envoyée</h3>
-        <p style={{ margin: "0 auto", color: "#555" }}>
-          Merci ! Nous vous rappelons rapidement avec votre estimation.
-        </p>
-      </div>
-    );
-  }
 
   return (
     <form onSubmit={submit} noValidate style={{
@@ -116,6 +104,12 @@ export default function QuoteForm({ compact = false }) {
       <div style={{ marginTop: 18 }}>
         <label htmlFor="qf-msg">Détails du projet</label>
         <textarea id="qf-msg" value={data.message} onChange={set("message")} placeholder="Type de propriété, hauteur, sections à illuminer, échéancier…" />
+      </div>
+
+      {/* Honeypot anti-bot — invisible, hors du flux de tabulation */}
+      <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: 1, height: 1, overflow: "hidden" }}>
+        <label htmlFor={`qf-${HONEYPOT_FIELD}`}>Ne pas remplir</label>
+        <input id={`qf-${HONEYPOT_FIELD}`} type="text" tabIndex={-1} autoComplete="off" value={data[HONEYPOT_FIELD]} onChange={set(HONEYPOT_FIELD)} />
       </div>
 
       <div style={{ marginTop: 22 }}>

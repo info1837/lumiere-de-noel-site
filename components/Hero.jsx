@@ -2,9 +2,9 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
-import { sendLead, serviceOptions, navy, ivory, charcoal, company } from "@/components/data";
+import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
 
-const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "" };
+const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "", [HONEYPOT_FIELD]: "" };
 
 // Hero d'accueil : image plein écran + voile + carte de réservation rapide (5 champs).
 export default function Hero() {
@@ -26,12 +26,13 @@ export default function Hero() {
       ...data,
     });
     if (ok) {
-      setStatus("sent");
-      setData(empty);
       if (typeof window !== "undefined" && window.fbq) window.fbq("track", "Lead");
-    } else {
-      setStatus("error");
+      // Redirection vers /merci — page dédiée mesurable en conversion et
+      // qui donne au client une promesse claire ("Réponse en moins de 24 h").
+      window.location.assign("/merci?src=hero");
+      return;
     }
+    setStatus("error");
   };
 
   return (
@@ -99,13 +100,7 @@ export default function Hero() {
           background: "#fff", borderRadius: 18, padding: "clamp(22px, 3vw, 32px)",
           boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
         }}>
-          {status === "sent" ? (
-            <div style={{ textAlign: "center", padding: "24px 0" }}>
-              <div style={{ fontSize: 38 }}>✓</div>
-              <h3 style={{ color: charcoal, margin: "8px 0" }}>Merci !</h3>
-              <p style={{ color: "#555", margin: "0 auto" }}>On vous rappelle très bientôt.</p>
-            </div>
-          ) : (
+          {(
             <form onSubmit={submit} noValidate>
               <h3 style={{ color: charcoal, marginBottom: 4 }}>Réservez votre date</h3>
               <p style={{ fontSize: 14, color: "#666", marginBottom: 18 }}>
@@ -138,6 +133,11 @@ export default function Hero() {
                     placeholder="Sélectionnez…"
                   />
                 </div>
+              </div>
+              {/* Honeypot anti-bot — invisible et hors du flux de tabulation */}
+              <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: 1, height: 1, overflow: "hidden" }}>
+                <label htmlFor={`h-${HONEYPOT_FIELD}`}>Ne pas remplir</label>
+                <input id={`h-${HONEYPOT_FIELD}`} type="text" tabIndex={-1} autoComplete="off" value={data[HONEYPOT_FIELD]} onChange={set(HONEYPOT_FIELD)} />
               </div>
               <div style={{ marginTop: 18 }}>
                 <CTAButton type="submit" style={{ width: "100%" }}>

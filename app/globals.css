@@ -183,7 +183,8 @@ input, textarea, select {
   border: 1px solid #d8d2c4;
   border-radius: 10px;
   font-family: 'Nunito Sans', sans-serif;
-  font-size: 15px;
+  /* 16px = seuil sous lequel Safari iOS force le zoom automatique sur le champ */
+  font-size: 16px;
   background: #fff;
   color: var(--charcoal);
   transition: border-color 0.2s, box-shadow 0.2s;
@@ -198,13 +199,16 @@ input:focus, textarea:focus, select:focus {
 
 .radio-row { display: flex; flex-wrap: wrap; gap: 10px; }
 .radio-chip {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 16px; border: 1px solid #d8d2c4; border-radius: 300px;
-  font-size: 14px; cursor: pointer; background: #fff; transition: all 0.18s;
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 12px 18px; min-height: 48px;
+  border: 1px solid #d8d2c4; border-radius: 300px;
+  font-size: 15px; cursor: pointer; background: #fff; transition: all 0.18s;
   text-transform: none; font-weight: 500; letter-spacing: 0;
 }
-.radio-chip input { width: auto; }
+/* Cible tactile ≥20px pour le disque radio lui-même (WCAG 2.5.5) */
+.radio-chip input { width: 20px; height: 20px; margin: 0; accent-color: var(--charcoal); }
 .radio-chip.selected { background: var(--charcoal); color: var(--off-white); border-color: var(--charcoal); }
+.radio-chip.selected input { accent-color: var(--gold); }
 
 /* --- Sélecteur personnalisé (components/Select.jsx) ----------------------- */
 .ld-select { position: relative; width: 100%; }
@@ -217,7 +221,7 @@ input:focus, textarea:focus, select:focus {
   border: 1px solid #d8d2c4;
   border-radius: 10px;
   font-family: 'Nunito Sans', sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   color: var(--charcoal);
   cursor: pointer;
   text-align: left;
@@ -264,7 +268,7 @@ input:focus, textarea:focus, select:focus {
   display: flex; align-items: center; gap: 10px;
   padding: 11px 12px;
   border-radius: 8px;
-  font-size: 15px; line-height: 1.3;
+  font-size: 16px; line-height: 1.3;
   color: var(--charcoal);
   cursor: pointer;
   transition: background-color 0.12s;

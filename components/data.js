@@ -523,7 +523,18 @@ async function sendLeadToCrm(payload) {
   }
 }
 
+// Champ honeypot : les bots remplissent tous les champs, y compris ceux
+// visuellement cachés. Si _website (ou payload.honeypot) est non vide,
+// on retourne "succès" côté client sans rien envoyer — le pourri disparaît
+// silencieusement sans alerter le bot.
+export const HONEYPOT_FIELD = "_website";
+
 export async function sendLead(payload) {
+  if (payload && (payload[HONEYPOT_FIELD] || payload.honeypot)) {
+    if (typeof console !== "undefined") console.warn("[Lumière] Honeypot déclenché — envoi ignoré.");
+    return true;
+  }
+
   // Toujours tenter le CRM, même en mode démo Web3Forms.
   void sendLeadToCrm(payload);
 
