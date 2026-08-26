@@ -55,7 +55,7 @@ export default function Hero() {
             fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
             textTransform: "uppercase", color: "#E9DCC0", marginBottom: 18,
           }}>
-            Leader au Québec — installation clé en main
+            Rive-Nord & Grand Montréal — installation clé en main
           </div>
           <h1 style={{ color: ivory }}>
             Des Fêtes éclatantes,<br />sans monter dans l'échelle
@@ -65,15 +65,28 @@ export default function Hero() {
             Conception, installation, entretien et retrait de vos lumières de Noël et de votre
             éclairage architectural. On s'occupe de tout — résidentiel, commercial et municipal.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 28 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
             <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
             <CTAButton href={company.phoneHref} variant="outlineLight">Appeler {company.phoneDisplay}</CTAButton>
           </div>
+          {/* Ligne datée — donne le QUAND dans les 3 premières secondes */}
+          <p style={{
+            color: "rgba(243,233,210,0.78)", fontSize: 14, lineHeight: 1.55,
+            margin: "0 0 26px", maxWidth: 560, fontWeight: 500,
+          }}>
+            Installations octobre–novembre 2026 · retrait et entreposage en janvier
+            · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>les dates de novembre partent en premier</strong>.
+          </p>
           <div style={{
             display: "flex", flexWrap: "wrap", gap: "10px 22px",
             color: "rgba(243,233,210,0.85)", fontSize: 14, fontWeight: 600,
           }}>
-            {["Installation + retrait inclus", "Matériel professionnel fourni", "Soumission gratuite, sans obligation"].map((t) => (
+            {[
+              "Installation + retrait inclus",
+              "Matériel professionnel fourni",
+              "On garde vos lumières chez nous — rien à ranger",
+              "Soumission gratuite, sans obligation",
+            ].map((t) => (
               <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
                 <span className="bulb bulb--tw" aria-hidden="true" />{t}
               </span>
