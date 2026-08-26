@@ -100,7 +100,7 @@ export function ArticleJsonLd({ post, urlPath }) {
           name: company.name,
           logo: {
             "@type": "ImageObject",
-            url: `${BASE}/images/logo.png`,
+            url: `${BASE}/favicon-512.png`,
           },
         },
         mainEntityOfPage: `${BASE}${urlPath}`,

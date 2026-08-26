@@ -14,7 +14,7 @@ export function ServerFooter() {
         }} className="footer-grid-seo">
           {/* Identité */}
           <div>
-            <img src="/images/logo.png" alt={company.name}
+            <img src="/images/logo-horizontal-transparent-fonce.svg" alt={company.name}
               style={{ height: 68, width: "auto", display: "block", marginBottom: 16 }} />
             <p style={{ fontSize: 14, lineHeight: 1.7, maxWidth: 340, marginBottom: 18 }}>
               Installation clé en main de lumières de Noël et d'éclairage architectural permanent —

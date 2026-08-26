@@ -158,6 +158,17 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
   body { padding-bottom: 76px; }
 }
 
+/* Logo de l'en-tête. Le lockup horizontal du kit est ~1,6x plus large que
+   l'ancien logo pour une même hauteur : à 52px il fait 152px de large, et
+   sous 900px il chevauchait le bouton tap-to-call. Ces paliers le ramènent
+   à la largeur de l'ancien logo sur les petits écrans. La hauteur est ici
+   et non en style inline — un style inline l'emporterait sur les media
+   queries. */
+.site-logo { height: 52px; width: auto; display: block; }
+@media (max-width: 900px) { .site-logo { height: 44px; } }
+@media (max-width: 560px) { .site-logo { height: 38px; } }
+@media (max-width: 400px) { .site-logo { height: 32px; } }
+
 @media (max-width: 960px) {
   .grid-3, .grid-4, .gallery-grid { grid-template-columns: repeat(2, 1fr); }
   .grid-2 { grid-template-columns: 1fr; gap: 28px; }

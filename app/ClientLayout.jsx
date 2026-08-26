@@ -51,8 +51,8 @@ export function NavBar() {
         padding: "14px 24px", gap: 16,
       }}>
         <Link href="/" aria-label={`${company.name} — accueil`} style={{ display: "flex", alignItems: "center" }}>
-          <img src="/images/logo.png" alt={company.name}
-            style={{ height: 52, width: "auto", display: "block" }} />
+          <img src="/images/logo-horizontal-transparent-fonce.svg" alt={company.name}
+            className="site-logo" />
         </Link>
 
         {/* Nav horizontale — desktop uniquement (≥1024px) */}

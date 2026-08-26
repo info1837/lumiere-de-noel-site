@@ -43,12 +43,19 @@ export const metadata = {
     description: "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec.",
     images: ["/images/hero-accueil.jpg"],
   },
+  // Rend exactement les balises du LISEZMOI du kit logo :
+  //   <link rel="icon" href="/favicon.ico" sizes="48x48">
+  //   <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+  //   <link rel="apple-touch-icon" href="/favicon-180.png">
+  // L'ancien /favicon.svg est volontairement retiré : un favicon SVG a
+  // priorite sur le .ico dans les navigateurs modernes, il aurait donc
+  // continue d'afficher l'ANCIEN logo par-dessus le nouveau kit.
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
     ],
-    apple: "/apple-touch-icon.png",
+    apple: "/favicon-180.png",
   },
   other: {
     "theme-color": "#0B1B2B",
@@ -80,7 +87,7 @@ export default function RootLayout({ children }) {
               "@id": `${BASE}/#business`,
               name: company.name,
               image: `${BASE}/images/hero-accueil.jpg`,
-              logo: `${BASE}/images/logo.png`,
+              logo: `${BASE}/favicon-512.png`,
               url: `${BASE}/`,
               telephone: company.phoneHref ? company.phoneHref.replace("tel:", "") : undefined,
               email: company.email,

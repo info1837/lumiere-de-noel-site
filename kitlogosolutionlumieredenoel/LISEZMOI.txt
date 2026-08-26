@@ -1,0 +1,46 @@
+KIT LOGO — SOLUTION LUMIÈRE DE NOËL INC.
+Direction F « le filament » · S2 script (Grand Hotel)
+26 août 2026
+
+Tous les SVG sont en tracés vectoriels purs : aucune police à installer,
+ils s'affichent identiques partout et s'agrandissent sans perte (favicon
+comme flanc de remorque).
+
+── svg/
+  logo-horizontal-fond-fonce.svg      logo complet, fond marine
+  logo-horizontal-fond-pale.svg       logo complet, fond crème
+  logo-horizontal-transparent-fonce.svg  sans fond, pour fonds foncés (site, vidéo)
+  logo-horizontal-transparent-pale.svg   sans fond, pour fonds pâles (papier, factures)
+  icone-pour-fond-fonce.svg           l'ampoule seule, pour fonds foncés
+  icone-pour-fond-pale.svg            l'ampoule seule, pour fonds pâles
+  carre-favicon.svg / carre-profil.svg   sources des carrés
+
+── png/
+  favicon.ico                         à mettre à la racine du site
+  favicon-16 / 32 / 48.png            navigateurs
+  favicon-180.png                     apple-touch-icon (iPhone)
+  favicon-192.png / favicon-512.png   Android / manifest
+  carre-1024.png                      logo carré maître (Google Business Profile)
+  profil-960.png                      photo de profil Facebook / Instagram
+  logo-horizontal-fond-fonce.png      aperçu / réseaux sociaux
+  logo-horizontal-fond-pale.png       aperçu / documents
+
+── COULEURS
+  Marine nuit  #0A1524     Crème  #F5EFE0
+  Ambre        #F0BC55     Ambre foncé (sur pâle)  #C98A1E
+  Rouge ampoule #D94436    Vert ampoule  #3E9B62
+
+── POLICES (Google Fonts, libres d'usage commercial)
+  Script S     Grand Hotel
+  LUMIÈRE      Bricolage Grotesque 700
+  DE NOËL      Bricolage Grotesque 600
+  SOLUTION     Barlow Condensed 600
+
+── POUR LE SITE (à donner à Claude Code)
+  Copier favicon.ico, favicon-32.png, favicon-180.png, favicon-192.png,
+  favicon-512.png dans /public, puis dans le <head> :
+    <link rel="icon" href="/favicon.ico" sizes="48x48">
+    <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
+    <link rel="apple-touch-icon" href="/favicon-180.png">
+  Et remplacer le logo du site par logo-horizontal-transparent-fonce.svg
+  (en-tête sombre) ou -pale.svg (en-tête clair).
