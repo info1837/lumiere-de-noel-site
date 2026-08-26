@@ -1,9 +1,10 @@
+import Link from "next/link";
 import Hero from "@/components/Hero";
 import QuoteForm from "@/components/QuoteForm";
 import HowItWorks from "@/components/HowItWorks";
-import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
+import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
 import {
-  serviceCards, whyUs, faqHome, serviceArea, company,
+  serviceCards, whyUs, faqHome, serviceArea, company, homePortfolio,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -88,6 +89,26 @@ export default function Home() {
 
       {/* Comment ça marche — 5 étapes datées (répond à "qu'est-ce qui se passe après ?") */}
       <HowItWorks variant="light" />
+
+      {/* Aperçu portfolio — 6 vignettes tirées de /lumiere-de-noel (preuve visuelle plus près du hero) */}
+      <section style={{ background: navy, paddingTop: 72, paddingBottom: 72 }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: 34 }}>
+            <SectionTag dark>Réalisations</SectionTag>
+            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, saison après saison</SectionTitle>
+          </div>
+          <Gallery items={homePortfolio} />
+          <div style={{ textAlign: "center", marginTop: 30 }}>
+            <Link href="/lumiere-de-noel#realisations" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              color: gold, textDecoration: "none",
+              fontWeight: 700, fontSize: 14, letterSpacing: "0.06em", textTransform: "uppercase",
+            }}>
+              Voir toutes les réalisations →
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* 4 — Pourquoi nous choisir + FAQ */}
       <section style={{ background: offWhite }}>

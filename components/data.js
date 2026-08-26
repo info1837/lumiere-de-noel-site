@@ -453,6 +453,12 @@ export const eclairagePage = {
   ],
 };
 
+// Sélection de 6 photos de projets — représentative du territoire réel
+// (Rive-Nord + Grand Montréal + Rive-Sud). Utilisée pour l'aperçu accueil.
+// Les indices sont figés pour garder une sélection cohérente si la galerie
+// complète s'étoffe. Voir noelPage.gallery pour la source.
+const HOME_PORTFOLIO_INDICES = [0, 2, 4, 5, 7, 9];
+
 // --- Page : Lumière de Noël ---------------------------------------------------
 export const noelPage = {
   slug: "lumiere-de-noel",
@@ -483,6 +489,9 @@ export const noelPage = {
     { image: "/images/noel-magog-01.jpg", alt: "Installation de lumières de Noël à Magog", caption: "Magog" },
   ],
 };
+
+// 6 vignettes pour l'aperçu portfolio sur l'accueil.
+export const homePortfolio = HOME_PORTFOLIO_INDICES.map((i) => noelPage.gallery[i]);
 
 // --- Formulaire de soumission (7 champs, incl. groupe radio budget) ----------
 export const budgetOptions = [

@@ -26,7 +26,7 @@ export default function LumiereDeNoel() {
         ctaLabel="Soumission gratuite"
       />
 
-      <section style={{ background: offWhite }}>
+      <section id="realisations" style={{ background: offWhite, scrollMarginTop: 100 }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 36, maxWidth: 720, marginLeft: "auto", marginRight: "auto" }}>
             <SectionTag>Portfolio</SectionTag>
