@@ -74,6 +74,21 @@ const SITUEES = {
     ville: "Saint-Donat",
     alt: "Maison illuminée pour les Fêtes à Saint-Donat, en soirée",
   },
+  "lery-01": {
+    src: `${REEL_PREFIX}noel-lery-01.jpg`,
+    ville: "Léry",
+    alt: "Grande maison illuminée pour les Fêtes à Léry — chaque pignon souligné, colonnes de pierre enrubannées et arbustes éclairés",
+  },
+  "mercier-01": {
+    src: `${REEL_PREFIX}noel-mercier-01.jpg`,
+    ville: "Mercier",
+    alt: "Résidence illuminée pour les Fêtes à Mercier",
+  },
+  "montreal-01": {
+    src: `${REEL_PREFIX}noel-montreal-01.jpg`,
+    ville: "Montréal",
+    alt: "Maison illuminée pour les Fêtes à Montréal — ligne de toit, galerie et colonnes enrubannées, sous la neige",
+  },
   "stratford-01": {
     src: `${REEL_PREFIX}noel-stratford-01.jpg`,
     ville: "Stratford",
@@ -146,19 +161,23 @@ export const CITY_PHOTO = {
   blainville: "blainville-01",
   terrebonne: "terrebonne-01",
   "saint-jerome": "st-jerome-01",
-  montreal: null,   // PHOTO PERDUE — voir PHOTOS-NEEDED.md
+  montreal: "montreal-01",
   laval: null,      // aucun chantier photographié à Laval
-  "rive-sud": null, // Léry est sur la Rive-Sud — photo perdue, à reverser ici
+  // Léry (Montérégie) est notre seule photo au sud du fleuve, mais la page
+  // « Rive-Sud » parle de Brossard, Longueuil, Boucherville — Léry est à ~40 km
+  // de là. L'y mettre referait, en plus discret, le coup de « Terrebonne sur
+  // Laval ». La page garde donc une générique. À basculer sur "lery-01" si
+  // Yahir considère Léry comme faisant partie du territoire Rive-Sud.
+  "rive-sud": null,
 };
 
 // -----------------------------------------------------------------------------
 // Photos attendues mais absentes du dépôt.
 // -----------------------------------------------------------------------------
-export const PHOTOS_MANQUANTES = [
-  { fichier: "noel-lery-01.jpg", usage: "Léry (Rive-Sud) + section valeur de l'accueil" },
-  { fichier: "noel-mercier-01.jpg", usage: "Mercier — version pivotée, pas celle couchée" },
-  { fichier: "noel-montreal-01.jpg", usage: "page ville Montréal" },
-];
+// Plus aucune photo manquante — les trois dernières sont arrivées le
+// 2026-08-30. Garder le tableau : il documente le format attendu si une
+// photo vient à manquer de nouveau.
+export const PHOTOS_MANQUANTES = [];
 
 /** Une photo par clé, ou null. */
 export const photo = (cle) => (cle && PHOTOS[cle]) || null;

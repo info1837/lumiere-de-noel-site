@@ -53,10 +53,9 @@ export default function Home() {
             <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-            {/* TODO PHOTO : noel-lery-01 dès qu'elle est redéposée — elle montre
-                ligne de toit, colonnes, arbustes ET arbres dans un seul
-                cadre, l'argument « tout inclus » en une image. */}
-            <img src={PHOTOS["blainville-01"].src} alt={PHOTOS["blainville-01"].alt}
+            {/* Léry : ligne de toit, colonnes et arbustes dans un seul cadre —
+                l'argument « tout inclus » fait visuellement, sans le dire. */}
+            <img src={PHOTOS["lery-01"].src} alt={PHOTOS["lery-01"].alt}
               loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         </div>

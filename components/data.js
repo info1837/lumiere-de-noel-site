@@ -474,10 +474,12 @@ export const eclairagePage = {
 // (Rive-Nord + Grand Montréal + Rive-Sud). Utilisée pour l'aperçu accueil.
 // Les indices sont figés pour garder une sélection cohérente si la galerie
 // complète s'étoffe. Voir noelPage.gallery pour la source.
-// Six vignettes VISUELLEMENT distinctes : quatre maisons de villes
-// différentes, le commerce, les arbres. Aucune photo déjà utilisée plus
-// haut sur l'accueil (hero = arbre enrubanné, valeur = Blainville).
-const HOME_PORTFOLIO_INDICES = [1, 2, 3, 6, 8, 9];
+// Six vignettes VISUELLEMENT distinctes, aucune déjà vue plus haut sur
+// l'accueil (hero = arbre enrubanné, section valeur = Léry).
+// 0 Blainville · 1 Terrebonne · 2 St-Jérôme · 3 Mirabel · 4 Ste-Julienne
+// 5 Ste-Anne · 6 St-Donat · 7 Stratford · 8 Léry · 9 Mercier · 10 Montréal
+// 11 Commercial · 12-13 Arbres
+const HOME_PORTFOLIO_INDICES = [0, 2, 3, 9, 10, 11];
 
 // --- Page : Lumière de Noël ---------------------------------------------------
 export const noelPage = {
@@ -507,6 +509,9 @@ export const noelPage = {
     { image: PHOTOS["ste-anne-01"].src,     alt: PHOTOS["ste-anne-01"].alt,     caption: "Sainte-Anne-des-Plaines" },
     { image: PHOTOS["st-donat-01"].src,     alt: PHOTOS["st-donat-01"].alt,     caption: "Saint-Donat" },
     { image: PHOTOS["stratford-01"].src,    alt: PHOTOS["stratford-01"].alt,    caption: "Stratford" },
+    { image: PHOTOS["lery-01"].src,         alt: PHOTOS["lery-01"].alt,         caption: "Léry" },
+    { image: PHOTOS["mercier-01"].src,      alt: PHOTOS["mercier-01"].alt,      caption: "Mercier" },
+    { image: PHOTOS["montreal-01"].src,     alt: PHOTOS["montreal-01"].alt,     caption: "Montréal" },
     { image: PHOTOS["commercial-02"].src,   alt: PHOTOS["commercial-02"].alt,   caption: "Commercial" },
     { image: PHOTOS["arbres-01"].src,       alt: PHOTOS["arbres-01"].alt,       caption: "Arbres et arbustes" },
     { image: PHOTOS["arbres-02"].src,       alt: PHOTOS["arbres-02"].alt,       caption: "Arbres et arbustes" },
