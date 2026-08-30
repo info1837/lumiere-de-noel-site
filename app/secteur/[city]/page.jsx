@@ -30,7 +30,7 @@ export function generateMetadata({ params }) {
 const cityFaq = (cityName) => [
   {
     q: `Desservez-vous tout le territoire de ${cityName}?`,
-    a: `Oui. Nous installons partout sur le territoire de ${cityName} ainsi que dans les municipalités avoisinantes.`,
+    a: `Oui — ${cityName} et les municipalités voisines. Si vous êtes en limite de secteur, demandez : on vous le dira franchement.`,
   },
   {
     q: `Combien coûte une installation à ${cityName}?`,
@@ -38,7 +38,7 @@ const cityFaq = (cityName) => [
   },
   {
     q: `Quand devrais-je réserver pour ${cityName}?`,
-    a: `Le plus tôt possible — idéalement en octobre. Nos équipes couvrent ${cityName} plusieurs jours par semaine en novembre, mais les meilleures dates partent vite.`,
+    a: `Le plus tôt possible — idéalement en octobre. Les dates de novembre partent vite : réserver tôt garantit la vôtre avant les premières neiges.`,
   },
   {
     q: `Est-ce que le retrait est inclus?`,

@@ -105,41 +105,7 @@ export function SectionTitle({ children, light, style = {} }) {
   );
 }
 
-// --- Étoiles ----------------------------------------------------------------
-export function Stars({ size = 18, color = "#E5B567" }) {
-  return (
-    <span aria-label="5 étoiles sur 5" role="img" style={{ display: "inline-flex", gap: 2 }}>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true">
-          <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
-        </svg>
-      ))}
-    </span>
-  );
-}
 
-// --- Badges d'avis Google / Facebook 5.0 ------------------------------------
-export function ReviewBadges({ dark }) {
-  const c = dark ? "rgba(250,250,250,0.92)" : charcoal;
-  const Badge = ({ label }) => (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      padding: "10px 16px", borderRadius: 300,
-      background: dark ? "rgba(255,255,255,0.08)" : "#fff",
-      border: `1px solid ${dark ? "rgba(255,255,255,0.18)" : "#e5dfd0"}`,
-    }}>
-      <strong style={{ color: c, fontSize: 14 }}>{label}</strong>
-      <Stars size={15} />
-      <span style={{ color: c, fontSize: 14, fontWeight: 700 }}>5.0</span>
-    </div>
-  );
-  return (
-    <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
-      <Badge label="Google" />
-      <Badge label="Facebook" />
-    </div>
-  );
-}
 
 // --- Accordéon FAQ -----------------------------------------------------------
 export function FaqAccordion({ items, dark }) {
@@ -183,6 +149,19 @@ export function FaqAccordion({ items, dark }) {
 }
 
 // --- Galerie de projets ------------------------------------------------------
+// --- Étoiles ----------------------------------------------------------------
+export function Stars({ size = 18, color = "#E5B567" }) {
+  return (
+    <span aria-label="5 étoiles sur 5" role="img" style={{ display: "inline-flex", gap: 2 }}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <svg key={i} width={size} height={size} viewBox="0 0 24 24" fill={color} aria-hidden="true">
+          <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+        </svg>
+      ))}
+    </span>
+  );
+}
+
 export function Gallery({ items }) {
   return (
     <div className="gallery-grid">

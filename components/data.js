@@ -76,7 +76,6 @@ export const nav = [
   },
   { label: "Zones desservies", href: "/secteur" },
   { label: "Blog", href: "/blog" },
-  { label: "Renouvellement", href: "/renouvellement" },
   { label: "Soumission", href: "/soumission" },
 ];
 
@@ -116,7 +115,7 @@ export const serviceCards = [
     // DRAFT COPY
     bullets: [
       "Parcs, rues principales et bâtiments publics à grande échelle",
-      "Conformité, sécurité et calendrier respecté à la lettre",
+      "Sécurité du public et calendrier respecté à la lettre",
     ],
   },
 ];
@@ -138,11 +137,11 @@ export const whyUs = [
     // une affirmation au présent, lue au présent. Le jour où la police
     // démarre, remettre « assurée » ici et aux autres marqueurs ASSURANCE.
     title: "Vous ne montez jamais dans l'échelle",
-    desc: "Installateurs formés et assurés, travail en hauteur effectué selon les normes.",
+    desc: "On fournit l'échelle, le matériel et la main-d'œuvre. Vous ne sortez jamais du salon.",  // ASSURANCE
   },
   {
     title: "Service après-vente",
-    desc: "Un problème pendant la saison ? On revient rapidement, sans frais supplémentaires.",
+    desc: "Ampoule brûlée ou section tombée ? On repasse sans frais, autant de fois qu'il le faut — de la pose au retrait.",
   },
 ];
 
@@ -163,7 +162,7 @@ export const faqHome = [
   },
   {
     q: "Que se passe-t-il si une lumière brûle pendant la saison ?",
-    a: "Notre service après-vente est inclus : un appel et nous revenons régler le problème sans frais additionnels.",
+    a: "Le service après-vente est inclus : un appel et on repasse sans frais, autant de fois qu'il le faut, de la pose au retrait.",
   },
   {
     q: "Quelles régions desservez-vous ?",
@@ -218,11 +217,11 @@ export const services = [
       "Toiture, corniches, arbres, arbustes et façade",
       "DEL commerciales blanc-chaud ou multicolores",
       "Pose, entretien et retrait inclus — vous ne touchez jamais à une échelle",
-      "Service après-vente : on revient sans frais si une lumière brûle",
+      "Rappels sans frais et illimités, de la pose au retrait",
     ],
     body: "Notre équipe se déplace, mesure votre propriété et propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
     forCity: (city) =>
-      `Nous installons des lumières de Noël résidentielles à ${city} chaque année. Notre équipe connaît bien le secteur et planifie les installations selon la météo locale et les premières neiges.`,
+      `Lumières de Noël résidentielles à ${city} : conception, pose, entretien et retrait — tout inclus, sans que vous touchiez à une échelle. On planifie selon la météo locale et les premières neiges.`,
   },
   {
     slug: "lumieres-de-noel-commercial",
@@ -232,16 +231,16 @@ export const services = [
     heroImage: PHOTOS["commercial-01"].src,
     heroImageAlt: PHOTOS["commercial-01"].alt,
     metaDescription:
-      "Installation commerciale de lumières de Noël au Québec : façades, vitrines et entrées. Planification hors-heures, matériel professionnel, conformité et sécurité.",
+      "Installation commerciale de lumières de Noël au Québec : façades, vitrines et entrées. Planification hors-heures, matériel professionnel, échéancier respecté.",
     intro:
-      "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, équipe formée au travail en hauteur, conformité respectée.",
+      "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, et le travail en hauteur fait par notre équipe.",  // ASSURANCE
     bullets: [
       "Façades, vitrines, marquises, entrées",
       "Planification hors-heures (soir / nuit) si requis",
       "Travail en hauteur fait par notre équipe",  // ASSURANCE
       "Maintenance pendant la saison incluse",
     ],
-    body: "Nous travaillons avec des restaurants, hôtels, bureaux, centres commerciaux et concessionnaires partout au Québec. Conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et soumission gratuite.",
+    body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et soumission gratuite.",
     forCity: (city) =>
       `Pour les commerces de ${city}, on planifie l'installation en dehors des heures d'ouverture quand c'est requis — vos clients voient le résultat, jamais les échelles.`,
   },
@@ -253,18 +252,18 @@ export const services = [
     heroImage: null,   // aucune photo municipale — voir PLAN-IMAGES.md §4B
     heroImageAlt: null,
     metaDescription:
-      "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Conformité, sécurité et calendrier respecté.",
+      "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Sécurité et calendrier respecté.",
     intro:
-      "Pour les municipalités, BIA et grandes propriétés : décor à grande échelle avec respect strict du calendrier, conformité et sécurité du public.",
+      "Pour les municipalités, BIA et grandes propriétés : décor à grande échelle, avec respect strict du calendrier et sécurité du public.",
     bullets: [
       "Parcs, rues principales et bâtiments publics",
       "Coordination avec voirie / travaux publics",
-      "Documentation, conformité et assurances",
+      "Documentation et planification avec votre service technique",  // ASSURANCE
       "Calendrier respecté à la lettre",
     ],
-    body: "Notre expérience municipale couvre l'éclairage de parcs, l'illumination de rues principales et les grandes propriétés institutionnelles. Devis sur soumission selon l'envergure du projet — on travaille avec votre service technique pour planifier les détails (alimentation, fixation, accès).",
+    body: "Nous soumissionnons pour l'éclairage de parcs, l'illumination de rues principales et les grandes propriétés institutionnelles. Devis sur soumission selon l'envergure du projet — on planifie les détails avec votre service technique (alimentation, fixation, accès).",
     forCity: (city) =>
-      `Pour la ville de ${city} et ses propriétés institutionnelles, on coordonne l'installation avec les services techniques municipaux.`,
+      `Pour la ville de ${city} et ses propriétés institutionnelles : devis sur soumission, et une planification faite avec votre service technique.`,
   },
   {
     slug: "eclairage-architectural-permanent",
@@ -302,8 +301,8 @@ const villesBrutes = [
     metaDescription:
       "Installation de lumières de Noël et d'éclairage architectural à Blainville. Service clé en main : conception, pose, entretien et retrait. Soumission gratuite.",
     intro:
-      "Blainville est l'une des villes où nous installons le plus de lumières chaque année. De Fontainebleau au Plateau, de Chambéry à Notre-Dame, on connaît bien les rues et les styles d'architecture du secteur.",
-    body: "Notre équipe est sur la route dans le secteur Blainville–Boisbriand–Sainte-Thérèse plusieurs jours par semaine en novembre et décembre — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
+      "Blainville est au cœur de notre territoire. De Fontainebleau au Plateau, de Chambéry à Notre-Dame — on connaît les rues et les styles d'architecture du secteur.",
+    body: "On planifie le secteur Blainville–Boisbriand–Sainte-Thérèse ensemble, pour limiter les déplacements — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
   },
   {
     slug: "terrebonne",
@@ -313,7 +312,7 @@ const villesBrutes = [
       "Installation de lumières de Noël à Terrebonne — quartiers Lachenaie, La Plaine et Vieux-Terrebonne. Service complet, matériel fourni, retrait inclus.",
     intro:
       "De Lachenaie à La Plaine en passant par le Vieux-Terrebonne, nous illuminons résidences et commerces dans tout le secteur. Architecture variée — bungalows, cottages, maisons de ville — on adapte le design à votre propriété.",
-    body: "Le Vieux-Terrebonne nous demande des installations soignées qui mettent en valeur les façades patrimoniales ; les nouveaux développements de Lachenaie et La Plaine demandent souvent des dégagements d'arbres et arbustes plus généreux. Devis personnalisé pour chaque adresse.",
+    body: "Le Vieux-Terrebonne demande des installations soignées, qui mettent en valeur les façades patrimoniales ; les nouveaux développements de Lachenaie et La Plaine demandent souvent des dégagements d'arbres et arbustes plus généreux. Devis personnalisé pour chaque adresse.",
   },
   {
     slug: "saint-jerome",
@@ -322,7 +321,7 @@ const villesBrutes = [
     metaDescription:
       "Installation de lumières de Noël à Saint-Jérôme et environs — Bellefeuille, Lafontaine, Saint-Antoine. Service clé en main avec retrait inclus.",
     intro:
-      "Saint-Jérôme et ses anciens secteurs (Bellefeuille, Lafontaine, Saint-Antoine) font partie de notre tournée annuelle. Centre-ville historique, secteurs résidentiels et propriétés commerciales — on installe pour tout.",
+      "Saint-Jérôme et ses anciens secteurs (Bellefeuille, Lafontaine, Saint-Antoine) sont dans notre territoire. Centre-ville historique, secteurs résidentiels et propriétés commerciales — on installe pour tout.",
     body: "L'hiver arrive vite en haut des Laurentides : on planifie les installations Saint-Jérôme avant les autres pour devancer les premières chutes de neige importantes. Réservez tôt pour garantir votre date.",
   },
   {
@@ -333,7 +332,7 @@ const villesBrutes = [
       "Installation de lumières de Noël à Laval — Sainte-Dorothée, Sainte-Rose, Chomedey, Fabreville, Vimont. Service résidentiel et commercial, retrait inclus.",
     intro:
       "Laval est sur notre territoire principal : Sainte-Dorothée, Sainte-Rose, Chomedey, Fabreville, Vimont, Saint-François. Quartiers résidentiels et commerces — on couvre toute l'île Jésus.",
-    body: "Les grandes propriétés de Sainte-Dorothée et Sainte-Rose représentent une bonne part de nos installations résidentielles haut de gamme. Pour le commercial, on travaille avec restaurants, concessionnaires et bureaux le long du boulevard des Laurentides et de l'autoroute 15.",
+    body: "Les grandes propriétés de Sainte-Dorothée et Sainte-Rose se prêtent bien aux designs haut de gamme. Côté commercial : restaurants, concessionnaires et bureaux le long du boulevard des Laurentides et de l'autoroute 15.",
   },
   {
     slug: "montreal",
@@ -343,7 +342,7 @@ const villesBrutes = [
       "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, soumission gratuite.",
     intro:
       "Sur l'île, on installe partout : Outremont, Westmount, le Plateau, Ahuntsic, Rosemont, NDG, Côte-des-Neiges. Façades patrimoniales, duplex et triplex, copropriétés — on adapte le design à votre style architectural.",
-    body: "Les ruelles montréalaises et les façades en rangée demandent une approche différente des grands terrains de banlieue : davantage d'attention aux corniches, balcons et alignements de fenêtres. Notre équipe a l'habitude des contraintes urbaines (stationnement, accès, hauteur).",
+    body: "Les ruelles montréalaises et les façades en rangée demandent une approche différente des grands terrains de banlieue : davantage d'attention aux corniches, balcons et alignements de fenêtres. Les contraintes urbaines — stationnement, accès, hauteur — font partie du travail.",
   },
   {
     slug: "rive-sud",
@@ -353,7 +352,7 @@ const villesBrutes = [
       "Installation de lumières de Noël sur la Rive-Sud de Montréal — Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Service complet.",
     intro:
       "On dessert toute la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie, Candiac. Résidentiel et commercial, du DIX30 aux quartiers résidentiels patrimoniaux.",
-    body: "Nos chantiers Rive-Sud sont concentrés dans la couronne sud rapprochée. Pour les commerces du DIX30 et des grandes artères, on planifie les installations hors-heures. Pour les résidences, on couvre les développements récents comme les quartiers établis (vieux Longueuil, vieux Boucherville).",
+    body: "On dessert la couronne sud rapprochée. Pour les commerces des grandes artères, on planifie les installations hors-heures. Pour les résidences : développements récents comme quartiers établis (vieux Longueuil, vieux Boucherville).",
   },
 ];
 
@@ -459,12 +458,12 @@ export const eclairagePage = {
   faq: [
     { q: "Est-ce que les lumières sont visibles le jour ?", a: "Très peu. Les pastilles épousent la couleur du soffite et restent discrètes ; on remarque l'éclairage seulement une fois allumé." },
     { q: "Puis-je changer les couleurs moi-même ?", a: "Oui. Tout se contrôle depuis une application : couleurs, zones, animations, minuteries et scènes pour chaque fête." },
-    { q: "Combien de temps dure l'installation ?", a: "La plupart des résidences sont complétées en une journée, selon la dimension et l'architecture du bâtiment." },
-    { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Le matériel est couvert par une garantie — détails fournis à la soumission." },
+    { q: "Combien de temps dure l'installation ?", a: "La plupart des résidences se font en une seule visite, selon la dimension et l'architecture du bâtiment." },
+    { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
     { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
     { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
     { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel, commercial et municipal. On évalue la faisabilité lors de la soumission gratuite." },
-    { q: "Qu'arrive-t-il en cas de bris ?", a: "La garantie couvre le matériel et la main-d'œuvre. Un appel et nous planifions la réparation." },
+    { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
   ],
   // Vraies installations d'éclairage permanent. Pas de légende de ville :
   // ces photos-là n'ont pas de ville confirmée au dossier.
@@ -493,7 +492,7 @@ export const noelPage = {
   heroImageAlt: PHOTOS["blainville-01"].alt,
   // DRAFT COPY
   intro:
-    "Chaque année, nous illuminons des dizaines de propriétés à travers le Québec. Voici un aperçu de projets réalisés.",
+    "Voici des installations réalisées cette saison, à travers notre territoire.",
   // Vraies réalisations, saison 2025. Ces photos-là PEUVENT nommer leur
   // ville : ce sont de vrais chantiers. Une image générée ne le pourrait
   // jamais — scripts/check-photos.mjs casse le build si ça arrive.

@@ -34,7 +34,7 @@ export default function SecteurIndex() {
             <SectionTag dark>Zones desservies</SectionTag>
             <h1 style={{ color: ivory, marginBottom: 18 }}>Du Grand Montréal aux Laurentides</h1>
             <p style={{ color: "rgba(243,233,210,0.82)", fontSize: 19, margin: "0 auto", maxWidth: 700 }}>
-              Couronne nord, Laval, Île de Montréal, Rive-Sud — notre équipe couvre toute la grande région
+              Couronne nord, Laval, Île de Montréal, Rive-Sud — notre territoire couvre la grande région
               de Montréal. Votre ville n'est pas listée ? Appelez-nous, on dessert un large territoire.
             </p>
           </div>

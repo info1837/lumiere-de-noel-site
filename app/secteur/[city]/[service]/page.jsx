@@ -31,7 +31,7 @@ export function generateMetadata({ params }) {
     alternates: { canonical: `/secteur/${c.slug}/${s.slug}` },
     openGraph: {
       title: `${title} | Lumière de Noël inc.`,
-      description: `Installation par notre équipe ${cityIn}. Retrait inclus. Soumission gratuite.`,
+      description: `Lumières de Noël ${cityIn} — pose, entretien et retrait inclus. Soumission gratuite.`,
       url: `/secteur/${c.slug}/${s.slug}`,
       images: s.heroImage ? [s.heroImage] : undefined,
     },
@@ -41,11 +41,11 @@ export function generateMetadata({ params }) {
 const buildFaq = (cityName, serviceTitle) => [
   {
     q: `Faites-vous l'installation de ${serviceTitle.toLowerCase()} ${inCity(cityName)}?`,
-    a: `Oui. ${cityName} fait partie de notre territoire principal — nos équipes y sont sur la route plusieurs jours par semaine en saison.`,
+    a: `Oui, ${cityName} est dans notre territoire. On planifie les installations par secteur pour limiter les déplacements — réserver tôt vous laisse le choix de la date.`,
   },
   {
     q: `Combien de temps prend l'installation ${inCity(cityName)}?`,
-    a: `La plupart des résidences sont complétées en une journée. Pour les projets commerciaux ou les grandes propriétés, on planifie selon vos besoins.`,
+    a: `La plupart des résidences se font en une seule visite. Pour les projets commerciaux ou les grandes propriétés, on planifie selon vos besoins.`,
   },
   {
     q: `Le matériel est-il inclus?`,
