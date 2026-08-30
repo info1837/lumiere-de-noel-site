@@ -41,7 +41,6 @@ export default function Hero() {
       position: "relative", padding: 0, minHeight: "92vh",
       display: "flex", alignItems: "center", background: navy,
     }}>
-      {/* TODO PHOTO : hero-accueil.jpg — voir PHOTOS-NEEDED.md */}
       <img
         src={PHOTOS["blainville-01"].src}
         alt="Maison résidentielle illuminée de lumières de Noël la nuit"

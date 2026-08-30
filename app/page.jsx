@@ -52,7 +52,6 @@ export default function Home() {
             <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-            {/* TODO PHOTO : valeur-commercial.jpg */}
             <img src={PHOTOS["commercial-01"].src} alt={PHOTOS["commercial-01"].alt}
               loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
@@ -70,7 +69,6 @@ export default function Home() {
             {serviceCards.map((s) => (
               <article key={s.key} className="glow-card" style={{ background: "#10202f", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(233,220,192,0.12)" }}>
                 <div style={{ aspectRatio: "4 / 3", background: "#0b1b2b" }}>
-                  {/* TODO PHOTO : voir PHOTOS-NEEDED.md */}
                   {s.image && <img src={s.image} alt={s.imageAlt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                 </div>
                 <div style={{ padding: 24 }}>

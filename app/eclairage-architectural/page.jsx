@@ -63,7 +63,6 @@ export default function EclairageArchitectural() {
             </div>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-            {/* TODO PHOTO : eclairage-feature.jpg */}
             <img src={PHOTOS["permanent-detail"].src} alt={PHOTOS["permanent-detail"].alt}
               loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
