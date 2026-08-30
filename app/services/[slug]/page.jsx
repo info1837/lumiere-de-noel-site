@@ -22,7 +22,7 @@ export function generateMetadata({ params }) {
       title: `${s.h1 || s.title} | Solution Lumière de Noël inc.`,
       description: s.metaDescription,
       url: `/services/${s.slug}`,
-      images: [s.heroImage],
+      images: s.heroImage ? [s.heroImage] : undefined,
     },
   };
 }
@@ -78,10 +78,15 @@ export default function ServicePage({ params }) {
                 <CTAButton href="/soumission">Soumission gratuite</CTAButton>
               </div>
             </div>
-            <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-              <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-            </div>
+            {/* Le volet municipal n'a AUCUNE photo (heroImage: null). Sans ce
+                garde, React rend <img> sans src : une image cassée. On ne
+                réserve alors même pas le cadre — pas de trou décoratif. */}
+            {s.heroImage && (
+              <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
+                <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+              </div>
+            )}
           </div>
         </div>
       </section>

@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "node --no-warnings scripts/check-photos.mjs && next build",
     "start": "next start",
-    "check:photos": "node --no-warnings scripts/check-photos.mjs"
+    "check:photos": "node --no-warnings scripts/check-photos.mjs",
+    "audit:visuel": "node scripts/audit-visuel.mjs",
+    "audit:visuel:autotest": "node scripts/audit-visuel-autotest.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -15,6 +17,7 @@
     "react-dom": "^18.3.0"
   },
   "devDependencies": {
+    "playwright": "^1.58.2",
     "vercel": "^51.6.1"
   }
 }
