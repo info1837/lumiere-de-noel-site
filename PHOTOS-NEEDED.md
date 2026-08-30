@@ -63,33 +63,23 @@ prochain qui passe. Lancer seul : `npm run check:photos`.
 
 ---
 
-## Photos manquantes (3)
+## Photos manquantes — aucune ✅
 
-Perdues lors d'une manipulation Git du 2026-08-30. À redéposer dans
-`public/images/reel/` :
-
-| Fichier | Sert à |
-|---|---|
-| `noel-lery-01.jpg` | Léry (Rive-Sud) **et la section valeur de l'accueil** — elle montre ligne de toit, colonnes, arbustes et arbres dans un seul cadre |
-| `noel-mercier-01.jpg` | Mercier — **la version pivotée**, pas celle couchée |
-| `noel-montreal-01.jpg` | page ville Montréal |
-
-En attendant, les villes concernées affichent une photo **générique** (sans
-nom de ville dans l'alt) — jamais celle d'une autre ville.
+Les trois dernières (`noel-lery-01`, `noel-mercier-01`, `noel-montreal-01`) sont
+arrivées le 2026-08-30. Les 23 photos du registre pointent toutes sur un fichier
+réel, et `npm run build` le vérifie.
 
 
 ## Villes sans photo
 
 | Ville | État |
 |---|---|
-| Montréal | photo perdue — à redéposer |
 | Laval | aucun chantier photographié |
-| Rive-Sud | Léry est sur la Rive-Sud — photo perdue, à reverser ici |
+| Rive-Sud | Léry (Montérégie) est notre seule photo au sud du fleuve, mais elle est à ~40 km de Brossard/Longueuil. On ne l'y met pas : ce serait refaire, en plus discret, « Terrebonne sur Laval ». À basculer si Yahir considère Léry comme du territoire Rive-Sud. |
 
-Une ville sans photo affiche son titre sur le fond marine dégradé. C'est propre,
-et c'est vrai.
+Ces deux pages affichent une photo **générique** — un vrai chantier à nous, dont
+l'alt ne nomme aucune ville. Jamais celle d'une autre ville.
 
----
 
 ## Photos non classées
 
