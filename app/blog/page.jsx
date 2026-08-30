@@ -10,7 +10,7 @@ export const metadata = {
     "Conseils, tarifs et guides sur l'installation de lumières de Noël et d'éclairage architectural permanent au Québec. Articles pratiques pour résidences et commerces.",
   alternates: { canonical: "/blog" },
   openGraph: {
-    title: "Blog | Lumière de Noël inc.",
+    title: "Blog | Solution Lumière de Noël inc.",
     description:
       "Conseils et tarifs sur l'installation de lumières de Noël au Québec — articles pratiques.",
     url: "/blog",

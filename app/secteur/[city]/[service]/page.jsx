@@ -2,16 +2,18 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd, ServiceJsonLd, FaqJsonLd } from "@/components/jsonld";
+import { servicePhoto } from "@/components/photos";
 import {
-  services, cities, findCity, findService, inCity,
+  services, gridServices, cities, findCity, findService, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
-// Génère les 6 × 4 = 24 combinaisons service × ville en statique.
+// Génère les combinaisons service × ville en statique. Le municipal en est
+// exclu : aucune photo, aucun chantier — il garde sa seule page /services.
 export function generateStaticParams() {
   const params = [];
   for (const c of cities) {
-    for (const s of services) {
+    for (const s of gridServices) {
       params.push({ city: c.slug, service: s.slug });
     }
   }
@@ -30,10 +32,10 @@ export function generateMetadata({ params }) {
       `${s.title} ${cityIn} — service clé en main avec matériel professionnel fourni. ${s.metaDescription.split(".")[0]}.`,
     alternates: { canonical: `/secteur/${c.slug}/${s.slug}` },
     openGraph: {
-      title: `${title} | Lumière de Noël inc.`,
+      title: `${title} | Solution Lumière de Noël inc.`,
       description: `Lumières de Noël ${cityIn} — pose, entretien et retrait inclus. Soumission gratuite.`,
       url: `/secteur/${c.slug}/${s.slug}`,
-      images: s.heroImage ? [s.heroImage] : undefined,
+      images: [servicePhoto(s.slug, c.slug)?.src].filter(Boolean),
     },
   };
 }
@@ -77,8 +79,8 @@ export default function CityServicePage({ params }) {
         kicker={`${c.regionLabel} — ${c.name}`}
         title={`${s.title} ${inCity(c.name)}`}
         subtitle={s.forCity ? s.forCity(c.name) : s.intro}
-        image={s.heroImage}
-        imageAlt={s.heroImageAlt}
+        image={servicePhoto(s.slug, c.slug)?.src}
+        imageAlt={servicePhoto(s.slug, c.slug)?.alt}
         ctaLabel="Soumission gratuite"
       />
 
@@ -115,8 +117,9 @@ export default function CityServicePage({ params }) {
             </div>
             <div>
               <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f", marginBottom: 16 }}>
-                {s.heroImage && <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                {(() => { const ph = servicePhoto(s.slug, c.slug); return ph && (
+                  <img src={ph.src} alt={ph.alt} loading="lazy"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />); })()}
               </div>
               <div style={{ background: "#fff", border: "1px solid #ece5d6", borderRadius: 14, padding: 20 }}>
                 <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>

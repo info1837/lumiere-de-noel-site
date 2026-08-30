@@ -10,7 +10,7 @@ export const metadata = {
     "Installation de lumières de Noël et d'éclairage architectural dans le Grand Montréal — Blainville, Terrebonne, Saint-Jérôme, Laval, Montréal et Rive-Sud.",
   alternates: { canonical: "/secteur" },
   openGraph: {
-    title: "Zones desservies | Lumière de Noël inc.",
+    title: "Zones desservies | Solution Lumière de Noël inc.",
     description: "Service complet dans le Grand Montréal — couronne nord, Laval, Montréal et Rive-Sud.",
     url: "/secteur",
     images: [PHOTOS["blainville-01"].src],

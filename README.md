@@ -1,6 +1,6 @@
-# Lumière de Noël inc. — site web (Next.js)
+# Solution Lumière de Noël inc. — site web (Next.js)
 
-Reconstruction du site Squarespace expiré de **Lumière de Noël inc.**, en version
+Reconstruction du site Squarespace expiré de **Solution Lumière de Noël inc.**, en version
 **améliorée**, prête à héberger gratuitement sur Vercel. Même pile technique que
 `palencia-site` (Next.js 14 App Router, sans TypeScript, sans Tailwind, CSS + tokens JS).
 

@@ -42,8 +42,8 @@ export default function Hero() {
       display: "flex", alignItems: "center", background: navy,
     }}>
       <img
-        src={PHOTOS["blainville-01"].src}
-        alt="Maison résidentielle illuminée de lumières de Noël la nuit"
+        src={PHOTOS["arbre-enrubanne"].src}
+        alt={PHOTOS["arbre-enrubanne"].alt}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(110deg, rgba(5,10,20,0.88) 0%, rgba(5,10,20,0.62) 55%, rgba(5,10,20,0.30) 100%)" }} />

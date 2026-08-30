@@ -1,6 +1,5 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
-import QuoteForm from "@/components/QuoteForm";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
@@ -54,7 +53,10 @@ export default function Home() {
             <CTAButton href="/soumission">Soumission gratuite</CTAButton>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-            <img src={PHOTOS["commercial-01"].src} alt={PHOTOS["commercial-01"].alt}
+            {/* TODO PHOTO : noel-lery-01 dès qu'elle est redéposée — elle montre
+                ligne de toit, colonnes, arbustes ET arbres dans un seul
+                cadre, l'argument « tout inclus » en une image. */}
+            <img src={PHOTOS["blainville-01"].src} alt={PHOTOS["blainville-01"].alt}
               loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         </div>
@@ -95,7 +97,7 @@ export default function Home() {
       {/* Comment ça marche — 5 étapes datées (répond à "qu'est-ce qui se passe après ?") */}
       <HowItWorks variant="light" />
 
-      {/* Aperçu portfolio — 6 vignettes tirées de /lumiere-de-noel (preuve visuelle plus près du hero) */}
+      {/* Aperçu portfolio — 6 vignettes tirées de /realisations */}
       <section style={{ background: navy, paddingTop: 72, paddingBottom: 72 }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 34 }}>
@@ -104,7 +106,7 @@ export default function Home() {
           </div>
           <Gallery items={homePortfolio} />
           <div style={{ textAlign: "center", marginTop: 30 }}>
-            <Link href="/lumiere-de-noel#realisations" style={{
+            <Link href="/realisations" style={{
               display: "inline-flex", alignItems: "center", gap: 8,
               color: gold, textDecoration: "none",
               fontWeight: 700, fontSize: 14, letterSpacing: "0.06em", textTransform: "uppercase",
@@ -207,22 +209,25 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6 — Formulaire « Demande de soumission » */}
+      {/* 6 — Bande de conversion. UN SEUL formulaire sur l'accueil : le court,
+          dans le hero. Il y en avait un second, long, ici — dix sections de
+          défilement plus bas sur téléphone. Deux formulaires ne doublent pas
+          les leads, ils partagent l'attention : le visiteur qui hésite sur le
+          premier en croise un autre, différent, et doit deviner lequel compte.
+          Tout le reste pointe vers /soumission. Audit mobile 2026-08-30. */}
       <section id="soumission" style={{ background: offWhite }}>
-        <div className="container grid-2" style={{ alignItems: "start" }}>
-          <div>
-            <SectionTag>Demande de soumission</SectionTag>
-            <SectionTitle>Obtenez votre estimation gratuite</SectionTitle>
-            <p style={{ color: "#444", fontSize: 18, marginBottom: 20 }}>
-              Remplissez le formulaire et nous vous rappelons rapidement avec une estimation claire,
-              sans obligation.
-            </p>
-            <p style={{ color: "#444", fontSize: 16 }}>
-              Vous préférez parler à quelqu'un ?{" "}
-              <a href={company.phoneHref} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
-            </p>
-          </div>
-          <QuoteForm />
+        <div className="container" style={{ textAlign: "center", maxWidth: 720 }}>
+          <SectionTag>Demande de soumission</SectionTag>
+          <SectionTitle>Obtenez votre estimation gratuite</SectionTitle>
+          <p style={{ color: "#444", fontSize: 18, margin: "0 auto 26px" }}>
+            Décrivez votre projet en deux minutes — on vous rappelle rapidement avec une
+            estimation claire, sans obligation.
+          </p>
+          <CTAButton href="/soumission" variant="gold">Demander ma soumission</CTAButton>
+          <p style={{ color: "#444", fontSize: 16, marginTop: 22 }}>
+            Vous préférez parler à quelqu'un ?{" "}
+            <a href={company.phoneHref} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
+          </p>
         </div>
       </section>
     </>

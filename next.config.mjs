@@ -12,6 +12,11 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/home", destination: "/", permanent: true },
+      // Le portfolio s'appelait /lumiere-de-noel — une URL qui ne dit pas ce
+      // qu'elle contient, et que le pied de page appelait « Portfolio lumières »
+      // pendant que la nav disait « Réalisations ». Un seul nom, une seule URL,
+      // et un 301 pour ne rien perdre de l'ancienne.
+      { source: "/lumiere-de-noel", destination: "/realisations", permanent: true },
       { source: "/index", destination: "/", permanent: true },
 
       // .ca -> .com. Le .ca est l'ancien domaine : les pubs Meta de la

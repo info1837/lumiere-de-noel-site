@@ -1,4 +1,4 @@
-# Batch de génération Higgsfield — Lumière de Noël inc.
+# Batch de génération Higgsfield — Solution Lumière de Noël inc.
 
 Fichier de travail : tous les prompts pour générer les 24 images du site via le MCP
 Higgsfield, puis recadrer / optimiser / placer dans `public/images/`.

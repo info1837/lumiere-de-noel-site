@@ -10,7 +10,7 @@ const desktopNav = [
   { label: "Accueil", href: "/" },
   { label: "Services", href: "/services" },
   { label: "Zones desservies", href: "/secteur" },
-  { label: "Réalisations", href: "/lumiere-de-noel#realisations" },
+  { label: "Réalisations", href: "/realisations" },
   { label: "Blog", href: "/blog" },
 ];
 

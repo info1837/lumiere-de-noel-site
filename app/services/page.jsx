@@ -2,8 +2,9 @@ import Link from "next/link";
 import HowItWorks from "@/components/HowItWorks";
 import { SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
-import { services, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
+import { services, gridServices, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
+import { servicePhoto } from "@/components/photos";
 
 export const metadata = {
   title: "Nos services",
@@ -11,7 +12,7 @@ export const metadata = {
     "Tous nos services au Québec : installation de lumières de Noël résidentielles, commerciales et municipales, ainsi qu'éclairage architectural permanent DEL. Service clé en main.",
   alternates: { canonical: "/services" },
   openGraph: {
-    title: "Nos services | Lumière de Noël inc.",
+    title: "Nos services | Solution Lumière de Noël inc.",
     description:
       "Lumières de Noël résidentielles, commerciales et municipales + éclairage architectural permanent. Service clé en main, retrait inclus.",
     url: "/services",
@@ -42,15 +43,16 @@ export default function ServicesIndex() {
           </div>
 
           <div className="grid-2" style={{ gap: 24 }}>
-            {services.map((s) => (
+            {gridServices.map((s) => (
               <Link key={s.slug} href={`/services/${s.slug}`} className="glow-card" style={{
                 display: "block", textDecoration: "none",
                 background: "#10202f", borderRadius: 16, overflow: "hidden",
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
                 <div style={{ aspectRatio: "16 / 9", background: "#0b1b2b" }}>
-                  {s.heroImage && <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                  {(() => { const ph = servicePhoto(s.slug); return ph && (
+                    <img src={ph.src} alt={ph.alt} loading="lazy"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }} />); })()}
                 </div>
                 <div style={{ padding: 26 }}>
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>

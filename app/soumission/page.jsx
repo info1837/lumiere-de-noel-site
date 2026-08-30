@@ -11,7 +11,7 @@ export const metadata = {
     "Demandez votre soumission gratuite pour l'installation de lumières de Noël ou d'éclairage architectural permanent au Québec. Réponse en moins de 24 h, sans obligation.",
   alternates: { canonical: "/soumission" },
   openGraph: {
-    title: "Soumission gratuite | Lumière de Noël inc.",
+    title: "Soumission gratuite | Solution Lumière de Noël inc.",
     description: "Estimation gratuite et sans obligation pour vos lumières de Noël ou votre éclairage permanent.",
     url: "/soumission",
     images: [PHOTOS["blainville-01"].src],

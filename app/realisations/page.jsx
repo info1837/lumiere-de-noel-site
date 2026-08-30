@@ -6,11 +6,11 @@ export const metadata = {
   title: "Installation de lumières de Noël",
   description:
     "Installation clé en main de lumières de Noël au Québec — conception, pose, entretien et retrait. Résidentiel, commercial et municipal. Portfolio de projets. Soumission gratuite.",
-  alternates: { canonical: "/lumiere-de-noel" },
+  alternates: { canonical: "/realisations" },
   openGraph: {
-    title: "Installation de lumières de Noël | Lumière de Noël inc.",
+    title: "Installation de lumières de Noël | Solution Lumière de Noël inc.",
     description: "On conçoit, installe, entretient et retire vos lumières de Noël. Vous profitez des Fêtes.",
-    url: "/lumiere-de-noel",
+    url: "/realisations",
     images: [PHOTOS["blainville-01"].src],
   },
 };

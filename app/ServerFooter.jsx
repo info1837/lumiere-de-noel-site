@@ -60,7 +60,7 @@ export function ServerFooter() {
           <div>
             <h4 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Ressources</h4>
             <div><Link href="/blog" style={linkStyle}>Blog</Link></div>
-            <div><Link href="/lumiere-de-noel" style={linkStyle}>Portfolio lumières</Link></div>
+            <div><Link href="/realisations" style={linkStyle}>Réalisations</Link></div>
             <div><Link href="/eclairage-architectural" style={linkStyle}>Éclairage architectural</Link></div>
             <div style={{ marginTop: 6 }}>
               <Link href="/soumission" style={{ ...linkStyle, color: gold, fontWeight: 700 }}>
