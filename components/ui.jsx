@@ -209,7 +209,9 @@ export function PageHero({ kicker, title, subtitle, image, imageAlt, ctaHref = "
         />
       )}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,10,20,0.92), rgba(5,10,20,0.45))" }} />
-      <div className="container" style={{ position: "relative", padding: "0 24px 72px", width: "100%" }}>
+      {/* Padding HAUT obligatoire : l'en-tête est fixe. Sans lui, chaque page
+          sauf l'accueil rendait son surtitre et son h1 SOUS l'en-tête. */}
+      <div className="container" style={{ position: "relative", padding: "clamp(124px, 20vh, 168px) 24px 72px", width: "100%" }}>
         {kicker && <SectionTag dark>{kicker}</SectionTag>}
         <h1 style={{ color: ivory, maxWidth: 900 }}>{title}</h1>
         {subtitle && (
