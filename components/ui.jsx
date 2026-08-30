@@ -225,7 +225,7 @@ export function PageHero({ kicker, title, subtitle, image, imageAlt, ctaHref = "
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,10,20,0.92), rgba(5,10,20,0.45))" }} />
-      <div className="container" style={{ position: "relative", padding: "0 24px 72px", width: "100%" }}>
+      <div className="container" style={{ position: "relative", padding: "clamp(124px, 20vh, 168px) 24px 72px", width: "100%" }}>
         {kicker && <SectionTag dark>{kicker}</SectionTag>}
         <h1 style={{ color: ivory, maxWidth: 900 }}>{title}</h1>
         {subtitle && (

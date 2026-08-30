@@ -136,7 +136,7 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
   backdrop-filter: blur(6px);
 }
 .mobile-bottom-bar a {
-  flex: 1;
+  flex: 1; white-space: nowrap;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 13px 14px; border-radius: 300px;
   text-decoration: none; font-weight: 700; font-size: 15px;
@@ -155,7 +155,10 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
 }
 /* Réserve de l'espace en bas de page pour que la barre ne cache jamais le contenu */
 @media (max-width: 1023.98px) {
-  body { padding-bottom: 76px; }
+  /* La barre fixe recouvrait le contenu : 76px était la hauteur ESPÉRÉE,
+     pas la réelle. Mesurée à 73,75px + encoche, et les libellés passaient
+     à deux lignes, ce qui la faisait grandir sans que le body suive. */
+  body { padding-bottom: calc(84px + env(safe-area-inset-bottom, 0px)); }
 }
 
 @media (max-width: 960px) {
@@ -504,3 +507,8 @@ textarea:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .ls-bulb { animation: none; opacity: 1; }
 }
+
+/* Le numéro se coupait après le trait d'union sur mobile — « (438) 812- »
+   puis « 6635 » — ce qui doublait la hauteur de l'en-tête fixe et aggravait
+   le chevauchement du hero. Un numéro de téléphone ne se coupe jamais. */
+.phone-label { white-space: nowrap; }
