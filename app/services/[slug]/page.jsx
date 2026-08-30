@@ -19,7 +19,7 @@ export function generateMetadata({ params }) {
     description: s.metaDescription,
     alternates: { canonical: `/services/${s.slug}` },
     openGraph: {
-      title: `${s.h1 || s.title} | Lumière de Noël inc.`,
+      title: `${s.h1 || s.title} | Solution Lumière de Noël inc.`,
       description: s.metaDescription,
       url: `/services/${s.slug}`,
       images: [s.heroImage],

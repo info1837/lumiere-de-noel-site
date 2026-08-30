@@ -40,34 +40,43 @@ partagent la même photo, ou si une image **non réelle** nomme une ville.
 
 ---
 
-## La règle, en une phrase
+## Les deux règles
 
-> Seule une photo vivant sous `public/images/reel/` a le droit de nommer une
-> ville dans son `alt` ou sa légende. Tout le reste reste générique — pour
-> toujours.
+> **1.** Seule une photo vivant sous `public/images/reel/` a le droit de nommer
+> une ville dans son `alt`. Tout le reste reste générique — pour toujours.
+>
+> **2.** Une page de ville ne montre **jamais** la photo d'une autre ville.
+> Sa propre photo, ou une générique. Jamais la maison du voisin légendée
+> « à Terrebonne ».
+
+La règle 2 existe parce qu'elle a été violée en production : les cartes de
+service choisissaient leur image par **type de service** et court-circuitaient
+le mappage par ville. `/secteur/laval` affichait la maison de Terrebonne, avec
+« à Terrebonne » dans l'alt. Trois photos portaient tout le site.
+
+**Photos SITUÉES** (`ville:` renseignée) : réservées à leur ville.
+**Photos GÉNÉRIQUES** (pas de `ville`, aucun nom de ville dans l'alt) :
+utilisables partout, y compris sur une ville qu'on n'a pas photographiée.
 
 C'est `scripts/check-photos.mjs` qui l'applique, pas la bonne volonté du
 prochain qui passe. Lancer seul : `npm run check:photos`.
 
 ---
 
-## Photos manquantes (5)
+## Photos manquantes (3)
 
 Perdues lors d'une manipulation Git du 2026-08-30. À redéposer dans
 `public/images/reel/` :
 
 | Fichier | Sert à |
 |---|---|
-| `noel-lery-01.jpg` | Léry (Rive-Sud) + section valeur de l'accueil |
+| `noel-lery-01.jpg` | Léry (Rive-Sud) **et la section valeur de l'accueil** — elle montre ligne de toit, colonnes, arbustes et arbres dans un seul cadre |
 | `noel-mercier-01.jpg` | Mercier — **la version pivotée**, pas celle couchée |
 | `noel-montreal-01.jpg` | page ville Montréal |
-| `lights1.jpg` | 2e image commerciale (même commerce, autre angle) |
-| `permanent 2.jpg` | galerie éclairage permanent |
 
-En attendant, les villes concernées n'affichent **aucune** image — jamais celle
-d'une autre ville.
+En attendant, les villes concernées affichent une photo **générique** (sans
+nom de ville dans l'alt) — jamais celle d'une autre ville.
 
----
 
 ## Villes sans photo
 

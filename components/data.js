@@ -1,5 +1,5 @@
 // =============================================================================
-// Lumière de Noël inc. — données centrales (tokens de marque + contenu)
+// Solution Lumière de Noël inc. — données centrales (tokens de marque + contenu)
 // -----------------------------------------------------------------------------
 // Source de vérité : palette/typo/structure extraites de la spec du site
 // Squarespace expiré. Les copies longues marquées DRAFT sont reconstruites
@@ -28,7 +28,7 @@ export const textMuted = "#5A5A5A";
 // L'origine du site (baseUrl) est résolue via lib/site-url.js pour supporter
 // les previews Vercel et un override par variable d'environnement.
 import { getSiteUrl } from "@/lib/site-url";
-import { PHOTOS, cityPhoto } from "@/components/photos";
+import { PHOTOS, cityPhoto, servicePhoto } from "@/components/photos";
 
 const DOMAIN = "lumieredenoelinc.com";
 
@@ -80,12 +80,18 @@ export const nav = [
 ];
 
 // --- 3 cartes de service (page d'accueil, section 3) -------------------------
+// Le volet MUNICIPAL n'a aucune photo — il n'y a jamais eu de chantier
+// municipal. Une carte sans image à côté de deux cartes illustrées se lit
+// comme un bug, sur ~8 pages. Il n'apparaît donc dans AUCUNE grille : il
+// garde une seule page qui décrit la capacité. Voir `gridServices`.
 export const serviceCards = [
   {
     key: "residentiel",
     title: "Résidentiel",
-    image: PHOTOS["terrebonne-01"].src,
-    imageAlt: PHOTOS["terrebonne-01"].alt,
+    // Générique : l'accueil n'est pas une page de ville. La photo de
+    // Terrebonne est réservée à Terrebonne.
+    image: servicePhoto("lumieres-de-noel-residentiel").src,
+    imageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     // DRAFT COPY — reconstruite dans la voix de marque
     bullets: [
       "Installation complète : toiture, arbres, arbustes et façade",
@@ -101,21 +107,6 @@ export const serviceCards = [
     bullets: [
       "Façades, vitrines et entrées qui attirent la clientèle",
       "Planification hors-heures pour ne pas nuire à vos opérations",
-    ],
-  },
-  {
-    key: "municipal",
-    title: "Municipal",
-    // Aucune photo municipale n'existe : le volet municipal reste offert
-    // en CAPACITÉ, sans image et sans étude de cas. Ne pas illustrer avec
-    // une photo résidentielle — ce serait présenter un chantier pour un
-    // autre. PLAN-IMAGES.md §4B.
-    image: null,
-    imageAlt: null,
-    // DRAFT COPY
-    bullets: [
-      "Parcs, rues principales et bâtiments publics à grande échelle",
-      "Sécurité du public et calendrier respecté à la lettre",
     ],
   },
 ];
@@ -207,8 +198,8 @@ export const services = [
     title: "Lumières de Noël — Résidentiel",
     h1: "Installation de lumières de Noël résidentielles",
     kicker: "Service résidentiel clé en main",
-    heroImage: PHOTOS["terrebonne-01"].src,
-    heroImageAlt: PHOTOS["terrebonne-01"].alt,
+    heroImage: servicePhoto("lumieres-de-noel-residentiel").src,
+    heroImageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     metaDescription:
       "Installation de lumières de Noël résidentielles au Québec — conception, pose, entretien et retrait inclus. Matériel professionnel DEL fourni. Soumission gratuite.",
     intro:
@@ -228,8 +219,8 @@ export const services = [
     title: "Lumières de Noël — Commercial",
     h1: "Installation de lumières de Noël commerciales",
     kicker: "Pour vos commerces et bureaux",
-    heroImage: PHOTOS["commercial-01"].src,
-    heroImageAlt: PHOTOS["commercial-01"].alt,
+    heroImage: servicePhoto("lumieres-de-noel-commercial").src,
+    heroImageAlt: servicePhoto("lumieres-de-noel-commercial").alt,
     metaDescription:
       "Installation commerciale de lumières de Noël au Québec : façades, vitrines et entrées. Planification hors-heures, matériel professionnel, échéancier respecté.",
     intro:
@@ -249,7 +240,9 @@ export const services = [
     title: "Lumières de Noël — Municipal",
     h1: "Décoration de Noël municipale & grandes propriétés",
     kicker: "Parcs, rues principales, bâtiments publics",
-    heroImage: null,   // aucune photo municipale — voir PLAN-IMAGES.md §4B
+    // Capacité seulement : jamais dans une grille, jamais d'image.
+    capabilityOnly: true,
+    heroImage: null,
     heroImageAlt: null,
     metaDescription:
       "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Sécurité et calendrier respecté.",
@@ -270,8 +263,8 @@ export const services = [
     title: "Éclairage architectural permanent",
     h1: "Éclairage architectural permanent (DEL)",
     kicker: "Installé une seule fois — illuminé toute l'année",
-    heroImage: PHOTOS["permanent-hero"].src,
-    heroImageAlt: PHOTOS["permanent-hero"].alt,
+    heroImage: servicePhoto("eclairage-architectural-permanent").src,
+    heroImageAlt: servicePhoto("eclairage-architectural-permanent").alt,
     metaDescription:
       "Éclairage architectural permanent DEL au Québec : pastilles discrètes installées sous les soffites, contrôle par application, des millions de couleurs et d'animations. Soumission gratuite.",
     intro:
@@ -363,6 +356,10 @@ export const cities = villesBrutes.map((v) => {
   const ph = cityPhoto(v.slug);
   return { ...v, image: ph?.src ?? null, imageAlt: ph?.alt ?? null };
 });
+
+// Les services qui apparaissent dans une grille de cartes. Le municipal en
+// est exclu : pas de photo, donc pas de carte. Sa page existe toujours.
+export const gridServices = services.filter((s) => !s.capabilityOnly);
 
 // Helper : retrouve un service ou une ville par slug (utilisé dans les routes)
 export const findService = (slug) => services.find((s) => s.slug === slug);
@@ -477,19 +474,24 @@ export const eclairagePage = {
 // (Rive-Nord + Grand Montréal + Rive-Sud). Utilisée pour l'aperçu accueil.
 // Les indices sont figés pour garder une sélection cohérente si la galerie
 // complète s'étoffe. Voir noelPage.gallery pour la source.
-const HOME_PORTFOLIO_INDICES = [0, 1, 2, 4, 7, 8];
+// Six vignettes VISUELLEMENT distinctes : quatre maisons de villes
+// différentes, le commerce, les arbres. Aucune photo déjà utilisée plus
+// haut sur l'accueil (hero = arbre enrubanné, valeur = Blainville).
+const HOME_PORTFOLIO_INDICES = [1, 2, 3, 6, 8, 9];
 
 // --- Page : Lumière de Noël ---------------------------------------------------
 export const noelPage = {
-  slug: "lumiere-de-noel",
+  slug: "realisations",
   navLabel: "Lumière de Noël",
   heroKicker: "Service saisonnier clé en main",
   heroTitle: "INSTALLATION DE LUMIÈRES DE NOËL AU QUÉBEC",
   // DRAFT COPY
   heroSubtitle:
     "Conception, installation, entretien et retrait. On s'occupe de tout — vous profitez des Fêtes.",
-  heroImage: PHOTOS["blainville-01"].src,
-  heroImageAlt: PHOTOS["blainville-01"].alt,
+  // En-tête du portfolio : une photo qui n'est PAS dans la galerie plus bas,
+  // sinon la même maison ouvre la page et y réapparaît en vignette.
+  heroImage: PHOTOS["st-donat-02"].src,
+  heroImageAlt: PHOTOS["st-donat-02"].alt,
   // DRAFT COPY
   intro:
     "Voici des installations réalisées cette saison, à travers notre territoire.",
@@ -505,7 +507,7 @@ export const noelPage = {
     { image: PHOTOS["ste-anne-01"].src,     alt: PHOTOS["ste-anne-01"].alt,     caption: "Sainte-Anne-des-Plaines" },
     { image: PHOTOS["st-donat-01"].src,     alt: PHOTOS["st-donat-01"].alt,     caption: "Saint-Donat" },
     { image: PHOTOS["stratford-01"].src,    alt: PHOTOS["stratford-01"].alt,    caption: "Stratford" },
-    { image: PHOTOS["commercial-01"].src,   alt: PHOTOS["commercial-01"].alt,   caption: "Commercial" },
+    { image: PHOTOS["commercial-02"].src,   alt: PHOTOS["commercial-02"].alt,   caption: "Commercial" },
     { image: PHOTOS["arbres-01"].src,       alt: PHOTOS["arbres-01"].alt,       caption: "Arbres et arbustes" },
     { image: PHOTOS["arbres-02"].src,       alt: PHOTOS["arbres-02"].alt,       caption: "Arbres et arbustes" },
   ],
@@ -584,7 +586,7 @@ export async function sendLead(payload) {
       headers: { "Content-Type": "application/json", Accept: "application/json" },
       body: JSON.stringify({
         access_key: WEB3FORMS_ACCESS_KEY,
-        from_name: "Site Lumière de Noël inc.",
+        from_name: "Site Solution Lumière de Noël inc.",
         ...payload,
       }),
     });

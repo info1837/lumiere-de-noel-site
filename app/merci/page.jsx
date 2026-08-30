@@ -9,7 +9,7 @@ import { company, navy, ivory, gold, charcoal, offWhite } from "@/components/dat
 export const metadata = {
   title: "Merci — nous vous répondons sous 24 h",
   description:
-    "Votre demande est bien reçue. Un membre de l'équipe Lumière de Noël inc. vous répond en moins de 24 h avec votre soumission gratuite.",
+    "Votre demande est bien reçue. Un membre de l'équipe Solution Lumière de Noël inc. vous répond en moins de 24 h avec votre soumission gratuite.",
   robots: { index: false, follow: true },
   alternates: { canonical: "/merci" },
 };
@@ -73,7 +73,7 @@ export default function MerciPage() {
             Merci — on vous répond<br />en moins de 24 h
           </h1>
           <p style={{ color: "rgba(243,233,210,0.88)", fontSize: 19, margin: "0 auto 34px", maxWidth: 620 }}>
-            Votre demande est bien arrivée. Un membre de l'équipe Lumière de Noël inc.
+            Votre demande est bien arrivée. Un membre de l'équipe Solution Lumière de Noël inc.
             vous rappelle rapidement pour planifier votre visite d'évaluation
             gratuite — sans obligation.
           </p>

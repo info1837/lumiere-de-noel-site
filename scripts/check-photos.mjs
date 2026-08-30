@@ -22,8 +22,16 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC = join(RACINE, "public");
 const erreurs = [];
 
-const { PHOTOS, CITY_PHOTO, REEL_PREFIX, PHOTOS_MANQUANTES } =
+const { PHOTOS, CITY_PHOTO, REEL_PREFIX, PHOTOS_MANQUANTES, CLES_GENERIQUES,
+        cityPhoto, cityHeroPhoto, servicePhoto } =
   await import(join(RACINE, "components/photos.js"));
+
+// Les services dont une carte porte une image. Le municipal n'en a pas.
+const SERVICES = [
+  "lumieres-de-noel-residentiel",
+  "lumieres-de-noel-commercial",
+  "eclairage-architectural-permanent",
+];
 
 // Villes que le site nomme. Sert au contrôle « pas de ville sur une image
 // non réelle ». En ajouter une ici est gratuit ; en oublier une ne l'est pas.
@@ -93,6 +101,37 @@ for (const [slug, cle] of Object.entries(CITY_PHOTO)) {
   else prises.set(cle, slug);
 }
 
+// --- 5. Une page de ville ne montre jamais la photo d'une AUTRE ville -------
+// C'est le contrôle qui manquait : les cartes de service choisissaient leur
+// image par type de service et court-circuitaient le mappage par ville.
+// /secteur/laval affichait la maison de Terrebonne, légendée « à Terrebonne ».
+for (const slug of Object.keys(CITY_PHOTO)) {
+  const sienne = cityPhoto(slug);
+  const verifier = (p, ou) => {
+    if (!p || !p.ville) return;                 // générique : autorisé partout
+    if (sienne && p.src === sienne.src) return; // sa propre photo : autorisé
+    erreurs.push(
+      `${ou} pour « ${slug} » utilise une photo SITUÉE à ${p.ville}.\n` +
+      `    ${p.src}\n` +
+      `    alt : "${p.alt}"\n` +
+      `    Une page de ville montre sa photo ou une générique — jamais celle d'une autre ville.`);
+  };
+  verifier(cityHeroPhoto(slug), "L'en-tête");
+  for (const sv of SERVICES) verifier(servicePhoto(sv, slug), `La carte « ${sv} »`);
+}
+
+// --- 6. Une photo générique ne revendique aucun lieu ------------------------
+for (const cle of CLES_GENERIQUES) {
+  const p = PHOTOS[cle];
+  if (p.ville)
+    erreurs.push(`PHOTOS["${cle}"] est déclarée générique mais porte ville="${p.ville}".`);
+  const t = nommeUneVille(p.alt);
+  if (t.length)
+    erreurs.push(
+      `PHOTOS["${cle}"] est générique — elle peut apparaître sur n'importe quelle\n` +
+      `    page de ville — mais son alt nomme ${t.join(", ")}.\n    → "${p.alt}"`);
+}
+
 // --- Verdict -----------------------------------------------------------------
 if (erreurs.length) {
   console.error(`\n✖ check-photos : ${erreurs.length} problème(s)\n`);
@@ -104,4 +143,5 @@ const sansPhoto = Object.values(CITY_PHOTO).length - avecPhoto;
 console.log(
   `✓ check-photos : ${Object.keys(PHOTOS).length} photos réelles, ` +
   `${refs.size} image(s) littérale(s) vérifiée(s), ${avecPhoto} ville(s) illustrée(s), ` +
-  `${sansPhoto} sans photo (volontaire), ${PHOTOS_MANQUANTES.length} photo(s) attendue(s).`);
+  `${sansPhoto} sans photo (générique), ${CLES_GENERIQUES.length} générique(s), ` +
+  `${PHOTOS_MANQUANTES.length} photo(s) attendue(s).`);

@@ -9,7 +9,7 @@ export const metadata = {
     "Système d'éclairage DEL architectural permanent : installé une fois, illuminez votre propriété toute l'année via une application. Résidentiel, commercial et municipal au Québec. Soumission gratuite.",
   alternates: { canonical: "/eclairage-architectural" },
   openGraph: {
-    title: "Éclairage architectural permanent | Lumière de Noël inc.",
+    title: "Éclairage architectural permanent | Solution Lumière de Noël inc.",
     description: "DEL discrètes installées une seule fois — un éclairage pour chaque occasion, toute l'année.",
     url: "/eclairage-architectural",
     images: [PHOTOS["permanent-hero"].src],

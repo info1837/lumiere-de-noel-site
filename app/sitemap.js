@@ -1,4 +1,4 @@
-import { company, services, cities, blogPosts } from "@/components/data";
+import { company, services, gridServices, cities, blogPosts } from "@/components/data";
 
 const BASE = company.baseUrl;
 
@@ -7,7 +7,7 @@ export default function sitemap() {
 
   const staticRoutes = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
-    { url: `${BASE}/lumiere-de-noel`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
+    { url: `${BASE}/realisations`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/eclairage-architectural`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/soumission`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
@@ -32,7 +32,7 @@ export default function sitemap() {
   // Matrice service × ville (long-tail SEO)
   const cityServiceRoutes = [];
   for (const c of cities) {
-    for (const s of services) {
+    for (const s of gridServices) {
       cityServiceRoutes.push({
         url: `${BASE}/secteur/${c.slug}/${s.slug}`,
         lastModified: now,

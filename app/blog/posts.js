@@ -102,7 +102,7 @@ export const postBodies = {
     ]},
 
     { type: "h2", text: "Ce qu'on installe" },
-    { type: "p", text: "Chez Lumière de Noël inc., on installe exclusivement des DEL de qualité commerciale, blanc-chaud ou multicolores selon le goût. Pour l'éclairage architectural permanent, on va plus loin avec des pastilles RGB programmables qui changent de couleur selon l'occasion." },
+    { type: "p", text: "Chez Solution Lumière de Noël inc., on installe exclusivement des DEL de qualité commerciale, blanc-chaud ou multicolores selon le goût. Pour l'éclairage architectural permanent, on va plus loin avec des pastilles RGB programmables qui changent de couleur selon l'occasion." },
 
     { type: "cta", text: "Soumission gratuite pour votre installation DEL — résidentiel ou commercial." },
   ],

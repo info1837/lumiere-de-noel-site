@@ -18,7 +18,7 @@ export function generateMetadata({ params }) {
     alternates: { canonical: `/blog/${p.slug}` },
     openGraph: {
       type: "article",
-      title: `${p.title} | Lumière de Noël inc.`,
+      title: `${p.title} | Solution Lumière de Noël inc.`,
       description: p.metaDescription || p.excerpt,
       url: `/blog/${p.slug}`,
       images: [p.image],

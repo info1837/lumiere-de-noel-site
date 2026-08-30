@@ -2,8 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/jsonld";
+import { cityHeroPhoto, servicePhoto } from "@/components/photos";
 import {
-  services, cities, findCity, inCity,
+  services, gridServices, cities, findCity, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -19,10 +20,10 @@ export function generateMetadata({ params }) {
     description: c.metaDescription,
     alternates: { canonical: `/secteur/${c.slug}` },
     openGraph: {
-      title: `Installation de lumières de Noël ${inCity(c.name)} | Lumière de Noël inc.`,
+      title: `Installation de lumières de Noël ${inCity(c.name)} | Solution Lumière de Noël inc.`,
       description: c.metaDescription,
       url: `/secteur/${c.slug}`,
-      images: c.image ? [c.image] : undefined,
+      images: [cityHeroPhoto(c.slug).src],
     },
   };
 }
@@ -67,8 +68,8 @@ export default function CityPage({ params }) {
         kicker={c.regionLabel}
         title={`Lumières de Noël ${inCity(c.name)}`}
         subtitle={c.intro}
-        image={c.image}
-        imageAlt={c.imageAlt}
+        image={cityHeroPhoto(c.slug).src}
+        imageAlt={cityHeroPhoto(c.slug).alt}
         ctaLabel="Soumission gratuite"
       />
 
@@ -98,15 +99,16 @@ export default function CityPage({ params }) {
             <SectionTitle light style={{ margin: "0 auto" }}>Pour chaque type de propriété</SectionTitle>
           </div>
           <div className="grid-2">
-            {services.map((s) => (
+            {gridServices.map((s) => (
               <Link key={s.slug} href={`/secteur/${c.slug}/${s.slug}`} className="glow-card" style={{
                 display: "block", textDecoration: "none",
                 background: "#10202f", borderRadius: 16, overflow: "hidden",
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
                 <div style={{ aspectRatio: "16 / 9", background: "#0b1b2b" }}>
-                  {s.heroImage && <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                  {(() => { const ph = servicePhoto(s.slug, c.slug); return ph && (
+                    <img src={ph.src} alt={ph.alt} loading="lazy"
+                      style={{ width: "100%", height: "100%", objectFit: "cover" }} />); })()}
                 </div>
                 <div style={{ padding: 24 }}>
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>

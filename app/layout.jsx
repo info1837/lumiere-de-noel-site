@@ -19,8 +19,10 @@ const BASE = company.baseUrl;
 export const metadata = {
   metadataBase: new URL(BASE),
   title: {
-    default: "Lumière de Noël inc. | Installation de lumières de Noël & éclairage architectural — Québec",
-    template: "%s | Lumière de Noël inc.",
+    default: "Solution Lumière de Noël inc. | Installation de lumières de Noël & éclairage architectural — Québec",
+    // Lié à company.name : la raison sociale ne peut plus diverger entre
+    // le corps de page, l'onglet du navigateur et le résultat Google.
+    template: `%s | ${company.name}`,
   },
   description:
     "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel, commercial et municipal. Soumission gratuite. Service sur la Rive-Sud, à Montréal et sur la Rive-Nord.",
@@ -32,7 +34,7 @@ export const metadata = {
     type: "website",
     url: "/",
     siteName: company.name,
-    title: "Lumière de Noël inc. | Lumières de Noël & éclairage architectural au Québec",
+    title: "Solution Lumière de Noël inc. | Lumières de Noël & éclairage architectural au Québec",
     description:
       "On conçoit, installe, entretient et retire vos lumières de Noël. Éclairage architectural permanent disponible. Soumission gratuite.",
     images: [PHOTOS["blainville-01"].src],
@@ -40,7 +42,7 @@ export const metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Lumière de Noël inc. | Lumières de Noël & éclairage architectural",
+    title: "Solution Lumière de Noël inc. | Lumières de Noël & éclairage architectural",
     description: "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec.",
     images: [PHOTOS["blainville-01"].src],
   },
