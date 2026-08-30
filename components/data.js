@@ -32,7 +32,10 @@ import { getSiteUrl } from "@/lib/site-url";
 const DOMAIN = "lumieredenoelinc.com";
 
 export const company = {
-  name: "Lumière de Noël inc.",
+  // Raison sociale EXACTE, telle qu'enregistrée et telle qu'affichée sur
+  // la fiche Google Business — une divergence de nom est un signal local
+  // négatif. shortName existe pour l'affichage court.
+  name: "Solution Lumière de Noël inc.",
   shortName: "Lumière de Noël",
   // Numéro Twilio de Solution Lumière de Noël Inc. (2026-08-25).
   // Sert à la fois de numéro public sur le site ET de numéro à Sophie B.
@@ -125,7 +128,11 @@ export const whyUs = [
     desc: "Lumières DEL de qualité commerciale, durables et écoénergétiques — fournies par nous.",
   },
   {
-    title: "Équipe assurée",
+    // ⚠️ ASSURANCE — la police entre en vigueur au DÉBUT DE LA SAISON
+    // (Yahir, 2026-08-30). D'ici là le site ne dit pas « assurée » : c'est
+    // une affirmation au présent, lue au présent. Le jour où la police
+    // démarre, remettre « assurée » ici et aux autres marqueurs ASSURANCE.
+    title: "Vous ne montez jamais dans l'échelle",
     desc: "Installateurs formés et assurés, travail en hauteur effectué selon les normes.",
   },
   {
@@ -201,7 +208,7 @@ export const services = [
     metaDescription:
       "Installation de lumières de Noël résidentielles au Québec — conception, pose, entretien et retrait inclus. Matériel professionnel DEL fourni. Soumission gratuite.",
     intro:
-      "On illumine votre maison comme si c'était la nôtre. Toiture, arbres, arbustes, façade et entrée — un design pensé pour votre propriété, installé par notre équipe assurée, retiré après les Fêtes.",
+      "On illumine votre maison comme si c'était la nôtre. Toiture, arbres, arbustes, façade et entrée — un design pensé pour votre propriété, installé par notre équipe, retiré après les Fêtes.",
     bullets: [
       "Toiture, corniches, arbres, arbustes et façade",
       "DEL commerciales blanc-chaud ou multicolores",
@@ -226,7 +233,7 @@ export const services = [
     bullets: [
       "Façades, vitrines, marquises, entrées",
       "Planification hors-heures (soir / nuit) si requis",
-      "Équipe assurée, conforme aux normes de hauteur",
+      "Travail en hauteur fait par notre équipe",  // ASSURANCE
       "Maintenance pendant la saison incluse",
     ],
     body: "Nous travaillons avec des restaurants, hôtels, bureaux, centres commerciaux et concessionnaires partout au Québec. Conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et soumission gratuite.",
@@ -269,7 +276,7 @@ export const services = [
       "DEL discrètes, invisibles le jour",
       "Des millions de couleurs et animations via l'application",
       "Contrôle par zones, minuteries et scènes prédéfinies",
-      "Garantie sur le matériel et la main-d'œuvre",
+      "Rappels sans frais toute la saison, de la pose au retrait",
     ],
     body: "L'éclairage architectural permanent élimine la pose annuelle : un seul investissement et votre propriété change de visage à chaque fête. La technologie DEL utilisée est basse consommation et conçue pour résister aux hivers québécois. La plupart des résidences sont installées en une seule journée.",
     forCity: (city) =>
@@ -338,7 +345,7 @@ export const cities = [
     image: "/images/noel-montreal-01.jpg",
     imageAlt: "Façade montréalaise illuminée pour les Fêtes",
     metaDescription:
-      "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, équipe assurée, soumission gratuite.",
+      "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, soumission gratuite.",
     intro:
       "Sur l'île, on installe partout : Outremont, Westmount, le Plateau, Ahuntsic, Rosemont, NDG, Côte-des-Neiges. Façades patrimoniales, duplex et triplex, copropriétés — on adapte le design à votre style architectural.",
     body: "Les ruelles montréalaises et les façades en rangée demandent une approche différente des grands terrains de banlieue : davantage d'attention aux corniches, balcons et alignements de fenêtres. Notre équipe a l'habitude des contraintes urbaines (stationnement, accès, hauteur).",
@@ -438,7 +445,7 @@ export const eclairagePage = {
       "DEL discrètes, invisibles le jour",
       "Des millions de couleurs et d'animations via l'application",
       "Contrôle par zones, minuteries et scènes prédéfinies",
-      "Garantie sur le matériel et la main-d'œuvre",
+      "Rappels sans frais toute la saison, de la pose au retrait",
     ],
   },
   whyChoose: [

@@ -32,16 +32,18 @@ export default function Home() {
       {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
       <Testimonials limit={3} variant="light" />
 
-      {/* 2 — Proposition de valeur « Leader au Québec » */}
+      {/* 2 — Proposition de valeur. NE PAS réintroduire de superlatif ici
+          (« leader », « numéro 1 », « le meilleur ») : première saison sous
+          ce nom, rien à substantier. Audit 2026-08-30. */}
       <section style={{ background: offWhite }}>
         <div className="container grid-2">
           <div>
-            <SectionTag>Leader au Québec</SectionTag>
+            <SectionTag>Forfait tout inclus</SectionTag>
             <SectionTitle>Votre propriété, illuminée — sans le tracas</SectionTitle>
             {/* DRAFT COPY — reconstruite dans la voix de marque */}
             <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>
-              Résidences, commerces et municipalités de la Rive-Nord et du Grand Montréal nous
-              confient leur éclairage des Fêtes saison après saison. On fournit le matériel
+              Des résidences et des commerces de la Rive-Nord et du Grand Montréal nous
+              confient leur éclairage des Fêtes. On fournit le matériel
               professionnel, on l'installe en sécurité, on l'entretient pendant la saison et on
               le retire après les Fêtes.
             </p>
@@ -99,7 +101,7 @@ export default function Home() {
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 34 }}>
             <SectionTag dark>Réalisations</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, saison après saison</SectionTitle>
+            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, de vraies installations</SectionTitle>
           </div>
           <Gallery items={homePortfolio} />
           <div style={{ textAlign: "center", marginTop: 30 }}>
