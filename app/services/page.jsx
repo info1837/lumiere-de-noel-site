@@ -3,6 +3,7 @@ import HowItWorks from "@/components/HowItWorks";
 import { SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { services, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
   title: "Nos services",
@@ -14,7 +15,7 @@ export const metadata = {
     description:
       "Lumières de Noël résidentielles, commerciales et municipales + éclairage architectural permanent. Service clé en main, retrait inclus.",
     url: "/services",
-    images: ["/images/hero-accueil.jpg"],
+    images: [PHOTOS["blainville-01"].src],
   },
 };
 
@@ -48,8 +49,8 @@ export default function ServicesIndex() {
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
                 <div style={{ aspectRatio: "16 / 9", background: "#0b1b2b" }}>
-                  <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  {s.heroImage && <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                 </div>
                 <div style={{ padding: 26 }}>
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>

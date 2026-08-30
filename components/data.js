@@ -28,6 +28,7 @@ export const textMuted = "#5A5A5A";
 // L'origine du site (baseUrl) est résolue via lib/site-url.js pour supporter
 // les previews Vercel et un override par variable d'environnement.
 import { getSiteUrl } from "@/lib/site-url";
+import { PHOTOS, cityPhoto } from "@/components/photos";
 
 const DOMAIN = "lumieredenoelinc.com";
 
@@ -81,8 +82,8 @@ export const serviceCards = [
   {
     key: "residentiel",
     title: "Résidentiel",
-    image: "/images/service-residentiel.jpg",
-    imageAlt: "Maison résidentielle illuminée pour les Fêtes",
+    image: PHOTOS["terrebonne-01"].src,
+    imageAlt: PHOTOS["terrebonne-01"].alt,
     // DRAFT COPY — reconstruite dans la voix de marque
     bullets: [
       "Installation complète : toiture, arbres, arbustes et façade",
@@ -92,8 +93,8 @@ export const serviceCards = [
   {
     key: "commercial",
     title: "Commercial",
-    image: "/images/service-commercial.jpg",
-    imageAlt: "Bâtiment commercial avec éclairage des Fêtes",
+    image: PHOTOS["commercial-01"].src,
+    imageAlt: PHOTOS["commercial-01"].alt,
     // DRAFT COPY
     bullets: [
       "Façades, vitrines et entrées qui attirent la clientèle",
@@ -103,8 +104,12 @@ export const serviceCards = [
   {
     key: "municipal",
     title: "Municipal",
-    image: "/images/service-municipal.jpg",
-    imageAlt: "Parc ou rue municipale décorée de lumières",
+    // Aucune photo municipale n'existe : le volet municipal reste offert
+    // en CAPACITÉ, sans image et sans étude de cas. Ne pas illustrer avec
+    // une photo résidentielle — ce serait présenter un chantier pour un
+    // autre. PLAN-IMAGES.md §4B.
+    image: null,
+    imageAlt: null,
     // DRAFT COPY
     bullets: [
       "Parcs, rues principales et bâtiments publics à grande échelle",
@@ -196,8 +201,8 @@ export const services = [
     title: "Lumières de Noël — Résidentiel",
     h1: "Installation de lumières de Noël résidentielles",
     kicker: "Service résidentiel clé en main",
-    heroImage: "/images/service-residentiel.jpg",
-    heroImageAlt: "Maison résidentielle illuminée pour les Fêtes",
+    heroImage: PHOTOS["terrebonne-01"].src,
+    heroImageAlt: PHOTOS["terrebonne-01"].alt,
     metaDescription:
       "Installation de lumières de Noël résidentielles au Québec — conception, pose, entretien et retrait inclus. Matériel professionnel DEL fourni. Soumission gratuite.",
     intro:
@@ -217,8 +222,8 @@ export const services = [
     title: "Lumières de Noël — Commercial",
     h1: "Installation de lumières de Noël commerciales",
     kicker: "Pour vos commerces et bureaux",
-    heroImage: "/images/service-commercial.jpg",
-    heroImageAlt: "Bâtiment commercial illuminé pour les Fêtes",
+    heroImage: PHOTOS["commercial-01"].src,
+    heroImageAlt: PHOTOS["commercial-01"].alt,
     metaDescription:
       "Installation commerciale de lumières de Noël au Québec : façades, vitrines et entrées. Planification hors-heures, matériel professionnel, conformité et sécurité.",
     intro:
@@ -238,8 +243,8 @@ export const services = [
     title: "Lumières de Noël — Municipal",
     h1: "Décoration de Noël municipale & grandes propriétés",
     kicker: "Parcs, rues principales, bâtiments publics",
-    heroImage: "/images/service-municipal.jpg",
-    heroImageAlt: "Parc municipal décoré de lumières des Fêtes",
+    heroImage: null,   // aucune photo municipale — voir PLAN-IMAGES.md §4B
+    heroImageAlt: null,
     metaDescription:
       "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Conformité, sécurité et calendrier respecté.",
     intro:
@@ -259,8 +264,8 @@ export const services = [
     title: "Éclairage architectural permanent",
     h1: "Éclairage architectural permanent (DEL)",
     kicker: "Installé une seule fois — illuminé toute l'année",
-    heroImage: "/images/eclairage-hero.jpg",
-    heroImageAlt: "Maison avec éclairage architectural permanent allumé la nuit",
+    heroImage: PHOTOS["permanent-hero"].src,
+    heroImageAlt: PHOTOS["permanent-hero"].alt,
     metaDescription:
       "Éclairage architectural permanent DEL au Québec : pastilles discrètes installées sous les soffites, contrôle par application, des millions de couleurs et d'animations. Soumission gratuite.",
     intro:
@@ -282,13 +287,11 @@ export const services = [
 // =============================================================================
 // `intro` et `body` doivent rester uniques à chaque ville (contenu mince = pénalité).
 // `cities` ⊆ `serviceArea` (par slug). `regionLabel` apparaît sous le H1.
-export const cities = [
+const villesBrutes = [
   {
     slug: "blainville",
     name: "Blainville",
     regionLabel: "Couronne nord — Laurentides",
-    image: "/images/noel-blainville-01.jpg",
-    imageAlt: "Maison illuminée pour les Fêtes à Blainville",
     metaDescription:
       "Installation de lumières de Noël et d'éclairage architectural à Blainville. Service clé en main : conception, pose, entretien et retrait. Soumission gratuite.",
     intro:
@@ -299,8 +302,6 @@ export const cities = [
     slug: "terrebonne",
     name: "Terrebonne",
     regionLabel: "Lanaudière — couronne nord",
-    image: "/images/noel-terrebonne-01.jpg",
-    imageAlt: "Résidence illuminée pour les Fêtes à Terrebonne",
     metaDescription:
       "Installation de lumières de Noël à Terrebonne — quartiers Lachenaie, La Plaine et Vieux-Terrebonne. Service complet, matériel fourni, retrait inclus.",
     intro:
@@ -311,8 +312,6 @@ export const cities = [
     slug: "saint-jerome",
     name: "Saint-Jérôme",
     regionLabel: "Laurentides",
-    image: "/images/noel-blainville-02.jpg",
-    imageAlt: "Maison illuminée pour les Fêtes à Saint-Jérôme",
     metaDescription:
       "Installation de lumières de Noël à Saint-Jérôme et environs — Bellefeuille, Lafontaine, Saint-Antoine. Service clé en main avec retrait inclus.",
     intro:
@@ -323,8 +322,6 @@ export const cities = [
     slug: "laval",
     name: "Laval",
     regionLabel: "Île Jésus",
-    image: "/images/noel-blainville-01.jpg",
-    imageAlt: "Maison illuminée pour les Fêtes à Laval",
     metaDescription:
       "Installation de lumières de Noël à Laval — Sainte-Dorothée, Sainte-Rose, Chomedey, Fabreville, Vimont. Service résidentiel et commercial, retrait inclus.",
     intro:
@@ -335,8 +332,6 @@ export const cities = [
     slug: "montreal",
     name: "Montréal",
     regionLabel: "Île de Montréal",
-    image: "/images/noel-montreal-01.jpg",
-    imageAlt: "Façade montréalaise illuminée pour les Fêtes",
     metaDescription:
       "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, équipe assurée, soumission gratuite.",
     intro:
@@ -347,8 +342,6 @@ export const cities = [
     slug: "rive-sud",
     name: "Rive-Sud",
     regionLabel: "Rive-Sud de Montréal",
-    image: "/images/noel-brossard-01.jpg",
-    imageAlt: "Maison illuminée pour les Fêtes sur la Rive-Sud de Montréal",
     metaDescription:
       "Installation de lumières de Noël sur la Rive-Sud de Montréal — Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Service complet.",
     intro:
@@ -356,6 +349,14 @@ export const cities = [
     body: "Nos chantiers Rive-Sud sont concentrés dans la couronne sud rapprochée. Pour les commerces du DIX30 et des grandes artères, on planifie les installations hors-heures. Pour les résidences, on couvre les développements récents comme les quartiers établis (vieux Longueuil, vieux Boucherville).",
   },
 ];
+
+// La photo d'une ville vient UNIQUEMENT du registre (components/photos.js).
+// `image`/`imageAlt` valent null quand aucune vraie photo n'existe pour cette
+// ville — les pages n'affichent alors aucune image, jamais celle d'ailleurs.
+export const cities = villesBrutes.map((v) => {
+  const ph = cityPhoto(v.slug);
+  return { ...v, image: ph?.src ?? null, imageAlt: ph?.alt ?? null };
+});
 
 // Helper : retrouve un service ou une ville par slug (utilisé dans les routes)
 export const findService = (slug) => services.find((s) => s.slug === slug);
@@ -383,8 +384,8 @@ export const blogPosts = [
       "Tarifs réels par type de propriété, ce qui fait varier le prix, et quand réserver pour économiser. Guide pratique pour résidences et commerces.",
     metaDescription:
       "Guide 2026 : combien coûte l'installation de lumières de Noël au Québec? Tarifs par type de propriété, facteurs de prix, et quand réserver. Estimation gratuite.",
-    image: "/images/noel-blainville-01.jpg",
-    imageAlt: "Maison résidentielle entièrement décorée de lumières de Noël la nuit",
+    image: PHOTOS["blainville-01"].src,
+    imageAlt: PHOTOS["blainville-01"].alt,
     date: "2026-08-01",
     readingTime: "6 min",
     tags: ["Tarifs", "Résidentiel", "Commercial"],
@@ -396,8 +397,8 @@ export const blogPosts = [
       "Pourquoi octobre est le meilleur moment, ce qui se passe quand vous attendez trop, et comment garantir votre date avant les premières neiges.",
     metaDescription:
       "Quand réserver son installation de lumières de Noël au Québec? Pourquoi octobre est le moment idéal et comment garantir votre date avant les premières neiges.",
-    image: "/images/noel-terrebonne-01.jpg",
-    imageAlt: "Équipe d'installation de lumières de Noël travaillant en automne",
+    image: PHOTOS["terrebonne-01"].src,
+    imageAlt: PHOTOS["terrebonne-01"].alt,
     date: "2026-07-15",
     readingTime: "4 min",
     tags: ["Planification", "Saison"],
@@ -409,7 +410,7 @@ export const blogPosts = [
       "Consommation, durée de vie, intensité lumineuse, rendu visuel : tableau comparatif honnête entre les DEL commerciales et les lumières traditionnelles.",
     metaDescription:
       "DEL ou incandescent pour vos lumières de Noël? Comparatif honnête : consommation, durée de vie, rendu visuel. Pourquoi les DEL commerciales dominent en 2026.",
-    image: "/images/eclairage-feature.jpg",
+    image: PHOTOS["permanent-detail"].src,
     imageAlt: "Détail de guirlandes DEL professionnelles sur une corniche",
     date: "2026-08-20",
     readingTime: "5 min",
@@ -428,7 +429,7 @@ export const eclairagePage = {
   // DRAFT COPY
   heroSubtitle:
     "Un système DEL architectural installé une seule fois — illuminez votre propriété toute l'année, des Fêtes à la Saint-Jean, par simple application.",
-  heroImage: "/images/eclairage-hero.jpg",
+  heroImage: PHOTOS["permanent-hero"].src,
   heroImageAlt: "Maison avec éclairage architectural permanent allumé la nuit",
   // DRAFT COPY
   feature: {
@@ -458,10 +459,11 @@ export const eclairagePage = {
     { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel, commercial et municipal. On évalue la faisabilité lors de la soumission gratuite." },
     { q: "Qu'arrive-t-il en cas de bris ?", a: "La garantie couvre le matériel et la main-d'œuvre. Un appel et nous planifions la réparation." },
   ],
+  // Vraies installations d'éclairage permanent. Pas de légende de ville :
+  // ces photos-là n'ont pas de ville confirmée au dossier.
   gallery: [
-    { image: "/images/eclairage-blainville.jpg", alt: "Projet d'éclairage architectural à Blainville", caption: "Blainville" },
-    { image: "/images/eclairage-terrebonne.jpg", alt: "Projet d'éclairage architectural à Terrebonne", caption: "Terrebonne" },
-    { image: "/images/eclairage-magog.jpg", alt: "Projet d'éclairage architectural à Magog", caption: "Magog" },
+    { image: PHOTOS["permanent-01"].src, alt: PHOTOS["permanent-01"].alt },
+    { image: PHOTOS["permanent-02"].src, alt: PHOTOS["permanent-02"].alt },
   ],
 };
 
@@ -469,7 +471,7 @@ export const eclairagePage = {
 // (Rive-Nord + Grand Montréal + Rive-Sud). Utilisée pour l'aperçu accueil.
 // Les indices sont figés pour garder une sélection cohérente si la galerie
 // complète s'étoffe. Voir noelPage.gallery pour la source.
-const HOME_PORTFOLIO_INDICES = [0, 2, 4, 5, 7, 9];
+const HOME_PORTFOLIO_INDICES = [0, 1, 2, 4, 7, 8];
 
 // --- Page : Lumière de Noël ---------------------------------------------------
 export const noelPage = {
@@ -480,25 +482,26 @@ export const noelPage = {
   // DRAFT COPY
   heroSubtitle:
     "Conception, installation, entretien et retrait. On s'occupe de tout — vous profitez des Fêtes.",
-  heroImage: "/images/noel-hero.jpg",
-  heroImageAlt: "Maison entièrement décorée de lumières de Noël la nuit",
+  heroImage: PHOTOS["blainville-01"].src,
+  heroImageAlt: PHOTOS["blainville-01"].alt,
   // DRAFT COPY
   intro:
     "Chaque année, nous illuminons des dizaines de propriétés à travers le Québec. Voici un aperçu de projets réalisés.",
-  // 13 emplacements de projets tirés de la spec (10 villes)
+  // Vraies réalisations, saison 2025. Ces photos-là PEUVENT nommer leur
+  // ville : ce sont de vrais chantiers. Une image générée ne le pourrait
+  // jamais — scripts/check-photos.mjs casse le build si ça arrive.
   gallery: [
-    { image: "/images/noel-blainville-01.jpg", alt: "Installation de lumières de Noël à Blainville", caption: "Blainville" },
-    { image: "/images/noel-blainville-02.jpg", alt: "Installation de lumières de Noël à Blainville", caption: "Blainville" },
-    { image: "/images/noel-terrebonne-01.jpg", alt: "Installation de lumières de Noël à Terrebonne", caption: "Terrebonne" },
-    { image: "/images/noel-terrebonne-02.jpg", alt: "Installation de lumières de Noël à Terrebonne", caption: "Terrebonne" },
-    { image: "/images/noel-brossard-01.jpg", alt: "Installation de lumières de Noël à Brossard", caption: "Brossard" },
-    { image: "/images/noel-montreal-01.jpg", alt: "Installation de lumières de Noël à Montréal", caption: "Montréal" },
-    { image: "/images/noel-sainte-julienne-01.jpg", alt: "Installation de lumières de Noël à Sainte-Julienne", caption: "Sainte-Julienne" },
-    { image: "/images/noel-sainte-anne-01.jpg", alt: "Installation de lumières de Noël à Sainte-Anne-des-Plaines", caption: "Sainte-Anne-des-Plaines" },
-    { image: "/images/noel-granby-01.jpg", alt: "Installation de lumières de Noël à Granby", caption: "Granby" },
-    { image: "/images/noel-mercier-01.jpg", alt: "Installation de lumières de Noël à Mercier", caption: "Mercier" },
-    { image: "/images/noel-lery-01.jpg", alt: "Installation de lumières de Noël à Léry", caption: "Léry" },
-    { image: "/images/noel-magog-01.jpg", alt: "Installation de lumières de Noël à Magog", caption: "Magog" },
+    { image: PHOTOS["blainville-01"].src,   alt: PHOTOS["blainville-01"].alt,   caption: "Blainville" },
+    { image: PHOTOS["terrebonne-01"].src,   alt: PHOTOS["terrebonne-01"].alt,   caption: "Terrebonne" },
+    { image: PHOTOS["st-jerome-01"].src,    alt: PHOTOS["st-jerome-01"].alt,    caption: "Saint-Jérôme" },
+    { image: PHOTOS["mirabel-01"].src,      alt: PHOTOS["mirabel-01"].alt,      caption: "Mirabel" },
+    { image: PHOTOS["ste-julienne-01"].src, alt: PHOTOS["ste-julienne-01"].alt, caption: "Sainte-Julienne" },
+    { image: PHOTOS["ste-anne-01"].src,     alt: PHOTOS["ste-anne-01"].alt,     caption: "Sainte-Anne-des-Plaines" },
+    { image: PHOTOS["st-donat-01"].src,     alt: PHOTOS["st-donat-01"].alt,     caption: "Saint-Donat" },
+    { image: PHOTOS["stratford-01"].src,    alt: PHOTOS["stratford-01"].alt,    caption: "Stratford" },
+    { image: PHOTOS["commercial-01"].src,   alt: PHOTOS["commercial-01"].alt,   caption: "Commercial" },
+    { image: PHOTOS["arbres-01"].src,       alt: PHOTOS["arbres-01"].alt,       caption: "Arbres et arbustes" },
+    { image: PHOTOS["arbres-02"].src,       alt: PHOTOS["arbres-02"].alt,       caption: "Arbres et arbustes" },
   ],
 };
 

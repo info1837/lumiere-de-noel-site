@@ -219,11 +219,16 @@ export function Gallery({ items }) {
 export function PageHero({ kicker, title, subtitle, image, imageAlt, ctaHref = "/soumission", ctaLabel = "Soumission gratuite" }) {
   return (
     <section style={{ position: "relative", padding: 0, minHeight: "62vh", display: "flex", alignItems: "flex-end", background: navy }}>
-      <img
-        src={image}
-        alt={imageAlt}
-        style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
-      />
+      {/* Pas de photo réelle pour cet endroit ? On n'en met AUCUNE : le
+          dégradé sur fond marine suffit. Mettre la photo d'une autre ville
+          serait présenter un chantier pour un autre. */}
+      {image && (
+        <img
+          src={image}
+          alt={imageAlt}
+          style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
+        />
+      )}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,10,20,0.92), rgba(5,10,20,0.45))" }} />
       <div className="container" style={{ position: "relative", padding: "0 24px 72px", width: "100%" }}>
         {kicker && <SectionTag dark>{kicker}</SectionTag>}

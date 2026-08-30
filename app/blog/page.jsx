@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SectionTag, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { blogPosts, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
   title: "Blog — conseils et tarifs",
@@ -13,7 +14,7 @@ export const metadata = {
     description:
       "Conseils et tarifs sur l'installation de lumières de Noël au Québec — articles pratiques.",
     url: "/blog",
-    images: ["/images/hero-accueil.jpg"],
+    images: [PHOTOS["blainville-01"].src],
   },
 };
 

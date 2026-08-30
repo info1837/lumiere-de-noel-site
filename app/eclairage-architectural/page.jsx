@@ -1,6 +1,7 @@
 import { PageHero, SectionTag, SectionTitle, FaqAccordion, Gallery, CTAButton } from "@/components/ui";
 import AppDemo from "@/components/AppDemo";
 import { eclairagePage as p, navy, offWhite, ivory, gold, charcoal } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
   title: "Éclairage architectural permanent",
@@ -11,7 +12,7 @@ export const metadata = {
     title: "Éclairage architectural permanent | Lumière de Noël inc.",
     description: "DEL discrètes installées une seule fois — un éclairage pour chaque occasion, toute l'année.",
     url: "/eclairage-architectural",
-    images: ["/images/eclairage-hero.jpg"],
+    images: [PHOTOS["permanent-hero"].src],
   },
 };
 
@@ -62,8 +63,7 @@ export default function EclairageArchitectural() {
             </div>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-            {/* TODO PHOTO : eclairage-feature.jpg */}
-            <img src="/images/eclairage-feature.jpg" alt="Détail de pastilles DEL d'éclairage architectural sous un soffite"
+            <img src={PHOTOS["permanent-detail"].src} alt={PHOTOS["permanent-detail"].alt}
               loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         </div>

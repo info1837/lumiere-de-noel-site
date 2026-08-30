@@ -1,5 +1,6 @@
 import { PageHero, SectionTag, SectionTitle, Gallery, CTAButton } from "@/components/ui";
 import { noelPage as p, offWhite, navy } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
   title: "Installation de lumières de Noël",
@@ -10,7 +11,7 @@ export const metadata = {
     title: "Installation de lumières de Noël | Lumière de Noël inc.",
     description: "On conçoit, installe, entretient et retire vos lumières de Noël. Vous profitez des Fêtes.",
     url: "/lumiere-de-noel",
-    images: ["/images/noel-hero.jpg"],
+    images: [PHOTOS["blainville-01"].src],
   },
 };
 
