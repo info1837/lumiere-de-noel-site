@@ -56,7 +56,7 @@ export default function Hero() {
             fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
             textTransform: "uppercase", color: "#E9DCC0", marginBottom: 18,
           }}>
-            Rive-Nord & Grand Montréal — installation clé en main
+            Installation clé en main — pose, entretien et retrait inclus
           </div>
           <h1 style={{ color: ivory }}>
             Des Fêtes éclatantes,<br />sans monter dans l'échelle

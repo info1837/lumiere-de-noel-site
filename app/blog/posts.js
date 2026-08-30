@@ -30,7 +30,7 @@ export const postBodies = {
     { type: "p", text: "On comprend la tentation de tout faire soi-même — Costco vend des boîtes de lumières à 50 $. Mais voici ce que vous obtenez en plus avec une installation professionnelle :" },
     { type: "ul", items: [
       "Matériel DEL de qualité commerciale (durée de vie 5×+ supérieure aux lumières grand public).",
-      "Équipe assurée pour le travail en hauteur — fini les chutes d'échelle.",
+      "Le travail en hauteur, c'est notre métier — fini les chutes d'échelle.",  // ASSURANCE
       "Conception personnalisée pour votre propriété, pas une pose aléatoire.",
       "Service après-vente : si une lumière brûle pendant la saison, on revient sans frais.",
       "Retrait inclus en janvier + entreposage du matériel jusqu'à la prochaine saison.",
