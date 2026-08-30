@@ -115,7 +115,7 @@ export const serviceCards = [
     // DRAFT COPY
     bullets: [
       "Parcs, rues principales et bâtiments publics à grande échelle",
-      "Conformité, sécurité et calendrier respecté à la lettre",
+      "Sécurité du public et calendrier respecté à la lettre",
     ],
   },
 ];
@@ -252,7 +252,7 @@ export const services = [
     heroImage: null,   // aucune photo municipale — voir PLAN-IMAGES.md §4B
     heroImageAlt: null,
     metaDescription:
-      "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Conformité, sécurité et calendrier respecté.",
+      "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Sécurité et calendrier respecté.",
     intro:
       "Pour les municipalités, BIA et grandes propriétés : décor à grande échelle, avec respect strict du calendrier et sécurité du public.",
     bullets: [
@@ -302,7 +302,7 @@ const villesBrutes = [
       "Installation de lumières de Noël et d'éclairage architectural à Blainville. Service clé en main : conception, pose, entretien et retrait. Soumission gratuite.",
     intro:
       "Blainville est au cœur de notre territoire. De Fontainebleau au Plateau, de Chambéry à Notre-Dame — on connaît les rues et les styles d'architecture du secteur.",
-    body: "Notre équipe est sur la route dans le secteur Blainville–Boisbriand–Sainte-Thérèse plusieurs jours par semaine en novembre et décembre — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
+    body: "On planifie le secteur Blainville–Boisbriand–Sainte-Thérèse ensemble, pour limiter les déplacements — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
   },
   {
     slug: "terrebonne",
