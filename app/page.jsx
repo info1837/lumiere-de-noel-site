@@ -4,6 +4,7 @@ import QuoteForm from "@/components/QuoteForm";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
+import { PHOTOS } from "@/components/photos";
 import {
   serviceCards, whyUs, faqHome, serviceArea, company, homePortfolio,
   navy, offWhite, ivory, gold, charcoal, goldText,
@@ -52,7 +53,7 @@ export default function Home() {
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
             {/* TODO PHOTO : valeur-commercial.jpg */}
-            <img src="/images/valeur-commercial.jpg" alt="Bâtiment commercial illuminé pour les Fêtes la nuit"
+            <img src={PHOTOS["commercial-01"].src} alt={PHOTOS["commercial-01"].alt}
               loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
           </div>
         </div>
@@ -70,7 +71,7 @@ export default function Home() {
               <article key={s.key} className="glow-card" style={{ background: "#10202f", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(233,220,192,0.12)" }}>
                 <div style={{ aspectRatio: "4 / 3", background: "#0b1b2b" }}>
                   {/* TODO PHOTO : voir PHOTOS-NEEDED.md */}
-                  <img src={s.image} alt={s.imageAlt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  {s.image && <img src={s.image} alt={s.imageAlt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                 </div>
                 <div style={{ padding: 24 }}>
                   <h3 style={{ color: ivory, marginBottom: 14 }}>{s.title}</h3>

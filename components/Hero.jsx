@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "", [HONEYPOT_FIELD]: "" };
 
@@ -42,7 +43,7 @@ export default function Hero() {
     }}>
       {/* TODO PHOTO : hero-accueil.jpg — voir PHOTOS-NEEDED.md */}
       <img
-        src="/images/hero-accueil.jpg"
+        src={PHOTOS["blainville-01"].src}
         alt="Maison résidentielle illuminée de lumières de Noël la nuit"
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
       />

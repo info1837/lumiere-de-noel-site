@@ -3,6 +3,7 @@ import QuoteForm from "@/components/QuoteForm";
 import Testimonials from "@/components/Testimonials";
 import { SectionTag } from "@/components/ui";
 import { company, homePortfolio, navy, ivory, gold, offWhite, charcoal } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
   title: "Soumission gratuite",
@@ -13,7 +14,7 @@ export const metadata = {
     title: "Soumission gratuite | Lumière de Noël inc.",
     description: "Estimation gratuite et sans obligation pour vos lumières de Noël ou votre éclairage permanent.",
     url: "/soumission",
-    images: ["/images/hero-accueil.jpg"],
+    images: [PHOTOS["blainville-01"].src],
   },
 };
 

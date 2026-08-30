@@ -7,6 +7,7 @@ import TelemetryClient from "./TelemetryClient";
 import FestiveLayer from "@/components/FestiveLayer";
 import { company, serviceArea, services } from "@/components/data";
 import { aggregateRating, sameAs } from "@/components/reviews";
+import { PHOTOS } from "@/components/photos";
 
 // Meta Pixel piloté par variable d'environnement. Absent = pixel inactif.
 // Voir .env.example — NEXT_PUBLIC_META_PIXEL_ID.
@@ -34,14 +35,14 @@ export const metadata = {
     title: "Lumière de Noël inc. | Lumières de Noël & éclairage architectural au Québec",
     description:
       "On conçoit, installe, entretient et retire vos lumières de Noël. Éclairage architectural permanent disponible. Soumission gratuite.",
-    images: ["/images/hero-accueil.jpg"],
+    images: [PHOTOS["blainville-01"].src],
     locale: "fr_CA",
   },
   twitter: {
     card: "summary_large_image",
     title: "Lumière de Noël inc. | Lumières de Noël & éclairage architectural",
     description: "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec.",
-    images: ["/images/hero-accueil.jpg"],
+    images: [PHOTOS["blainville-01"].src],
   },
   // Rend exactement les balises du LISEZMOI du kit logo :
   //   <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -86,7 +87,7 @@ export default function RootLayout({ children }) {
               "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
               "@id": `${BASE}/#business`,
               name: company.name,
-              image: `${BASE}/images/hero-accueil.jpg`,
+              image: `${BASE}${PHOTOS["blainville-01"].src}`,
               logo: `${BASE}/favicon-512.png`,
               url: `${BASE}/`,
               telephone: company.phoneHref ? company.phoneHref.replace("tel:", "") : undefined,

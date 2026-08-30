@@ -22,7 +22,7 @@ export function generateMetadata({ params }) {
       title: `Installation de lumières de Noël ${inCity(c.name)} | Lumière de Noël inc.`,
       description: c.metaDescription,
       url: `/secteur/${c.slug}`,
-      images: [c.image],
+      images: c.image ? [c.image] : undefined,
     },
   };
 }
@@ -105,8 +105,8 @@ export default function CityPage({ params }) {
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
                 <div style={{ aspectRatio: "16 / 9", background: "#0b1b2b" }}>
-                  <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  {s.heroImage && <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
                 </div>
                 <div style={{ padding: 24 }}>
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>

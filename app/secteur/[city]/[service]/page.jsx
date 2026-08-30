@@ -33,7 +33,7 @@ export function generateMetadata({ params }) {
       title: `${title} | Lumière de Noël inc.`,
       description: `Installation par notre équipe ${cityIn}. Retrait inclus. Soumission gratuite.`,
       url: `/secteur/${c.slug}/${s.slug}`,
-      images: [s.heroImage],
+      images: s.heroImage ? [s.heroImage] : undefined,
     },
   };
 }
@@ -115,8 +115,8 @@ export default function CityServicePage({ params }) {
             </div>
             <div>
               <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f", marginBottom: 16 }}>
-                <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                {s.heroImage && <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
+                  style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
               </div>
               <div style={{ background: "#fff", border: "1px solid #ece5d6", borderRadius: 14, padding: 20 }}>
                 <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>

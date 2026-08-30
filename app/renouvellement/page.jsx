@@ -2,6 +2,7 @@ import Link from "next/link";
 import RenewalForm from "@/components/RenewalForm";
 import { SectionTag } from "@/components/ui";
 import { company, navy, ivory, gold, goldText } from "@/components/data";
+import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
   title: "Renouvellement — client de l'an passé",
@@ -12,7 +13,7 @@ export const metadata = {
     title: "Renouvellement — client de l'an passé | Lumière de Noël inc.",
     description: "Reconduction plus simple, à ~70–80 % du prix initial. Réservez votre date pour la saison 2026.",
     url: "/renouvellement",
-    images: ["/images/hero-accueil.jpg"],
+    images: [PHOTOS["blainville-01"].src],
   },
 };
 
