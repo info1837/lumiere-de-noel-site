@@ -12,6 +12,7 @@ const desktopNav = [
   { label: "Zones desservies", href: "/secteur" },
   { label: "Réalisations", href: "/realisations" },
   { label: "Blog", href: "/blog" },
+  { label: "Renouvellement", href: "/renouvellement" },
 ];
 
 export function NavBar() {
