@@ -21,22 +21,53 @@ import { navy, ivory, gold, charcoal, offWhite } from "@/components/data";
 const CLE_MAPS = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 const ETAPES = ["adresse", "mesure", "extras", "contact", "prix"];
 
+// --- Chargement de Google Maps -----------------------------------------------
+// DEUX ÉCHECS DISTINCTS, et il faut les deux :
+//
+//   1. le script ne charge pas       → `onerror`
+//   2. le script charge, PUIS Google REFUSE la clé (domaine non autorisé,
+//      facturation absente) → `gm_authFailure`, qui arrive APRÈS que le
+//      callback a résolu.
+//
+// Le cas 2 est le piège : la promesse est déjà tenue, l'assistant reste sur
+// l'étape « tracez », et le visiteur voit une carte vide avec des boutons qui
+// ne font rien. Vérifié : sur un domaine non autorisé, Google rend
+// `RefererNotAllowedMapError` et la carte ne s'affiche jamais.
+//
+// On garde donc un drapeau + des abonnés, pour que le composant bascule sur le
+// repli même quand le refus arrive tard.
 let promesseMaps = null;
+let cleRefusee = false;
+const abonnes = new Set();
+
+export const cleMapsRefusee = () => cleRefusee;
+function signalerRefus() {
+  cleRefusee = true;
+  promesseMaps = null;
+  abonnes.forEach((f) => { try { f(); } catch {} });
+}
+function surRefus(f) { abonnes.add(f); return () => abonnes.delete(f); }
+
 function chargerMaps() {
   if (typeof window === "undefined") return Promise.reject(new Error("ssr"));
+  if (cleRefusee) return Promise.reject(new Error("cle_refusee"));
   if (window.google?.maps?.geometry) return Promise.resolve(window.google.maps);
   if (promesseMaps) return promesseMaps;
   promesseMaps = new Promise((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = `https://maps.googleapis.com/maps/api/js?key=${CLE_MAPS}&libraries=places,geometry&v=weekly&loading=async`;
-    s.async = true;
-    s.onerror = () => reject(new Error("script refusé"));
-    // Google appelle gm_authFailure quand la clé est refusée (domaine non
-    // autorisé, facturation absente). Sans ce crochet, la carte reste grise
-    // et on ne saurait pas pourquoi.
-    window.gm_authFailure = () => reject(new Error("cle_refusee"));
-    s.onload = () => (window.google?.maps ? resolve(window.google.maps) : reject(new Error("maps absent")));
-    document.head.appendChild(s);
+    // `loading=async` OBLIGE le paramètre `callback` : sinon `onload` se
+    // déclenche AVANT que window.google.maps existe, et un chargeur qui s'y
+    // fie rejette systématiquement. Même motif que la calculatrice de
+    // gouttières, qui tourne en production.
+    const nom = "__lumiereMapsPret_" + Math.random().toString(36).slice(2, 8);
+    window[nom] = () => { resolve(window.google.maps); delete window[nom]; };
+    window.gm_authFailure = () => { signalerRefus(); reject(new Error("cle_refusee")); };
+
+    const el = document.createElement("script");
+    el.async = true; el.defer = true;
+    el.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(CLE_MAPS)}`
+      + `&libraries=places,geometry&callback=${nom}&v=weekly&loading=async`;
+    el.onerror = () => { promesseMaps = null; reject(new Error("script refusé")); };
+    document.head.appendChild(el);
   });
   return promesseMaps;
 }
@@ -68,6 +99,11 @@ export default function CalculatriceToiture() {
   const carte = useRef(null);
   const traces = useRef([]);
   const champAdresse = useRef(null);
+
+  // Un refus de clé peut arriver APRÈS le chargement du script : on s'abonne
+  // pour basculer sur le repli à ce moment-là, plutôt que de laisser une
+  // carte vide et des boutons inertes.
+  useEffect(() => surRefus(() => setCarteKO(true)), []);
 
   // --- Carte ---------------------------------------------------------------
   useEffect(() => {
