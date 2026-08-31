@@ -6,7 +6,7 @@ import { PHOTOS } from "@/components/photos";
 export const metadata = {
   title: "Éclairage architectural permanent",
   description:
-    "Système d'éclairage DEL architectural permanent : installé une fois, illuminez votre propriété toute l'année via une application. Résidentiel, commercial et municipal au Québec. Soumission gratuite.",
+    "Système d'éclairage DEL architectural permanent : installé une fois, illuminez votre propriété toute l'année via une application. Résidentiel et commercial au Québec. Soumission gratuite.",
   alternates: { canonical: "/eclairage-architectural" },
   openGraph: {
     title: "Éclairage architectural permanent | Solution Lumière de Noël inc.",

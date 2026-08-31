@@ -4,16 +4,15 @@ import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/com
 import { BreadcrumbJsonLd, ServiceJsonLd, FaqJsonLd } from "@/components/jsonld";
 import { servicePhoto } from "@/components/photos";
 import {
-  services, gridServices, cities, findCity, findService, inCity,
+  services, cities, findCity, findService, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
-// Génère les combinaisons service × ville en statique. Le municipal en est
-// exclu : aucune photo, aucun chantier — il garde sa seule page /services.
+// Génère les combinaisons service × ville en statique.
 export function generateStaticParams() {
   const params = [];
   for (const c of cities) {
-    for (const s of gridServices) {
+    for (const s of services) {
       params.push({ city: c.slug, service: s.slug });
     }
   }

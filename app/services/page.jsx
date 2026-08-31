@@ -2,19 +2,19 @@ import Link from "next/link";
 import HowItWorks from "@/components/HowItWorks";
 import { SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
-import { services, gridServices, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
+import { services, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 import { servicePhoto } from "@/components/photos";
 
 export const metadata = {
   title: "Nos services",
   description:
-    "Tous nos services au Québec : installation de lumières de Noël résidentielles, commerciales et municipales, ainsi qu'éclairage architectural permanent DEL. Service clé en main.",
+    "Tous nos services au Québec : installation de lumières de Noël résidentielles et commerciales, ainsi qu'éclairage architectural permanent DEL. Service clé en main.",
   alternates: { canonical: "/services" },
   openGraph: {
     title: "Nos services | Solution Lumière de Noël inc.",
     description:
-      "Lumières de Noël résidentielles, commerciales et municipales + éclairage architectural permanent. Service clé en main, retrait inclus.",
+      "Lumières de Noël résidentielles et commerciales + éclairage architectural permanent. Service clé en main, retrait inclus.",
     url: "/services",
     images: [PHOTOS["blainville-01"].src],
   },
@@ -37,13 +37,13 @@ export default function ServicesIndex() {
             <SectionTag dark>Nos services</SectionTag>
             <h1 style={{ color: ivory, marginBottom: 18 }}>Un seul fournisseur pour tout</h1>
             <p style={{ color: "rgba(243,233,210,0.82)", fontSize: 19, margin: "0 auto", maxWidth: 700 }}>
-              Lumières de Noël (résidentiel, commercial, municipal) et éclairage architectural permanent —
+              Lumières de Noël (résidentiel, commercial) et éclairage architectural permanent —
               tout est conçu, installé, entretenu et retiré par notre équipe.
             </p>
           </div>
 
           <div className="grid-2" style={{ gap: 24 }}>
-            {gridServices.map((s) => (
+            {services.map((s) => (
               <Link key={s.slug} href={`/services/${s.slug}`} className="glow-card" style={{
                 display: "block", textDecoration: "none",
                 background: "#10202f", borderRadius: 16, overflow: "hidden",

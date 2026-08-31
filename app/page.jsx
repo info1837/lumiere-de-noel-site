@@ -189,8 +189,8 @@ export default function Home() {
             À partir de {company.priceFrom}
           </div>
           <p style={{ color: "rgba(243,233,210,0.75)", fontSize: 16, margin: "0 auto 30px", maxWidth: 540 }}>
-            Le prix final dépend de la grandeur de la propriété et du design. Commercial et
-            municipal : sur soumission.
+            Le prix final dépend de la grandeur de la propriété et du design.
+            Commercial : sur soumission.
           </p>
           <div className="grid-4" style={{ maxWidth: 920, margin: "0 auto 32px" }}>
             {["Conception personnalisée", "Installation par notre équipe",

@@ -212,5 +212,5 @@ export function servicePhoto(serviceSlug, citySlug = null) {
   }
   if (serviceSlug === "lumieres-de-noel-commercial") return photo("commercial-01");
   if (serviceSlug === "eclairage-architectural-permanent") return photo("permanent-hero");
-  return null; // municipal : aucune photo, volontairement
+  return null; // service inconnu — aucune photo plutôt qu'une image au hasard
 }

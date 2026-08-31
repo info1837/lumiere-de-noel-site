@@ -5,7 +5,7 @@ import { PHOTOS } from "@/components/photos";
 export const metadata = {
   title: "Installation de lumières de Noël",
   description:
-    "Installation clé en main de lumières de Noël au Québec — conception, pose, entretien et retrait. Résidentiel, commercial et municipal. Portfolio de projets. Soumission gratuite.",
+    "Installation clé en main de lumières de Noël au Québec — conception, pose, entretien et retrait. Résidentiel et commercial. Portfolio de projets. Soumission gratuite.",
   alternates: { canonical: "/realisations" },
   openGraph: {
     title: "Installation de lumières de Noël | Solution Lumière de Noël inc.",

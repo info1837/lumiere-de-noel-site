@@ -22,8 +22,8 @@ export const postBodies = {
       "Le design : façade simple ou « setup magazine » avec rideaux de glace, sapins illuminés, etc.",
     ]},
 
-    { type: "h2", text: "Commercial et municipal : sur soumission" },
-    { type: "p", text: "Pour les commerces, restaurants, concessionnaires et bâtiments municipaux, on travaille sur soumission. Les projets varient de 2 500 $ pour une petite vitrine à plus de 25 000 $ pour des illuminations urbaines ou des grands sièges sociaux." },
+    { type: "h2", text: "Commercial : sur soumission" },
+    { type: "p", text: "Pour les commerces, restaurants et concessionnaires, on travaille sur soumission. Les projets varient de 2 500 $ pour une petite vitrine à plus de 25 000 $ pour des illuminations urbaines ou des grands sièges sociaux." },
     { type: "p", text: "Ce qui change le prix : la hauteur du bâtiment, l'accès à l'électricité, les contraintes d'accès, et bien sûr l'envergure du design. La planification hors-heures (soir ou nuit) est aussi un facteur." },
 
     { type: "h2", text: "Pourquoi payer pour une installation pro?" },

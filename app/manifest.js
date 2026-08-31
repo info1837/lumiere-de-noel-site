@@ -15,7 +15,7 @@ export default function manifest() {
     short_name: "Lumière de Noël",
     description:
       "Installation clé en main de lumières de Noël et d'éclairage " +
-      "architectural permanent au Québec — résidentiel, commercial et municipal.",
+      "architectural permanent au Québec — résidentiel et commercial.",
     lang: "fr-CA",
     start_url: "/",
     display: "standalone",

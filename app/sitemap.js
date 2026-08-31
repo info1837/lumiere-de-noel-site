@@ -1,4 +1,4 @@
-import { company, services, gridServices, cities, blogPosts } from "@/components/data";
+import { company, services, cities, blogPosts } from "@/components/data";
 
 const BASE = company.baseUrl;
 
@@ -32,7 +32,7 @@ export default function sitemap() {
   // Matrice service × ville (long-tail SEO)
   const cityServiceRoutes = [];
   for (const c of cities) {
-    for (const s of gridServices) {
+    for (const s of services) {
       cityServiceRoutes.push({
         url: `${BASE}/secteur/${c.slug}/${s.slug}`,
         lastModified: now,

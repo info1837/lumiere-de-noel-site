@@ -25,7 +25,7 @@ export const metadata = {
     template: `%s | ${company.name}`,
   },
   description:
-    "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel, commercial et municipal. Soumission gratuite. Service sur la Rive-Sud, à Montréal et sur la Rive-Nord.",
+    "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel et commercial. Soumission gratuite. Service sur la Rive-Sud, à Montréal et sur la Rive-Nord.",
   keywords:
     "lumières de Noël, installation lumières de Noël, éclairage architectural, éclairage permanent DEL, décoration de Noël commerciale, Blainville, Terrebonne, Brossard, Montréal, Québec",
   authors: [{ name: company.name }],
@@ -96,7 +96,7 @@ export default function RootLayout({ children }) {
               email: company.email,
               priceRange: "$$",
               description:
-                "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel, commercial et municipal.",
+                "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel et commercial.",
               slogan: "Votre propriété, illuminée — sans le tracas.",
               knowsLanguage: ["fr-CA", "en"],
               currenciesAccepted: "CAD",
