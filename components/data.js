@@ -106,6 +106,21 @@ export const serviceCards = [
       "Planification hors-heures pour ne pas nuire à vos opérations",
     ],
   },
+  // Troisième carte : la grille de l'accueil est en 3 colonnes. Depuis le
+  // retrait du volet municipal elle n'en avait plus que deux, et la troisième
+  // colonne restait vide. L'éclairage permanent est un vrai service, avec sa
+  // page et ses photos — il remplit la colonne honnêtement, et c'est le seul
+  // des trois qui se vend toute l'année.
+  {
+    key: "permanent",
+    title: "Éclairage permanent",
+    image: PHOTOS["permanent-01"].src,
+    imageAlt: PHOTOS["permanent-01"].alt,
+    bullets: [
+      "Pastilles DEL discrètes sous les soffites — invisibles le jour",
+      "Couleurs et animations par application, installé une seule fois",
+    ],
+  },
 ];
 
 // --- « Pourquoi nous choisir ? » 4 cartes (accueil, section 4) ---------------

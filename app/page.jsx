@@ -70,20 +70,29 @@ export default function Home() {
           </div>
           <div className="grid-3">
             {serviceCards.map((s) => (
-              <article key={s.key} className="glow-card" style={{ background: "#10202f", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(233,220,192,0.12)" }}>
-                <div style={{ aspectRatio: "4 / 3", background: "#0b1b2b" }}>
-                  {s.image && <img src={s.image} alt={s.imageAlt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+              // Les cartes sont en colonne flex et la liste pousse le bouton vers
+              // le bas : un titre sur deux lignes (« Éclairage permanent ») ne
+              // décale plus le CTA par rapport aux deux autres cartes.
+              <article key={s.key} className="glow-card" style={{ background: "#10202f", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(233,220,192,0.12)", display: "flex", flexDirection: "column" }}>
+                {/* Boîte photo en ratio 4/3 GARANTI. `aspectRatio` seul ne suffit
+                    pas ici : dans une colonne flex, une photo portrait (comme
+                    celle de l'éclairage permanent) impose sa hauteur intrinsèque
+                    et la carte s'allonge. Le padding-top de 75 % fixe la hauteur
+                    à partir de la largeur, quoi qu'il arrive à l'image. */}
+                <div style={{ position: "relative", width: "100%", height: 0, paddingTop: "75%", background: "#0b1b2b", flex: "none", overflow: "hidden" }}>
+                  {s.image && <img src={s.image} alt={s.imageAlt} loading="lazy"
+                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
                 </div>
-                <div style={{ padding: 24 }}>
+                <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
                   <h3 style={{ color: ivory, marginBottom: 14 }}>{s.title}</h3>
-                  <ul style={{ listStyle: "none", marginBottom: 20 }}>
+                  <ul style={{ listStyle: "none", marginBottom: 20, flex: 1 }}>
                     {s.bullets.map((b, i) => (
                       <li key={i} style={{ color: "rgba(243,233,210,0.78)", fontSize: 15, marginBottom: 8, display: "flex", gap: 8 }}>
                         <span className="bulb bulb--tw" aria-hidden="true" style={{ marginTop: 5 }} />{b}
                       </li>
                     ))}
                   </ul>
-                  <CTAButton href="/soumission" variant="outlineLight" style={{ padding: "13px 24px", fontSize: 13 }}>
+                  <CTAButton href="/soumission" variant="outlineLight" style={{ padding: "13px 24px", fontSize: 13, alignSelf: "flex-start" }}>
                     Soumission gratuite
                   </CTAButton>
                 </div>
