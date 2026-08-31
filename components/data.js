@@ -31,6 +31,10 @@ import { getSiteUrl } from "@/lib/site-url";
 
 const DOMAIN = "lumieredenoelinc.com";
 
+// Boîte courriel réellement en service. Distincte de DOMAIN : voir la
+// note dans `company` ci-dessous.
+const EMAIL_DOMAIN = "lumieredenoelinc.com";
+
 export const company = {
   // Raison sociale EXACTE, telle qu'enregistrée et telle qu'affichée sur
   // la fiche Google Business — une divergence de nom est un signal local
@@ -43,13 +47,23 @@ export const company = {
   // leur, et ils ne doivent jamais se croiser.
   phoneDisplay: "(438) 812-6635",
   phoneHref: "tel:+14388126635",
-  // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
-  // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
-  // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se
-  // fait en changeant DOMAIN ci-dessus, et rien d'autre.
-  email: `info@${DOMAIN}`,
-  emailDisplay: `INFO@${DOMAIN.toUpperCase()}`,
-  emailHref: `mailto:info@${DOMAIN}`,
+  // ── DOMAINE ───────────────────────────────────────────────────────
+  // DOMAIN sert au SITE : baseUrl, sitemap, robots.txt, JSON-LD,
+  // canonicals. Rien d'autre n'en dérive.
+  //
+  // ⚠️ LE COURRIEL N'EN DÉRIVE PLUS, et c'est délibéré.
+  // Le 2026-08-30 le site publiait `info@lumieredenoelinc.com` alors que
+  // cette boîte n'acceptait pas encore le courrier : chaque client qui
+  // écrivait depuis le site recevait un rebond, sans que personne le voie.
+  // L'adresse du site et le domaine du site sont DEUX FAITS DISTINCTS qui
+  // se trouvent coïncider. Les lier avait rendu impossible de corriger
+  // l'un sans déplacer l'autre (canonicals, sitemap, JSON-LD compris).
+  //
+  // Ne remettre EMAIL_DOMAIN à .com qu'une fois un vrai courriel de test
+  // reçu à info@lumieredenoelinc.com — pas avant.
+  email: `info@${EMAIL_DOMAIN}`,
+  emailDisplay: `INFO@${EMAIL_DOMAIN.toUpperCase()}`,
+  emailHref: `mailto:info@${EMAIL_DOMAIN}`,
   // Territoire réel : PLUS LARGE que celui de Palencia (Rive-Nord seule).
   // L'Estrie qui était ici était une erreur — elle attirait des leads hors zone.
   region: "Rive-Sud, Montréal et Rive-Nord, Québec",
