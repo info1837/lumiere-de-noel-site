@@ -18,7 +18,7 @@ export function ServerFooter() {
               style={{ height: 68, width: "auto", display: "block", marginBottom: 16 }} />
             <p style={{ fontSize: 14, lineHeight: 1.7, maxWidth: 340, marginBottom: 18 }}>
               Installation clé en main de lumières de Noël et d'éclairage architectural permanent —
-              résidentiel, commercial et municipal. {company.region}.
+              résidentiel et commercial. {company.region}.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14 }}>
               <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>

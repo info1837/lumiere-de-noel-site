@@ -4,7 +4,7 @@ import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/com
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/jsonld";
 import { cityHeroPhoto, servicePhoto } from "@/components/photos";
 import {
-  services, gridServices, cities, findCity, inCity,
+  services, cities, findCity, inCity,
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
@@ -99,7 +99,7 @@ export default function CityPage({ params }) {
             <SectionTitle light style={{ margin: "0 auto" }}>Pour chaque type de propriété</SectionTitle>
           </div>
           <div className="grid-2">
-            {gridServices.map((s) => (
+            {services.map((s) => (
               <Link key={s.slug} href={`/secteur/${c.slug}/${s.slug}`} className="glow-card" style={{
                 display: "block", textDecoration: "none",
                 background: "#10202f", borderRadius: 16, overflow: "hidden",

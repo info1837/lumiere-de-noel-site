@@ -64,7 +64,7 @@ export default function Hero() {
           {/* DRAFT COPY — reconstruite dans la voix de marque */}
           <p style={{ color: "rgba(243,233,210,0.88)", fontSize: 20, margin: "22px 0 30px", maxWidth: 520 }}>
             Conception, installation, entretien et retrait de vos lumières de Noël et de votre
-            éclairage architectural. On s'occupe de tout — résidentiel, commercial et municipal.
+            éclairage architectural. On s'occupe de tout — résidentiel et commercial.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
             <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>

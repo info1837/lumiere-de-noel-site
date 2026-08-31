@@ -69,7 +69,6 @@ export const nav = [
     children: [
       { label: "Lumières de Noël — résidentiel", href: "/services/lumieres-de-noel-residentiel" },
       { label: "Lumières de Noël — commercial", href: "/services/lumieres-de-noel-commercial" },
-      { label: "Lumières de Noël — municipal", href: "/services/lumieres-de-noel-municipal" },
       { label: "Éclairage architectural permanent", href: "/services/eclairage-architectural-permanent" },
       { label: "Tous les services", href: "/services" },
     ],
@@ -80,10 +79,6 @@ export const nav = [
 ];
 
 // --- 3 cartes de service (page d'accueil, section 3) -------------------------
-// Le volet MUNICIPAL n'a aucune photo — il n'y a jamais eu de chantier
-// municipal. Une carte sans image à côté de deux cartes illustrées se lit
-// comme un bug, sur ~8 pages. Il n'apparaît donc dans AUCUNE grille : il
-// garde une seule page qui décrit la capacité. Voir `gridServices`.
 export const serviceCards = [
   {
     key: "residentiel",
@@ -236,29 +231,6 @@ export const services = [
       `Pour les commerces de ${city}, on planifie l'installation en dehors des heures d'ouverture quand c'est requis — vos clients voient le résultat, jamais les échelles.`,
   },
   {
-    slug: "lumieres-de-noel-municipal",
-    title: "Lumières de Noël — Municipal",
-    h1: "Décoration de Noël municipale & grandes propriétés",
-    kicker: "Parcs, rues principales, bâtiments publics",
-    // Capacité seulement : jamais dans une grille, jamais d'image.
-    capabilityOnly: true,
-    heroImage: null,
-    heroImageAlt: null,
-    metaDescription:
-      "Décoration de Noël municipale au Québec : parcs, rues principales, bâtiments publics et grandes propriétés. Sécurité et calendrier respecté.",
-    intro:
-      "Pour les municipalités, BIA et grandes propriétés : décor à grande échelle, avec respect strict du calendrier et sécurité du public.",
-    bullets: [
-      "Parcs, rues principales et bâtiments publics",
-      "Coordination avec voirie / travaux publics",
-      "Documentation et planification avec votre service technique",  // ASSURANCE
-      "Calendrier respecté à la lettre",
-    ],
-    body: "Nous soumissionnons pour l'éclairage de parcs, l'illumination de rues principales et les grandes propriétés institutionnelles. Devis sur soumission selon l'envergure du projet — on planifie les détails avec votre service technique (alimentation, fixation, accès).",
-    forCity: (city) =>
-      `Pour la ville de ${city} et ses propriétés institutionnelles : devis sur soumission, et une planification faite avec votre service technique.`,
-  },
-  {
     slug: "eclairage-architectural-permanent",
     title: "Éclairage architectural permanent",
     h1: "Éclairage architectural permanent (DEL)",
@@ -356,10 +328,6 @@ export const cities = villesBrutes.map((v) => {
   const ph = cityPhoto(v.slug);
   return { ...v, image: ph?.src ?? null, imageAlt: ph?.alt ?? null };
 });
-
-// Les services qui apparaissent dans une grille de cartes. Le municipal en
-// est exclu : pas de photo, donc pas de carte. Sa page existe toujours.
-export const gridServices = services.filter((s) => !s.capabilityOnly);
 
 // Helper : retrouve un service ou une ville par slug (utilisé dans les routes)
 export const findService = (slug) => services.find((s) => s.slug === slug);
@@ -459,7 +427,7 @@ export const eclairagePage = {
     { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
     { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
     { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
-    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel, commercial et municipal. On évalue la faisabilité lors de la soumission gratuite." },
+    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la soumission gratuite." },
     { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
   ],
   // Vraies installations d'éclairage permanent. Pas de légende de ville :
