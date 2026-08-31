@@ -93,10 +93,23 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
 .header-desktop-nav { display: none; }
 .header-hamburger { display: inline-flex; }
 
-@media (min-width: 1160px) {
-  .header-desktop-nav { display: inline-flex; align-items: center; gap: 22px; }
+@media (min-width: 1300px) {
+  .header-desktop-nav { display: inline-flex; align-items: center; gap: 18px; }
   .header-hamburger { display: none; }
 }
+
+/* L'entête est la seule bande qui a le droit d'être plus large que le contenu
+   de page (1180px). MESURÉ : logo 152 + nav 619 + téléphone/CTA 419 + 32 de
+   gouttières = 1222px, soit 1270px avec le padding. Dans un conteneur de
+   1180px il en restait 1132 : l'entête débordait de ~105px À TOUTES LES
+   LARGEURS. Ça ne se voyait pas parce que le lien du logo, seul élément
+   compressible, absorbait tout le débordement en tombant à 0px — et parce que
+   body { overflow-x: hidden } empêche scrollWidth de le signaler.
+   Corollaire : les chiffres ci-dessus ont été mesurés APRÈS avoir rendu le
+   logo incompressible. Mesurés avant, la nav faisait « 555 » et le groupe de
+   droite « 372 » : des largeurs déjà écrasées par le flex. Toujours mesurer
+   sur une rangée qui n'est pas en train d'être compressée. */
+header > .container { max-width: 1320px; }
 
 /* Le logo ne rétrécit JAMAIS. Trois verrous indépendants, parce que la panne
    n'a été visible nulle part pendant des semaines : flex-shrink sur le lien,
@@ -593,3 +606,62 @@ textarea:focus-visible,
    puis « 6635 » — ce qui doublait la hauteur de l'en-tête fixe et aggravait
    le chevauchement du hero. Un numéro de téléphone ne se coupe jamais. */
 .phone-label { white-space: nowrap; }
+
+
+/* --- Menu mobile plein écran ----------------------------------------------- */
+/* Deux pannes réelles, vues sur un iPhone :
+     1. le haut de la liste défilait DERRIÈRE l'en-tête fixe et se faisait
+        couper en plein milieu d'un mot (« TOUS LES SERVICES », « ZONES
+        DESSERVIES ») ;
+     2. le bloc n'avait AUCUN padding en bas, donc la barre d'action fixe
+        recouvrait les derniers liens et le courriel — on défilait jusqu'au
+        bout et l'adresse restait cachée.
+   Les deux réserves viennent de hauteurs MESURÉES au moment de l'ouverture
+   (--hauteur-entete / --hauteur-barre-bas, posées par ClientLayout), jamais
+   de constantes : la panne d'origine dans ce dépôt venait précisément d'une
+   hauteur espérée de 76px pour une barre qui en faisait 73,75. Les valeurs de
+   repli ne servent qu'au tout premier rendu, avant la mesure. */
+.menu-overlay {
+  position: fixed; inset: 0; z-index: 90;
+  background: var(--off-white, #FAFAFA);
+  display: flex; flex-direction: column;
+  /* La zone de défilement est ENCADRÉE par les deux barres fixes, elle ne
+     passe pas dessous. Réserver la place ici plutôt qu'en padding interne
+     change le résultat : avec un padding interne, les liens du milieu
+     passaient quand même derrière la barre du bas tant qu'on n'avait pas
+     défilé. Ici, aucun lien n'est jamais caché, à aucune position. */
+  padding-top: var(--hauteur-entete, 70px);
+  padding-bottom: calc(var(--hauteur-barre-bas, 84px) + env(safe-area-inset-bottom, 0px));
+}
+.menu-overlay-defile {
+  flex: 1; min-height: 0;
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  /* Respiration en fin de liste : le courriel ne colle pas au bord. */
+  padding-bottom: 24px;
+}
+
+
+/* --- Entête mobile : ce qui tient réellement dans la largeur ---------------- */
+/* RÉGRESSION RÉELLE, INTRODUITE PAR LE CORRECTIF DU LOGO.
+   L'entête mobile ne « tenait » que parce que le logo était écrasé à 0px de
+   large. En lui rendant ses ~93px, la rangée est passée à ~410px de contenu
+   dans un écran de 390 : le bouton hamburger sortait de l'écran à TOUTES les
+   largeurs de téléphone (320 à 430). Invisible dans les contrôles, parce que
+   body { overflow-x: hidden } ramène scrollWidth à clientWidth — un test qui
+   compare ces deux valeurs ne peut structurellement rien voir. C'est
+   scripts/check-entete-mobile.mjs qui mesure maintenant le bord droit réel de
+   chaque élément.
+
+   Ce qu'on retire, et pourquoi c'est sans perte : sous 1024px la barre d'action
+   fixe du bas affiche déjà « Appeler » ET « Soumission gratuite ». Le bouton
+   CTA de l'entête y était donc un doublon. Le NUMÉRO reste dans l'entête —
+   c'est une décision de conversion assumée (P1-6) — sauf sous 360px où il ne
+   reste que l'icône, faute de place. */
+@media (max-width: 1023.98px) {
+  /* Doublon de la barre du bas — on récupère ~50px pour le hamburger. */
+  .header-cta { display: none; }
+}
+@media (max-width: 359.98px) {
+  .phone-label { display: none; }
+}
