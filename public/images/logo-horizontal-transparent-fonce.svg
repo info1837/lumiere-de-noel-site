@@ -4,7 +4,7 @@
      logo au lieu des 49px de l'ancien PNG. Dessin reel mesure a
      x 91..678 / y 102..296 ; marge egale ajoutee pour retrouver le meme
      ratio dessin/boite que l'ancien logo (94.6%). AUCUN trace modifie. -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="85.5 96.5 598 205"><g transform="translate(64,92) scale(1.2)">
+<svg xmlns="http://www.w3.org/2000/svg" width="598" height="205" viewBox="85.5 96.5 598 205"><g transform="translate(64,92) scale(1.2)">
   <path d="M47 12 h26" stroke="#F5EFE0" stroke-width="7" stroke-linecap="round" fill="none"/>
   <path d="M44 26 h32" stroke="#F5EFE0" stroke-width="7" stroke-linecap="round" fill="none"/>
   <path d="M48 36 C32 48, 26 71, 26 92 C26 129, 41 156, 60 156 C79 156, 94 129, 94 92 C94 71, 88 48, 72 36 Z"

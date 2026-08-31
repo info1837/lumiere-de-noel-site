@@ -8,7 +8,8 @@
     "start": "next start",
     "check:photos": "node --no-warnings scripts/check-photos.mjs",
     "audit:visuel": "node scripts/audit-visuel.mjs",
-    "audit:visuel:autotest": "node scripts/audit-visuel-autotest.mjs"
+    "audit:visuel:autotest": "node scripts/audit-visuel-autotest.mjs",
+    "check:logo": "node scripts/check-logo.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

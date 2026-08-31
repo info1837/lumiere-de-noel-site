@@ -4,16 +4,45 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { nav, company, navy, ivory, gold, charcoal, offWhite } from "@/components/data";
 
-// Items du menu horizontal desktop — on aplatit "Services" (dropdown gardé pour
-// le menu mobile plein écran, mais pas nécessaire sur desktop).
+// Items du menu horizontal desktop.
+//
+// POURQUOI SEULEMENT CINQ ENTRÉES : la barre dispose de 576 px entre le logo
+// (152 px) et le groupe téléphone + CTA (372 px). Les sept entrées plates
+// d'avant mesuraient 791 px — 215 px de trop. Comme le lien du logo était le
+// seul élément flex compressible de l'entête, le navigateur l'écrasait à 0 px
+// de large : le logo se téléchargeait (200 OK) mais ne s'affichait sur AUCUNE
+// page à partir de 1024 px. Aplatir « Services » avait libéré la place que ces
+// deux entrées ont reprise. Le dropdown la rend.
+//
+// Avant d'ajouter une entrée ici : 5 entrées ≈ 555 px. Il ne reste que ~20 px.
+// Une sixième n'entre pas — elle va dans le dropdown.
 const desktopNav = [
   { label: "Accueil", href: "/" },
-  { label: "Services", href: "/services" },
+  {
+    label: "Services",
+    href: "/services",
+    groups: [
+      {
+        title: "Nos services",
+        items: [
+          { label: "Lumières de Noël — résidentiel", href: "/services/lumieres-de-noel-residentiel" },
+          { label: "Lumières de Noël — commercial", href: "/services/lumieres-de-noel-commercial" },
+          { label: "Éclairage architectural permanent", href: "/services/eclairage-architectural-permanent" },
+          { label: "Tous les services", href: "/services" },
+        ],
+      },
+      {
+        title: "Autres",
+        items: [
+          { label: "Blog", href: "/blog" },
+          { label: "Renouvellement", href: "/renouvellement" },
+        ],
+      },
+    ],
+  },
   { label: "Zones desservies", href: "/secteur" },
   { label: "Réalisations", href: "/realisations" },
-  { label: "Blog", href: "/blog" },
   { label: "Calculatrice", href: "/calculatrice" },
-  { label: "Renouvellement", href: "/renouvellement" },
 ];
 
 export function NavBar() {
@@ -51,7 +80,7 @@ export function NavBar() {
         display: "flex", alignItems: "center", justifyContent: "space-between",
         padding: "14px 24px", gap: 16,
       }}>
-        <Link href="/" aria-label={`${company.name} — accueil`} style={{ display: "flex", alignItems: "center" }}>
+        <Link href="/" aria-label={`${company.name} — accueil`} className="site-logo-link">
           <img src="/images/logo-horizontal-transparent-fonce.svg" alt={company.name}
             className="site-logo" />
         </Link>
@@ -60,19 +89,33 @@ export function NavBar() {
         <nav className="header-desktop-nav" aria-label="Navigation principale">
           {desktopNav.map((item) => {
             const active = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
+            const inGroups = item.groups?.some((g) => g.items.some((c) => pathname === c.href));
+            if (item.groups) {
+              return (
+                <div key={item.label} className="nav-dropdown">
+                  <Link href={item.href} className="nav-link" data-active={active || inGroups ? "true" : undefined}>
+                    {item.label}
+                    <svg className="nav-caret" width="10" height="10" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" strokeWidth="3" aria-hidden="true"><path d="M6 9l6 6 6-6" /></svg>
+                  </Link>
+                  <div className="nav-panel" role="menu">
+                    {item.groups.map((g) => (
+                      <div key={g.title} className="nav-panel-group">
+                        <p className="nav-panel-title">{g.title}</p>
+                        {g.items.map((c) => (
+                          <Link key={c.href} href={c.href} role="menuitem"
+                            className="nav-panel-link" data-active={pathname === c.href ? "true" : undefined}>
+                            {c.label}
+                          </Link>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  color: ivory, textDecoration: "none",
-                  fontFamily: "'Nunito Sans', sans-serif",
-                  fontSize: 14, fontWeight: 600, letterSpacing: "0.06em",
-                  textTransform: "uppercase",
-                  borderBottom: active ? `2px solid ${gold}` : "2px solid transparent",
-                  paddingBottom: 4,
-                }}
-              >
+              <Link key={item.href} href={item.href} className="nav-link" data-active={active ? "true" : undefined}>
                 {item.label}
               </Link>
             );

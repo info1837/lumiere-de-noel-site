@@ -83,13 +83,83 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
 }
 
 /* --- Header : nav responsive ----------------------------------------------- */
-/* Nav horizontale sortie du hamburger à partir de ≥1024px */
+/* Nav horizontale sortie du hamburger à partir de ≥1160px.
+   1024px était TROP TÔT : logo 152 + nav 555 + tél/CTA 372 + gouttières 32
+   = 1111px de contenu, soit 1159px avec le padding de 24px. En dessous, la
+   barre débordait — et comme le lien du logo était le seul élément
+   compressible, c'est LUI qui absorbait le débordement en tombant à 0px de
+   large. Le débordement ne se voyait donc jamais : le logo disparaissait à sa
+   place. Ce palier est calculé, pas choisi ; le recalculer avant d'y toucher. */
 .header-desktop-nav { display: none; }
 .header-hamburger { display: inline-flex; }
 
-@media (min-width: 1024px) {
-  .header-desktop-nav { display: inline-flex; align-items: center; gap: 26px; }
+@media (min-width: 1160px) {
+  .header-desktop-nav { display: inline-flex; align-items: center; gap: 22px; }
   .header-hamburger { display: none; }
+}
+
+/* Le logo ne rétrécit JAMAIS. Trois verrous indépendants, parce que la panne
+   n'a été visible nulle part pendant des semaines : flex-shrink sur le lien,
+   flex:none sur l'image, et width/height intrinsèques dans le SVG lui-même
+   (un SVG à viewBox seul n'a pas de largeur intrinsèque et se laisse écraser
+   à 0 dans un contexte flex). */
+.site-logo-link { display: flex; align-items: center; flex: 0 0 auto; }
+.site-logo { flex: none; }
+
+/* --- Nav desktop : liens et dropdown --------------------------------------- */
+.nav-link {
+  display: inline-flex; align-items: center; gap: 5px;
+  color: var(--ivory); text-decoration: none;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 14px; font-weight: 600; letter-spacing: 0.06em;
+  text-transform: uppercase; white-space: nowrap;
+  border-bottom: 2px solid transparent; padding-bottom: 4px;
+}
+.nav-link[data-active="true"] { border-bottom-color: var(--gold); }
+.nav-link:hover { color: #fff; }
+
+.nav-dropdown { position: relative; }
+.nav-caret { transition: transform 0.18s; flex: none; }
+.nav-dropdown:hover .nav-caret,
+.nav-dropdown:focus-within .nav-caret { transform: rotate(180deg); }
+
+.nav-panel {
+  position: absolute; top: 100%; left: -18px; margin-top: 12px;
+  min-width: 292px; padding: 18px 6px 12px;
+  background: rgba(11,27,43,0.98);
+  border: 1px solid rgba(233,220,192,0.18); border-radius: 14px;
+  box-shadow: 0 18px 44px rgba(0,0,0,0.45);
+  opacity: 0; visibility: hidden; transform: translateY(-6px);
+  transition: opacity 0.18s, transform 0.18s, visibility 0.18s;
+  z-index: 120;
+}
+/* Pont invisible : évite que le menu se ferme en traversant la gouttière. */
+.nav-panel::before { content: ""; position: absolute; top: -14px; left: 0; right: 0; height: 14px; }
+.nav-dropdown:hover .nav-panel,
+.nav-dropdown:focus-within .nav-panel { opacity: 1; visibility: visible; transform: translateY(0); }
+
+.nav-panel-group + .nav-panel-group {
+  margin-top: 10px; padding-top: 12px;
+  border-top: 1px solid rgba(233,220,192,0.14);
+}
+.nav-panel-title {
+  margin: 0 0 4px; padding: 0 18px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.18em;
+  text-transform: uppercase; color: rgba(233,220,192,0.55);
+}
+.nav-panel-link {
+  display: block; padding: 9px 18px; border-radius: 8px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 14.5px; font-weight: 600; letter-spacing: 0.01em;
+  color: rgba(243,233,210,0.9); text-decoration: none;
+  text-transform: none;
+}
+.nav-panel-link:hover { background: rgba(233,220,192,0.1); color: #fff; }
+.nav-panel-link[data-active="true"] { color: var(--gold); }
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-panel, .nav-caret { transition: none; }
 }
 
 /* Bouton CTA persistant dans l'entête (à toutes les largeurs, à côté de la pastille) */
