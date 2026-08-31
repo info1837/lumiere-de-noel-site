@@ -50,7 +50,10 @@ const nommeUneVille = (txt) =>
 const fichiersSource = [];
 (function marcher(dir) {
   for (const e of readdirSync(dir)) {
-    if (["node_modules", ".next", ".git", "public"].includes(e)) continue;
+    // `scripts/` est de l'outillage, pas des pages rendues. L'audit visuel y
+    // référence volontairement une image inexistante pour prouver que son
+    // contrôle « image cassée » sait échouer — ce n'est pas un défaut du site.
+    if (["node_modules", ".next", ".git", "public", "scripts"].includes(e)) continue;
     const p = join(dir, e);
     if (statSync(p).isDirectory()) marcher(p);
     else if (/\.(jsx?|mjs)$/.test(e)) fichiersSource.push(p);

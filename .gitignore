@@ -25,3 +25,6 @@ dist-ssr
 *.sw?
 .vercel
 .env*
+
+# Sorties de l'audit visuel (captures + rapport) — régénérées à la demande
+.audit-visuel/
