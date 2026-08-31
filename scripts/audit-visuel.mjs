@@ -188,25 +188,6 @@ const INJECTIONS = {
   console: () => { console.error("DEFAUT INJECTE — erreur de console"); },
 };
 
-// Les sections `.reveal` s'animent à l'entrée dans la fenêtre. Mesurer
-// pendant l'animation donne des rectangles faux — c'est exactement d'où
-// venaient les « chiffres inventés » d'une première tentative d'audit. On
-// exige donc deux mesures identiques à 250 ms d'intervalle avant de juger.
-const stabiliser = async (page, essais = 12) => {
-  const empreinte = () => page.evaluate(() => {
-    const e = [...document.querySelectorAll("h1,h2,header,.container")].slice(0, 25);
-    return e.map((x) => { const r = x.getBoundingClientRect(); return `${Math.round(r.top)},${Math.round(r.height)}`; }).join("|");
-  });
-  let prec = await empreinte();
-  for (let i = 0; i < essais; i++) {
-    await page.waitForTimeout(250);
-    const cur = await empreinte();
-    if (cur === prec) return true;
-    prec = cur;
-  }
-  return false;
-};
-
 const defiler = async (page) => {
   await page.evaluate(async () => {
     for (let y = 0; y < document.body.scrollHeight; y += 300) {
@@ -252,6 +233,16 @@ try {
 
   for (const L of LARGEURS) {
     const ctx = await nav.newContext({
+      // L'ÉCHAPPATOIRE DU SITE LUI-MÊME. globals.css:476-479 met `.reveal` à
+      // opacity:1 / transform:none / transition:none sous
+      // `prefers-reduced-motion: reduce`, et masque `.snow`. L'animation
+      // cesse d'exister, au lieu d'être contournée par un délai.
+      //
+      // Ce qui précédait — deux lectures identiques à 250 ms d'intervalle —
+      // ne supprimait pas le flou, il le rendait moins probable : la
+      // transition dure 0,7 s, donc les deux lectures pouvaient tomber en
+      // pleine animation et concorder en étant fausses toutes les deux.
+      reducedMotion: "reduce",
       viewport: { width: L.width, height: L.height },
       isMobile: L.mobile, hasTouch: L.mobile, deviceScaleFactor: L.mobile ? 3 : 1,
       ...(L.ua ? { userAgent: L.ua } : {}),
@@ -283,15 +274,15 @@ try {
           await page.waitForTimeout(250);
         }
         await page.evaluate(() => window.scrollTo(0, 0));
-        if (!(await stabiliser(page))) erreurs.push("mise en page jamais stabilisée (animations sans fin ?)");
+        await page.waitForTimeout(150);
         m = await page.evaluate(MESURE);
         // La barre du bas se juge en bas de page, là où elle recouvre.
         await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-        await stabiliser(page);
+        await page.waitForTimeout(150);
         const bas = await page.evaluate(MESURE);
         m.sousBarreBas = bas.sousBarreBas;
         await page.evaluate(() => window.scrollTo(0, 0));
-        await stabiliser(page);
+        await page.waitForTimeout(150);
         const nom = (route === "/" ? "accueil" : route.replace(/^\//, "").replace(/\//g, "_"));
         await page.screenshot({ path: join(SORTIE, `${L.nom}-${nom}.png`), fullPage: false });
       } catch (e) {
