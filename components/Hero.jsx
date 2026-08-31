@@ -78,21 +78,14 @@ export default function Hero() {
             Installations octobre–novembre 2026 · retrait et entreposage en janvier
             · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>les dates de novembre partent en premier</strong>.
           </p>
-          <div style={{
-            display: "flex", flexWrap: "wrap", gap: "10px 22px",
-            color: "rgba(243,233,210,0.85)", fontSize: 14, fontWeight: 600,
-          }}>
-            {[
-              "Installation + retrait inclus",
-              "Matériel professionnel fourni",
-              "On garde vos lumières chez nous — rien à ranger",
-              "Soumission gratuite, sans obligation",
-            ].map((t) => (
-              <span key={t} style={{ display: "inline-flex", alignItems: "center", gap: 7 }}>
-                <span className="bulb bulb--tw" aria-hidden="true" />{t}
-              </span>
-            ))}
-          </div>
+          {/* Les quatre puces qui vivaient ici disaient exactement ce que dit
+              maintenant la barre des objections, juste en dessous : « tout
+              inclus », l'entreposage, la soumission gratuite. Les garder, c'est
+              faire lire deux fois la même chose au visiteur et repousser le
+              formulaire vers le bas. La barre le dit mieux : chaque réponse y
+              est cliquable et mène à la page qui la détaille.
+              Le matériel professionnel fourni, seul point qui n'était PAS
+              repris, est rappelé dans la carte « Tout inclus » côté services. */}
         </div>
 
         {/* Carte de réservation rapide */}

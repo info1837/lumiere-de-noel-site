@@ -593,3 +593,56 @@ textarea:focus-visible,
    puis « 6635 » — ce qui doublait la hauteur de l'en-tête fixe et aggravait
    le chevauchement du hero. Un numéro de téléphone ne se coupe jamais. */
 .phone-label { white-space: nowrap; }
+
+
+/* --- Barre des quatre objections (sous le hero) ---------------------------- */
+/* Quatre cartes, jamais moins de deux colonnes avant 620px : à une colonne sur
+   tablette la barre pousse tout le contenu utile sous la ligne de flottaison,
+   ce qui annule exactement ce à quoi elle sert. */
+.objection-bar {
+  list-style: none; margin: 0 0 -26px; padding: 0;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
+}
+@media (max-width: 1020px) { .objection-bar { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px)  { .objection-bar { grid-template-columns: 1fr; gap: 10px; } }
+
+.objection-card {
+  display: flex; flex-direction: column; align-items: flex-start; height: 100%;
+  padding: 20px 20px 18px; border-radius: 14px;
+  background: rgba(255,255,255,0.045);
+  border: 1px solid rgba(233,220,192,0.16);
+  text-decoration: none; color: var(--ivory);
+  transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
+}
+.objection-card:hover {
+  background: rgba(233,220,192,0.09);
+  border-color: rgba(233,220,192,0.42);
+  transform: translateY(-3px);
+}
+.objection-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+.objection-icone { color: var(--gold); flex: none; margin-bottom: 12px; }
+
+.objection-titre {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 23px; line-height: 1.08; letter-spacing: 0.03em;
+  margin: 0 0 7px; color: var(--ivory); text-wrap: balance;
+}
+.objection-detail {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 14.5px; line-height: 1.5; margin: 0 0 14px;
+  color: rgba(243,233,210,0.76); flex: 1;
+}
+.objection-lien {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 12px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase;
+  color: var(--gold);
+}
+.objection-card:hover .objection-lien svg { transform: translateX(3px); }
+.objection-lien svg { transition: transform 0.22s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .objection-card, .objection-lien svg { transition: none; }
+  .objection-card:hover { transform: none; }
+}

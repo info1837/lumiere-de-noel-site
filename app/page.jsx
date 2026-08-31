@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
+import ObjectionBar from "@/components/ObjectionBar";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
@@ -28,6 +29,11 @@ export default function Home() {
         }}
       />
       <Hero />
+
+      {/* 1b — Les quatre objections, répondues avant qu'on demande quoi que ce
+          soit au visiteur. Elle doit rester COLLÉE au hero : plus bas, elle
+          n'intercepte plus personne. */}
+      <ObjectionBar />
 
       {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
       <Testimonials limit={3} variant="light" />
