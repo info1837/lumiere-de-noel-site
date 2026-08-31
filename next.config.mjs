@@ -9,25 +9,25 @@ const nextConfig = {
     minimumCacheTTL: 2678400, // 31 jours
   },
   // Redirige les anciens slugs Squarespace s'ils sont encore indexés.
+  // Note : `permanent: true` fait émettre un 308 par Next, pas un 301. Les
+  // deux sont des redirections permanentes et Google les traite de façon
+  // identique ; on garde `permanent: true` partout pour que ce fichier se
+  // lise d'une seule façon, sans exception à expliquer.
   async redirects() {
     return [
       { source: "/home", destination: "/", permanent: true },
       // Le portfolio s'appelait /lumiere-de-noel — une URL qui ne dit pas ce
       // qu'elle contient, et que le pied de page appelait « Portfolio lumières »
       // pendant que la nav disait « Réalisations ». Un seul nom, une seule URL,
-      // et un 301 pour ne rien perdre de l'ancienne.
+      // et une redirection permanente pour ne rien perdre de l'ancienne.
       { source: "/lumiere-de-noel", destination: "/realisations", permanent: true },
       // Volet municipal retiré pour la saison 2026 : aucun chantier municipal,
       // donc aucune photo, aucune étude de cas — la page ne pouvait
-      // qu'affirmer une expérience inexistante. Le 301 garde l'URL vivante.
+      // qu'affirmer une expérience inexistante. La redirection garde l'URL vivante.
       // CONDITION POUR RETIRER CETTE REDIRECTION ET REMETTRE LA PAGE :
       // un vrai contrat municipal livré, ET une photographie du chantier.
       // Pas l'un sans l'autre.
-      // `statusCode: 301` et non `permanent: true` : ce dernier émet un 308.
-      // Les deux sont permanents et Google les traite pareil, mais un 301
-      // est ce qui a été demandé, et c'est le code que tout le monde
-      // reconnaît dans un journal d'accès.
-      { source: "/services/lumieres-de-noel-municipal", destination: "/services/lumieres-de-noel-commercial", statusCode: 301 },
+      { source: "/services/lumieres-de-noel-municipal", destination: "/services/lumieres-de-noel-commercial", permanent: true },
       { source: "/index", destination: "/", permanent: true },
 
       // .ca -> .com. Le .ca est l'ancien domaine : les pubs Meta de la
