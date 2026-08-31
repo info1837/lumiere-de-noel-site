@@ -35,6 +35,21 @@ export default function Soumission() {
         <div className="container grid-2" style={{ alignItems: "start" }}>
           <div>
             <SectionTag dark>Soumission</SectionTag>
+            {/* Le client de l'an dernier n'a pas besoin d'une soumission : il a
+                besoin d'une date. Chemin le plus court vers la vente la plus
+                rentable de la saison. */}
+            <div style={{ marginBottom: 16 }}>
+              <Link href="/renouvellement" style={{
+                display: "inline-flex", alignItems: "center", gap: 8,
+                padding: "8px 14px", borderRadius: 300,
+                background: "rgba(233,220,192,0.14)",
+                border: "1px solid rgba(233,220,192,0.4)",
+                color: gold, textDecoration: "none",
+                fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
+              }}>
+                Vous étiez client l'an dernier ? Réservez votre date →
+              </Link>
+            </div>
             <h1 style={{ color: ivory, marginBottom: 18 }}>Demande de soumission</h1>
             <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 19, marginBottom: 20 }}>
               Décrivez votre projet — on vous rappelle en moins de 24 h avec une estimation claire,
