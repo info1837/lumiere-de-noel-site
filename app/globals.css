@@ -93,7 +93,7 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
 .header-desktop-nav { display: none; }
 .header-hamburger { display: inline-flex; }
 
-@media (min-width: 1300px) {
+@media (min-width: 1240px) {
   .header-desktop-nav { display: inline-flex; align-items: center; gap: 18px; }
   .header-hamburger { display: none; }
 }
@@ -658,6 +658,8 @@ textarea:focus-visible,
 @media (prefers-reduced-motion: reduce) {
   .objection-card, .objection-lien svg { transition: none; }
   .objection-card:hover { transform: none; }
+}
+
 /* --- Menu mobile plein écran ----------------------------------------------- */
 /* Deux pannes réelles, vues sur un iPhone :
      1. le haut de la liste défilait DERRIÈRE l'en-tête fixe et se faisait

@@ -40,7 +40,12 @@ const desktopNav = [
       },
     ],
   },
-  { label: "Zones desservies", href: "/secteur" },
+  // « Secteurs » plutôt que « Zones desservies » : 37px de moins dans la barre,
+  // ce qui suffit à faire tenir la nav horizontale sur un portable 1280px au
+  // lieu de la renvoyer au hamburger. Le libellé long reste partout ailleurs
+  // (menu mobile, pied de page, titre de la page /secteur) — c'est seulement
+  // la barre desktop qui manque de place.
+  { label: "Secteurs", href: "/secteur" },
   { label: "Réalisations", href: "/realisations" },
   { label: "Calculatrice", href: "/calculatrice" },
 ];
