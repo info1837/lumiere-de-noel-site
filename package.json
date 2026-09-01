@@ -9,7 +9,9 @@
     "check:photos": "node --no-warnings scripts/check-photos.mjs",
     "audit:visuel": "node scripts/audit-visuel.mjs",
     "audit:visuel:autotest": "node scripts/audit-visuel-autotest.mjs",
-    "check:logo": "node scripts/check-logo.mjs"
+    "check:logo": "node scripts/check-logo.mjs",
+    "check:menu": "node scripts/check-menu-mobile.mjs",
+    "check:entete": "node scripts/check-entete-mobile.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

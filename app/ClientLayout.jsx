@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { nav, company, navy, ivory, gold, charcoal, offWhite } from "@/components/data";
@@ -49,6 +49,37 @@ export function NavBar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const headerRef = useRef(null);
+
+  // Hauteurs MESURÉES de l'en-tête et de la barre du bas, publiées en
+  // variables CSS. On ne les code pas en dur : ce dépôt s'est déjà fait avoir
+  // par une hauteur « espérée » de 76px alors que la vraie était 73,75px, et
+  // par un en-tête qui recouvrait le h1. La hauteur change avec la largeur
+  // (paliers du logo), avec la taille de police du système et quand un libellé
+  // passe sur deux lignes. Un ResizeObserver suit les trois.
+  useEffect(() => {
+    const racine = document.documentElement;
+    const mesurer = () => {
+      const h = headerRef.current?.getBoundingClientRect().height;
+      if (h) racine.style.setProperty("--hauteur-entete", `${Math.ceil(h)}px`);
+      const b = document.querySelector(".mobile-bottom-bar");
+      const hb = b && getComputedStyle(b).display !== "none"
+        ? b.getBoundingClientRect().height : 0;
+      racine.style.setProperty("--hauteur-barre-bas", `${Math.ceil(hb)}px`);
+    };
+    mesurer();
+    const ro = new ResizeObserver(mesurer);
+    if (headerRef.current) ro.observe(headerRef.current);
+    const bb = document.querySelector(".mobile-bottom-bar");
+    if (bb) ro.observe(bb);
+    window.addEventListener("resize", mesurer);
+    window.addEventListener("orientationchange", mesurer);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", mesurer);
+      window.removeEventListener("orientationchange", mesurer);
+    };
+  }, []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 40);
@@ -69,6 +100,7 @@ export function NavBar() {
   return (
     <>
     <header
+      ref={headerRef}
       style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
         background: solid ? "rgba(11,27,43,0.97)" : "transparent",
@@ -166,18 +198,24 @@ export function NavBar() {
     </header>
 
       {open && (
-        <div style={{
-          position: "fixed", inset: 0, background: offWhite, zIndex: 90,
-          paddingTop: 104, display: "flex", flexDirection: "column", overflowY: "auto",
-        }}>
+        // Le menu ne défile PLUS derrière l'en-tête ni sous la barre du bas.
+        // Avant : un seul bloc en overflow:auto avec paddingTop 104px et AUCUN
+        // padding en bas — les derniers liens et le courriel restaient sous la
+        // barre fixe, inatteignables même en défilant jusqu'au bout, et le haut
+        // de la liste passait derrière l'en-tête en coupant les mots en deux.
+        // Maintenant : une colonne flex dont la réserve haute vaut la hauteur
+        // MESURÉE de l'en-tête, et une zone de défilement qui réserve en bas la
+        // hauteur MESURÉE de la barre plus l'encoche.
+        <div className="menu-overlay">
+          <div className="menu-overlay-defile">
           <nav className="container" style={{ padding: "24px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
             {nav.filter((i) => i.href !== "/soumission").map((item) =>
               item.children ? (
                 <div key={item.label} style={{ marginBottom: 8 }}>
                   <div style={{
-                    fontFamily: "'Nunito Sans', sans-serif", fontSize: 13, fontWeight: 700,
-                    letterSpacing: "0.18em", textTransform: "uppercase", color: "#9b8c66",
-                    margin: "12px 0 6px",
+                    fontFamily: "'Nunito Sans', sans-serif", fontSize: 15, fontWeight: 800,
+                    letterSpacing: "0.16em", textTransform: "uppercase", color: "#8A6A1C",
+                    margin: "18px 0 10px",
                   }}>
                     {item.label}
                   </div>
@@ -200,6 +238,7 @@ export function NavBar() {
               </a>
             </div>
           </nav>
+          </div>
         </div>
       )}
     </>
