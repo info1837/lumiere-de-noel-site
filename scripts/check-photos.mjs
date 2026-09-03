@@ -23,7 +23,7 @@ const PUBLIC = join(RACINE, "public");
 const erreurs = [];
 
 const { PHOTOS, CITY_PHOTO, REEL_PREFIX, PHOTOS_MANQUANTES, CLES_GENERIQUES,
-        cityPhoto, cityHeroPhoto, servicePhoto } =
+        PREFIXES_OPTIONNELS, cityPhoto, cityHeroPhoto, servicePhoto } =
   await import(join(RACINE, "components/photos.js"));
 
 // Les services dont une carte porte une image. Le municipal n'en a pas.
@@ -68,9 +68,16 @@ for (const f of fichiersSource) {
     refs.get(m[1]).push(f.replace(RACINE + "/", ""));
   }
 }
+const optionnelles = [];
 for (const [img, ou] of refs) {
-  if (!existsSync(join(PUBLIC, img)))
-    erreurs.push(`Image RÉFÉRENCÉE mais ABSENTE du disque : ${img}\n    → ${[...new Set(ou)].join(", ")}`);
+  if (existsSync(join(PUBLIC, img))) continue;
+  // Préfixes déclarés optionnels : signalés, jamais bloquants (le rendu les
+  // masque tant que le fichier n'est pas là). Voir PREFIXES_OPTIONNELS.
+  if ((PREFIXES_OPTIONNELS || []).some((p) => img.startsWith(p))) {
+    optionnelles.push(`${img}  (optionnelle — ${[...new Set(ou)].join(", ")})`);
+    continue;
+  }
+  erreurs.push(`Image RÉFÉRENCÉE mais ABSENTE du disque : ${img}\n    → ${[...new Set(ou)].join(", ")}`);
 }
 
 // --- 2. Le registre pointe sur des fichiers qui existent ----------------------
@@ -148,3 +155,9 @@ console.log(
   `${refs.size} image(s) littérale(s) vérifiée(s), ${avecPhoto} ville(s) illustrée(s), ` +
   `${sansPhoto} sans photo (générique), ${CLES_GENERIQUES.length} générique(s), ` +
   `${PHOTOS_MANQUANTES.length} photo(s) attendue(s).`);
+// Les optionnelles ne bloquent pas, mais elles ne se cachent pas non plus :
+// tant qu'elles manquent, la section correspondante ne s'affiche pas.
+if (optionnelles.length) {
+  console.log(`  ↳ ${optionnelles.length} image(s) optionnelle(s) encore absente(s) — section masquée tant qu'elles manquent :`);
+  optionnelles.forEach((o) => console.log(`     · ${o}`));
+}

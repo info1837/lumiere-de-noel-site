@@ -6,6 +6,18 @@
 // longueur venue du client est une longueur choisie par le client, et ici
 // elle deviendrait un prix.
 //
+// SAUF sur le chemin manuel, ajouté sciemment (2026-09-03). Quand la carte
+// satellite ne charge pas — ou que le visiteur préfère taper ses pieds —
+// il n'y a plus de points à mesurer : la longueur vient forcément de lui.
+// Trois garde-fous rendent la chose tenable :
+//   1. le chemin doit se déclarer : `measure_method: "manual"`;
+//   2. la valeur est bornée à [MANUEL_MIN, MANUEL_MAX] — au-delà, on
+//      bascule en évaluation sur place plutôt que d'afficher un prix;
+//   3. le lead porte `measure_method: "manual"`, et l'écran dit au client
+//      que le prix ferme est confirmé lors de la visite.
+// Le tarif et le plancher restent au CRM : ce fichier ne les connaît
+// toujours pas.
+//
 // LE CHEMIN
 //   navigateur ──► /api/calc-noel  (ici)
 //                    │ recalcule les pi linéaires (haversine, lib/geo.js)
@@ -33,6 +45,12 @@ const URL_LEADS = `${CRM}/api/leads`;
 // ailleurs et les leads partiraient dans la mauvaise base — silencieusement.
 const ENTREPRISE_ATTENDUE = 'lumiere';
 
+// Bornes du chemin manuel. En deçà de 40 pi il ne reste pas une façade;
+// au-delà de 1000 pi on est hors résidentiel — dans les deux cas une
+// visite vaut mieux qu'un prix automatique.
+const MANUEL_MIN = 40;
+const MANUEL_MAX = 1000;
+
 const propre = (v, max = 500) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 const json = (d, status = 200) => Response.json(d, { status });
 
@@ -52,10 +70,81 @@ export async function POST(request) {
     return json({ ok: false, error: 'non_configure' }, 500);
   }
 
-  // --- 1. La mesure, recalculée ici ---------------------------------------
+  // --- 0. Demande de maquette ----------------------------------------------
+  // Deuxième contact du même visiteur, après qu'il a vu son prix : il veut
+  // voir sa maison illuminée avant de s'engager. Aucun calcul ici — le prix
+  // a déjà été chiffré par le CRM, on le transporte tel quel dans les notes
+  // pour que le vendeur voie exactement le nombre que le client a lu.
+  // Passe par ce fichier, et pas par une route à part, parce que c'est le
+  // seul endroit du projet qui a le droit de lire la clé d'intake.
+  if (body.intent === 'maquette') {
+    const nomM = propre(body.contact?.nom || body.contact?.name, 120);
+    const telM = propre(body.contact?.telephone || body.contact?.phone, 40);
+    const adrM = propre(body.address || body.adresse, 240);
+    if (!nomM || !telM) return json({ ok: false, error: 'contact_incomplet' }, 400);
+
+    const piedsM = Number(body.linearFt);
+    const prixM = Number(body.estimatedPrice);
+    const notesM = [
+      'DEMANDE DE MAQUETTE depuis la calculatrice.',
+      Number.isFinite(piedsM) && piedsM > 0 ? `Mesure : ${Math.round(piedsM)} pi linéaires (${body.measure_method === 'manual' ? 'saisis à la main' : 'tracés sur la carte'}).` : '',
+      Number.isFinite(prixM) && prixM > 0 ? `Prix affiché au client : ${prixM} $.` : '',
+      'Le client attend une maquette de sa maison avec le design proposé.',
+      body.photoParTexto ? 'A dit vouloir envoyer sa photo par texto.' : '',
+    ].filter(Boolean).join('\n');
+
+    let enregistre = false;
+    try {
+      const res = await fetch(URL_LEADS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-intake-key': cle },
+        body: JSON.stringify({
+          name: nomM, phone: telM, address: adrM,
+          service: 'Lumières de Noël',
+          source: 'calculatrice',
+          notes: notesM, language: 'fr',
+          linear_ft: Number.isFinite(piedsM) && piedsM > 0 ? Math.round(piedsM) : undefined,
+          estimated_price: Number.isFinite(prixM) && prixM > 0 ? prixM : undefined,
+          measure_method: body.measure_method === 'manual' ? 'manual' : 'map',
+        }),
+      });
+      enregistre = res.ok;
+      if (!res.ok) {
+        const detail = await res.text().catch(() => '');
+        await alerter(`maquette-refusee-${res.status}`,
+          `⚠️ UNE DEMANDE DE MAQUETTE N'A PAS ÉTÉ ENREGISTRÉE (HTTP ${res.status}).\n\n`
+          + `${nomM} — ${telM}\n${adrM || 'adresse non fournie'}\n`
+          + `Rappeler à la main : cette personne attend une maquette.\n${detail.slice(0, 200)}`);
+      }
+    } catch (e) {
+      await alerter('maquette-reseau',
+        `⚠️ UNE DEMANDE DE MAQUETTE EST PERDUE (réseau).\n\n${nomM} — ${telM}\n${adrM || ''}\n${e?.message || ''}`);
+    }
+    return json({ ok: true, maquette: true, leadEnregistre: enregistre });
+  }
+
+  // --- 1. La mesure ---------------------------------------------------------
+  // Chemin carte : on recalcule depuis les points, on ne fait confiance à rien.
+  // Chemin manuel : la valeur vient du visiteur, bornée, et étiquetée comme telle.
+  const manuel = body.measure_method === 'manual';
   const lignes = Array.isArray(body.lines) ? body.lines : [];
-  const nbLignes = lignesMesurables(lignes);
-  const linearFt = piLineaires(lignes);
+  const nbLignes = manuel ? 0 : lignesMesurables(lignes);
+
+  let linearFt;
+  let manuelHorsBornes = false;
+  if (manuel) {
+    const saisi = Number(body.linearFt);
+    if (Number.isFinite(saisi) && saisi >= MANUEL_MIN && saisi <= MANUEL_MAX) {
+      linearFt = Math.round(saisi);
+    } else {
+      // Hors bornes ou illisible : pas de prix. Le CRM répondra
+      // « évaluation sur place » puisqu'il ne reçoit aucune mesure valable.
+      linearFt = 0;
+      manuelHorsBornes = true;
+    }
+  } else {
+    linearFt = piLineaires(lignes);
+  }
 
   const contact = body.contact || {};
   const nom = propre(contact.nom || contact.name, 120);
@@ -111,7 +200,10 @@ export async function POST(request) {
   let leadEnregistre = false;
   if (nom && (telephone || courriel)) {
     const notes = [
-      `Calculatrice toiture : ${linearFt} pi linéaires sur ${nbLignes} section(s).`,
+      manuel
+        ? `Calculatrice toiture — PIEDS SAISIS À LA MAIN par le client : ${linearFt || '—'} pi linéaires`
+          + `${manuelHorsBornes ? ' (valeur hors bornes, aucun prix affiché)' : ''}. À vérifier sur place.`
+        : `Calculatrice toiture : ${linearFt} pi linéaires sur ${nbLignes} section(s).`,
       devis.quotable ? `Prix affiché au client : ${devis.total} $.` : `Aucun prix affiché (évaluation).`,
       // La même phrase que le client a lue à l'écran — pour que Yahir
       // ouvre le lead et voie exactement ce qui lui a été montré.
@@ -132,7 +224,7 @@ export async function POST(request) {
           notes, language: 'fr',
           // Colonnes déjà présentes sur `leads` et acceptées par /api/leads.
           linear_ft: linearFt,
-          measure_method: 'map',
+          measure_method: manuel ? 'manual' : 'map',
           line_count: nbLignes,
         }),
       });
@@ -167,6 +259,7 @@ export async function POST(request) {
     needsOnSiteAssessment: devis.needsOnSiteAssessment === true,
     surPlace,
     reason: devis.reason || null,
+    measureMethod: manuel ? 'manual' : 'map',
     leadEnregistre,
   });
 }

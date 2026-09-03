@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { navy, ivory, gold, charcoal, offWhite } from "@/components/data";
+import { evenement } from "@/lib/evenements";
+import { CAS_DEMO, PANNEAUX, cheminPanneau } from "@/components/demos";
 
 // =============================================================================
 // Calculatrice de toiture — le visiteur trace, le serveur chiffre
@@ -20,6 +22,20 @@ import { navy, ivory, gold, charcoal, offWhite } from "@/components/data";
 
 const CLE_MAPS = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
 const ETAPES = ["adresse", "mesure", "extras", "contact", "prix"];
+
+// Chemin manuel — le filet de sécurité. Il existe pour deux raisons : la
+// carte peut ne pas charger (quota, réseau, navigateur), et certains
+// visiteurs connaissent déjà leur métrage et n'ont aucune envie de tracer.
+// Les bornes 40–1000 pi sont les mêmes que côté serveur : au-delà, pas de
+// prix automatique.
+const MANUEL_MIN = 40;
+const MANUEL_MAX = 1000;
+const DELAI_CARTE_MS = 4000;
+const PRESETS = [
+  { titre: "Bungalow", plage: "120–160 pi", valeur: 140 },
+  { titre: "Cottage", plage: "160–220 pi", valeur: 190 },
+  { titre: "Grand cottage", plage: "220–300 pi", valeur: 260 },
+];
 
 // --- Chargement de Google Maps -----------------------------------------------
 // DEUX ÉCHECS DISTINCTS, et il faut les deux :
@@ -94,6 +110,10 @@ export default function CalculatriceToiture() {
   const [resultat, setResultat] = useState(null);
   const [erreur, setErreur] = useState(null);
   const [carteKO, setCarteKO] = useState(!CLE_MAPS);
+  const [manuel, setManuel] = useState(false);
+  const [piedsManuels, setPiedsManuels] = useState("");
+  const [carteLente, setCarteLente] = useState(false);
+  const [maquette, setMaquette] = useState({ ouvert: false, nom: "", telephone: "", adresse: "", consent: false, statut: "idle" });
 
   const divCarte = useRef(null);
   const carte = useRef(null);
@@ -105,9 +125,25 @@ export default function CalculatriceToiture() {
   // carte vide et des boutons inertes.
   useEffect(() => surRefus(() => setCarteKO(true)), []);
 
+  // Pas de clé, script refusé, refus tardif : dans tous les cas le visiteur
+  // garde un chemin qui aboutit à un prix. Avant, il tombait sur un
+  // formulaire « on viendra mesurer » — un rendez-vous au lieu d'un chiffre.
+  useEffect(() => { if (carteKO) setManuel(true); }, [carteKO]);
+
+  // Si l'étape « mesure » reste sans carte au bout de 4 s, on ne laisse pas
+  // le visiteur devant un rectangle noir : on passe au chemin manuel et on
+  // le dit. Mieux vaut un prix saisi qu'un écran mort.
+  useEffect(() => {
+    if (etape !== "mesure" || manuel || carteKO) return;
+    const t = setTimeout(() => {
+      if (!carte.current) { setCarteLente(true); setManuel(true); evenement("calc_manual_used", { raison: "carte_lente" }); }
+    }, DELAI_CARTE_MS);
+    return () => clearTimeout(t);
+  }, [etape, manuel, carteKO]);
+
   // --- Carte ---------------------------------------------------------------
   useEffect(() => {
-    if (etape !== "mesure" || carteKO || carte.current) return;
+    if (etape !== "mesure" || carteKO || manuel || carte.current) return;
     let annule = false;
     chargerMaps()
       .then((maps) => {
@@ -127,7 +163,7 @@ export default function CalculatriceToiture() {
       })
       .catch(() => { if (!annule) setCarteKO(true); });
     return () => { annule = true; };
-  }, [etape, carteKO, adresse]);
+  }, [etape, carteKO, manuel, adresse]);
 
   // Redessine les polylignes et met à jour l'aperçu de longueur.
   const redessiner = useCallback((nouvelles) => {
@@ -177,6 +213,7 @@ export default function CalculatriceToiture() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lines: lignes, address: adresse, extras, contact, website: pot,
+          ...(manuel ? { measure_method: "manual", linearFt: Number(piedsManuels) } : {}),
         }),
       });
       const d = await r.json();
@@ -187,6 +224,11 @@ export default function CalculatriceToiture() {
         setEnvoi(false); return;
       }
       setResultat(d); setEtape("prix");
+      evenement("calc_price_shown", {
+        price: d.quotable ? d.total : null,
+        linear_ft: d.linearFt ?? null,
+        measure_method: d.measureMethod || (manuel ? "manual" : "map"),
+      });
     } catch {
       setErreur("Connexion perdue. Réessayez, ou appelez-nous.");
     }
@@ -196,31 +238,9 @@ export default function CalculatriceToiture() {
   const champ = { width: "100%", padding: "14px 16px", borderRadius: 12, border: "1px solid #d9d2c2", fontSize: 16 };
   const carteBlanche = { background: "#fff", borderRadius: 18, padding: "clamp(20px,3vw,30px)" };
 
-  // --- Repli sans carte -----------------------------------------------------
-  if (carteKO && etape !== "prix") {
-    return (
-      <div style={carteBlanche}>
-        <h3 style={{ marginBottom: 10 }}>Estimation sur place</h3>
-        <p style={{ color: "#444", marginBottom: 20 }}>
-          La carte satellite n'est pas disponible en ce moment. Laissez-nous votre adresse :
-          on mesure votre toiture et on vous rappelle avec votre prix — c'est gratuit et sans obligation.
-        </p>
-        <div style={{ display: "grid", gap: 12 }}>
-          <input style={champ} placeholder="Adresse civique + ville" value={adresse} onChange={(e) => setAdresse(e.target.value)} />
-          <input style={champ} placeholder="Votre nom" value={contact.nom} onChange={(e) => setContact({ ...contact, nom: e.target.value })} />
-          <input style={champ} placeholder="Téléphone" inputMode="tel" value={contact.telephone} onChange={(e) => setContact({ ...contact, telephone: e.target.value })} />
-          <input style={champ} placeholder="Courriel" inputMode="email" value={contact.courriel} onChange={(e) => setContact({ ...contact, courriel: e.target.value })} />
-          <input tabIndex={-1} autoComplete="off" aria-hidden="true" value={pot} onChange={(e) => setPot(e.target.value)}
-            style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }} />
-          <button style={btn()} disabled={envoi || !contact.nom || !contact.telephone} onClick={envoyer}>
-            {envoi ? "Envoi…" : "Demander mon estimation"}
-          </button>
-          {erreur && <p style={{ color: "#9E2A2A", fontSize: 14, margin: 0 }}>{erreur}</p>}
-        </div>
-      </div>
-    );
-  }
-
+  // Le repli « on viendra mesurer » a été retiré (2026-09-03) : quand la
+  // carte ne charge pas, le visiteur passe par le chemin manuel et repart
+  // avec un prix, pas avec une promesse de rappel.
   return (
     <div style={carteBlanche}>
       {/* fil des étapes */}
@@ -242,11 +262,69 @@ export default function CalculatriceToiture() {
           <input ref={champAdresse} style={champ} placeholder="123 rue Principale, Blainville"
             value={adresse} onChange={(e) => setAdresse(e.target.value)} />
           <button style={{ ...btn(), marginTop: 16 }} disabled={adresse.trim().length < 6}
-            onClick={() => setEtape("mesure")}>Voir ma toiture →</button>
+            onClick={() => { evenement("calc_address_entered"); setEtape("mesure"); }}>Voir ma toiture →</button>
+          {/* Le chemin manuel est offert d'emblée, pas seulement en cas de
+              panne : un client qui connaît son métrage ne veut pas tracer. */}
+          <button type="button"
+            onClick={() => { setManuel(true); setEtape("mesure"); evenement("calc_manual_used", { raison: "choix_client" }); }}
+            style={{ display: "block", marginTop: 14, background: "none", border: "none", padding: 0,
+              color: charcoal, textDecoration: "underline", cursor: "pointer", fontSize: 15 }}>
+            Je préfère entrer mes pieds linéaires
+          </button>
         </>
       )}
 
-      {etape === "mesure" && (
+      {etape === "mesure" && manuel && (
+        <>
+          <h3 style={{ marginBottom: 8 }}>Vos pieds linéaires</h3>
+          {(carteLente || carteKO) && (
+            <p style={{ background: "#FFF6E5", border: "1px solid #EBD9AE", borderRadius: 12,
+              padding: "12px 14px", color: "#6B4E00", fontSize: 15, marginBottom: 14 }}>
+              L'image satellite n'est pas disponible pour le moment — entrez vos pieds linéaires.
+            </p>
+          )}
+          <p style={{ color: "#444", marginBottom: 16, fontSize: 15 }}>
+            La longueur de toiture et de gouttières à illuminer, en pieds. Si vous ne l'avez pas,
+            partez du gabarit le plus proche de votre maison — on valide la mesure sur place.
+          </p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(150px,1fr))", gap: 10, marginBottom: 16 }}>
+            {PRESETS.map((p) => {
+              const actif = Number(piedsManuels) === p.valeur;
+              return (
+                <button key={p.titre} type="button" onClick={() => setPiedsManuels(String(p.valeur))}
+                  style={{ textAlign: "left", padding: "14px 16px", borderRadius: 12, cursor: "pointer",
+                    border: actif ? `2px solid ${charcoal}` : "1px solid #d9d2c2",
+                    background: actif ? offWhite : "#fff" }}>
+                  <div style={{ fontWeight: 700, fontSize: 15 }}>{p.titre}</div>
+                  <div style={{ color: "#666", fontSize: 14 }}>{p.plage}</div>
+                </button>
+              );
+            })}
+          </div>
+          <label htmlFor="pieds-manuels" style={{ display: "block", fontSize: 14, fontWeight: 600, marginBottom: 6 }}>
+            Pieds linéaires
+          </label>
+          <input id="pieds-manuels" style={champ} type="number" inputMode="numeric"
+            min={MANUEL_MIN} max={MANUEL_MAX} placeholder="ex. 165"
+            value={piedsManuels} onChange={(e) => setPiedsManuels(e.target.value)} />
+          <p style={{ color: "#666", fontSize: 13, marginTop: 8, marginBottom: 0 }}>
+            Entre {MANUEL_MIN} et {MANUEL_MAX} pi. Hors de cette plage, on passe par une visite.
+          </p>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
+            <button style={btn()}
+              disabled={!(Number(piedsManuels) >= MANUEL_MIN && Number(piedsManuels) <= MANUEL_MAX)}
+              onClick={() => setEtape("extras")}>Continuer →</button>
+            {!carteLente && !carteKO && CLE_MAPS && (
+              <button type="button" onClick={() => { setManuel(false); setPiedsManuels(""); }}
+                style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }}>
+                Tracer sur la carte
+              </button>
+            )}
+          </div>
+        </>
+      )}
+
+      {etape === "mesure" && !manuel && (
         <>
           <h3 style={{ marginBottom: 8 }}>Tracez votre ligne de toit</h3>
           <p style={{ color: "#444", marginBottom: 14, fontSize: 15 }}>
@@ -273,7 +351,8 @@ export default function CalculatriceToiture() {
             <button style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={annulerCoin}>Annuler</button>
             <button style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={nouvelleSection}>Nouvelle section</button>
           </div>
-          <button style={{ ...btn(), marginTop: 16 }} disabled={sections < 1} onClick={() => setEtape("extras")}>
+          <button style={{ ...btn(), marginTop: 16 }} disabled={sections < 1}
+            onClick={() => { evenement("calc_roof_traced", { sections, pi_apercu: piApercu }); setEtape("extras"); }}>
             Continuer →
           </button>
         </>
@@ -329,10 +408,16 @@ export default function CalculatriceToiture() {
                 {resultat.linearFt} pi linéaires de toiture
               </div>
               <div style={{
-                fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(48px,12vw,72px)",
-                color: charcoal, lineHeight: 1, marginBottom: 6,
+                fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(40px,10vw,64px)",
+                color: charcoal, lineHeight: 1, marginBottom: 8,
               }}>
-                {Number(resultat.total).toLocaleString("fr-CA")} $
+                Votre prix : {Number(resultat.total).toLocaleString("fr-CA")} $ tout inclus
+              </div>
+              <div style={{ color: "#444", fontSize: 15, marginBottom: 4 }}>
+                Colonnes, arbres et arbustes en sus, évalués sur place.
+              </div>
+              <div style={{ color: "#444", fontSize: 15, marginBottom: 16 }}>
+                Prix ferme confirmé lors de la visite.
               </div>
               {/* Phrase composée par le serveur. On l'affiche, on ne la fabrique pas. */}
               {resultat.note && (
@@ -359,11 +444,166 @@ export default function CalculatriceToiture() {
               </p>
             </>
           )}
+          <BlocMaquette
+            resultat={resultat}
+            adresse={adresse}
+            manuel={manuel}
+            maquette={maquette}
+            setMaquette={setMaquette}
+          />
+
           <p style={{ color: resultat.leadEnregistre ? "#2E6B4F" : "#9E2A2A", fontSize: 14, margin: 0 }}>
             {resultat.leadEnregistre
               ? "✓ On vous rappelle pour confirmer votre date."
               : "Appelez-nous pour confirmer — on n'a pas pu enregistrer votre demande."}
           </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// =============================================================================
+// « Avant d'installer, vous voyez le résultat » + demande de maquette
+// =============================================================================
+// Trois vrais chantiers en trois panneaux (maison → maquette → résultat), puis
+// le seul geste qui reste au visiteur convaincu : demander SA maquette.
+//
+// Les images sont fournies par Yahir. Tant qu'un dossier de cas est vide, le
+// composant montre l'explication sans les vignettes plutôt qu'un cadre cassé
+// ou une image d'illustration — ce site a déjà été pris à légender des rendus
+// générés comme de vraies réalisations.
+function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
+  const [casDispo, setCasDispo] = useState([]);
+
+  // On teste les images côté navigateur : pas de manifeste à maintenir, et un
+  // dossier rempli plus tard apparaît tout seul au prochain chargement.
+  useEffect(() => {
+    let vivant = true;
+    Promise.all(
+      CAS_DEMO.map((c) =>
+        Promise.all(
+          PANNEAUX.map((p) => new Promise((res) => {
+            const img = new Image();
+            img.onload = () => res(true);
+            img.onerror = () => res(false);
+            img.src = cheminPanneau(c.slug, p.cle);
+          }))
+        ).then((r) => (r.every(Boolean) ? c : null))
+      )
+    ).then((r) => { if (vivant) setCasDispo(r.filter(Boolean)); });
+    return () => { vivant = false; };
+  }, []);
+
+  const majM = (k, v) => setMaquette((p) => ({ ...p, [k]: v }));
+
+  async function demanderMaquette() {
+    majM("statut", "envoi");
+    try {
+      const r = await fetch("/api/calc-noel", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          intent: "maquette",
+          contact: { nom: maquette.nom, telephone: maquette.telephone },
+          address: maquette.adresse,
+          linearFt: resultat.linearFt,
+          estimatedPrice: resultat.quotable ? resultat.total : null,
+          measure_method: manuel ? "manual" : "map",
+          photoParTexto: true,
+        }),
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok || d.ok === false) { majM("statut", "erreur"); return; }
+      majM("statut", "envoye");
+      evenement("maquette_requested", {
+        linear_ft: resultat.linearFt ?? null,
+        price: resultat.quotable ? resultat.total : null,
+      });
+    } catch { majM("statut", "erreur"); }
+  }
+
+  const champM = { width: "100%", padding: "13px 15px", borderRadius: 12, border: "1px solid #d9d2c2", fontSize: 16 };
+
+  return (
+    <div style={{ textAlign: "left", marginTop: 26, paddingTop: 26, borderTop: "1px solid #e6e0d0" }}>
+      <h3 style={{ marginBottom: 8 }}>Avant d'installer, vous voyez le résultat</h3>
+
+      {casDispo.length > 0 && (
+        <div style={{ display: "grid", gap: 18, marginBottom: 18 }}>
+          {casDispo.map((c) => (
+            <figure key={c.slug} style={{ margin: 0 }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                {PANNEAUX.map((p) => (
+                  <div key={p.cle}>
+                    <img src={cheminPanneau(c.slug, p.cle)} alt={`${p.titre} — ${c.ville}`} loading="lazy"
+                      style={{ width: "100%", aspectRatio: "4/3", objectFit: "cover", borderRadius: 10, display: "block" }} />
+                    <div style={{ fontSize: 12, color: "#666", marginTop: 5 }}>{p.legende}</div>
+                  </div>
+                ))}
+              </div>
+              <figcaption style={{ fontSize: 13, color: "#444", marginTop: 8 }}>
+                {c.ville} · {c.pieds} pi linéaires
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )}
+
+      <p style={{ color: "#444", fontSize: 15, lineHeight: 1.7, marginBottom: 18 }}>
+        Après votre soumission, vous recevez une maquette de votre maison avec le design proposé.
+        Vous ajustez — couleurs, sections, arbres — et on installe exactement ce que vous avez approuvé.
+      </p>
+
+      {maquette.statut === "envoye" ? (
+        <p style={{ background: "#EAF5EF", border: "1px solid #BFE0CE", borderRadius: 12,
+          padding: "14px 16px", color: "#2E6B4F", fontSize: 15, margin: 0 }}>
+          ✓ Demande reçue. On prépare votre maquette et on vous rappelle pour valider le design.
+        </p>
+      ) : !maquette.ouvert ? (
+        <button style={btn()} onClick={() => setMaquette((p) => ({
+          ...p, ouvert: true, adresse: p.adresse || adresse,
+        }))}>
+          Recevoir ma maquette gratuite
+        </button>
+      ) : (
+        <div style={{ display: "grid", gap: 12, background: offWhite, borderRadius: 14, padding: 18 }}>
+          <div>
+            <label htmlFor="mq-nom" style={{ display: "block", fontSize: 14, fontWeight: 600, marginBottom: 5 }}>Nom *</label>
+            <input id="mq-nom" style={champM} value={maquette.nom} onChange={(e) => majM("nom", e.target.value)} />
+          </div>
+          <div>
+            <label htmlFor="mq-tel" style={{ display: "block", fontSize: 14, fontWeight: 600, marginBottom: 5 }}>Téléphone *</label>
+            <input id="mq-tel" style={champM} inputMode="tel" value={maquette.telephone} onChange={(e) => majM("telephone", e.target.value)} />
+          </div>
+          <div>
+            <label htmlFor="mq-adr" style={{ display: "block", fontSize: 14, fontWeight: 600, marginBottom: 5 }}>Adresse</label>
+            <input id="mq-adr" style={champM} value={maquette.adresse} onChange={(e) => majM("adresse", e.target.value)} />
+          </div>
+          <p style={{ fontSize: 14, color: "#444", margin: 0 }}>
+            Une photo de votre maison aide au design — envoyez-la par texto au{" "}
+            <a href="tel:4388126635" style={{ color: charcoal, fontWeight: 700 }}>(438) 812-6635</a>.
+          </p>
+          <label htmlFor="mq-consent" style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#444", lineHeight: 1.55, cursor: "pointer" }}>
+            <input id="mq-consent" type="checkbox" checked={maquette.consent}
+              onChange={(e) => majM("consent", e.target.checked)}
+              style={{ width: 18, height: 18, marginTop: 2, flexShrink: 0, accentColor: gold }} />
+            <span>
+              J'accepte de recevoir des messages texte et des courriels de Solution Lumière de Noël
+              au sujet de ma demande. Mes informations sont traitées selon la{" "}
+              <a href="/confidentialite" style={{ color: charcoal, fontWeight: 600 }}>politique de confidentialité</a>.
+            </span>
+          </label>
+          <button style={btn()}
+            disabled={maquette.statut === "envoi" || !maquette.nom || !maquette.telephone || !maquette.consent}
+            onClick={demanderMaquette}>
+            {maquette.statut === "envoi" ? "Envoi…" : "Recevoir ma maquette gratuite"}
+          </button>
+          {maquette.statut === "erreur" && (
+            <p style={{ color: "#9E2A2A", fontSize: 14, margin: 0 }}>
+              On n'a pas pu enregistrer votre demande. Appelez-nous au (438) 812-6635.
+            </p>
+          )}
+          <p style={{ fontSize: 13, color: "#666", margin: 0 }}>Soumission gratuite — réponse en moins de 24 h</p>
         </div>
       )}
     </div>
