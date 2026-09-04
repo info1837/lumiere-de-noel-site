@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { navy, ivory, gold, charcoal, offWhite } from "@/components/data";
 import { evenement } from "@/lib/evenements";
 import { CAS_DEMO, PANNEAUX, cheminPanneau } from "@/components/demos";
+import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
 
 // =============================================================================
 // Calculatrice de toiture — le visiteur trace, le serveur chiffre
@@ -583,16 +584,8 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
             Une photo de votre maison aide au design — envoyez-la par texto au{" "}
             <a href="tel:4388126635" style={{ color: charcoal, fontWeight: 700 }}>(438) 812-6635</a>.
           </p>
-          <label htmlFor="mq-consent" style={{ display: "flex", gap: 10, alignItems: "flex-start", fontSize: 13, color: "#444", lineHeight: 1.55, cursor: "pointer" }}>
-            <input id="mq-consent" type="checkbox" checked={maquette.consent}
-              onChange={(e) => majM("consent", e.target.checked)}
-              style={{ width: 18, height: 18, marginTop: 2, flexShrink: 0, accentColor: gold }} />
-            <span>
-              J'accepte de recevoir des messages texte et des courriels de Solution Lumière de Noël
-              au sujet de ma demande. Mes informations sont traitées selon la{" "}
-              <a href="/confidentialite" style={{ color: charcoal, fontWeight: 600 }}>politique de confidentialité</a>.
-            </span>
-          </label>
+          <CaseConsentement id="mq-consent" checked={maquette.consent}
+            onChange={(v) => majM("consent", v)} />
           <button style={btn()}
             disabled={maquette.statut === "envoi" || !maquette.nom || !maquette.telephone || !maquette.consent}
             onClick={demanderMaquette}>
@@ -603,7 +596,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
               On n'a pas pu enregistrer votre demande. Appelez-nous au (438) 812-6635.
             </p>
           )}
-          <p style={{ fontSize: 13, color: "#666", margin: 0 }}>Soumission gratuite — réponse en moins de 24 h</p>
+          <NoteSoumission />
         </div>
       )}
     </div>
