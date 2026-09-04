@@ -24,3 +24,12 @@ Mesures au même moment : entête 81 px (desktop) / 70 px (mobile), H1 à
 
 Entête 81 px à 1440, 1920 et 2560 ; H1 à 181 px (317 à 2560, hero centré) —
 aucun chevauchement, le formulaire tient dans le hero à toutes ces largeurs.
+
+## hero-redesign — hero + cartes de confiance
+
+- `hero-1440x900.png` · `hero-1920x1080.png` · `hero-2560x1440.png` · `hero-1728x1117.png` · `hero-390x844.png`
+- `cartes-confiance-1440.png` — les quatre cartes, chevauchant le bas du hero
+
+Assertions Playwright aux quatre largeurs : eyebrow et carte de réservation
+à 132 px, seuil (entête 85 + 24) = 109 px ✓, carte haute de 544 px, entière
+au-dessus de la ligne de flottaison ✓.

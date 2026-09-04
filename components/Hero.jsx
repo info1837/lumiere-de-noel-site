@@ -44,32 +44,32 @@ export default function Hero() {
   };
 
   return (
-    <section style={{
-      position: "relative", padding: 0, minHeight: "92vh",
-      display: "flex", alignItems: "center", background: navy,
-    }}>
+    // Refonte hero (motif ZS Exteriors) — le texte tient sur du navy
+    // franc à gauche, la carte de réservation reste au-dessus de la ligne
+    // de flottaison, et rien n'est centré verticalement : le contenu part
+    // sous l'entête et descend. Le centrage était ce qui faisait glisser
+    // l'eyebrow sous l'entête dès que la fenêtre raccourcissait.
+    <section className="hero-section" style={{ position: "relative", background: navy }}>
       <img
         src={PHOTOS["arbre-enrubanne"].src}
         alt={PHOTOS["arbre-enrubanne"].alt}
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
       />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(110deg, rgba(5,10,20,0.88) 0%, rgba(5,10,20,0.62) 55%, rgba(5,10,20,0.30) 100%)" }} />
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(11,27,43,0.88) 0%, rgba(11,27,43,0.72) 42%, rgba(11,27,43,0.25) 100%)" }} />
 
-      <div className="container hero-grid" style={{
-        position: "relative", padding: "120px 24px 80px", width: "100%",
-      }}>
+      <div className="hero-container hero-grid" style={{ position: "relative", width: "100%" }}>
         <div>
-          <div style={{
-            fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
-            textTransform: "uppercase", color: "#E9DCC0", marginBottom: 18,
+          <div className="hero-eyebrow" style={{
+            fontSize: 12, fontWeight: 700, letterSpacing: "0.2em",
+            textTransform: "uppercase", color: "#E9DCC0", marginBottom: 20,
           }}>
             Installation clé en main — pose, entretien et retrait inclus
           </div>
-          <h1 style={{ color: ivory }}>
+          <h1 className="hero-h1" style={{ color: ivory }}>
             Des Fêtes éclatantes,<br />sans monter dans l'échelle
           </h1>
           {/* DRAFT COPY — reconstruite dans la voix de marque */}
-          <p style={{ color: "rgba(243,233,210,0.88)", fontSize: 20, margin: "22px 0 30px", maxWidth: 520 }}>
+          <p style={{ color: "rgba(243,233,210,0.85)", fontSize: 18, lineHeight: 1.5, margin: "20px 0 28px", maxWidth: "52ch" }}>
             Conception, installation, entretien et retrait de vos lumières de Noël et de votre
             éclairage architectural. On s'occupe de tout — résidentiel et commercial.
           </p>
@@ -80,11 +80,19 @@ export default function Hero() {
           {/* Ligne datée — donne le QUAND dans les 3 premières secondes */}
           <p style={{
             color: "rgba(243,233,210,0.78)", fontSize: 14, lineHeight: 1.55,
-            margin: "0 0 26px", maxWidth: 560, fontWeight: 500,
+            margin: "0 0 18px", maxWidth: 560, fontWeight: 500,
           }}>
             Installations octobre–novembre 2026 · retrait et entreposage en janvier
             · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>les dates de novembre partent en premier</strong>.
           </p>
+          {/* Le territoire, en une ligne : trois mots qui répondent au
+              « est-ce que vous venez chez moi ? » avant le formulaire. */}
+          <div style={{
+            fontSize: 13, letterSpacing: "0.1em", textTransform: "uppercase",
+            color: "#E9DCC0", fontWeight: 600,
+          }}>
+            Rive-Nord · Montréal · Rive-Sud
+          </div>
           {/* Les quatre puces qui vivaient ici disaient exactement ce que dit
               maintenant la barre des objections, juste en dessous : « tout
               inclus », l'entreposage, la soumission gratuite. Les garder, c'est
@@ -96,35 +104,35 @@ export default function Hero() {
         </div>
 
         {/* Carte de réservation rapide */}
-        <div style={{
-          background: "#fff", borderRadius: 18, padding: "clamp(22px, 3vw, 32px)",
-          boxShadow: "0 24px 60px rgba(0,0,0,0.35)",
+        <div className="hero-card" style={{
+          background: "rgba(255,255,255,0.96)", borderRadius: 16, padding: 24,
+          boxShadow: "0 24px 64px rgba(0,0,0,0.35)", alignSelf: "start",
         }}>
           {(
             <form onSubmit={submit} noValidate>
-              <h3 style={{ color: charcoal, marginBottom: 4 }}>Réservez votre date</h3>
-              <p style={{ fontSize: 14, color: "#666", marginBottom: 18 }}>
+              <h3 style={{ color: charcoal, marginBottom: 2, fontSize: 24 }}>Réservez votre date</h3>
+              <p style={{ fontSize: 13, color: "#666", marginBottom: 14 }}>
                 Réponse rapide — soumission gratuite et sans obligation.
               </p>
-              <div style={{ display: "grid", gap: 12 }}>
-                <div>
+              <div className="hero-form-grid">
+                <div className="hero-field">
                   <label htmlFor="h-nom">Nom *</label>
                   <input id="h-nom" type="text" autoComplete="name" value={data.nom} onChange={set("nom")} placeholder="Votre nom" required />
                 </div>
-                <div>
+                <div className="hero-field">
                   <label htmlFor="h-tel">Téléphone *</label>
                   <input id="h-tel" type="tel" autoComplete="tel" value={data.telephone} onChange={set("telephone")} placeholder="(514) 000-0000" required />
                 </div>
                 {/* SEO P0 §5.3 — le courriel quitte le hero (il vit sur
                     /soumission) et la ville devient un choix : une ville
                     tapée à la main arrive au CRM en dix orthographes. */}
-                <div>
+                <div className="hero-field">
                   <label htmlFor="h-ville">Ville *</label>
                   <Select id="h-ville" value={data.ville}
                     onChange={(v) => setData((p) => ({ ...p, ville: v }))}
                     options={VILLES_DESSERVIES} placeholder="Choisir…" />
                 </div>
-                <div>
+                <div className="hero-field">
                   <label htmlFor="h-service">Service</label>
                   <Select
                     id="h-service"
@@ -134,8 +142,10 @@ export default function Hero() {
                     placeholder="Sélectionnez…"
                   />
                 </div>
-                <ChampAttribution id="h-attribution" value={data.attribution}
-                  onChange={(v) => setData((p) => ({ ...p, attribution: v }))} />
+                <div className="hero-field-full">
+                  <ChampAttribution id="h-attribution" value={data.attribution}
+                    onChange={(v) => setData((p) => ({ ...p, attribution: v }))} />
+                </div>
               </div>
               <CaseConsentement id="h-consent" checked={data.consent}
                 onChange={(v) => setData((p) => ({ ...p, consent: v }))}
@@ -145,8 +155,8 @@ export default function Hero() {
                 <label htmlFor={`h-${HONEYPOT_FIELD}`}>Ne pas remplir</label>
                 <input id={`h-${HONEYPOT_FIELD}`} type="text" tabIndex={-1} autoComplete="off" value={data[HONEYPOT_FIELD]} onChange={set(HONEYPOT_FIELD)} />
               </div>
-              <div style={{ marginTop: 18 }}>
-                <CTAButton type="submit" style={{ width: "100%" }}>
+              <div style={{ marginTop: 14 }}>
+                <CTAButton type="submit" style={{ width: "100%", height: 48 }}>
                   {status === "sending" ? "Envoi…" : "Réserver ma date"}
                 </CTAButton>
                 <NoteSoumission />

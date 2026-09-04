@@ -87,7 +87,9 @@ export function NavBar() {
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
+    // 24 px : l'entête devient opaque dès le premier geste de défilement,
+    // avant que le texte du hero ne passe dessous.
+    const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
@@ -108,14 +110,18 @@ export function NavBar() {
       ref={headerRef}
       style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: solid ? "rgba(11,27,43,0.97)" : "transparent",
+        background: solid ? "rgba(11,27,43,0.90)" : "transparent",
+        backdropFilter: solid ? "blur(12px)" : "none",
+        WebkitBackdropFilter: solid ? "blur(12px)" : "none",
         borderBottom: `1px solid ${solid ? "rgba(233,220,192,0.16)" : "transparent"}`,
-        transition: "background 0.25s, border-color 0.25s",
+        transition: "background 0.25s, border-color 0.25s, backdrop-filter 0.25s",
       }}
     >
-      <div className="container" style={{
+      {/* 16 px + logo 52 px + 16 px = 84 px, la hauteur sur laquelle le
+          padding du hero est calculé (globals.css .hero-section). */}
+      <div className="container header-row" style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "14px 24px", gap: 16,
+        padding: "16px 24px", gap: 16,
       }}>
         <Link href="/" aria-label={`${company.name} — accueil`} className="site-logo-link">
           <img src="/images/logo-horizontal-transparent-fonce.svg" alt={company.name}
