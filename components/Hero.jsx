@@ -3,27 +3,34 @@ import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
+import { ChampAttribution, CaseConsentement, NoteSoumission, VILLES_DESSERVIES } from "@/components/ConsentementAttribution";
 import { PHOTOS } from "@/components/photos";
 
-const empty = { nom: "", telephone: "", courriel: "", ville: "", service: "", [HONEYPOT_FIELD]: "" };
+const empty = { nom: "", telephone: "", ville: "", service: "", attribution: "", consent: false, [HONEYPOT_FIELD]: "" };
 
 // Hero d'accueil : image plein écran + voile + carte de réservation rapide (5 champs).
 export default function Hero() {
   const [data, setData] = useState(empty);
   const [status, setStatus] = useState("idle");
+  const [erreurConsent, setErreurConsent] = useState(false);
 
   const set = (k) => (e) => setData((p) => ({ ...p, [k]: e.target.value }));
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!data.nom || !data.telephone) {
-      alert("Veuillez indiquer au moins votre nom et votre téléphone.");
+    if (!data.nom || !data.telephone || !data.ville || !data.service) {
+      alert("Veuillez remplir les champs obligatoires : nom, téléphone, ville et service.");
       return;
     }
+    if (!data.consent) { setErreurConsent(true); return; }
+    setErreurConsent(false);
     setStatus("sending");
     const ok = await sendLead({
       subject: "Nouveau lead — Réservation rapide (hero)",
-      source: "Formulaire hero (réservation rapide)",
+      // L'attribution voyage dans la source : le CRM la lit sans schéma neuf.
+      source: `Formulaire hero (réservation rapide)${data.attribution ? ` · ${data.attribution}` : ""}`,
+      // Trace du consentement (Loi 25 / LCAP), horodatée.
+      consentement: `accordé le ${new Date().toISOString().slice(0, 10)} via le formulaire du hero`,
       ...data,
     });
     if (ok) {
@@ -108,13 +115,14 @@ export default function Hero() {
                   <label htmlFor="h-tel">Téléphone *</label>
                   <input id="h-tel" type="tel" autoComplete="tel" value={data.telephone} onChange={set("telephone")} placeholder="(514) 000-0000" required />
                 </div>
+                {/* SEO P0 §5.3 — le courriel quitte le hero (il vit sur
+                    /soumission) et la ville devient un choix : une ville
+                    tapée à la main arrive au CRM en dix orthographes. */}
                 <div>
-                  <label htmlFor="h-mail">Courriel</label>
-                  <input id="h-mail" type="email" autoComplete="email" value={data.courriel} onChange={set("courriel")} placeholder="vous@exemple.com" />
-                </div>
-                <div>
-                  <label htmlFor="h-ville">Ville</label>
-                  <input id="h-ville" type="text" value={data.ville} onChange={set("ville")} placeholder="Votre ville" />
+                  <label htmlFor="h-ville">Ville *</label>
+                  <Select id="h-ville" value={data.ville}
+                    onChange={(v) => setData((p) => ({ ...p, ville: v }))}
+                    options={VILLES_DESSERVIES} placeholder="Choisir…" />
                 </div>
                 <div>
                   <label htmlFor="h-service">Service</label>
@@ -126,7 +134,12 @@ export default function Hero() {
                     placeholder="Sélectionnez…"
                   />
                 </div>
+                <ChampAttribution id="h-attribution" value={data.attribution}
+                  onChange={(v) => setData((p) => ({ ...p, attribution: v }))} />
               </div>
+              <CaseConsentement id="h-consent" checked={data.consent}
+                onChange={(v) => setData((p) => ({ ...p, consent: v }))}
+                erreur={erreurConsent ? "Votre consentement est requis pour vous répondre." : ""} />
               {/* Honeypot anti-bot — invisible et hors du flux de tabulation */}
               <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: 1, height: 1, overflow: "hidden" }}>
                 <label htmlFor={`h-${HONEYPOT_FIELD}`}>Ne pas remplir</label>
@@ -136,6 +149,7 @@ export default function Hero() {
                 <CTAButton type="submit" style={{ width: "100%" }}>
                   {status === "sending" ? "Envoi…" : "Réserver ma date"}
                 </CTAButton>
+                <NoteSoumission />
               </div>
               {status === "error" && (
                 <p style={{ color: "#b00020", fontSize: 13, marginTop: 10 }}>

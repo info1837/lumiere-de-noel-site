@@ -24,14 +24,18 @@ export function generateMetadata({ params }) {
   const s = findService(params.service);
   if (!c || !s) return {};
   const cityIn = inCity(c.name);
-  const title = `${s.title} ${cityIn}`;
+  // SEO P0 §5.1 — titre ≤ 60 c. suffixe compris : `seoTitle` est la forme
+  // courte du service (« Lumières de Noël résidentielles »), sans le tiret
+  // ni le mot « Lumières de Noël » répété deux fois dans la même phrase.
+  const court = s.seoTitle || s.title;
+  const title = `${court} ${cityIn}`;
   return {
-    title,
+    title: { absolute: title },
     description:
-      `${s.title} ${cityIn} — service clé en main avec matériel professionnel fourni. ${s.metaDescription.split(".")[0]}.`,
+      `${court} ${cityIn} : pose, entretien et retrait inclus, matériel DEL commercial fourni. Dès 1 000 $.`,
     alternates: { canonical: `/secteur/${c.slug}/${s.slug}` },
     openGraph: {
-      title: `${title} | Solution Lumière de Noël inc.`,
+      title: `${title} | Solution Lumière de Noël`,
       description: `Lumières de Noël ${cityIn} — pose, entretien et retrait inclus. Soumission gratuite.`,
       url: `/secteur/${c.slug}/${s.slug}`,
       images: [servicePhoto(s.slug, c.slug)?.src].filter(Boolean),

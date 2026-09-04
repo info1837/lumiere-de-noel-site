@@ -13,12 +13,15 @@ export function generateMetadata({ params }) {
   const p = findPost(params.slug);
   if (!p) return {};
   return {
-    title: p.title,
+    // SEO P0 — les 3 titres d'articles dépassaient 60 c. avec le suffixe.
+    // `seoTitle` (data.js) porte la forme courte; `title` reste le titre
+    // éditorial affiché en H1 et sur la carte.
+    title: { absolute: p.seoTitle || p.title },
     description: p.metaDescription || p.excerpt,
     alternates: { canonical: `/blog/${p.slug}` },
     openGraph: {
       type: "article",
-      title: `${p.title} | Solution Lumière de Noël inc.`,
+      title: `${p.seoTitle || p.title} | Solution Lumière de Noël`,
       description: p.metaDescription || p.excerpt,
       url: `/blog/${p.slug}`,
       images: [p.image],

@@ -3,27 +3,35 @@ import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { budgetOptions, serviceOptions, sendLead, charcoal, HONEYPOT_FIELD } from "@/components/data";
+import { ChampAttribution, CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
 
-const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", budget: "", message: "", [HONEYPOT_FIELD]: "" };
+const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", budget: "", message: "", attribution: "", consent: false, [HONEYPOT_FIELD]: "" };
 
 // Formulaire « Demande de soumission » — 7 champs, incl. groupe radio budget.
 // Envoi via sendLead() (Web3Forms) — même endpoint que le hero.
 export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote" }) {
   const [data, setData] = useState(empty);
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
+  const [erreurConsent, setErreurConsent] = useState(false);
 
   const set = (k) => (e) => setData((p) => ({ ...p, [k]: e.target.value }));
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!data.nom || !data.telephone || !data.courriel) {
-      alert("Veuillez remplir les champs obligatoires : nom, téléphone et courriel.");
+    // SEO P0 §3.7 — le courriel n'est plus obligatoire : il coupait les
+    // visiteurs qui n'ont que leur téléphone, et le rappel se fait par
+    // téléphone de toute façon.
+    if (!data.nom || !data.telephone) {
+      alert("Veuillez remplir les champs obligatoires : nom et téléphone.");
       return;
     }
+    if (!data.consent) { setErreurConsent(true); return; }
+    setErreurConsent(false);
     setStatus("sending");
     const ok = await sendLead({
       subject: "Nouveau lead — Demande de soumission",
-      source,
+      source: `${source}${data.attribution ? ` · ${data.attribution}` : ""}`,
+      consentement: `accordé le ${new Date().toISOString().slice(0, 10)} via ${source}`,
       nom: data.nom,
       telephone: data.telephone,
       courriel: data.courriel,
@@ -60,8 +68,8 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
 
       <div className="grid-2" style={{ gap: 16, alignItems: "start", marginTop: 16 }}>
         <div>
-          <label htmlFor="qf-mail">Courriel *</label>
-          <input id="qf-mail" type="email" autoComplete="email" value={data.courriel} onChange={set("courriel")} placeholder="vous@exemple.com" required />
+          <label htmlFor="qf-mail">Courriel</label>
+          <input id="qf-mail" type="email" autoComplete="email" value={data.courriel} onChange={set("courriel")} placeholder="vous@exemple.com" />
         </div>
         <div>
           <label htmlFor="qf-adr">Adresse / ville</label>
@@ -113,9 +121,17 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
       </div>
 
       <div style={{ marginTop: 22 }}>
-        <CTAButton type="submit" style={{ width: "100%" }}>
-          {status === "sending" ? "Envoi en cours…" : "Envoyer ma demande"}
-        </CTAButton>
+        <ChampAttribution id="qf-attribution" value={data.attribution}
+          onChange={(v) => setData((p) => ({ ...p, attribution: v }))} />
+        <CaseConsentement id="qf-consent" checked={data.consent}
+          onChange={(v) => setData((p) => ({ ...p, consent: v }))}
+          erreur={erreurConsent ? "Votre consentement est requis pour vous répondre." : ""} />
+        <div style={{ marginTop: 16 }}>
+          <CTAButton type="submit" style={{ width: "100%" }}>
+            {status === "sending" ? "Envoi en cours…" : "Réserver ma date"}
+          </CTAButton>
+          <NoteSoumission />
+        </div>
         {status === "error" && (
           <p style={{ color: "#b00020", fontSize: 14, marginTop: 12 }}>
             Une erreur est survenue. Réessayez ou appelez-nous directement.

@@ -7,7 +7,7 @@ import { PHOTOS } from "@/components/photos";
 export const metadata = {
   title: "Blog — conseils et tarifs",
   description:
-    "Conseils, tarifs et guides sur l'installation de lumières de Noël et d'éclairage architectural permanent au Québec. Articles pratiques pour résidences et commerces.",
+    "Conseils, tarifs et guides sur les lumières de Noël et l'éclairage architectural permanent. Articles pratiques pour résidences et commerces.",
   alternates: { canonical: "/blog" },
   openGraph: {
     title: "Blog | Solution Lumière de Noël inc.",

@@ -8,10 +8,10 @@ import { PHOTOS } from "@/components/photos";
 export const metadata = {
   title: "Soumission gratuite",
   description:
-    "Demandez votre soumission gratuite pour l'installation de lumières de Noël ou d'éclairage architectural permanent au Québec. Réponse en moins de 24 h, sans obligation.",
+    "Demandez votre soumission pour vos lumières de Noël ou votre éclairage architectural permanent. Réponse en moins de 24 h, sans obligation.",
   alternates: { canonical: "/soumission" },
   openGraph: {
-    title: "Soumission gratuite | Solution Lumière de Noël inc.",
+    title: { absolute: "Soumission gratuite | Solution Lumière de Noël" },
     description: "Estimation gratuite et sans obligation pour vos lumières de Noël ou votre éclairage permanent.",
     url: "/soumission",
     images: [PHOTOS["blainville-01"].src],

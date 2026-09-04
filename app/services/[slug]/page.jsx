@@ -15,11 +15,11 @@ export function generateMetadata({ params }) {
   const s = findService(params.slug);
   if (!s) return {};
   return {
-    title: s.h1 || s.title,
+    title: s.seoTitle || s.h1 || s.title,
     description: s.metaDescription,
     alternates: { canonical: `/services/${s.slug}` },
     openGraph: {
-      title: `${s.h1 || s.title} | Solution Lumière de Noël inc.`,
+      title: `${s.seoTitle || s.h1 || s.title} | Solution Lumière de Noël`,
       description: s.metaDescription,
       url: `/services/${s.slug}`,
       images: s.heroImage ? [s.heroImage] : undefined,

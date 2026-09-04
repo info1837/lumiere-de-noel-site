@@ -38,6 +38,10 @@ export const company = {
   // négatif. shortName existe pour l'affichage court.
   name: "Solution Lumière de Noël inc.",
   shortName: "Lumière de Noël",
+  // Suffixe des <title> : la raison sociale complète mange 30 caractères
+  // sur les 60 que Google affiche. « inc. » ne sert à rien dans la SERP,
+  // il reste dans le JSON-LD et le pied de page (SEO P0 §5.1).
+  titleSuffix: "Solution Lumière de Noël",
   // Numéro Twilio de Solution Lumière de Noël Inc. (2026-08-25).
   // Sert à la fois de numéro public sur le site ET de numéro à Sophie B.
   // Ce n'est PAS celui de Palencia — les deux entreprises ont chacune le
@@ -208,12 +212,13 @@ export const services = [
   {
     slug: "lumieres-de-noel-residentiel",
     title: "Lumières de Noël — Résidentiel",
+    seoTitle: "Lumières de Noël résidentielles",
     h1: "Installation de lumières de Noël résidentielles",
     kicker: "Service résidentiel clé en main",
     heroImage: servicePhoto("lumieres-de-noel-residentiel").src,
     heroImageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     metaDescription:
-      "Installation de lumières de Noël résidentielles au Québec — conception, pose, entretien et retrait inclus. Matériel professionnel DEL fourni. Soumission gratuite.",
+      "Conception, pose, entretien et retrait de vos lumières de Noël, matériel DEL commercial fourni. Dès 1 000 $, prix ferme avant l'installation.",
     intro:
       "On illumine votre maison comme si c'était la nôtre. Toiture, arbres, arbustes, façade et entrée — un design pensé pour votre propriété, installé par notre équipe, retiré après les Fêtes.",
     bullets: [
@@ -229,12 +234,13 @@ export const services = [
   {
     slug: "lumieres-de-noel-commercial",
     title: "Lumières de Noël — Commercial",
+    seoTitle: "Lumières de Noël commerciales",
     h1: "Installation de lumières de Noël commerciales",
     kicker: "Pour vos commerces et bureaux",
     heroImage: servicePhoto("lumieres-de-noel-commercial").src,
     heroImageAlt: servicePhoto("lumieres-de-noel-commercial").alt,
     metaDescription:
-      "Installation commerciale de lumières de Noël au Québec : façades, vitrines et entrées. Planification hors-heures, matériel professionnel, échéancier respecté.",
+      "Façades, vitrines et entrées illuminées pour les Fêtes. Installation hors des heures d'ouverture, entretien inclus, retrait en janvier. Sur soumission.",
     intro:
       "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, et le travail en hauteur fait par notre équipe.",  // ASSURANCE
     bullets: [
@@ -250,12 +256,13 @@ export const services = [
   {
     slug: "eclairage-architectural-permanent",
     title: "Éclairage architectural permanent",
+    seoTitle: "Éclairage architectural permanent",
     h1: "Éclairage architectural permanent (DEL)",
     kicker: "Installé une seule fois — illuminé toute l'année",
     heroImage: servicePhoto("eclairage-architectural-permanent").src,
     heroImageAlt: servicePhoto("eclairage-architectural-permanent").alt,
     metaDescription:
-      "Éclairage architectural permanent DEL au Québec : pastilles discrètes installées sous les soffites, contrôle par application, des millions de couleurs et d'animations. Soumission gratuite.",
+      "Pastilles DEL discrètes sous les soffites, installées une seule fois. Couleurs et animations par application, pour toutes les fêtes de l'année.",
     intro:
       "Des pastilles DEL fixées discrètement sous les soffites et les corniches : invisibles le jour, programmables le soir. Blanc-chaud pour le quotidien, couleurs et animations pour chaque occasion — Halloween, Noël, Saint-Valentin, Saint-Jean.",
     bullets: [
@@ -281,7 +288,7 @@ const villesBrutes = [
     name: "Blainville",
     regionLabel: "Couronne nord — Laurentides",
     metaDescription:
-      "Installation de lumières de Noël et d'éclairage architectural à Blainville. Service clé en main : conception, pose, entretien et retrait. Soumission gratuite.",
+      "Lumières de Noël et éclairage architectural à Blainville. Conception, pose, entretien et retrait inclus. Dès 1 000 $, soumission gratuite.",
     intro:
       "Blainville est au cœur de notre territoire. De Fontainebleau au Plateau, de Chambéry à Notre-Dame — on connaît les rues et les styles d'architecture du secteur.",
     body: "On planifie le secteur Blainville–Boisbriand–Sainte-Thérèse ensemble, pour limiter les déplacements — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
@@ -331,7 +338,7 @@ const villesBrutes = [
     name: "Rive-Sud",
     regionLabel: "Rive-Sud de Montréal",
     metaDescription:
-      "Installation de lumières de Noël sur la Rive-Sud de Montréal — Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Service complet.",
+      "Lumières de Noël sur la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Pose et retrait inclus, dès 1 000 $.",
     intro:
       "On dessert toute la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie, Candiac. Résidentiel et commercial, du DIX30 aux quartiers résidentiels patrimoniaux.",
     body: "On dessert la couronne sud rapprochée. Pour les commerces des grandes artères, on planifie les installations hors-heures. Pour les résidences : développements récents comme quartiers établis (vieux Longueuil, vieux Boucherville).",
@@ -368,10 +375,11 @@ export const blogPosts = [
   {
     slug: "cout-installation-lumieres-de-noel-quebec",
     title: "Combien coûte l'installation de lumières de Noël au Québec en 2026?",
+    seoTitle: "Prix des lumières de Noël au Québec 2026",
     excerpt:
       "Tarifs réels par type de propriété, ce qui fait varier le prix, et quand réserver pour économiser. Guide pratique pour résidences et commerces.",
     metaDescription:
-      "Guide 2026 : combien coûte l'installation de lumières de Noël au Québec? Tarifs par type de propriété, facteurs de prix, et quand réserver. Estimation gratuite.",
+      "Combien coûte l'installation de lumières de Noël au Québec ? Tarifs par type de propriété, ce qui fait varier le prix, et quand réserver.",
     image: PHOTOS["blainville-01"].src,
     imageAlt: PHOTOS["blainville-01"].alt,
     date: "2026-08-01",
@@ -381,10 +389,11 @@ export const blogPosts = [
   {
     slug: "quand-reserver-installation-lumieres-noel",
     title: "Quand réserver son installation de lumières de Noël?",
+    seoTitle: "Quand réserver ses lumières de Noël ?",
     excerpt:
       "Pourquoi octobre est le meilleur moment, ce qui se passe quand vous attendez trop, et comment garantir votre date avant les premières neiges.",
     metaDescription:
-      "Quand réserver son installation de lumières de Noël au Québec? Pourquoi octobre est le moment idéal et comment garantir votre date avant les premières neiges.",
+      "Quand réserver ses lumières de Noël ? Pourquoi octobre est le bon moment et comment garantir sa date avant les premières neiges.",
     image: PHOTOS["terrebonne-01"].src,
     imageAlt: PHOTOS["terrebonne-01"].alt,
     date: "2026-07-15",
@@ -394,10 +403,11 @@ export const blogPosts = [
   {
     slug: "del-vs-incandescent-lumieres-noel",
     title: "DEL ou incandescent? Quel type de lumières de Noël choisir",
+    seoTitle: "DEL ou incandescent : que choisir ?",
     excerpt:
       "Consommation, durée de vie, intensité lumineuse, rendu visuel : tableau comparatif honnête entre les DEL commerciales et les lumières traditionnelles.",
     metaDescription:
-      "DEL ou incandescent pour vos lumières de Noël? Comparatif honnête : consommation, durée de vie, rendu visuel. Pourquoi les DEL commerciales dominent en 2026.",
+      "DEL ou incandescent ? Comparatif honnête : consommation, durée de vie, rendu visuel, et pourquoi les DEL commerciales dominent.",
     image: PHOTOS["permanent-detail"].src,
     imageAlt: "Détail de guirlandes DEL professionnelles sur une corniche",
     date: "2026-08-20",
