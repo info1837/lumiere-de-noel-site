@@ -4,6 +4,7 @@ import { navy, ivory, gold, charcoal, offWhite } from "@/components/data";
 import { evenement } from "@/lib/evenements";
 import { CAS_DEMO, PANNEAUX, cheminPanneau } from "@/components/demos";
 import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
+import { signalerPanne } from "@/lib/calc-telemetrie";
 
 // =============================================================================
 // Calculatrice de toiture — le visiteur trace, le serveur chiffre
@@ -61,6 +62,10 @@ export const cleMapsRefusee = () => cleRefusee;
 function signalerRefus() {
   cleRefusee = true;
   promesseMaps = null;
+  // Refus de clé Google (domaine non autorisé, facturation, quota) : c'est
+  // silencieux pour le visiteur, qui voit juste la saisie manuelle. On le
+  // fait remonter, sinon personne ne l'apprend jamais.
+  try { signalerPanne("maps-auth", "Google a refusé la clé Maps (gm_authFailure)"); } catch {}
   abonnes.forEach((f) => { try { f(); } catch {} });
 }
 function surRefus(f) { abonnes.add(f); return () => abonnes.delete(f); }
@@ -115,6 +120,17 @@ export default function CalculatriceToiture() {
   const [piedsManuels, setPiedsManuels] = useState("");
   const [carteLente, setCarteLente] = useState(false);
   const [maquette, setMaquette] = useState({ ouvert: false, nom: "", telephone: "", adresse: "", consent: false, statut: "idle" });
+  // Safari : la carte continue de glisser après le doigt (panoramique
+  // inertiel). Un point capturé pendant ce glissement atterrit n'importe où
+  // — mesuré : le MÊME glissement de 100 px donne 56 pi dans Chromium et
+  // 761 pi dans WebKit. On ne capture donc plus que sur une carte immobile,
+  // et le tap sur la carte place le point là où le doigt s'est posé, ce qui
+  // supprime complètement la dépendance au centre de la carte.
+  const [carteImmobile, setCarteImmobile] = useState(true);
+  const [tactile, setTactile] = useState(false);
+  const [deplacementPermis, setDeplacementPermis] = useState(false);
+  const [indiceTrace, setIndiceTrace] = useState(false);
+  const lignesRef = useRef([[]]);
 
   const divCarte = useRef(null);
   const carte = useRef(null);
@@ -130,6 +146,32 @@ export default function CalculatriceToiture() {
   // garde un chemin qui aboutit à un prix. Avant, il tombait sur un
   // formulaire « on viendra mesurer » — un rendez-vous au lieu d'un chiffre.
   useEffect(() => { if (carteKO) setManuel(true); }, [carteKO]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    setTactile(window.matchMedia?.("(pointer: coarse)")?.matches === true);
+  }, []);
+
+  // Garde d'usage : carte ouverte, aucun point au bout de 20 s → on dit quoi
+  // faire, et on met la saisie manuelle à portée de pouce.
+  useEffect(() => {
+    if (etape !== "mesure" || manuel || carteKO) return;
+    const t = setTimeout(() => {
+      const vide = lignesRef.current.every((l) => l.length === 0);
+      if (vide) { setIndiceTrace(true); evenement("calc_trace_bloque"); }
+    }, 20000);
+    return () => clearTimeout(t);
+  }, [etape, manuel, carteKO]);
+
+  // Rapport d'erreurs : tout ce qui casse pendant que la calculatrice est
+  // ouverte part vers /api/calc-telemetry (et donc vers Telegram).
+  useEffect(() => {
+    const onErr = (e) => signalerPanne("js", e?.message || "erreur inconnue", { adresse });
+    const onRejet = (e) => signalerPanne("promesse", e?.reason?.message || String(e?.reason || ""), { adresse });
+    window.addEventListener("error", onErr);
+    window.addEventListener("unhandledrejection", onRejet);
+    return () => { window.removeEventListener("error", onErr); window.removeEventListener("unhandledrejection", onRejet); };
+  }, [adresse]);
 
   // Si l'étape « mesure » reste sans carte au bout de 4 s, on ne laisse pas
   // le visiteur devant un rectangle noir : on passe au chemin manuel et on
@@ -149,10 +191,27 @@ export default function CalculatriceToiture() {
     chargerMaps()
       .then((maps) => {
         if (annule || !divCarte.current) return;
+        const surTactile = window.matchMedia?.("(pointer: coarse)")?.matches === true;
         carte.current = new maps.Map(divCarte.current, {
           center: { lat: 45.6722, lng: -73.8736 }, zoom: 20, mapTypeId: "satellite",
-          tilt: 0, disableDefaultUI: true, gestureHandling: "greedy",
+          tilt: 0, disableDefaultUI: true,
+          // Sur tactile, le glissement est COUPÉ pendant le tracé : c'est lui
+          // qui, avec l'inertie de Safari, faisait atterrir les points au
+          // mauvais endroit. Un bouton « Déplacer la carte » le rend au
+          // visiteur quand il en a besoin.
+          gestureHandling: surTactile ? "none" : "greedy",
+          draggable: !surTactile,
         });
+        // Le tap (ou le clic) pose le point exactement là où le doigt s'est
+        // posé — plus aucun lien avec l'endroit où la carte s'immobilise.
+        carte.current.addListener("click", (ev) => {
+          if (!ev?.latLng) return;
+          poserPoint({ lat: ev.latLng.lat(), lng: ev.latLng.lng() });
+        });
+        // Immobilité : on n'autorise la capture au réticule que carte arrêtée.
+        carte.current.addListener("dragstart", () => setCarteImmobile(false));
+        carte.current.addListener("center_changed", () => setCarteImmobile(false));
+        carte.current.addListener("idle", () => setCarteImmobile(true));
         if (adresse) {
           new maps.Geocoder().geocode({ address: adresse + ", Québec, Canada" }, (r, st) => {
             if (st === "OK" && r[0] && carte.current) {
@@ -186,20 +245,55 @@ export default function CalculatriceToiture() {
     setPiApercu(Math.round(metres * 3.28084));
   }, []);
 
-  const ajouterCoin = () => {
-    const c = carte.current?.getCenter();
-    if (!c) return;
+  // Voie unique de placement : le tap sur la carte et le bouton au réticule
+  // finissent tous les deux ici.
+  const poserPoint = useCallback((pt) => {
+    if (!pt) return;
+    setIndiceTrace(false);
     setLignes((prev) => {
       const n = prev.map((l) => [...l]);
-      n[n.length - 1].push({ lat: c.lat(), lng: c.lng() });
+      n[n.length - 1].push(pt);
+      lignesRef.current = n;
       redessiner(n);
       return n;
+    });
+  }, [redessiner]);
+
+  const ajouterCoin = () => {
+    // Carte encore en mouvement : le centre n'est pas celui que le visiteur
+    // voit. On ne devine pas, on attend l'immobilité.
+    if (!carteImmobile) {
+      carte.current?.addListenerOnce?.("idle", () => {
+        const c = carte.current?.getCenter();
+        if (c) poserPoint({ lat: c.lat(), lng: c.lng() });
+      });
+      return;
+    }
+    const c = carte.current?.getCenter();
+    if (!c) return;
+    poserPoint({ lat: c.lat(), lng: c.lng() });
+  };
+
+  const recommencer = () => {
+    setLignes([[]]);
+    lignesRef.current = [[]];
+    redessiner([[]]);
+    setPiApercu(0);
+  };
+
+  const basculerDeplacement = () => {
+    const suivant = !deplacementPermis;
+    setDeplacementPermis(suivant);
+    carte.current?.setOptions?.({
+      draggable: suivant,
+      gestureHandling: suivant ? "greedy" : "none",
     });
   };
   const nouvelleSection = () => setLignes((p) => (p[p.length - 1].length >= 2 ? [...p, []] : p));
   const annulerCoin = () => setLignes((prev) => {
     const n = prev.map((l) => [...l]);
     for (let i = n.length - 1; i >= 0; i--) { if (n[i].length) { n[i].pop(); break; } }
+    lignesRef.current = n;
     redessiner(n);
     return n;
   });
@@ -208,6 +302,12 @@ export default function CalculatriceToiture() {
 
   // --- Envoi ---------------------------------------------------------------
   async function envoyer() {
+    // Un tracé de moins de 2 points ne mesure rien : on le dit ici plutôt
+    // que de laisser le CRM répondre « évaluation sur place » sans raison.
+    if (!manuel) {
+      const points = lignes.reduce((n, l) => n + l.length, 0);
+      if (points < 3) signalerPanne("trace-courte", `envoi avec ${points} point(s)`, { adresse });
+    }
     setEnvoi(true); setErreur(null);
     try {
       const r = await fetch("/api/calc-noel", {
@@ -219,6 +319,7 @@ export default function CalculatriceToiture() {
       });
       const d = await r.json();
       if (!r.ok || d.ok === false) {
+        signalerPanne("envoi", `/api/calc-noel a répondu ${r.status} (${d.error || "sans code"})`, { adresse });
         setErreur(d.error === "mauvaise_entreprise"
           ? "Configuration à corriger de notre côté. Appelez-nous, on s'en occupe."
           : "On n'arrive pas à calculer votre prix en ce moment. Appelez-nous — on vous le donne au téléphone.");
@@ -268,8 +369,7 @@ export default function CalculatriceToiture() {
               panne : un client qui connaît son métrage ne veut pas tracer. */}
           <button type="button"
             onClick={() => { setManuel(true); setEtape("mesure"); evenement("calc_manual_used", { raison: "choix_client" }); }}
-            style={{ display: "block", marginTop: 14, background: "none", border: "none", padding: 0,
-              color: charcoal, textDecoration: "underline", cursor: "pointer", fontSize: 15 }}>
+            style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2", marginTop: 12, width: "100%" }}>
             Je préfère entrer mes pieds linéaires
           </button>
         </>
@@ -329,9 +429,20 @@ export default function CalculatriceToiture() {
         <>
           <h3 style={{ marginBottom: 8 }}>Tracez votre ligne de toit</h3>
           <p style={{ color: "#444", marginBottom: 14, fontSize: 15 }}>
-            Placez la croix sur un coin du toit, touchez <strong>Ajouter un coin</strong>, puis suivez la
-            ligne. Une nouvelle section pour le garage ou l'arrière.
+            <strong>Touchez chaque coin de votre toit</strong> directement sur l'image — un point apparaît
+            à l'endroit touché. Ou placez la croix et utilisez <strong>Ajouter un point</strong>.
+            Une nouvelle section pour le garage ou l'arrière.
           </p>
+          {indiceTrace && (
+            <div style={{ background: "#FFF6E5", border: "1px solid #EBD9AE", borderRadius: 12,
+              padding: "12px 14px", color: "#6B4E00", fontSize: 15, marginBottom: 12 }}>
+              Touchez le coin de votre toit pour commencer.{" "}
+              <button type="button" onClick={() => { setManuel(true); evenement("calc_manual_used", { raison: "indice_20s" }); }}
+                style={{ background: "none", border: "none", padding: 0, color: "#6B4E00", fontWeight: 700, textDecoration: "underline", cursor: "pointer", fontSize: 15 }}>
+                Ou entrez vos pieds linéaires
+              </button>
+            </div>
+          )}
           <div style={{ position: "relative", borderRadius: 14, overflow: "hidden", height: 340, background: "#0b1b2b" }}>
             <div ref={divCarte} style={{ position: "absolute", inset: 0 }} />
             {/* croix fixe : c'est la carte qui bouge, pas le doigt */}
@@ -348,9 +459,16 @@ export default function CalculatriceToiture() {
             </div>
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 14 }}>
-            <button style={btn()} onClick={ajouterCoin}>Ajouter un coin</button>
-            <button style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={annulerCoin}>Annuler</button>
-            <button style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={nouvelleSection}>Nouvelle section</button>
+            <button type="button" style={btn()} onClick={ajouterCoin}>Ajouter un point</button>
+            <button type="button" style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={annulerCoin}>Annuler le dernier</button>
+            <button type="button" style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={nouvelleSection}>Nouvelle section</button>
+            <button type="button" style={{ ...btn("ghost"), color: charcoal, border: "1px solid #d9d2c2" }} onClick={recommencer}>Recommencer</button>
+            {tactile && (
+              <button type="button" onClick={basculerDeplacement}
+                style={{ ...btn("ghost"), color: charcoal, border: `1px solid ${deplacementPermis ? charcoal : "#d9d2c2"}` }}>
+                {deplacementPermis ? "Verrouiller la carte" : "Déplacer la carte"}
+              </button>
+            )}
           </div>
           <button style={{ ...btn(), marginTop: 16 }} disabled={sections < 1}
             onClick={() => { evenement("calc_roof_traced", { sections, pi_apercu: piApercu }); setEtape("extras"); }}>
