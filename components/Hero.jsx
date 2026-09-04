@@ -56,6 +56,10 @@ export default function Hero() {
         style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }}
       />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(11,27,43,0.88) 0%, rgba(11,27,43,0.72) 42%, rgba(11,27,43,0.25) 100%)" }} />
+      {/* Fondu vers le bas : la photo se dissout dans le navy exact de la
+          section des cartes (#0B1B2B). Sans lui, la bordure de l'image
+          coupait net derrière les cartes qui la chevauchent. */}
+      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(11,27,43,0) 40%, rgba(11,27,43,0.85) 82%, #0B1B2B 100%)" }} />
 
       <div className="hero-container hero-grid" style={{ position: "relative", width: "100%" }}>
         <div>

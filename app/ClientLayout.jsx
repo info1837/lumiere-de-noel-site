@@ -117,11 +117,11 @@ export function NavBar() {
         transition: "background 0.25s, border-color 0.25s, backdrop-filter 0.25s",
       }}
     >
-      {/* 16 px + logo 52 px + 16 px = 84 px, la hauteur sur laquelle le
+      {/* 14 px + logo 44 px + 14 px = 72 px, la hauteur sur laquelle le
           padding du hero est calculé (globals.css .hero-section). */}
       <div className="container header-row" style={{
         display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 24px", gap: 16,
+        padding: "14px 24px", gap: 16,
       }}>
         <Link href="/" aria-label={`${company.name} — accueil`} className="site-logo-link">
           <img src="/images/logo-horizontal-transparent-fonce.svg" alt={company.name}
