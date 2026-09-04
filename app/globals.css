@@ -612,48 +612,7 @@ textarea:focus-visible,
 /* Quatre cartes, jamais moins de deux colonnes avant 620px : à une colonne sur
    tablette la barre pousse tout le contenu utile sous la ligne de flottaison,
    ce qui annule exactement ce à quoi elle sert. */
-.objection-bar {
-  list-style: none; margin: 0 0 -26px; padding: 0;
-  display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px;
-}
-@media (max-width: 1020px) { .objection-bar { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px)  { .objection-bar { grid-template-columns: 1fr; gap: 10px; } }
 
-.objection-card {
-  display: flex; flex-direction: column; align-items: flex-start; height: 100%;
-  padding: 20px 20px 18px; border-radius: 14px;
-  background: rgba(255,255,255,0.045);
-  border: 1px solid rgba(233,220,192,0.16);
-  text-decoration: none; color: var(--ivory);
-  transition: background 0.22s ease, border-color 0.22s ease, transform 0.22s ease;
-}
-.objection-card:hover {
-  background: rgba(233,220,192,0.09);
-  border-color: rgba(233,220,192,0.42);
-  transform: translateY(-3px);
-}
-.objection-card:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
-
-.objection-icone { color: var(--gold); flex: none; margin-bottom: 12px; }
-
-.objection-titre {
-  font-family: 'Bebas Neue', sans-serif;
-  font-size: 23px; line-height: 1.08; letter-spacing: 0.03em;
-  margin: 0 0 7px; color: var(--ivory); text-wrap: balance;
-}
-.objection-detail {
-  font-family: 'Nunito Sans', sans-serif;
-  font-size: 14.5px; line-height: 1.5; margin: 0 0 14px;
-  color: rgba(243,233,210,0.76); flex: 1;
-}
-.objection-lien {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: 'Nunito Sans', sans-serif;
-  font-size: 12px; font-weight: 800; letter-spacing: 0.09em; text-transform: uppercase;
-  color: var(--gold);
-}
-.objection-card:hover .objection-lien svg { transform: translateX(3px); }
-.objection-lien svg { transition: transform 0.22s ease; }
 
 @media (prefers-reduced-motion: reduce) {
   .objection-card, .objection-lien svg { transition: none; }
@@ -716,4 +675,139 @@ textarea:focus-visible,
 }
 @media (max-width: 359.98px) {
   .phone-label { display: none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   HERO — refonte (motif ZS Exteriors, charte Lumière de Noël)
+   ═══════════════════════════════════════════════════════════════════
+   Deux règles tiennent tout le bloc, et elles existent parce que
+   l'ancienne version les violait :
+     1. AUCUN centrage vertical. Le hero centrait son contenu ; dès que
+        la fenêtre raccourcissait, l'eyebrow et le premier champ du
+        formulaire remontaient sous l'entête fixe.
+     2. Le padding-haut part de la hauteur RÉELLE de l'entête (84 px)
+        plus 48 px d'air, au lieu d'un 120 px arbitraire.
+   ═══════════════════════════════════════════════════════════════════ */
+.hero-section {
+  padding-top: calc(84px + 48px);
+  padding-bottom: 120px;           /* place pour le chevauchement des cartes */
+  min-height: calc(100svh - 84px);
+}
+.hero-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding-inline: 32px;
+}
+.hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(360px, 440px);
+  gap: 64px;
+  align-items: start;              /* jamais center — voir règle 1 */
+}
+.hero-h1 {
+  font-size: clamp(3rem, 4.6vw, 4.5rem);
+  line-height: 0.95;
+  max-width: 13ch;
+}
+.hero-card { max-width: 440px; }
+.hero-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.hero-field-full { grid-column: 1 / -1; }
+.hero-card input,
+.hero-card select,
+.hero-card .select-trigger { height: 44px; }
+.hero-card label { font-size: 13px; margin-bottom: 4px; }
+
+@media (max-width: 1100px) {
+  .hero-grid { grid-template-columns: 1fr; gap: 32px; }
+  .hero-card { max-width: 100%; }
+  .hero-section { padding-top: calc(70px + 32px); padding-bottom: 96px; min-height: 0; }
+}
+@media (max-width: 640px) {
+  .hero-h1 { font-size: clamp(2.6rem, 9vw, 3rem); max-width: 100%; }
+  .hero-container { padding-inline: 20px; }
+  .hero-form-grid { grid-template-columns: 1fr; }
+}
+
+/* Entête : 84 px pile en desktop (16 + logo 52 + 16). Le hero calcule son
+   padding-haut sur ce nombre — s'il change ici, il change là-bas. */
+.header-row { min-height: 84px; }
+@media (max-width: 900px) { .header-row { min-height: 76px; } }
+@media (max-width: 560px) { .header-row { min-height: 70px; } }
+
+/* ═══════════════════════════════════════════════════════════════════
+   CARTES DE CONFIANCE — chevauchent le bas du hero
+   ═══════════════════════════════════════════════════════════════════
+   marge négative + z-index : les cartes mordent sur l'image du hero,
+   ce qui coud les deux blocs ensemble au lieu de les empiler. Le
+   padding-bas du hero (120 px) existe pour ça.
+   ═══════════════════════════════════════════════════════════════════ */
+.trust-section { padding-top: 0; padding-bottom: 72px; }
+.trust-container { max-width: 1280px; margin: 0 auto; padding-inline: 32px; }
+.trust-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;
+  list-style: none; margin: -72px 0 0; padding: 0; position: relative; z-index: 2;
+}
+.trust-card {
+  height: 100%; display: flex; flex-direction: column;
+  background: linear-gradient(rgba(11,27,43,0.92), rgba(11,27,43,0.98));
+  border: 1px solid rgba(233,220,192,0.14);
+  border-radius: 16px; padding: 28px 24px 24px;
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
+}
+.trust-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(233,220,192,0.45);
+  box-shadow: 0 20px 48px rgba(0,0,0,0.4), 0 0 24px rgba(233,220,192,0.12);
+}
+.trust-badge {
+  font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
+  font-size: 52px; line-height: 0.95;
+  letter-spacing: 0.01em; margin-bottom: 12px;
+  /* Le mot NON accentué est volontairement en retrait. La « gold » de la
+     charte (#E9DCC0) et l'ivoire (#F3E9D2) sont deux crèmes voisines :
+     mettre le token en gold sur un fond ivoire ne se voyait pas du tout.
+     C'est le contraste qui porte l'accent, pas la teinte. */
+  color: rgba(243,233,210,0.55);
+}
+.trust-badge-or { color: var(--gold); }
+.trust-badge-suffixe { display: block; }
+.trust-sous {
+  font-weight: 700; font-size: 13px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--gold); margin: 0 0 10px;
+}
+.trust-phrase {
+  font-size: 15px; line-height: 1.55; color: rgba(243,233,210,0.8);
+  margin: 0 0 20px; flex: 1 1 auto;
+}
+.trust-pill {
+  align-self: flex-start; display: inline-flex; align-items: center;
+  background: var(--gold); color: var(--navy);
+  font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 10px 18px; border-radius: 999px; text-decoration: none;
+  border: 1px solid var(--gold); transition: background 200ms ease, color 200ms ease;
+}
+.trust-pill:hover { background: transparent; color: var(--gold); }
+.trust-card:focus-within { border-color: rgba(233,220,192,0.45); }
+
+/* Arête dorée en diagonale sous les cartes — la couture entre le bloc
+   sombre du hero et la suite de la page. */
+.trust-edge {
+  height: 6px; background: var(--gold);
+  clip-path: polygon(0 0, 100% 0, 100% 55%, 0 100%);
+}
+
+@media (max-width: 1100px) {
+  .trust-grid { grid-template-columns: repeat(2, 1fr); margin-top: -48px; }
+  .trust-badge { font-size: 44px; }
+}
+@media (max-width: 640px) {
+  .trust-grid { grid-template-columns: 1fr; margin-top: -40px; gap: 14px; }
+  .trust-container { padding-inline: 20px; }
+  .trust-badge { font-size: 40px; }
 }

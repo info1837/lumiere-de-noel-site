@@ -41,7 +41,11 @@ export default function Home() {
       {/* 2 — Proposition de valeur. NE PAS réintroduire de superlatif ici
           (« leader », « numéro 1 », « le meilleur ») : première saison sous
           ce nom, rien à substantier. Audit 2026-08-30. */}
-      <section style={{ background: offWhite }}>
+      {/* Arête dorée : couture entre le bloc sombre (hero + cartes) et
+          la suite de la page. */}
+      <div className="trust-edge" />
+
+      <section id="inclus" style={{ background: offWhite, scrollMarginTop: 84 }}>
         <div className="container grid-2">
           <div>
             <SectionTag>Forfait tout inclus</SectionTag>
@@ -109,6 +113,7 @@ export default function Home() {
       </section>
 
       {/* Comment ça marche — 5 étapes datées (répond à "qu'est-ce qui se passe après ?") */}
+      <div id="processus" style={{ scrollMarginTop: 84 }} />
       <HowItWorks variant="light" />
 
       {/* Aperçu portfolio — 6 vignettes tirées de /realisations */}
