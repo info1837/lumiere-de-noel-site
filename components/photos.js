@@ -179,6 +179,19 @@ export const CITY_PHOTO = {
 // photo vient à manquer de nouveau.
 export const PHOTOS_MANQUANTES = [];
 
+// Dossiers dont les images sont FOURNIES PLUS TARD et rendues seulement si
+// elles existent. La garde de compilation ne doit pas les traiter comme des
+// références cassées : le composant qui les affiche teste chaque fichier au
+// chargement et masque le bloc entier dès qu'il en manque un (voir
+// components/demos.js + le BlocMaquette de la calculatrice).
+//
+// C'est une exception étroite, par préfixe, et elle reste affichée dans le
+// rapport de la garde : une image absente doit rester visible, elle ne doit
+// simplement pas casser le build d'une section conçue pour être vide.
+export const PREFIXES_OPTIONNELS = [
+  "/images/demos/", // avant / maquette / après des 3 cas clients
+];
+
 /** Une photo par clé, ou null. */
 export const photo = (cle) => (cle && PHOTOS[cle]) || null;
 
