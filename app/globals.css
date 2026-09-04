@@ -250,9 +250,9 @@ header > .container { max-width: 1320px; }
    à la largeur de l'ancien logo sur les petits écrans. La hauteur est ici
    et non en style inline — un style inline l'emporterait sur les media
    queries. */
-.site-logo { height: 52px; width: auto; display: block; }
-@media (max-width: 900px) { .site-logo { height: 44px; } }
-@media (max-width: 560px) { .site-logo { height: 38px; } }
+.site-logo { height: 44px; width: auto; display: block; }
+@media (max-width: 900px) { .site-logo { height: 40px; } }
+@media (max-width: 560px) { .site-logo { height: 36px; } }
 @media (max-width: 400px) { .site-logo { height: 32px; } }
 
 @media (max-width: 960px) {
@@ -689,9 +689,9 @@ textarea:focus-visible,
         plus 48 px d'air, au lieu d'un 120 px arbitraire.
    ═══════════════════════════════════════════════════════════════════ */
 .hero-section {
-  padding-top: calc(84px + 48px);
+  padding-top: calc(72px + 40px);
   padding-bottom: 120px;           /* place pour le chevauchement des cartes */
-  min-height: calc(100svh - 84px);
+  min-height: calc(100svh - 72px);
 }
 .hero-container {
   max-width: 1280px;
@@ -705,9 +705,14 @@ textarea:focus-visible,
   align-items: start;              /* jamais center — voir règle 1 */
 }
 .hero-h1 {
-  font-size: clamp(3rem, 4.6vw, 4.5rem);
+  font-size: clamp(2.8rem, 4.2vw, 4rem);
   line-height: 0.95;
-  max-width: 13ch;
+  /* 16ch était arithmétiquement impossible : la deuxième ligne imposée,
+     « sans monter dans l'échelle », fait 26 caractères — à 16ch elle se
+     coupait en deux et le titre retombait à quatre lignes à TOUTES les
+     largeurs testées. 26ch tient la ligne la plus longue, et le <br>
+     forcé après « éclatantes, » fixe le reste : deux lignes, partout. */
+  max-width: 26ch;
 }
 .hero-card { max-width: 440px; }
 .hero-form-grid {
@@ -724,7 +729,7 @@ textarea:focus-visible,
 @media (max-width: 1100px) {
   .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .hero-card { max-width: 100%; }
-  .hero-section { padding-top: calc(70px + 32px); padding-bottom: 96px; min-height: 0; }
+  .hero-section { padding-top: calc(64px + 28px); padding-bottom: 96px; min-height: 0; }
 }
 @media (max-width: 640px) {
   .hero-h1 { font-size: clamp(2.6rem, 9vw, 3rem); max-width: 100%; }
@@ -734,9 +739,11 @@ textarea:focus-visible,
 
 /* Entête : 84 px pile en desktop (16 + logo 52 + 16). Le hero calcule son
    padding-haut sur ce nombre — s'il change ici, il change là-bas. */
-.header-row { min-height: 84px; }
-@media (max-width: 900px) { .header-row { min-height: 76px; } }
-@media (max-width: 560px) { .header-row { min-height: 70px; } }
+/* 72 px pile : 14 + logo 44 + 14. Le hero calcule son padding-haut sur ce
+   nombre (.hero-section) — s'il change ici, il change là-bas. */
+.header-row { min-height: 72px; }
+@media (max-width: 900px) { .header-row { min-height: 68px; } }
+@media (max-width: 560px) { .header-row { min-height: 64px; } }
 
 /* ═══════════════════════════════════════════════════════════════════
    CARTES DE CONFIANCE — chevauchent le bas du hero
@@ -752,18 +759,28 @@ textarea:focus-visible,
   list-style: none; margin: -72px 0 0; padding: 0; position: relative; z-index: 2;
 }
 .trust-card {
+  position: relative; overflow: hidden;
   height: 100%; display: flex; flex-direction: column;
-  background: linear-gradient(rgba(11,27,43,0.92), rgba(11,27,43,0.98));
-  border: 1px solid rgba(233,220,192,0.14);
+  background: linear-gradient(180deg, rgba(24,44,66,0.85) 0%, rgba(11,27,43,0.97) 100%);
+  border: 1px solid rgba(233,220,192,0.16);
   border-radius: 16px; padding: 28px 24px 24px;
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  /* Le liseré intérieur clair en haut est ce qui donne le « verre » :
+     sans lui, le dégradé seul rend une carte mate. */
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 16px 40px rgba(0,0,0,0.4);
   transition: transform 200ms ease, border-color 200ms ease, box-shadow 200ms ease;
 }
+/* Halo doré très faible en haut à gauche — la lumière vient du même côté
+   que celle de la photo du hero. */
+.trust-card::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 0% 0%, rgba(233,220,192,0.06) 0%, rgba(233,220,192,0) 60%);
+}
+.trust-card > * { position: relative; }
 .trust-card:hover {
   transform: translateY(-4px);
   border-color: rgba(233,220,192,0.45);
-  box-shadow: 0 20px 48px rgba(0,0,0,0.4), 0 0 24px rgba(233,220,192,0.12);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.10), 0 20px 48px rgba(0,0,0,0.45), 0 0 24px rgba(233,220,192,0.12);
 }
 .trust-badge {
   font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;

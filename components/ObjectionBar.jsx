@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { company, navy } from "@/components/data";
+import { company } from "@/components/data";
 // Fiche Google de PALENCIA SERVICES EXTÉRIEUR, pas de Lumière de Noël.
 // Elle est définie ici et NON dans components/reviews.js : ce fichier-là
 // décrit les avis de Solution Lumière de Noël (encore vides), et y mettre
@@ -74,7 +74,9 @@ function Badge({ mots, suffixe }) {
 
 export default function ObjectionBar() {
   return (
-    <section aria-label="Ce qui est compris" className="trust-section" style={{ background: navy }}>
+    // #0B1B2B = navy — exactement la couleur d'arrivée du fondu du hero,
+    // pour qu'aucune arête ne se voie derrière les cartes.
+    <section aria-label="Ce qui est compris" className="trust-section" style={{ background: "#0B1B2B" }}>
       <div className="trust-container">
         <ul className="trust-grid">
           {CARTES.map((c) => (
