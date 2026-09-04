@@ -5,7 +5,7 @@ import { PHOTOS } from "@/components/photos";
 export const metadata = {
   title: "Installation de lumières de Noël",
   description:
-    "Installation clé en main de lumières de Noël au Québec — conception, pose, entretien et retrait. Résidentiel et commercial. Portfolio de projets. Soumission gratuite.",
+    "Nos installations de lumières de Noël en photos : Blainville, Saint-Jérôme, Mirabel, Mercier, Léry, Montréal. Résidentiel et commercial.",
   alternates: { canonical: "/realisations" },
   openGraph: {
     title: "Installation de lumières de Noël | Solution Lumière de Noël inc.",

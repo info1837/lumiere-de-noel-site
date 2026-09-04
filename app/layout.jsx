@@ -18,32 +18,31 @@ const BASE = company.baseUrl;
 
 export const metadata = {
   metadataBase: new URL(BASE),
+  // SEO P0 §5.1 — le titre faisait 111 caractères et la description 200 :
+  // Google coupait les deux. `keywords` est retiré (ignoré depuis 2009, et
+  // il annonçait Brossard sur les pages de Laval).
   title: {
-    default: "Solution Lumière de Noël inc. | Installation de lumières de Noël & éclairage architectural — Québec",
-    // Lié à company.name : la raison sociale ne peut plus diverger entre
-    // le corps de page, l'onglet du navigateur et le résultat Google.
-    template: `%s | ${company.name}`,
+    default: "Installation de lumières de Noël | Solution Lumière de Noël",
+    template: `%s | ${company.titleSuffix}`,
   },
   description:
-    "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel et commercial. Soumission gratuite. Service sur la Rive-Sud, à Montréal et sur la Rive-Nord.",
-  keywords:
-    "lumières de Noël, installation lumières de Noël, éclairage architectural, éclairage permanent DEL, décoration de Noël commerciale, Blainville, Terrebonne, Brossard, Montréal, Québec",
+    "Pose, entretien et retrait inclus — dès 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Soumission gratuite en 24 h.",
   authors: [{ name: company.name }],
   alternates: { canonical: "/", languages: { "fr-CA": "/" } },
   openGraph: {
     type: "website",
     url: "/",
     siteName: company.name,
-    title: "Solution Lumière de Noël inc. | Lumières de Noël & éclairage architectural au Québec",
+    title: "Installation de lumières de Noël | Solution Lumière de Noël",
     description:
-      "On conçoit, installe, entretient et retire vos lumières de Noël. Éclairage architectural permanent disponible. Soumission gratuite.",
+      "Pose, entretien et retrait inclus — dès 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Soumission gratuite en 24 h.",
     images: [PHOTOS["blainville-01"].src],
     locale: "fr_CA",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Solution Lumière de Noël inc. | Lumières de Noël & éclairage architectural",
-    description: "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec.",
+    title: "Installation de lumières de Noël | Solution Lumière de Noël",
+    description: "Pose, entretien et retrait inclus — dès 1 000 $. Rive-Nord, Montréal et Rive-Sud. Soumission gratuite en 24 h.",
     images: [PHOTOS["blainville-01"].src],
   },
   // Rend exactement les balises du LISEZMOI du kit logo :

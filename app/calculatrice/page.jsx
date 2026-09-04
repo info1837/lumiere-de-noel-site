@@ -3,12 +3,12 @@ import { SectionTag } from "@/components/ui";
 import { company, navy, ivory } from "@/components/data";
 
 export const metadata = {
-  title: "Calculatrice — le prix de vos lumières de Noël",
+  title: "Calculatrice de prix",
   description:
     "Tracez votre ligne de toit sur l'image satellite et voyez votre prix. Installation, entretien, retrait et entreposage inclus.",
   alternates: { canonical: "/calculatrice" },
   openGraph: {
-    title: "Calculatrice — le prix de vos lumières de Noël | Solution Lumière de Noël inc.",
+    title: "Calculatrice de prix | Solution Lumière de Noël",
     description: "Votre prix à l'écran, en deux minutes.",
     url: "/calculatrice",
   },

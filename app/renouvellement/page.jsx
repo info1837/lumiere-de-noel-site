@@ -5,12 +5,12 @@ import { company, navy, ivory, gold, goldText } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
-  title: "Renouvellement — client de l'an dernier",
+  title: "Renouvellement",
   description:
     "Vous étiez client l'an dernier ? On connaît déjà votre propriété et votre matériel est chez nous. Réservez votre date pour la saison 2026.",
   alternates: { canonical: "/renouvellement" },
   openGraph: {
-    title: "Renouvellement — client de l'an dernier | Solution Lumière de Noël inc.",
+    title: "Renouvellement | Solution Lumière de Noël",
     description: "On connaît déjà votre propriété. Réservez votre date pour la saison 2026.",
     url: "/renouvellement",
     images: [PHOTOS["blainville-01"].src],

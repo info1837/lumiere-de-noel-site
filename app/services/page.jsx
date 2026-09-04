@@ -9,7 +9,7 @@ import { servicePhoto } from "@/components/photos";
 export const metadata = {
   title: "Nos services",
   description:
-    "Tous nos services au Québec : installation de lumières de Noël résidentielles et commerciales, ainsi qu'éclairage architectural permanent DEL. Service clé en main.",
+    "Lumières de Noël résidentielles et commerciales, et éclairage architectural permanent DEL. Pose, entretien et retrait inclus. Dès 1 000 $.",
   alternates: { canonical: "/services" },
   openGraph: {
     title: "Nos services | Solution Lumière de Noël inc.",
