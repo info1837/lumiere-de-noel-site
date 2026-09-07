@@ -18,6 +18,14 @@
   --hero-scrim: rgba(5, 10, 20, 0.82);
   --line: rgba(233, 220, 192, 0.22);
   --maxw: 1180px;
+
+  /* Géométrie de l'entête pilule, déclarée UNE fois.
+     Le hero calcule son padding dessus : avant, « 72 » était recopié à la
+     main dans .hero-section ET .header-row, avec un commentaire qui priait
+     qu'on pense à changer les deux. Maintenant c'est impossible d'oublier. */
+  --entete-h: 72px;      /* hauteur de la pilule */
+  --entete-encart: 16px; /* espace au-dessus et sur les côtés */
+  --entete-total: calc(var(--entete-h) + var(--entete-encart));
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -176,15 +184,49 @@ header > .container { max-width: 1320px; }
 }
 
 /* Bouton CTA persistant dans l'entête (à toutes les largeurs, à côté de la pastille) */
+/* ─── Entête pilule ──────────────────────────────────────────────────────
+   Même motif que palencia-site : barre flottante, encart de 16px, 1280 max,
+   hauteur FIXE. Seule l'opacité du fond change au défilement, donc aucun
+   décalage de mise en page. */
+.entete-pilule {
+  top: var(--entete-encart) !important;
+  left: var(--entete-encart) !important;
+  right: var(--entete-encart) !important;
+  margin-inline: auto;
+  max-width: 1280px;
+  height: var(--entete-h);
+  border-radius: 20px;
+  border: 1px solid rgba(233, 220, 192, 0.18);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+}
+.entete-pilule .header-row { height: 100%; padding-inline: 20px; max-width: none; }
+/* Sur petit écran la pilule coûte 2 × encart + 2 × padding de largeur utile.
+   Aux réglages bureau (16 + 20) il reste 288px à 360px de large — 24 de
+   MOINS que l'ancienne barre pleine largeur, et le hamburger sortait de
+   l'écran de 2px (attrapé par check:entete). On resserre donc l'encart et le
+   padding sous 560px, ce qui redonne 320px utiles. La hauteur suit aussi,
+   comme avant, via le token — le hero se recalcule tout seul. */
+@media (max-width: 900px) { :root { --entete-h: 68px; } }
+@media (max-width: 560px) {
+  :root { --entete-h: 64px; --entete-encart: 8px; }
+  .entete-pilule { border-radius: 16px; }
+  .entete-pilule .header-row { padding-inline: 12px; }
+}
+/* Le panneau descend du bas de la pilule, qui ne touche plus le bord. */
+.entete-pilule .nav-panel { top: calc(100% + 10px); }
+
 .header-cta {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 16px; border-radius: 300px;
-  background: var(--charcoal); color: #fff; text-decoration: none;
+  /* CTA crème : sur la pilule navy translucide, l'ancien fond charcoal se
+     confondait avec le fond. Le crème reprend l'accent de la marque, avec
+     un texte navy — contraste très au-dessus de 4.5:1. */
+  background: var(--ivory); color: var(--navy); text-decoration: none;
   font-weight: 700; font-size: 14px; letter-spacing: 0.03em;
   white-space: nowrap;
   transition: transform 0.15s, box-shadow 0.15s, background-color 0.15s;
 }
-.header-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.25); background: #000; }
+.header-cta:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.25); background: #fff; }
 .header-cta .cta-icon { flex-shrink: 0; }
 
 /* Sur très petit écran (<420px) on cache le label pour laisser la place à la pastille tél. */
@@ -718,9 +760,9 @@ textarea:focus-visible,
         plus 48 px d'air, au lieu d'un 120 px arbitraire.
    ═══════════════════════════════════════════════════════════════════ */
 .hero-section {
-  padding-top: calc(72px + 40px);
+  padding-top: calc(var(--entete-total) + 40px);
   padding-bottom: 120px;           /* place pour le chevauchement des cartes */
-  min-height: calc(100svh - 72px);
+  min-height: calc(100svh - var(--entete-total));
 }
 .hero-container {
   max-width: 1280px;
@@ -758,7 +800,7 @@ textarea:focus-visible,
 @media (max-width: 1100px) {
   .hero-grid { grid-template-columns: 1fr; gap: 32px; }
   .hero-card { max-width: 100%; }
-  .hero-section { padding-top: calc(64px + 28px); padding-bottom: 96px; min-height: 0; }
+  .hero-section { padding-top: calc(var(--entete-total) + 28px); padding-bottom: 96px; min-height: 0; }
 }
 @media (max-width: 640px) {
   .hero-h1 { font-size: clamp(2.6rem, 9vw, 3rem); max-width: 100%; }
@@ -768,11 +810,8 @@ textarea:focus-visible,
 
 /* Entête : 84 px pile en desktop (16 + logo 52 + 16). Le hero calcule son
    padding-haut sur ce nombre — s'il change ici, il change là-bas. */
-/* 72 px pile : 14 + logo 44 + 14. Le hero calcule son padding-haut sur ce
-   nombre (.hero-section) — s'il change ici, il change là-bas. */
-.header-row { min-height: 72px; }
-@media (max-width: 900px) { .header-row { min-height: 68px; } }
-@media (max-width: 560px) { .header-row { min-height: 64px; } }
+/* La hauteur vient de --entete-h : le hero se recalcule tout seul. */
+.header-row { min-height: var(--entete-h); }
 
 /* ═══════════════════════════════════════════════════════════════════
    CARTES DE CONFIANCE — chevauchent le bas du hero
