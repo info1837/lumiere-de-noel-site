@@ -45,16 +45,23 @@ export const metadata = {
     description: "Pose, entretien et retrait inclus — dès 1 000 $. Rive-Nord, Montréal et Rive-Sud. Soumission gratuite en 24 h.",
     images: [PHOTOS["blainville-01"].src],
   },
-  // Rend exactement les balises du LISEZMOI du kit logo :
-  //   <link rel="icon" href="/favicon.ico" sizes="48x48">
-  //   <link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32">
-  //   <link rel="apple-touch-icon" href="/favicon-180.png">
-  // L'ancien /favicon.svg est volontairement retiré : un favicon SVG a
-  // priorite sur le .ico dans les navigateurs modernes, il aurait donc
-  // continue d'afficher l'ANCIEN logo par-dessus le nouveau kit.
+  // L'ancien /favicon.svg reste volontairement retiré : un favicon SVG a
+  // priorité sur le .ico dans les navigateurs modernes, il aurait donc
+  // continué d'afficher l'ANCIEN logo par-dessus le nouveau kit.
+  //
+  // DEUX DESSINS SELON LA TAILLE, ET C'EST VOULU.
+  // Le carré du kit place la marque sur 31 % de la largeur du canevas : à 16px,
+  // le dessin réel ne fait plus que ~5px, l'ampoule (traits de 6,5 unités) se
+  // dissout en gris et le S devient illisible. Mesuré, pas supposé.
+  //   ≤48px  (onglet, favoris)      → le S doré seul, à 74 % du carré
+  //   ≥180px (iOS, Android, PWA)    → la marque complète, à 86 % du carré
+  // Le .ico contient trois rendus INDÉPENDANTS (16/32/48) issus du SVG, pas un
+  // agrandissement du 16 : Pillow ignore silencieusement append_images pour ce
+  // format et n'écrivait qu'une seule taille. Le conteneur est écrit à la main.
+  // Sources : kitlogosolutionlumieredenoel/svg/favicon-petit.svg et -grand.svg.
   icons: {
     icon: [
-      { url: "/favicon.ico", sizes: "48x48" },
+      { url: "/favicon.ico", sizes: "16x16 32x32 48x48" },
       { url: "/favicon-32.png", type: "image/png", sizes: "32x32" },
     ],
     apple: "/favicon-180.png",

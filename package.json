@@ -11,7 +11,8 @@
     "audit:visuel:autotest": "node scripts/audit-visuel-autotest.mjs",
     "check:logo": "node scripts/check-logo.mjs",
     "check:menu": "node scripts/check-menu-mobile.mjs",
-    "check:entete": "node scripts/check-entete-mobile.mjs"
+    "check:entete": "node scripts/check-entete-mobile.mjs",
+    "check:calc": "node scripts/calc-layout-check.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

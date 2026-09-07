@@ -265,6 +265,20 @@ header > .container { max-width: 1320px; }
 }
 
 /* --- Champs de formulaire ------------------------------------------------- */
+/* Ces deux règles visent l'ÉTIQUETTE POSÉE AU-DESSUS D'UN CHAMP et le CHAMP
+   TEXTE. Elles étaient écrites sur les éléments nus `label` et `input`, donc
+   elles frappaient aussi les libellés qui ENVELOPPENT une case à cocher ou un
+   bouton radio — des cartes cliquables, pas des étiquettes.
+   Deux dégâts, tous deux vus en production Safari sur /calculatrice :
+     · `input { width: 100% }` s'appliquait à la CASE elle-même : dans une
+       rangée flex elle prenait toute la largeur de la carte et éjectait le
+       texte hors du cadre, sur le fond navy, illisible.
+     · `text-transform: uppercase` + `color: var(--charcoal)` transformaient
+       le libellé de la carte en petites capitales gris foncé.
+   `.radio-chip` (plus bas) neutralisait déjà les deux À LA MAIN — la preuve
+   que le défaut avait été rencontré, puis corrigé au mauvais endroit. On le
+   corrige ici, à la racine, pour que le prochain composant n'ait rien à
+   redéfaire. */
 label {
   display: block;
   font-size: 13px;
@@ -275,7 +289,22 @@ label {
   color: var(--charcoal);
 }
 
-input, textarea, select {
+/* Un libellé qui ENVELOPPE un contrôle est une carte/pastille cliquable :
+   il hérite de la typographie de son contexte, pas du style d'étiquette.
+   `:has()` — Safari 15.4+, Chrome 105+, Firefox 121+. */
+label:has(input), label:has(select), label:has(textarea) {
+  display: initial;
+  font-size: inherit;
+  font-weight: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+  margin-bottom: 0;
+  color: inherit;
+}
+
+/* Cases et boutons radio EXCLUS : ce sont des contrôles à taille intrinsèque,
+   pas des champs pleine largeur. Sans ça la case mange toute la ligne. */
+input:not([type="checkbox"]):not([type="radio"]), textarea, select {
   width: 100%;
   padding: 14px 16px;
   border: 1px solid #d8d2c4;
@@ -290,7 +319,7 @@ input, textarea, select {
 }
 textarea { min-height: 120px; resize: vertical; }
 
-input:focus, textarea:focus, select:focus {
+input:not([type="checkbox"]):not([type="radio"]):focus, textarea:focus, select:focus {
   border-color: var(--charcoal);
   box-shadow: 0 0 0 3px rgba(28, 28, 28, 0.12);
 }
