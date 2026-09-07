@@ -344,7 +344,7 @@ export default function CalculatriceToiture() {
   // carte ne charge pas, le visiteur passe par le chemin manuel et repart
   // avec un prix, pas avec une promesse de rappel.
   return (
-    <div style={carteBlanche}>
+    <div style={carteBlanche} data-calc-panneau>
       {/* fil des étapes */}
       <div style={{ display: "flex", gap: 6, marginBottom: 18 }}>
         {ETAPES.map((e) => (
@@ -484,16 +484,37 @@ export default function CalculatriceToiture() {
             Ces éléments <strong>ne changent pas</strong> le prix affiché : on les évalue sur place,
             avec vous.
           </p>
+          {/* Carte = UNE grille à deux colonnes : 24px pour la case, le reste
+              pour le texte. La largeur de la case est bornée ICI en plus de la
+              correction de globals.css — si une règle globale revient un jour
+              imposer width:100% aux champs, la colonne de 24px l'absorbe et le
+              libellé ne peut plus être repoussé au bord de la carte. */}
           <div style={{ display: "grid", gap: 10, marginBottom: 18 }}>
-            {[["colonnes", "Colonnes / poteaux"], ["arbres", "Arbres"], ["arbustes", "Arbustes et haies"]].map(([k, l]) => (
-              <label key={k} style={{
-                display: "flex", alignItems: "center", gap: 12, padding: "14px 16px",
-                border: `1px solid ${extras[k] ? gold : "#e0d9c8"}`, borderRadius: 12, cursor: "pointer",
-              }}>
-                <input type="checkbox" checked={extras[k]} onChange={(e) => setExtras({ ...extras, [k]: e.target.checked })} />
-                <span style={{ fontSize: 16 }}>{l}</span>
-              </label>
-            ))}
+            {[["colonnes", "Colonnes / poteaux"], ["arbres", "Arbres"], ["arbustes", "Arbustes et haies"]].map(([k, l]) => {
+              const coche = extras[k];
+              return (
+                <label key={k} style={{
+                  display: "grid", gridTemplateColumns: "24px 1fr", gap: 14, alignItems: "center",
+                  // La bordure passe de 1 à 2px une fois cochée : on retire ce
+                  // pixel du padding pour que la carte ne bouge pas d'un poil.
+                  padding: coche ? "15px 17px" : "16px 18px",
+                  border: coche ? `2px solid ${navy}` : "1px solid #e0d9c8",
+                  borderRadius: 12, cursor: "pointer",
+                  background: coche ? "#FBF6EA" : "#fff",
+                  transition: "background 0.15s, border-color 0.15s",
+                }}>
+                  <input
+                    type="checkbox" checked={coche}
+                    onChange={(e) => setExtras({ ...extras, [k]: e.target.checked })}
+                    style={{ width: 18, height: 18, margin: 0, accentColor: navy, justifySelf: "center" }}
+                  />
+                  <span style={{
+                    fontSize: 15, lineHeight: 1.4, color: navy,
+                    textTransform: "uppercase", letterSpacing: "0.06em", fontWeight: 600,
+                  }}>{l}</span>
+                </label>
+              );
+            })}
           </div>
           <button style={btn()} onClick={() => setEtape("contact")}>Voir mon prix →</button>
         </>
