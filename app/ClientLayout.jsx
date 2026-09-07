@@ -65,8 +65,13 @@ export function NavBar() {
   useEffect(() => {
     const racine = document.documentElement;
     const mesurer = () => {
-      const h = headerRef.current?.getBoundingClientRect().height;
-      if (h) racine.style.setProperty("--hauteur-entete", `${Math.ceil(h)}px`);
+      // .bottom, PAS .height : depuis que l'en-tête est une pilule flottante,
+      // elle commence à --entete-encart du haut. Sa hauteur (68) n'est plus
+      // ce que le menu doit réserver — il lui faut le BAS de la pilule (84),
+      // sinon le contenu défile dans l'espace au-dessus d'elle. Attrapé par
+      // check:menu à 768px. Sur un élément fixed, .bottom EST la réserve.
+      const bas = headerRef.current?.getBoundingClientRect().bottom;
+      if (bas) racine.style.setProperty("--hauteur-entete", `${Math.ceil(bas)}px`);
       const b = document.querySelector(".mobile-bottom-bar");
       const hb = b && getComputedStyle(b).display !== "none"
         ? b.getBoundingClientRect().height : 0;
@@ -108,13 +113,17 @@ export function NavBar() {
     <>
     <header
       ref={headerRef}
+      className="entete-pilule"
       style={{
-        position: "fixed", top: 0, left: 0, right: 0, zIndex: 100,
-        background: solid ? "rgba(11,27,43,0.90)" : "transparent",
-        backdropFilter: solid ? "blur(12px)" : "none",
-        WebkitBackdropFilter: solid ? "blur(12px)" : "none",
-        borderBottom: `1px solid ${solid ? "rgba(233,220,192,0.16)" : "transparent"}`,
-        transition: "background 0.25s, border-color 0.25s, backdrop-filter 0.25s",
+        position: "fixed", zIndex: 100,
+        // La pilule est TOUJOURS visible : contrairement à l'ancienne barre
+        // pleine largeur, elle ne peut pas être transparente — elle flotte
+        // au-dessus du hero et ses liens doivent rester lisibles dès le
+        // premier pixel. Seule l'opacité varie au défilement.
+        background: solid ? "rgba(11,27,43,0.92)" : "rgba(11,27,43,0.72)",
+        backdropFilter: "blur(12px)",
+        WebkitBackdropFilter: "blur(12px)",
+        transition: "background 0.25s",
       }}
     >
       {/* 14 px + logo 44 px + 14 px = 72 px, la hauteur sur laquelle le
