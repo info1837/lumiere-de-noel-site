@@ -106,6 +106,117 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
   .header-hamburger { display: none; }
 }
 
+/* ─── Tiroir mobile ───────────────────────────────────────────────────────
+   Même motif que palencia-site, aux couleurs d'ici. Panneau qui glisse
+   depuis la droite, TOUJOURS dans le DOM : fermé, il est poussé hors écran
+   (transform) ET rendu invisible (visibility) — la visibility retire ses
+   liens de l'ordre de tabulation et de l'arbre d'accessibilité. Le délai
+   sur visibility laisse la glissade de sortie se jouer. Il vit là où vit
+   le hamburger : sous 1240px (palier calculé de la nav de bureau). */
+.tiroir-voile {
+  position: fixed; inset: 0; z-index: 1090;
+  background: rgba(0, 0, 0, 0.55);
+  opacity: 0; visibility: hidden;
+  transition: opacity 220ms ease, visibility 0s linear 220ms;
+}
+.tiroir-voile[data-ouvert] { opacity: 1; visibility: visible; transition: opacity 220ms ease; }
+.tiroir {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 1100;
+  width: min(88vw, 400px);
+  display: flex; flex-direction: column;
+  background: rgba(11, 27, 43, 0.96);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  border-left: 3px solid var(--gold);
+  color: var(--ivory);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform 220ms ease, visibility 0s linear 220ms;
+}
+.tiroir[data-ouvert] { transform: none; visibility: visible; transition: transform 220ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .tiroir, .tiroir[data-ouvert], .tiroir-voile, .tiroir-voile[data-ouvert] { transition: none; }
+}
+@media (min-width: 1240px) { .tiroir, .tiroir-voile { display: none; } }
+
+.tiroir__entete {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 16px 10px 24px; flex-shrink: 0;
+}
+.tiroir__marque { display: flex; align-items: center; }
+.tiroir__marque img { height: 28px; width: auto; display: block; }
+.tiroir__fermer {
+  width: 44px; height: 44px; flex-shrink: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: none; color: var(--ivory);
+  border: 1px solid rgba(233, 220, 192, 0.3); border-radius: 12px;
+  cursor: pointer; font-family: inherit;
+}
+
+.tiroir__corps { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
+.tiroir__liste, .tiroir__sous { list-style: none; margin: 0; padding: 0; }
+.tiroir__rangee { border-bottom: 1px solid rgba(243, 233, 210, 0.10); }
+.tiroir__item {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  width: 100%; min-height: 56px; padding: 0 24px;
+  color: var(--ivory); text-decoration: none; text-align: left;
+  font-family: 'Nunito Sans', system-ui, sans-serif; font-weight: 700; font-size: 18px; line-height: 1.2;
+}
+.tiroir__accordeon { background: none; border: none; cursor: pointer; }
+.tiroir__accordeon svg { flex-shrink: 0; transition: transform 220ms ease; }
+.tiroir__accordeon[aria-expanded="true"] svg { transform: rotate(180deg); }
+@media (prefers-reduced-motion: reduce) { .tiroir__accordeon svg { transition: none; } }
+.tiroir__item:focus-visible, .tiroir__item[aria-current="page"] { color: var(--gold); }
+.tiroir__item:focus-visible, .tiroir__sous-lien:focus-visible, .tiroir__fermer:focus-visible, .tiroir__cta:focus-visible, .tiroir__tel:focus-visible {
+  outline: 2px solid var(--gold); outline-offset: -2px;
+}
+
+/* Sous-liste : retrait de 20px, puce dorée de 6px, rangées de 48px.
+   [hidden] redéclaré : la grille des secteurs pose un display:grid
+   d'auteur qui l'emporterait sinon sur la feuille du navigateur. */
+[id^="tiroir-"][hidden] { display: none !important; }
+.tiroir__sous { padding: 4px 0 10px 20px; }
+.tiroir__sous[data-colonnes="2"] { display: grid; grid-template-columns: 1fr 1fr; column-gap: 8px; }
+.tiroir__sous-lien {
+  display: flex; align-items: center; gap: 12px;
+  min-height: 48px; padding: 0 24px;
+  color: rgba(243, 233, 210, 0.88); text-decoration: none;
+  font-family: 'Nunito Sans', system-ui, sans-serif; font-weight: 600; font-size: 16px; line-height: 1.25;
+}
+.tiroir__sous[data-colonnes="2"] .tiroir__sous-lien { padding: 0 0 0 8px; gap: 10px; white-space: nowrap; }
+.tiroir__sous-lien::before {
+  content: ""; width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0;
+  background: var(--gold);
+}
+.tiroir__sous-lien:focus-visible, .tiroir__sous-lien[aria-current="page"] { color: var(--gold); }
+.tiroir__sous-lien[aria-current="page"] { font-weight: 700; }
+
+/* Pied épinglé, au-dessus de la barre système (safe-area). Le CTA reprend
+   la pilule champagne + charbon de la marque (celle de l'ancien overlay). */
+.tiroir__pied {
+  flex-shrink: 0;
+  display: flex; flex-direction: column; align-items: center; gap: 14px;
+  padding: 16px 24px calc(20px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid rgba(243, 233, 210, 0.10);
+}
+.tiroir__cta {
+  display: flex; align-items: center; justify-content: center;
+  width: 100%; min-height: 52px; border-radius: 300px;
+  background: var(--gold); color: var(--charcoal); text-decoration: none;
+  font-family: 'Nunito Sans', system-ui, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.03em;
+}
+.tiroir__tel {
+  display: inline-flex; align-items: center; gap: 8px; min-height: 44px;
+  color: var(--ivory); text-decoration: none;
+  font-family: 'Nunito Sans', system-ui, sans-serif; font-weight: 600; font-size: 16px;
+}
+/* Survols réservés aux vrais pointeurs : sur tactile, Safari laisse en
+   :hover ce qui est sous le dernier tap, et quand un accordéon se referme
+   c'est une AUTRE entrée qui glisse sous ce point et s'allume. */
+@media (hover: hover) {
+  .tiroir__fermer:hover { border-color: var(--gold); color: var(--gold); }
+  .tiroir__item:hover, .tiroir__sous-lien:hover, .tiroir__tel:hover { color: var(--gold); }
+  .tiroir__cta:hover { background: #fff; }
+}
+
 /* L'entête est la seule bande qui a le droit d'être plus large que le contenu
    de page (1180px). MESURÉ : logo 152 + nav 619 + téléphone/CTA 419 + 32 de
    gouttières = 1222px, soit 1270px avec le padding. Dans un conteneur de
@@ -235,17 +346,6 @@ header > .container { max-width: 1320px; }
   .header-cta { padding: 10px 12px; }
 }
 
-/* Bouton SOUMISSION dans le menu overlay = plein bouton, pas un simple lien */
-.overlay-cta {
-  margin-top: 18px;
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 14px 26px; border-radius: 300px;
-  background: var(--gold); color: var(--charcoal);
-  font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
-  font-size: 26px; letter-spacing: 0.06em;
-  text-decoration: none; font-weight: 700;
-  box-shadow: 0 6px 20px rgba(11,27,43,0.14);
-}
 
 /* --- Barre fixe mobile (Appeler / Soumission) ------------------------------ */
 .mobile-bottom-bar {
@@ -690,38 +790,6 @@ textarea:focus-visible,
   .objection-card:hover { transform: none; }
 }
 
-/* --- Menu mobile plein écran ----------------------------------------------- */
-/* Deux pannes réelles, vues sur un iPhone :
-     1. le haut de la liste défilait DERRIÈRE l'en-tête fixe et se faisait
-        couper en plein milieu d'un mot (« TOUS LES SERVICES », « ZONES
-        DESSERVIES ») ;
-     2. le bloc n'avait AUCUN padding en bas, donc la barre d'action fixe
-        recouvrait les derniers liens et le courriel — on défilait jusqu'au
-        bout et l'adresse restait cachée.
-   Les deux réserves viennent de hauteurs MESURÉES au moment de l'ouverture
-   (--hauteur-entete / --hauteur-barre-bas, posées par ClientLayout), jamais
-   de constantes : la panne d'origine dans ce dépôt venait précisément d'une
-   hauteur espérée de 76px pour une barre qui en faisait 73,75. Les valeurs de
-   repli ne servent qu'au tout premier rendu, avant la mesure. */
-.menu-overlay {
-  position: fixed; inset: 0; z-index: 90;
-  background: var(--off-white, #FAFAFA);
-  display: flex; flex-direction: column;
-  /* La zone de défilement est ENCADRÉE par les deux barres fixes, elle ne
-     passe pas dessous. Réserver la place ici plutôt qu'en padding interne
-     change le résultat : avec un padding interne, les liens du milieu
-     passaient quand même derrière la barre du bas tant qu'on n'avait pas
-     défilé. Ici, aucun lien n'est jamais caché, à aucune position. */
-  padding-top: var(--hauteur-entete, 70px);
-  padding-bottom: calc(var(--hauteur-barre-bas, 84px) + env(safe-area-inset-bottom, 0px));
-}
-.menu-overlay-defile {
-  flex: 1; min-height: 0;
-  overflow-y: auto; -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
-  /* Respiration en fin de liste : le courriel ne colle pas au bord. */
-  padding-bottom: 24px;
-}
 
 
 /* --- Entête mobile : ce qui tient réellement dans la largeur ---------------- */

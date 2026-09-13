@@ -2,7 +2,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { nav, company, navy, ivory, gold, charcoal, offWhite } from "@/components/data";
+import { company, ivory, gold, charcoal } from "@/components/data";
+import { TiroirMobile } from "@/components/TiroirMobile";
 
 // Items du menu horizontal desktop.
 //
@@ -54,42 +55,11 @@ export function NavBar() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const headerRef = useRef(null);
+  const hamburgerRef = useRef(null);
 
-  // Hauteurs MESURÉES de l'en-tête et de la barre du bas, publiées en
-  // variables CSS. On ne les code pas en dur : ce dépôt s'est déjà fait avoir
-  // par une hauteur « espérée » de 76px alors que la vraie était 73,75px, et
-  // par un en-tête qui recouvrait le h1. La hauteur change avec la largeur
-  // (paliers du logo), avec la taille de police du système et quand un libellé
-  // passe sur deux lignes. Un ResizeObserver suit les trois.
-  useEffect(() => {
-    const racine = document.documentElement;
-    const mesurer = () => {
-      // .bottom, PAS .height : depuis que l'en-tête est une pilule flottante,
-      // elle commence à --entete-encart du haut. Sa hauteur (68) n'est plus
-      // ce que le menu doit réserver — il lui faut le BAS de la pilule (84),
-      // sinon le contenu défile dans l'espace au-dessus d'elle. Attrapé par
-      // check:menu à 768px. Sur un élément fixed, .bottom EST la réserve.
-      const bas = headerRef.current?.getBoundingClientRect().bottom;
-      if (bas) racine.style.setProperty("--hauteur-entete", `${Math.ceil(bas)}px`);
-      const b = document.querySelector(".mobile-bottom-bar");
-      const hb = b && getComputedStyle(b).display !== "none"
-        ? b.getBoundingClientRect().height : 0;
-      racine.style.setProperty("--hauteur-barre-bas", `${Math.ceil(hb)}px`);
-    };
-    mesurer();
-    const ro = new ResizeObserver(mesurer);
-    if (headerRef.current) ro.observe(headerRef.current);
-    const bb = document.querySelector(".mobile-bottom-bar");
-    if (bb) ro.observe(bb);
-    window.addEventListener("resize", mesurer);
-    window.addEventListener("orientationchange", mesurer);
-    return () => {
-      ro.disconnect();
-      window.removeEventListener("resize", mesurer);
-      window.removeEventListener("orientationchange", mesurer);
-    };
-  }, []);
+  // (Le ResizeObserver qui publiait --hauteur-entete / --hauteur-barre-bas
+  // est parti avec le voile plein écran : le tiroir couvre toute la hauteur,
+  // au-dessus de l'entête et de la barre du bas, il n'a rien à réserver.)
 
   useEffect(() => {
     // 24 px : l'entête devient opaque dès le premier geste de défilement,
@@ -100,11 +70,8 @@ export function NavBar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
-
+  // Le verrou de défilement vit dans le tiroir (html ET body, iOS oblige).
+  // Navigation client (next/link) : le tiroir se ferme au changement de route.
   useEffect(() => { setOpen(false); }, [pathname]);
 
   const solid = scrolled || open;
@@ -112,7 +79,6 @@ export function NavBar() {
   return (
     <>
     <header
-      ref={headerRef}
       className="entete-pilule"
       style={{
         position: "fixed", zIndex: 100,
@@ -196,71 +162,32 @@ export function NavBar() {
             </svg>
           </Link>
 
+          {/* Le hamburger ne se transforme plus en × : le tiroir couvre
+              l'entête d'un voile et porte son propre bouton Fermer. */}
           <button
             type="button"
+            ref={hamburgerRef}
             className="header-hamburger"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+            onClick={() => setOpen(true)}
+            aria-label="Ouvrir le menu"
             aria-expanded={open}
+            aria-controls="tiroir-mobile"
             style={{
               background: "transparent", border: "none", cursor: "pointer",
-              color: ivory, padding: 6, alignItems: "center", justifyContent: "center",
+              // 8 + 28 + 8 = 44 : cible tactile de 44px, comme le bouton
+              // Fermer du tiroir qui s'ouvre exactement dessous.
+              color: ivory, padding: 8, alignItems: "center", justifyContent: "center",
             }}
           >
             <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-              {open
-                ? <><line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" /></>
-                : <><line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" /></>}
+              <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
             </svg>
           </button>
         </div>
       </div>
     </header>
 
-      {open && (
-        // Le menu ne défile PLUS derrière l'en-tête ni sous la barre du bas.
-        // Avant : un seul bloc en overflow:auto avec paddingTop 104px et AUCUN
-        // padding en bas — les derniers liens et le courriel restaient sous la
-        // barre fixe, inatteignables même en défilant jusqu'au bout, et le haut
-        // de la liste passait derrière l'en-tête en coupant les mots en deux.
-        // Maintenant : une colonne flex dont la réserve haute vaut la hauteur
-        // MESURÉE de l'en-tête, et une zone de défilement qui réserve en bas la
-        // hauteur MESURÉE de la barre plus l'encoche.
-        <div className="menu-overlay">
-          <div className="menu-overlay-defile">
-          <nav className="container" style={{ padding: "24px", display: "flex", flexDirection: "column", alignItems: "flex-start", gap: 4 }}>
-            {nav.filter((i) => i.href !== "/soumission").map((item) =>
-              item.children ? (
-                <div key={item.label} style={{ marginBottom: 8 }}>
-                  <div style={{
-                    fontFamily: "'Nunito Sans', sans-serif", fontSize: 15, fontWeight: 800,
-                    letterSpacing: "0.16em", textTransform: "uppercase", color: "#8A6A1C",
-                    margin: "18px 0 10px",
-                  }}>
-                    {item.label}
-                  </div>
-                  {item.children.map((c) => (
-                    <Link key={c.href} href={c.href} style={overlayLink}>{c.label}</Link>
-                  ))}
-                </div>
-              ) : (
-                <Link key={item.href} href={item.href} style={overlayLink}>{item.label}</Link>
-              )
-            )}
-            {/* SOUMISSION traité comme bouton plein (pas comme un lien de plus) */}
-            <Link href="/soumission" className="overlay-cta">Soumission gratuite</Link>
-            <div style={{ marginTop: 24, display: "flex", flexDirection: "column", gap: 10 }}>
-              <a href={company.phoneHref} style={{ ...overlayLink, color: charcoal, fontWeight: 700 }}>
-                {company.phoneDisplay}
-              </a>
-              <a href={company.emailHref} style={{ ...overlayLink, fontSize: 18 }}>
-                {company.email}
-              </a>
-            </div>
-          </nav>
-          </div>
-        </div>
-      )}
+      <TiroirMobile ouvert={open} onFermer={() => setOpen(false)} declencheurRef={hamburgerRef} />
     </>
   );
 }
@@ -283,13 +210,3 @@ export function MobileBottomBar() {
   );
 }
 
-const overlayLink = {
-  display: "block",
-  width: "fit-content",
-  fontFamily: "'Bebas Neue', sans-serif",
-  fontSize: 34,
-  letterSpacing: "0.04em",
-  color: navy,
-  textDecoration: "none",
-  padding: "8px 0",
-};
