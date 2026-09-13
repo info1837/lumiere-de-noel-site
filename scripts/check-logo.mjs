@@ -50,7 +50,12 @@ for (const width of LARGEURS) {
       return {
         logo: i ? { w: i.clientWidth, h: i.clientHeight } : null,
         debordement: de.scrollWidth - de.clientWidth,
+        // Une image dans un sous-arbre display:none (le mot-symbole du tiroir
+        // mobile, absent du bureau) n'a AUCUNE boîte : elle n'est pas rendue,
+        // donc pas « rendue à taille nulle ». Le logo écrasé d'origine, lui,
+        // avait bien une boîte — de 0px de large — et reste attrapé.
         nulles: [...document.querySelectorAll("img")]
+          .filter((x) => x.getClientRects().length > 0)
           .filter((x) => x.clientWidth === 0 || x.clientHeight === 0)
           .map((x) => x.getAttribute("src")),
       };
