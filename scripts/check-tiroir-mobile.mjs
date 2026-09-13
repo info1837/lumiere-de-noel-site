@@ -24,6 +24,10 @@ import { chromium, webkit } from 'playwright';
 
 const url = (process.argv.find(a => a.startsWith('--url=')) || '').slice(6) || 'http://localhost:3000';
 const SHOTS = process.env.SHOTS || '';
+// Previews Vercel (SSO) : VERCEL_AUTOMATION_BYPASS_SECRET → en-tête de
+// contournement sur chaque requête, jamais x-vercel-set-bypass-cookie.
+const BYPASS = process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '';
+const ENTETES = BYPASS ? { 'x-vercel-protection-bypass': BYPASS } : {};
 const echecs = [];
 const ok = (c, m) => { if (!c) echecs.push(m); return c; };
 const OR = 'rgb(233, 220, 192)';   // --gold (champagne)
@@ -63,7 +67,7 @@ async function axe(p, t, etat) {
 
 // ── 0. HTML serveur : tous les liens présents sans JavaScript ────────────
 {
-  const html = await (await fetch(url)).text();
+  const html = await (await fetch(url, { headers: ENTETES })).text();
   const i = html.indexOf('id="tiroir-mobile"');
   ok(i > 0, 'HTML serveur : #tiroir-mobile absent');
   const tiroir = html.slice(i, html.indexOf('tiroir__pied', i));
@@ -76,7 +80,7 @@ async function axe(p, t, etat) {
 for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
   const b = await M.launch();
   for (const vp of VP) {
-    const ctx = await b.newContext({ viewport: { width: vp.width, height: vp.height }, hasTouch: true, isMobile: true });
+    const ctx = await b.newContext({ viewport: { width: vp.width, height: vp.height }, hasTouch: true, isMobile: true, extraHTTPHeaders: ENTETES });
     const p = await ctx.newPage();
     const t = `${nomM} ${vp.nom}`;
     await p.goto(url, { waitUntil: 'domcontentloaded' });
