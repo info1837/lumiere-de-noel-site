@@ -41,6 +41,12 @@ export async function POST(request) {
     body.service ? `Service: ${clean(body.service, 120)}` : '',
     body.budget ? `Budget: ${clean(body.budget, 60)}` : '',
     body.message ? `Message: ${clean(body.message, 1000)}` : '',
+    // TRACE DE CONSENTEMENT (Loi 25 / LCAP). Les deux formulaires
+    // EXIGENT la case avant d'envoyer, et fabriquent une trace horodatee
+    // (« accorde le 2026-09-27 via le formulaire du hero »). Cette trace
+    // etait jetee ici : la preuve du consentement n'existait donc nulle
+    // part dans le CRM, alors que c'est elle qui autorise les SMS.
+    body.consentement ? `Consentement: ${clean(body.consentement, 160)}` : '',
   ].filter(Boolean).join('\n');
 
   try {
@@ -50,6 +56,15 @@ export async function POST(request) {
       body: JSON.stringify({
         name, phone, email,
         address: clean(body.adresse || body.address, 240),
+        // `ville` etait COLLECTE par le formulaire hero et jete ici : il
+        // n'apparaissait ni dans le payload, ni dans les notes. Le lead
+        // arrivait donc au CRM avec city = null, et Sophie B redemandait
+        // une information que le client venait d'ecrire. Trouve le
+        // 2026-09-27 pendant le test de bout en bout de Yahir.
+        //
+        // Le CRM accepte `city` (voir la liste de champs de
+        // /api/leads). Le formulaire complet, lui, envoie `adresse`.
+        city: clean(body.ville || body.city, 120),
         service: clean(body.service, 120) || 'Lumières de Noël',
         source: clean(body.source, 80) || 'Site — Lumière de Noël',
         notes,
