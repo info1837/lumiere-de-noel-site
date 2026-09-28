@@ -4,7 +4,7 @@ import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { budgetOptions, serviceOptions, sendLead, charcoal, HONEYPOT_FIELD } from "@/components/data";
 import { ChampAttribution, CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
-import { newLeadEventId, metaPixelBlock, trackLead, merciUrl } from "@/lib/meta-lead-event";
+import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
 
 const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", budget: "", message: "", attribution: "", consent: false, [HONEYPOT_FIELD]: "" };
 
@@ -50,7 +50,10 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
     if (ok) {
       // Lead AVEC son eventID. Sans lui, aucune deduplication : le
       // navigateur et le serveur comptent deux conversions.
-      trackLead(eventId);
+      // On ATTEND que le pixel soit pret ET que sa requete parte : une
+      // redirection immediate la coupait, et aucun Lead n'etait compte.
+      await trackLead(eventId);
+      await laisserPartir();
       window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=${encodeURIComponent(redirectSrc)}`);
       return;
     }

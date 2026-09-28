@@ -3,7 +3,7 @@ import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
-import { newLeadEventId, metaPixelBlock, trackLead, merciUrl } from "@/lib/meta-lead-event";
+import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
 import { ChampAttribution, CaseConsentement, NoteSoumission, VILLES_DESSERVIES } from "@/components/ConsentementAttribution";
 import { PHOTOS } from "@/components/photos";
 
@@ -44,7 +44,10 @@ export default function Hero() {
       // Lead AVEC son event_id, et /merci rejoue le MÊME id : sans ça la
       // page de remerciement comptait une deuxième conversion pour la
       // même soumission.
-      trackLead(eventId);
+      // On ATTEND que le pixel soit pret ET que sa requete parte : une
+      // redirection immediate la coupait, et aucun Lead n'etait compte.
+      await trackLead(eventId);
+      await laisserPartir();
       window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=hero`);
       return;
     }

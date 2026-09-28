@@ -33,10 +33,14 @@ for (const [f, nom] of FORMULAIRES) {
   const s = lire(f);
   const aId = /newLeadEventId\(\)/.test(s);
   const aTrack = /trackLead\(eventId\)/.test(s);
+  // Les formulaires qui REDIRIGENT doivent attendre : sans await, la
+  // navigation coupe la requete du pixel avant qu'elle parte.
+  const redirige = /window\.location\.assign/.test(s);
+  const attend = !redirige || /await trackLead\(eventId\)/.test(s) && /await laisserPartir\(\)/.test(s);
   const aBloc = /metaPixelBlock\(eventId\)/.test(s);
   const fbqNu = /fbq\("track",\s*"Lead"\)|fbq\('track',\s*'Lead'\)/.test(s);
-  t(nom.padEnd(26), aId && aTrack && aBloc && !fbqNu,
-    `event_id=${aId} track=${aTrack} bloc=${aBloc}${fbqNu ? ' · ⚠️ fbq NU encore présent' : ''}`);
+  t(nom.padEnd(26), aId && aTrack && aBloc && !fbqNu && attend,
+    `event_id=${aId} track=${aTrack} bloc=${aBloc} attend=${attend}${fbqNu ? ' · ⚠️ fbq NU' : ''}`);
 }
 
 console.log('\n--- 2. 🚨 /merci ne compte pas une deuxième conversion ---');
@@ -44,7 +48,13 @@ console.log('\n--- 2. 🚨 /merci ne compte pas une deuxième conversion ---');
   const s = lire('app/merci/page.jsx');
   t('elle lit ?eid dans l\'URL', /URLSearchParams\([^)]*\)\.get\('eid'\)/.test(s));
   t('🚨 elle rejoue avec eventID, pas un Lead nu', /fbq\('track', 'Lead', \{\}, \{ eventID: eid \}\)/.test(s));
-  t('🚨 sans eid, elle ne compte RIEN', /&& eid\b/.test(s),
+  // Le pixel s'initialise en afterInteractive, comme ce script : sans
+  // attente, il partait AVANT que fbq existe et la garde le sautait.
+  t('🚨 elle ATTEND que fbq soit chargé', /setInterval/.test(s) && /typeof window\.fbq === 'function'/.test(s));
+  // Le rejeu est enferme dans `if (eid)` : pas d'eid (visite directe,
+  // lien partage), aucun Lead. Un Lead sans soumission est un chiffre
+  // invente.
+  t('🚨 sans eid, elle ne compte RIEN', /if \(eid\) \{/.test(s),
     /fbq\('track', 'Lead'\)/.test(s) ? '⚠️ un Lead nu subsiste' : '');
 }
 
@@ -74,8 +84,11 @@ console.log('\n--- 4. Le module fait ce qu\'il annonce ---');
   t('merciUrl transporte l\'eid', m.merciUrl('', a).includes(`eid=${encodeURIComponent(a)}`), m.merciUrl('', a));
   // trackLead sans fbq ne doit jamais lever : le pixel peut être bloqué.
   let leve = false;
-  try { m.trackLead(a); } catch { leve = true; }
+  let rendu = null;
+  try { rendu = await m.trackLead(a, {}, 300); } catch { leve = true; }
   t('trackLead ne lève pas quand le pixel est absent', !leve);
+  t('🚨 et il rend false après avoir attendu, au lieu de mentir', rendu === false, `rendu=${rendu}`);
+  t('laisserPartir existe pour les redirections', typeof m.laisserPartir === 'function');
 }
 
 console.log('\n--- 5. Le pixel est-il vraiment allumé ? ---');

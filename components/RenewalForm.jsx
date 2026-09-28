@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import { sendLead, charcoal, HONEYPOT_FIELD } from "@/components/data";
-import { newLeadEventId, metaPixelBlock, trackLead, merciUrl } from "@/lib/meta-lead-event";
+import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
 
 // Formulaire dédié aux clients de l'an dernier — plus court que QuoteForm :
 // pas de choix de service (on sait déjà ce qu'ils avaient), pas de budget
@@ -50,7 +50,10 @@ export default function RenewalForm() {
     if (ok) {
       // Lead AVEC son eventID. Sans lui, aucune deduplication : le
       // navigateur et le serveur comptent deux conversions.
-      trackLead(eventId);
+      // On ATTEND que le pixel soit pret ET que sa requete parte : une
+      // redirection immediate la coupait, et aucun Lead n'etait compte.
+      await trackLead(eventId);
+      await laisserPartir();
       window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=renouvellement`);
       return;
     }
