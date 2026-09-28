@@ -226,6 +226,10 @@ export async function POST(request) {
           linear_ft: linearFt,
           measure_method: manuel ? 'manual' : 'map',
           line_count: nbLignes,
+          // Bloc du pixel relaye tel quel : le CRM renvoie le jumeau
+          // serveur avec le MEME event_id et Meta deduplique. La
+          // calculatrice ne tirait AUCUN Lead avant le 2026-09-28.
+          ...(body.meta_pixel && typeof body.meta_pixel === 'object' ? { meta_pixel: body.meta_pixel } : {}),
         }),
       });
       leadEnregistre = res.ok;

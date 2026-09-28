@@ -65,6 +65,12 @@ export async function POST(request) {
         // Le CRM accepte `city` (voir la liste de champs de
         // /api/leads). Le formulaire complet, lui, envoie `adresse`.
         city: clean(body.ville || body.city, 120),
+        // Bloc du pixel (event_id, _fbp, _fbc, url de la page). Le CRM
+        // renvoie le jumeau serveur avec le MEME event_id : Meta
+        // deduplique, et si un bloqueur coupe le pixel du navigateur la
+        // conversion survit quand meme. Relaye tel quel, jamais fabrique
+        // ici : ces cookies n'existent que dans le navigateur du visiteur.
+        ...(body.meta_pixel && typeof body.meta_pixel === 'object' ? { meta_pixel: body.meta_pixel } : {}),
         service: clean(body.service, 120) || 'Lumières de Noël',
         source: clean(body.source, 80) || 'Site — Lumière de Noël',
         notes,

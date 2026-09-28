@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import { sendLead, charcoal, HONEYPOT_FIELD } from "@/components/data";
+import { newLeadEventId, metaPixelBlock, trackLead, merciUrl } from "@/lib/meta-lead-event";
 
 // Formulaire dédié aux clients de l'an dernier — plus court que QuoteForm :
 // pas de choix de service (on sait déjà ce qu'ils avaient), pas de budget
@@ -31,7 +32,11 @@ export default function RenewalForm() {
       return;
     }
     setStatus("sending");
+    // UN event_id par soumission — pixel et CRM portent le meme, Meta
+    // deduplique le jumeau serveur (API Conversions).
+    const eventId = newLeadEventId();
     const ok = await sendLead({
+      meta_pixel: metaPixelBlock(eventId),
       subject: "Nouveau lead — Renouvellement (client existant)",
       source: "Formulaire /renouvellement",
       nom: data.nom,
@@ -43,8 +48,10 @@ export default function RenewalForm() {
       [HONEYPOT_FIELD]: data[HONEYPOT_FIELD],
     });
     if (ok) {
-      if (typeof window !== "undefined" && window.fbq) window.fbq("track", "Lead");
-      window.location.assign("/merci?src=renouvellement");
+      // Lead AVEC son eventID. Sans lui, aucune deduplication : le
+      // navigateur et le serveur comptent deux conversions.
+      trackLead(eventId);
+      window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=renouvellement`);
       return;
     }
     setStatus("error");
