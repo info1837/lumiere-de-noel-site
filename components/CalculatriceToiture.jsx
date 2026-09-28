@@ -334,7 +334,7 @@ export default function CalculatriceToiture() {
       }
       // Le lead est cree cote serveur : c'est ICI que la conversion est
       // reelle, pas au moment ou le visiteur ouvre la calculatrice.
-      trackLead(eventId);
+      void trackLead(eventId);
       setResultat(d); setEtape("prix");
       evenement("calc_price_shown", {
         price: d.quotable ? d.total : null,

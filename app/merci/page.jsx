@@ -53,8 +53,20 @@ export default function MerciPage() {
               // Pas d'eid (visite directe, lien partage) : on ne compte
               // RIEN. Un Lead sans soumission est un chiffre invente.
               var eid = new URLSearchParams(window.location.search).get('eid');
-              if (typeof window.fbq === 'function' && eid) {
-                window.fbq('track', 'Lead', {}, { eventID: eid });
+              // Le pixel s'initialise en afterInteractive, comme ce
+              // script : mesure le 2026-09-28, celui-ci partait AVANT que
+              // window.fbq existe et la garde le sautait EN SILENCE.
+              // On attend donc fbq, jusqu'a 5 s.
+              if (eid) {
+                var t0 = Date.now();
+                var minuteur = setInterval(function () {
+                  if (typeof window.fbq === 'function') {
+                    clearInterval(minuteur);
+                    window.fbq('track', 'Lead', {}, { eventID: eid });
+                  } else if (Date.now() - t0 > 5000) {
+                    clearInterval(minuteur);
+                  }
+                }, 100);
               }
               if (typeof window.gtag === 'function') { window.gtag('event', 'generate_lead'); }
               if (typeof window.va === 'function') { window.va('event', { name: 'lead_submitted' }); }
