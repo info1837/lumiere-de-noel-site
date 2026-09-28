@@ -4,6 +4,7 @@ import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { budgetOptions, serviceOptions, sendLead, charcoal, HONEYPOT_FIELD } from "@/components/data";
 import { ChampAttribution, CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
+import { newLeadEventId, metaPixelBlock, trackLead, merciUrl } from "@/lib/meta-lead-event";
 
 const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", budget: "", message: "", attribution: "", consent: false, [HONEYPOT_FIELD]: "" };
 
@@ -28,7 +29,11 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
     if (!data.consent) { setErreurConsent(true); return; }
     setErreurConsent(false);
     setStatus("sending");
+    // UN event_id par soumission — pixel et CRM portent le meme, Meta
+    // deduplique le jumeau serveur (API Conversions).
+    const eventId = newLeadEventId();
     const ok = await sendLead({
+      meta_pixel: metaPixelBlock(eventId),
       subject: "Nouveau lead — Demande de soumission",
       source: `${source}${data.attribution ? ` · ${data.attribution}` : ""}`,
       consentement: `accordé le ${new Date().toISOString().slice(0, 10)} via ${source}`,
@@ -43,8 +48,10 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
       ...(extraPayload || {}),
     });
     if (ok) {
-      if (typeof window !== "undefined" && window.fbq) window.fbq("track", "Lead");
-      window.location.assign(`/merci?src=${encodeURIComponent(redirectSrc)}`);
+      // Lead AVEC son eventID. Sans lui, aucune deduplication : le
+      // navigateur et le serveur comptent deux conversions.
+      trackLead(eventId);
+      window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=${encodeURIComponent(redirectSrc)}`);
       return;
     }
     setStatus("error");

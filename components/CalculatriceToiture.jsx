@@ -5,6 +5,7 @@ import { evenement } from "@/lib/evenements";
 import { CAS_DEMO, PANNEAUX, cheminPanneau } from "@/components/demos";
 import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
 import { signalerPanne } from "@/lib/calc-telemetrie";
+import { newLeadEventId, metaPixelBlock, trackLead } from "@/lib/meta-lead-event";
 
 // =============================================================================
 // Calculatrice de toiture — le visiteur trace, le serveur chiffre
@@ -310,10 +311,16 @@ export default function CalculatriceToiture() {
     }
     setEnvoi(true); setErreur(null);
     try {
+      // 4e formulaire du site, et le seul qui ne tirait AUCUN evenement
+      // Lead. Il produit pourtant un lead complet — adresse, contact,
+      // pieds lineaires : toutes ses conversions etaient invisibles dans
+      // le Gestionnaire d'evenements.
+      const eventId = newLeadEventId();
       const r = await fetch("/api/calc-noel", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lines: lignes, address: adresse, extras, contact, website: pot,
+          meta_pixel: metaPixelBlock(eventId),
           ...(manuel ? { measure_method: "manual", linearFt: Number(piedsManuels) } : {}),
         }),
       });
@@ -325,6 +332,9 @@ export default function CalculatriceToiture() {
           : "On n'arrive pas à calculer votre prix en ce moment. Appelez-nous — on vous le donne au téléphone.");
         setEnvoi(false); return;
       }
+      // Le lead est cree cote serveur : c'est ICI que la conversion est
+      // reelle, pas au moment ou le visiteur ouvre la calculatrice.
+      trackLead(eventId);
       setResultat(d); setEtape("prix");
       evenement("calc_price_shown", {
         price: d.quotable ? d.total : null,

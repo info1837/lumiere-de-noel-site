@@ -46,7 +46,16 @@ export default function MerciPage() {
         {`
           if (typeof window !== 'undefined') {
             try {
-              if (typeof window.fbq === 'function') { window.fbq('track', 'Lead'); }
+              // REJOUE le meme event_id que le formulaire, passe en ?eid=.
+              // Sans lui, cette page comptait une DEUXIEME conversion pour
+              // la meme soumission — et chaque rechargement de /merci en
+              // ajoutait une autre. Avec le meme id, Meta deduplique.
+              // Pas d'eid (visite directe, lien partage) : on ne compte
+              // RIEN. Un Lead sans soumission est un chiffre invente.
+              var eid = new URLSearchParams(window.location.search).get('eid');
+              if (typeof window.fbq === 'function' && eid) {
+                window.fbq('track', 'Lead', {}, { eventID: eid });
+              }
               if (typeof window.gtag === 'function') { window.gtag('event', 'generate_lead'); }
               if (typeof window.va === 'function') { window.va('event', { name: 'lead_submitted' }); }
             } catch (e) { /* silent */ }

@@ -3,6 +3,7 @@ import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
 import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
+import { newLeadEventId, metaPixelBlock, trackLead, merciUrl } from "@/lib/meta-lead-event";
 import { ChampAttribution, CaseConsentement, NoteSoumission, VILLES_DESSERVIES } from "@/components/ConsentementAttribution";
 import { PHOTOS } from "@/components/photos";
 
@@ -25,8 +26,14 @@ export default function Hero() {
     if (!data.consent) { setErreurConsent(true); return; }
     setErreurConsent(false);
     setStatus("sending");
+    // UN event_id par soumission : le navigateur l'envoie au pixel et le
+    // même id part au CRM, qui renvoie le jumeau serveur (API
+    // Conversions). Meta déduplique. Si un bloqueur coupe le pixel, la
+    // conversion serveur reste.
+    const eventId = newLeadEventId();
     const ok = await sendLead({
       subject: "Nouveau lead — Réservation rapide (hero)",
+      meta_pixel: metaPixelBlock(eventId),
       // L'attribution voyage dans la source : le CRM la lit sans schéma neuf.
       source: `Formulaire hero (réservation rapide)${data.attribution ? ` · ${data.attribution}` : ""}`,
       // Trace du consentement (Loi 25 / LCAP), horodatée.
@@ -34,10 +41,11 @@ export default function Hero() {
       ...data,
     });
     if (ok) {
-      if (typeof window !== "undefined" && window.fbq) window.fbq("track", "Lead");
-      // Redirection vers /merci — page dédiée mesurable en conversion et
-      // qui donne au client une promesse claire ("Réponse en moins de 24 h").
-      window.location.assign("/merci?src=hero");
+      // Lead AVEC son event_id, et /merci rejoue le MÊME id : sans ça la
+      // page de remerciement comptait une deuxième conversion pour la
+      // même soumission.
+      trackLead(eventId);
+      window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=hero`);
       return;
     }
     setStatus("error");
