@@ -543,6 +543,9 @@ export const WEB3FORMS_ACCESS_KEY = "295b087c-0152-4a3c-854f-edadd1961418";
 // d'intake vit côté serveur uniquement — jamais dans le bundle public.
 // Échoue en silence : le CRM ne doit jamais faire perdre un lead à
 // Web3Forms, qui reste le chemin de secours.
+// Le CRM est la SOURCE DE VÉRITÉ : c'est là que le lead vit, que Sophie
+// le prend en charge et que la conversion est réelle. Cette fonction rend
+// donc true/false, et c'est elle qui décide du succès.
 async function sendLeadToCrm(payload) {
   try {
     const res = await fetch("/api/lead", {
@@ -553,8 +556,40 @@ async function sendLeadToCrm(payload) {
     if (!res.ok && typeof console !== "undefined") {
       console.warn("[Lumière] CRM intake a répondu", res.status);
     }
+    return res.ok;
   } catch (e) {
     if (typeof console !== "undefined") console.warn("[Lumière] CRM intake indisponible:", e?.message);
+    return false;
+  }
+}
+
+// Web3Forms n'est qu'un relais de courriel. Il ne doit JAMAIS décider si
+// la soumission a réussi.
+//
+// Le 2026-09-28, mesuré en vrai navigateur sur la production : depuis
+// www.lumieredenoelinc.com, l'appel à api.web3forms.com est bloqué par
+// CORS. Le lead arrivait bien au CRM (HTTP 200), et pourtant le visiteur
+// lisait « Erreur d'envoi. Appelez-nous au (438) 812-6635. », la page ne
+// redirigeait pas vers /merci, et AUCUN événement Lead ne partait vers
+// Meta. Chaque soumission du hero, de la soumission complète et du
+// renouvellement se terminait par un message d'erreur mensonger.
+async function notifierWeb3Forms(payload) {
+  if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY") return false;
+  try {
+    const res = await fetch("https://api.web3forms.com/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        access_key: WEB3FORMS_ACCESS_KEY,
+        from_name: "Site Solution Lumière de Noël inc.",
+        ...payload,
+      }),
+    });
+    const json = await res.json().catch(() => ({}));
+    return res.ok && json.success !== false;
+  } catch (e) {
+    if (typeof console !== "undefined") console.warn("[Lumière] Web3Forms indisponible:", e?.message);
+    return false;
   }
 }
 
@@ -570,29 +605,12 @@ export async function sendLead(payload) {
     return true;
   }
 
-  // Toujours tenter le CRM, même en mode démo Web3Forms.
-  void sendLeadToCrm(payload);
-
-  if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY") {
-    if (typeof console !== "undefined") {
-      console.warn("[Lumière] WEB3FORMS_ACCESS_KEY non configurée — lead NON envoyé (mode démo).", payload);
-    }
-    await new Promise((r) => setTimeout(r, 600));
-    return true; // succès simulé pour la démo
-  }
-  try {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_ACCESS_KEY,
-        from_name: "Site Solution Lumière de Noël inc.",
-        ...payload,
-      }),
-    });
-    const json = await res.json().catch(() => ({}));
-    return res.ok && json.success !== false;
-  } catch {
-    return false;
-  }
+  // Le CRM decide. Web3Forms part en parallele et son echec n'est qu'une
+  // notification manquee — jamais un lead perdu, jamais une erreur a
+  // l'ecran, jamais une conversion non comptee.
+  const [crmOk] = await Promise.all([
+    sendLeadToCrm(payload),
+    notifierWeb3Forms(payload).catch(() => false),
+  ]);
+  return crmOk;
 }
