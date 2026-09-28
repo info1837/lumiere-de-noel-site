@@ -531,18 +531,19 @@ export const serviceOptions = [
   "Autre / je ne suis pas certain",
 ];
 
-// --- Capture des leads (Web3Forms) ------------------------------------------
-// Web3Forms = GRATUIT, envois ILLIMITÉS, formulaires illimités, AUCUN compte.
-// 1) Va sur https://web3forms.com  2) entre ton courriel  3) copie l'Access Key
-// 4) colle-la ci-dessous. UN SEUL endpoint sert TOUT le site (hero + soumission).
-// Tant que la clé n'est pas mise : le formulaire SIMULE le succès pour la démo
-// mais N'ENVOIE RIEN (clairement signalé en console).
-export const WEB3FORMS_ACCESS_KEY = "295b087c-0152-4a3c-854f-edadd1961418";
-
-// Relaie le lead vers le CRM via notre propre route serveur. La clé
-// d'intake vit côté serveur uniquement — jamais dans le bundle public.
-// Échoue en silence : le CRM ne doit jamais faire perdre un lead à
-// Web3Forms, qui reste le chemin de secours.
+// --- Capture des leads --------------------------------------------------
+// UN SEUL chemin : notre propre route serveur, qui relaie au CRM avec la
+// clé d'intake. Cette clé vit côté serveur uniquement, jamais dans le
+// bundle public.
+//
+// Web3Forms a été RETIRÉ le 2026-09-28. Il servait de relais de courriel
+// et il était bloqué par CORS depuis www.lumieredenoelinc.com : chaque
+// soumission affichait « Erreur d'envoi » au client alors que le lead
+// était bien enregistré. Sa clé d'accès vivait en clair dans le bundle.
+//
+// Ce que le client déclenche maintenant, sans aucun tiers : la fiche dans
+// le CRM, le courriel de nouveau lead au propriétaire, l'ouverture de
+// Sophie B, et le Telegram quand elle qualifie le lead en A.
 // Le CRM est la SOURCE DE VÉRITÉ : c'est là que le lead vit, que Sophie
 // le prend en charge et que la conversion est réelle. Cette fonction rend
 // donc true/false, et c'est elle qui décide du succès.
@@ -563,36 +564,6 @@ async function sendLeadToCrm(payload) {
   }
 }
 
-// Web3Forms n'est qu'un relais de courriel. Il ne doit JAMAIS décider si
-// la soumission a réussi.
-//
-// Le 2026-09-28, mesuré en vrai navigateur sur la production : depuis
-// www.lumieredenoelinc.com, l'appel à api.web3forms.com est bloqué par
-// CORS. Le lead arrivait bien au CRM (HTTP 200), et pourtant le visiteur
-// lisait « Erreur d'envoi. Appelez-nous au (438) 812-6635. », la page ne
-// redirigeait pas vers /merci, et AUCUN événement Lead ne partait vers
-// Meta. Chaque soumission du hero, de la soumission complète et du
-// renouvellement se terminait par un message d'erreur mensonger.
-async function notifierWeb3Forms(payload) {
-  if (!WEB3FORMS_ACCESS_KEY || WEB3FORMS_ACCESS_KEY === "YOUR_ACCESS_KEY") return false;
-  try {
-    const res = await fetch("https://api.web3forms.com/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({
-        access_key: WEB3FORMS_ACCESS_KEY,
-        from_name: "Site Solution Lumière de Noël inc.",
-        ...payload,
-      }),
-    });
-    const json = await res.json().catch(() => ({}));
-    return res.ok && json.success !== false;
-  } catch (e) {
-    if (typeof console !== "undefined") console.warn("[Lumière] Web3Forms indisponible:", e?.message);
-    return false;
-  }
-}
-
 // Champ honeypot : les bots remplissent tous les champs, y compris ceux
 // visuellement cachés. Si _website (ou payload.honeypot) est non vide,
 // on retourne "succès" côté client sans rien envoyer — le pourri disparaît
@@ -605,12 +576,6 @@ export async function sendLead(payload) {
     return true;
   }
 
-  // Le CRM decide. Web3Forms part en parallele et son echec n'est qu'une
-  // notification manquee — jamais un lead perdu, jamais une erreur a
-  // l'ecran, jamais une conversion non comptee.
-  const [crmOk] = await Promise.all([
-    sendLeadToCrm(payload),
-    notifierWeb3Forms(payload).catch(() => false),
-  ]);
-  return crmOk;
+  // Un seul chemin, un seul verdict : le CRM.
+  return sendLeadToCrm(payload);
 }

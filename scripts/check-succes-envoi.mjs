@@ -34,13 +34,17 @@ globalThis.fetch = async (url, init) => {
 
 const lead = { nom: 'Test', telephone: '5145550199', ville: 'Blainville', source: 'Formulaire hero (réservation rapide)' };
 
-console.log('\n--- 1. 🚨 Web3Forms bloqué par CORS : la soumission RÉUSSIT quand même ---');
+console.log('\n--- 1. 🚨 AUCUN service tiers n\'est appelé ---');
 {
   crmStatut = 200; web3Leve = true; appels = [];
   const ok = await sendLead({ ...lead });
-  t('🚨 sendLead rend true', ok === true, `rendu=${ok}`);
+  t('la soumission réussit', ok === true, `rendu=${ok}`);
   t('le CRM a bien été appelé', appels.includes('crm'));
-  t('Web3Forms a été tenté quand même', appels.includes('web3forms'));
+  // Web3Forms a ete RETIRE le 2026-09-28 : il etait bloque par CORS et
+  // faisait afficher « Erreur d'envoi » alors que le lead etait
+  // enregistre. Le succes ne doit dependre d'aucun tiers.
+  t('🚨 Web3Forms n\'est plus appelé du tout', !appels.includes('web3forms'), appels.join(', '));
+  t('🚨 un seul appel réseau, vers notre propre route', appels.length === 1 && appels[0] === 'crm', appels.join(', '));
 }
 
 console.log('\n--- 2. Le CRM refuse : la soumission échoue ---');
@@ -50,11 +54,12 @@ console.log('\n--- 2. Le CRM refuse : la soumission échoue ---');
   t('🚨 sendLead rend false quand le CRM refuse', ok === false, `rendu=${ok}`);
 }
 
-console.log('\n--- 3. Web3Forms va bien mais le CRM tombe : échec ---');
+console.log('\n--- 3. Le CRM tombe : échec, sans repli sur un tiers ---');
 {
-  crmStatut = 502; web3Leve = false;
+  crmStatut = 502; web3Leve = false; appels = [];
   const ok = await sendLead({ ...lead });
-  t('Web3Forms seul ne suffit pas à déclarer un succès', ok === false, `rendu=${ok}`);
+  t('aucun tiers ne sauve un CRM en panne', ok === false, `rendu=${ok}`);
+  t('et rien n\'a été envoyé ailleurs', !appels.includes('web3forms'));
 }
 
 console.log('\n--- 4. Les deux vont bien ---');
@@ -68,6 +73,17 @@ console.log('\n--- 5. Le honeypot reste silencieux ---');
   appels = [];
   const ok = await sendLead({ ...lead, [HONEYPOT_FIELD]: 'bot' });
   t('un bot reçoit « succès » sans rien envoyer', ok === true && appels.length === 0, `${appels.length} appel(s)`);
+}
+
+console.log('\n--- 6. La clé Web3Forms ne vit plus dans le bundle public ---');
+{
+  const fs = await import('fs');
+  const src = fs.readFileSync(path.join(ROOT, 'components/data.js'), 'utf8');
+  const code = src.replace(/\/\/[^\n]*/g, '').replace(/\/\*[\s\S]*?\*\//g, '');
+  t('🚨 aucune clé d\'accès tierce dans le code', !/295b087c|WEB3FORMS_ACCESS_KEY|api\.web3forms\.com/.test(code),
+    (code.match(/295b087c[^"']*/) || [''])[0]);
+  const mod = await import(path.join(ROOT, 'components/data.js'));
+  t('WEB3FORMS_ACCESS_KEY n\'est plus exporté', mod.WEB3FORMS_ACCESS_KEY === undefined);
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);
