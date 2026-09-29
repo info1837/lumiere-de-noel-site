@@ -454,7 +454,7 @@ export const eclairagePage = {
     { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
     { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
     { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
-    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la un nombre limité de propriétés chaque saison." },
+    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la consultation design." },
     { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
   ],
   // Vraies installations d'éclairage permanent. Pas de légende de ville :
