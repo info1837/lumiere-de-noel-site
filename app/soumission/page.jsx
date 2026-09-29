@@ -25,7 +25,20 @@ const nextSteps = [
   { n: "03", title: "Soumission ferme", body: "Prix écrit, sans surprise. Vous décidez si vous allez de l'avant." },
 ];
 
-export default function Soumission() {
+export default function Soumission({ searchParams }) {
+  // ⚠️ La liste d'attente passe par le MÊME formulaire et le MÊME envoi.
+  //
+  // Seule la `source` change. C'est elle qui porte l'étiquette jusque dans
+  // le CRM, et le consentement en dérive — il reste donc exact : « accordé
+  // le … via Liste d'attente ». Rien d'autre n'est touché : ni le pixel,
+  // ni l'event_id, ni /api/lead.
+  //
+  // Un deuxième formulaire aurait voulu dire un deuxième consentement, un
+  // deuxième envoi et deux endroits où une correction peut être oubliée.
+  const listeAttente = String(searchParams?.["liste-attente"] || "") === "1";
+  const sourceFormulaire = listeAttente
+    ? "Liste d'attente — site Lumière"
+    : "Formulaire de soumission (complet)";
   // 2 photos représentatives (Rive-Nord + Rive-Sud) pour la colonne de gauche.
   const leftPhotos = [homePortfolio[0], homePortfolio[2]];
 
@@ -50,9 +63,13 @@ export default function Soumission() {
                 Vous étiez client l'an dernier ? Réservez votre date →
               </Link>
             </div>
-            <h1 style={{ color: ivory, marginBottom: 18 }}>Réservez votre date</h1>
+            <h1 style={{ color: ivory, marginBottom: 18 }}>
+              {listeAttente ? "Liste d’attente" : "Réservez votre date"}
+            </h1>
             <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 19, marginBottom: 20 }}>
-              Nous confirmons votre place et votre prix après une courte consultation.
+              {listeAttente
+                ? "La saison est complète. Laissez-nous vos coordonnées : on vous appelle dès qu’une date se libère, et en priorité l’an prochain."
+                : "Nous confirmons votre place et votre prix après une courte consultation."}
             </p>
 
             {/* Rappel garantie — argument de réassurance sur la page de conversion */}
@@ -133,7 +150,7 @@ export default function Soumission() {
             </div>
           </div>
           <div style={{ paddingBottom: 24 }}>
-            <QuoteForm />
+            <QuoteForm source={sourceFormulaire} />
           </div>
         </div>
       </section>

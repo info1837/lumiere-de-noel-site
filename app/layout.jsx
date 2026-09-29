@@ -2,6 +2,7 @@ import "./globals.css";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { NavBar, MobileBottomBar } from "./ClientLayout";
+import BandeauRarete from "@/components/BandeauRarete";
 import { ServerFooter } from "./ServerFooter";
 import TelemetryClient from "./TelemetryClient";
 import FestiveLayer from "@/components/FestiveLayer";
@@ -166,6 +167,11 @@ export default function RootLayout({ children }) {
           </>
         )}
 
+        {/* Le bandeau AU-DESSUS de l'entête : c'est le premier chiffre que
+            le visiteur lit, et il ne doit pas disparaître au défilement
+            comme le ferait un élément de la nav. Il rend null quand le CRM
+            ne répond pas — aucun espace réservé, aucun squelette. */}
+        <BandeauRarete />
         <NavBar />
         <main id="contenu">{children}</main>
         <ServerFooter />
