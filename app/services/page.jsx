@@ -9,7 +9,7 @@ import { servicePhoto } from "@/components/photos";
 export const metadata = {
   title: "Nos services",
   description:
-    "Lumières de Noël résidentielles et commerciales, et éclairage architectural permanent DEL. Pose, entretien et retrait inclus. Dès 1 000 $.",
+    "Lumières de Noël résidentielles et commerciales, et éclairage architectural permanent DEL. Pose, entretien et retrait inclus. Projets à partir de 1 000 $.",
   alternates: { canonical: "/services" },
   openGraph: {
     title: "Nos services | Solution Lumière de Noël inc.",
@@ -69,7 +69,7 @@ export default function ServicesIndex() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: 48 }}>
-            <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>

@@ -64,7 +64,7 @@ export function ServerFooter() {
             <div><Link href="/eclairage-architectural" style={linkStyle}>Éclairage architectural</Link></div>
             <div style={{ marginTop: 6 }}>
               <Link href="/soumission" style={{ ...linkStyle, color: gold, fontWeight: 700 }}>
-                Soumission gratuite →
+                Réserver ma date →
               </Link>
             </div>
           </div>

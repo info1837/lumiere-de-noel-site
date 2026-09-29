@@ -53,7 +53,7 @@ export function CaseConsentement({ id = "consent", checked, onChange, erreur }) 
 export function NoteSoumission() {
   return (
     <p style={{ fontSize: 13, opacity: 0.75, textAlign: "center", marginTop: 10, marginBottom: 0 }}>
-      Soumission gratuite — réponse en moins de 24 h
+      Nous confirmons votre place et votre prix après une courte consultation
     </p>
   );
 }

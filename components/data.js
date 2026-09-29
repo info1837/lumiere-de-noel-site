@@ -79,7 +79,7 @@ export const nav = [
   },
   { label: "Zones desservies", href: "/secteur" },
   { label: "Blog", href: "/blog" },
-  { label: "Calculatrice", href: "/calculatrice" },
+  { label: "Estimer mon projet", href: "/calculatrice" },
   { label: "Renouvellement", href: "/renouvellement" },
   { label: "Soumission", href: "/soumission" },
 ];
@@ -181,7 +181,7 @@ export const faqHome = [
 // Datées pour répondre à "qu'est-ce qui se passe après que j'envoie le formulaire"
 // dans les 3 premières secondes.
 export const processSteps = [
-  { num: "01", title: "Soumission gratuite", when: "Aujourd'hui", desc: "Vous remplissez le formulaire ou vous appelez. Réponse en moins de 24 h avec une première fourchette." },
+  { num: "01", title: "Consultation design", when: "Aujourd'hui", desc: "Vous réservez votre date. On confirme votre place et on prépare votre design." },
   { num: "02", title: "Visite et design", when: "Sous 3–5 jours", desc: "On vient mesurer la propriété, comprendre votre vision et confirmer un prix ferme, écrit." },
   { num: "03", title: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
   { num: "04", title: "Entretien pendant la saison", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
@@ -218,7 +218,7 @@ export const services = [
     heroImage: servicePhoto("lumieres-de-noel-residentiel").src,
     heroImageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     metaDescription:
-      "Conception, pose, entretien et retrait de vos lumières de Noël, matériel DEL commercial fourni. Dès 1 000 $, prix ferme avant l'installation.",
+      "Conception, pose, entretien et retrait de vos lumières de Noël, matériel DEL commercial fourni. Projets à partir de 1 000 $, prix ferme avant l'installation.",
     intro:
       "On illumine votre maison comme si c'était la nôtre. Toiture, arbres, arbustes, façade et entrée — un design pensé pour votre propriété, installé par notre équipe, retiré après les Fêtes.",
     bullets: [
@@ -249,7 +249,7 @@ export const services = [
       "Travail en hauteur fait par notre équipe",  // ASSURANCE
       "Maintenance pendant la saison incluse",
     ],
-    body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et soumission gratuite.",
+    body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
     forCity: (city) =>
       `Pour les commerces de ${city}, on planifie l'installation en dehors des heures d'ouverture quand c'est requis — vos clients voient le résultat, jamais les échelles.`,
   },
@@ -288,7 +288,7 @@ const villesBrutes = [
     name: "Blainville",
     regionLabel: "Couronne nord — Laurentides",
     metaDescription:
-      "Lumières de Noël et éclairage architectural à Blainville. Conception, pose, entretien et retrait inclus. Dès 1 000 $, soumission gratuite.",
+      "Lumières de Noël et éclairage architectural à Blainville. Conception, pose, entretien et retrait inclus. Projets à partir de 1 000 $, un nombre limité de propriétés chaque saison.",
     intro:
       "Blainville est au cœur de notre territoire. De Fontainebleau au Plateau, de Chambéry à Notre-Dame — on connaît les rues et les styles d'architecture du secteur.",
     body: "On planifie le secteur Blainville–Boisbriand–Sainte-Thérèse ensemble, pour limiter les déplacements — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
@@ -328,7 +328,7 @@ const villesBrutes = [
     name: "Montréal",
     regionLabel: "Île de Montréal",
     metaDescription:
-      "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, soumission gratuite.",
+      "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, un nombre limité de propriétés chaque saison.",
     intro:
       "Sur l'île, on installe partout : Outremont, Westmount, le Plateau, Ahuntsic, Rosemont, NDG, Côte-des-Neiges. Façades patrimoniales, duplex et triplex, copropriétés — on adapte le design à votre style architectural.",
     body: "Les ruelles montréalaises et les façades en rangée demandent une approche différente des grands terrains de banlieue : davantage d'attention aux corniches, balcons et alignements de fenêtres. Les contraintes urbaines — stationnement, accès, hauteur — font partie du travail.",
@@ -338,7 +338,7 @@ const villesBrutes = [
     name: "Rive-Sud",
     regionLabel: "Rive-Sud de Montréal",
     metaDescription:
-      "Lumières de Noël sur la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Pose et retrait inclus, dès 1 000 $.",
+      "Lumières de Noël sur la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Pose et retrait inclus, projets à partir de 1 000 $.",
     intro:
       "On dessert toute la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie, Candiac. Résidentiel et commercial, du DIX30 aux quartiers résidentiels patrimoniaux.",
     body: "On dessert la couronne sud rapprochée. Pour les commerces des grandes artères, on planifie les installations hors-heures. Pour les résidences : développements récents comme quartiers établis (vieux Longueuil, vieux Boucherville).",
@@ -454,7 +454,7 @@ export const eclairagePage = {
     { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
     { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
     { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
-    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la soumission gratuite." },
+    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la un nombre limité de propriétés chaque saison." },
     { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
   ],
   // Vraies installations d'éclairage permanent. Pas de légende de ville :

@@ -40,7 +40,7 @@ export default function EclairageArchitectural() {
         subtitle={p.heroSubtitle}
         image={p.heroImage}
         imageAlt={p.heroImageAlt}
-        ctaLabel="Soumission gratuite"
+        ctaLabel="Réserver ma date"
       />
 
       {/* Section caractéristique */}
@@ -59,7 +59,7 @@ export default function EclairageArchitectural() {
               ))}
             </ul>
             <div style={{ marginTop: 26 }}>
-              <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+              <CTAButton href="/soumission">Réserver ma date</CTAButton>
             </div>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
@@ -117,7 +117,7 @@ export default function EclairageArchitectural() {
           </div>
           <FaqAccordion items={p.faq} dark />
           <div style={{ textAlign: "center", marginTop: 44 }}>
-            <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>

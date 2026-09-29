@@ -32,11 +32,11 @@ export function generateMetadata({ params }) {
   return {
     title: { absolute: title },
     description:
-      `${court} ${cityIn} : pose, entretien et retrait inclus, matériel DEL commercial fourni. Dès 1 000 $.`,
+      `${court} ${cityIn} : pose, entretien et retrait inclus, matériel DEL commercial fourni. Projets à partir de 1 000 $.`,
     alternates: { canonical: `/secteur/${c.slug}/${s.slug}` },
     openGraph: {
       title: `${title} | Solution Lumière de Noël`,
-      description: `Lumières de Noël ${cityIn} — pose, entretien et retrait inclus. Soumission gratuite.`,
+      description: `Lumières de Noël ${cityIn} — pose, entretien et retrait inclus. Un nombre limité de propriétés chaque saison.`,
       url: `/secteur/${c.slug}/${s.slug}`,
       images: [servicePhoto(s.slug, c.slug)?.src].filter(Boolean),
     },
@@ -84,7 +84,7 @@ export default function CityServicePage({ params }) {
         subtitle={s.forCity ? s.forCity(c.name) : s.intro}
         image={servicePhoto(s.slug, c.slug)?.src}
         imageAlt={servicePhoto(s.slug, c.slug)?.alt}
-        ctaLabel="Soumission gratuite"
+        ctaLabel="Réserver ma date"
       />
 
       <section style={{ background: offWhite }}>
@@ -115,7 +115,7 @@ export default function CityServicePage({ params }) {
                 ))}
               </ul>
               <div style={{ marginTop: 26 }}>
-                <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+                <CTAButton href="/soumission">Réserver ma date</CTAButton>
               </div>
             </div>
             <div>

@@ -35,7 +35,7 @@ const cityFaq = (cityName) => [
   },
   {
     q: `Combien coûte une installation à ${cityName}?`,
-    a: `Le tarif débute à 1 000 $ pour une résidence et varie selon la grandeur de la propriété et le design. Soumission gratuite avec estimation claire.`,
+    a: `Le tarif débute à 1 000 $ pour une résidence et varie selon la grandeur de la propriété et le design. Le prix exact est confirmé après une courte consultation.`,
   },
   {
     q: `Quand devrais-je réserver pour ${cityName}?`,
@@ -70,7 +70,7 @@ export default function CityPage({ params }) {
         subtitle={c.intro}
         image={cityHeroPhoto(c.slug).src}
         imageAlt={cityHeroPhoto(c.slug).alt}
-        ctaLabel="Soumission gratuite"
+        ctaLabel="Réserver ma date"
       />
 
       {/* Intro */}
@@ -86,7 +86,7 @@ export default function CityPage({ params }) {
             <SectionTag>{c.regionLabel}</SectionTag>
             <SectionTitle>Notre service {inCity(c.name)}</SectionTitle>
             <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>{c.body}</p>
-            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>
@@ -145,7 +145,7 @@ export default function CityPage({ params }) {
             </details>
           ))}
           <div style={{ textAlign: "center", marginTop: 32 }}>
-            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>

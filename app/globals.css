@@ -804,7 +804,7 @@ textarea:focus-visible,
    chaque élément.
 
    Ce qu'on retire, et pourquoi c'est sans perte : sous 1024px la barre d'action
-   fixe du bas affiche déjà « Appeler » ET « Soumission gratuite ». Le bouton
+   fixe du bas affiche déjà « Appeler » ET « Réserver ma date ». Le bouton
    CTA de l'entête y était donc un doublon. Le NUMÉRO reste dans l'entête —
    c'est une décision de conversion assumée (P1-6) — sauf sous 360px où il ne
    reste que l'icône, faute de place. */

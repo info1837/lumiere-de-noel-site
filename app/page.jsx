@@ -60,7 +60,7 @@ export default function Home() {
             <p style={{ color: "#444", fontSize: 18, marginBottom: 26 }}>
               Vous, vous profitez du spectacle. Nous, on s'occupe de tout le reste.
             </p>
-            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission">Réserver ma date</CTAButton>
           </div>
           <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
             {/* Léry : ligne de toit, colonnes et arbustes dans un seul cadre —
@@ -103,7 +103,7 @@ export default function Home() {
                     ))}
                   </ul>
                   <CTAButton href="/soumission" variant="outlineLight" style={{ padding: "13px 24px", fontSize: 13, alignSelf: "flex-start" }}>
-                    Soumission gratuite
+                    Réserver ma date
                   </CTAButton>
                 </div>
               </article>
@@ -237,10 +237,10 @@ export default function Home() {
       <section id="soumission" style={{ background: offWhite }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 720 }}>
           <SectionTag>Demande de soumission</SectionTag>
-          <SectionTitle>Obtenez votre estimation gratuite</SectionTitle>
+          <SectionTitle>Réservez votre date</SectionTitle>
           <p style={{ color: "#444", fontSize: 18, margin: "0 auto 26px" }}>
             Décrivez votre projet en deux minutes — on vous rappelle rapidement avec une
-            estimation claire, sans obligation.
+            estimation claire après une courte consultation.
           </p>
           <CTAButton href="/soumission" variant="gold">Demander ma soumission</CTAButton>
           <p style={{ color: "#444", fontSize: 16, marginTop: 22 }}>

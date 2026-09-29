@@ -64,7 +64,7 @@ export default function SecteurIndex() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: 48 }}>
-            <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>

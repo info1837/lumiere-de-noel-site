@@ -50,7 +50,7 @@ export default function ServicePage({ params }) {
         subtitle={s.intro}
         image={s.heroImage}
         imageAlt={s.heroImageAlt}
-        ctaLabel="Soumission gratuite"
+        ctaLabel="Réserver ma date"
       />
 
       {/* Intro + bullets */}
@@ -75,7 +75,7 @@ export default function ServicePage({ params }) {
                 ))}
               </ul>
               <div style={{ marginTop: 26 }}>
-                <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+                <CTAButton href="/soumission">Réserver ma date</CTAButton>
               </div>
             </div>
             {/* Le volet municipal n'a AUCUNE photo (heroImage: null). Sans ce
@@ -151,8 +151,8 @@ export default function ServicePage({ params }) {
       <section className="snowy" style={{ background: navy }}>
         <div className="container" style={{ textAlign: "center" }}>
           <SectionTag dark>Prêt à commencer ?</SectionTag>
-          <SectionTitle light style={{ margin: "0 auto 22px" }}>Soumission gratuite et sans obligation</SectionTitle>
-          <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+          <SectionTitle light style={{ margin: "0 auto 22px" }}>Réservez votre date</SectionTitle>
+          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
         </div>
       </section>
     </>

@@ -80,11 +80,11 @@ export default function BlogPost({ params }) {
                 <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
                   Prêt à démarrer ?
                 </div>
-                <h3 style={{ color: charcoal, fontSize: 22, marginBottom: 10 }}>Soumission gratuite et sans obligation</h3>
+                <h3 style={{ color: charcoal, fontSize: 22, marginBottom: 10 }}>Réservez votre date</h3>
                 <p style={{ color: "#555", marginBottom: 16 }}>
-                  Réponse rapide avec une estimation claire pour votre propriété.
+                  Une estimation claire pour votre propriété, après une courte consultation.
                 </p>
-                <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+                <CTAButton href="/soumission">Réserver ma date</CTAButton>
               </div>
             </article>
 

@@ -39,7 +39,7 @@ export const postBodies = {
     { type: "h2", text: "Quand réserver pour économiser?" },
     { type: "p", text: "Plus vous réservez tôt (septembre, octobre), plus vous avez de chances d'obtenir un tarif avant que la demande ne sature les équipes. À la dernière minute (mi-novembre), plusieurs entreprises chargent des suppléments d'urgence — quand elles acceptent encore des nouvelles installations." },
 
-    { type: "cta", text: "Une estimation pour votre propriété — gratuite et sans obligation. On vous rappelle rapidement." },
+    { type: "cta", text: "Une estimation pour votre propriété. Un nombre limité de places chaque saison." },
   ],
 
   "quand-reserver-installation-lumieres-noel": [
@@ -72,7 +72,7 @@ export const postBodies = {
     { type: "h2", text: "Et pour le commercial?" },
     { type: "p", text: "Pour les commerces, nous suggérons de réserver encore plus tôt — idéalement en août ou septembre. Les façades commerciales demandent souvent une planification (permis, accès, alimentation électrique) qui ne se fait pas du jour au lendemain." },
 
-    { type: "cta", text: "Réservez votre date maintenant — soumission gratuite, aucune obligation." },
+    { type: "cta", text: "Réservez votre date maintenant — les places de la saison sont limitées." },
   ],
 
   "del-vs-incandescent-lumieres-noel": [
@@ -104,7 +104,7 @@ export const postBodies = {
     { type: "h2", text: "Ce qu'on installe" },
     { type: "p", text: "Chez Solution Lumière de Noël inc., on installe exclusivement des DEL de qualité commerciale, blanc-chaud ou multicolores selon le goût. Pour l'éclairage architectural permanent, on va plus loin avec des pastilles RGB programmables qui changent de couleur selon l'occasion." },
 
-    { type: "cta", text: "Soumission gratuite pour votre installation DEL — résidentiel ou commercial." },
+    { type: "cta", text: "Réservez votre date pour votre installation DEL — résidentiel ou commercial." },
   ],
 };
 

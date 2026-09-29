@@ -147,8 +147,16 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
             Une erreur est survenue. Réessayez ou appelez-nous directement.
           </p>
         )}
+        {/* ⚠️ LE SEUL endroit du site où « gratuit » et « sans obligation »
+            ont encore le droit d'exister, et c'est délibéré.
+
+            Dans un titre ou sur un bouton, ces mots vendent le prix : ils
+            disent « ça ne vous engage à rien », donc « ce n'est pas grave
+            si vous ne venez pas ». Ici, en petit, sous le bouton, ils font
+            l'inverse — ils enlèvent la dernière hésitation de quelqu'un qui
+            a DÉJÀ décidé de remplir le formulaire. */}
         <p style={{ fontSize: 12, color: "#888", marginTop: 12 }}>
-          * Champs obligatoires. Aucune obligation — soumission gratuite.
+          * Champs obligatoires. La consultation est gratuite et sans obligation.
         </p>
       </div>
     </form>
