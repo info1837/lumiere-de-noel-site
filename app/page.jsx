@@ -3,6 +3,7 @@ import Hero from "@/components/Hero";
 import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
 import ObjectionBar from "@/components/ObjectionBar";
 import HowItWorks from "@/components/HowItWorks";
+import ClientsFideles from "@/components/ClientsFideles";
 import Testimonials from "@/components/Testimonials";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
 import { PHOTOS } from "@/components/photos";
@@ -39,6 +40,35 @@ export default async function Home() {
           soit au visiteur. Elle doit rester COLLÉE au hero : plus bas, elle
           n'intercepte plus personne. */}
       <ObjectionBar />
+
+      {/* ⚠️ LA GALERIE MONTE, et elle grandit.
+          Elle vivait après « comment ça marche », c'est-à-dire après trois
+          sections de texte : le visiteur lisait ce qu'on PROMET avant de
+          voir ce qu'on FAIT. Sur un service haut de gamme, la preuve doit
+          arriver avant l'argument — et une photo de toit illuminé est la
+          seule chose de cette page qu'on ne peut pas inventer.
+          `gallery-grid--large` la passe à deux colonnes : trois vignettes
+          de 4/3 sur une largeur de 1180 px, ça fait des timbres-poste. */}
+      <section style={{ background: navy, paddingTop: 72, paddingBottom: 72 }}>
+        <div className="container">
+          <div style={{ textAlign: "center", marginBottom: 34 }}>
+            <SectionTag dark>Réalisations</SectionTag>
+            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, de vraies installations</SectionTitle>
+          </div>
+          <div className="gallery-grid--large">
+            <Gallery items={homePortfolio} />
+          </div>
+          <div style={{ textAlign: "center", marginTop: 30 }}>
+            <Link href="/realisations" style={{
+              display: "inline-flex", alignItems: "center", gap: 8,
+              color: gold, textDecoration: "none",
+              fontWeight: 700, fontSize: 14, letterSpacing: "0.06em", textTransform: "uppercase",
+            }}>
+              Voir toutes les réalisations →
+            </Link>
+          </div>
+        </div>
+      </section>
 
       {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
       <Testimonials limit={3} variant="light" />
@@ -121,25 +151,11 @@ export default async function Home() {
       <div id="processus" style={{ scrollMarginTop: 84 }} />
       <HowItWorks variant="light" />
 
-      {/* Aperçu portfolio — 6 vignettes tirées de /realisations */}
-      <section style={{ background: navy, paddingTop: 72, paddingBottom: 72 }}>
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 34 }}>
-            <SectionTag dark>Réalisations</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, de vraies installations</SectionTitle>
-          </div>
-          <Gallery items={homePortfolio} />
-          <div style={{ textAlign: "center", marginTop: 30 }}>
-            <Link href="/realisations" style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              color: gold, textDecoration: "none",
-              fontWeight: 700, fontSize: 14, letterSpacing: "0.06em", textTransform: "uppercase",
-            }}>
-              Voir toutes les réalisations →
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* La preuve la plus forte qu'on ait, et elle n'était nulle part :
+          des gens qui rachètent. Placée APRÈS le parcours — on vient
+          d'expliquer qu'on retire et qu'on entrepose, c'est le moment où
+          « et on revient l'an prochain » se comprend tout seul. */}
+      <ClientsFideles />
 
       {/* 4 — Pourquoi nous choisir + FAQ */}
       <section style={{ background: offWhite }}>
