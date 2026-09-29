@@ -257,13 +257,15 @@ export default async function Home() {
           Tout le reste pointe vers /soumission. Audit mobile 2026-08-30. */}
       <section id="soumission" style={{ background: offWhite }}>
         <div className="container" style={{ textAlign: "center", maxWidth: 720 }}>
-          <SectionTag>Demande de soumission</SectionTag>
+          <SectionTag>Réservation</SectionTag>
           <SectionTitle>Réservez votre date</SectionTitle>
           <p style={{ color: "#444", fontSize: 18, margin: "0 auto 26px" }}>
-            Décrivez votre projet en deux minutes — on vous rappelle rapidement avec une
-            estimation claire après une courte consultation.
+            Nous confirmons votre place et votre prix après une courte consultation.
           </p>
-          <CTAButton href="/soumission" variant="gold">Demander ma soumission</CTAButton>
+          {/* « Demander ma soumission » demandait un document ; « Réserver ma
+              date » réserve une place. C'est le même clic, et ce n'est pas la
+              même chose qu'on croit obtenir. */}
+          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           <p style={{ color: "#444", fontSize: 16, marginTop: 22 }}>
             Vous préférez parler à quelqu'un ?{" "}
             <a href={company.phoneHref} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
