@@ -23,11 +23,16 @@ export default function HowItWorks({ variant = "dark", showTitle = true }) {
       <div className="container">
         {showTitle && (
           <div style={{ textAlign: "center", marginBottom: 44 }}>
+            {/* « De la soumission à l'entreposage » commençait par un mot
+                d'administration. Le nouveau titre nomme le PARCOURS, et il
+                commence par la consultation design — la seule étape où le
+                client rencontre quelqu'un qui conçoit quelque chose pour
+                lui. C'est ça qu'on vend. */}
             {dark
-              ? <SectionTag dark>Comment ça marche</SectionTag>
-              : <SectionTag>Comment ça marche</SectionTag>}
+              ? <SectionTag dark>Le parcours</SectionTag>
+              : <SectionTag>Le parcours</SectionTag>}
             <SectionTitle light={dark} style={{ margin: "0 auto" }}>
-              De la soumission à l'entreposage — 5 étapes
+              Consultation design → Installation → Entretien → Retrait
             </SectionTitle>
           </div>
         )}

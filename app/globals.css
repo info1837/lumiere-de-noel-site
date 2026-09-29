@@ -1029,3 +1029,20 @@ textarea:focus-visible,
   .bandeau-rarete__note { flex-basis: 100%; border-left: 0; padding-left: 0; }
   .bandeau-rarete__lien { margin-left: 0; }
 }
+
+/* ── La galerie de réalisations, en grand ─────────────────────────────
+   Trois vignettes de 4/3 sur 1180 px font des timbres-poste : chacune
+   tient 370 px de large, soit moins que la photo d'un téléphone. Sur un
+   service haut de gamme, la preuve est ce qu'on regarde le plus longtemps
+   — elle mérite la place.
+
+   Deux colonnes sur écran, une seule sur téléphone. La règle générique
+   à 560 px passe déjà `.gallery-grid` à une colonne ; on ne la double
+   pas ici. */
+.gallery-grid--large .gallery-grid {
+  grid-template-columns: repeat(2, 1fr);
+  gap: 22px;
+}
+@media (max-width: 720px) {
+  .gallery-grid--large .gallery-grid { grid-template-columns: 1fr; gap: 16px; }
+}
