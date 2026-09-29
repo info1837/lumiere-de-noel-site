@@ -140,8 +140,13 @@ export default function Hero({ rarete = null }) {
           {(
             <form onSubmit={submit} noValidate>
               <h3 style={{ color: charcoal, marginBottom: 2, fontSize: 24 }}>Réservez votre date</h3>
+              {/* Le sous-titre dit ce qui se passe APRÈS l'envoi, et dans quel
+                  ordre : on confirme la place, puis le prix, et les deux
+                  viennent d'une consultation. « Un nombre limité de
+                  propriétés » était vrai mais répétait le sous-titre du hero,
+                  trois centimètres à gauche. */}
               <p style={{ fontSize: 13, color: "#666", marginBottom: 14 }}>
-                Un nombre limité de propriétés chaque saison.
+                Nous confirmons votre place et votre prix après une courte consultation.
               </p>
               <div className="hero-form-grid">
                 <div className="hero-field">
