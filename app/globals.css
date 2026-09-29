@@ -964,3 +964,68 @@ textarea:focus-visible,
   .trust-container { padding-inline: 20px; }
   .trust-badge { font-size: 40px; }
 }
+
+/* ── Bandeau de rareté ───────────────────────────────────────────────
+   Le premier chiffre que le visiteur voit, donc le plus scruté. Il vit
+   AU-DESSUS de l'entête, en pleine largeur : un bandeau qu'on peut
+   confondre avec une pub se fait ignorer.
+
+   Il n'existe que quand le CRM répond — le composant rend null sinon, il
+   n'y a donc aucun état « vide » à styler. */
+.bandeau-rarete {
+  background: #0d1b2a;
+  color: #f3e9d2;
+  border-bottom: 1px solid rgba(201, 169, 110, 0.35);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+.bandeau-rarete__contenu {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 9px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bandeau-rarete__pastille {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #c9a96e;
+  flex-shrink: 0;
+  /* Elle respire doucement. Un point qui clignote vite ressemble à une
+     alarme ; celui-ci dit « c'est vivant », pas « dépêchez-vous ». */
+  animation: bandeau-respire 2.8s ease-in-out infinite;
+}
+@keyframes bandeau-respire {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.35; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bandeau-rarete__pastille { animation: none; }
+}
+.bandeau-rarete__texte { font-weight: 700; letter-spacing: 0.01em; }
+.bandeau-rarete__rabais {
+  color: #c9a96e;
+  font-weight: 700;
+  border-left: 1px solid rgba(243, 233, 210, 0.25);
+  padding-left: 12px;
+}
+.bandeau-rarete__note {
+  color: rgba(243, 233, 210, 0.62);
+  border-left: 1px solid rgba(243, 233, 210, 0.25);
+  padding-left: 12px;
+}
+.bandeau-rarete__lien {
+  color: #f3e9d2;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: auto;
+  font-weight: 600;
+}
+/* Sur téléphone, la note de fermeture passe à la ligne plutôt que de
+   serrer le chiffre, qui est l'information. */
+@media (max-width: 560px) {
+  .bandeau-rarete__contenu { padding: 8px 16px; gap: 8px; font-size: 13px; }
+  .bandeau-rarete__note { flex-basis: 100%; border-left: 0; padding-left: 0; }
+  .bandeau-rarete__lien { margin-left: 0; }
+}
