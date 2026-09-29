@@ -10,7 +10,11 @@ import { PHOTOS } from "@/components/photos";
 const empty = { nom: "", telephone: "", ville: "", service: "", attribution: "", consent: false, [HONEYPOT_FIELD]: "" };
 
 // Hero d'accueil : image plein écran + voile + carte de réservation rapide (5 champs).
-export default function Hero() {
+// `rarete` vient de la PAGE, qui est un composant serveur. Ce hero est
+// « use client » a cause de son formulaire : il ne peut pas lire le CRM
+// lui-meme. La page lit, le hero affiche — et quand il n'y a rien a
+// afficher, la ligne n'existe pas.
+export default function Hero({ rarete = null }) {
   const [data, setData] = useState(empty);
   const [status, setStatus] = useState("idle");
   const [erreurConsent, setErreurConsent] = useState(false);
@@ -80,25 +84,35 @@ export default function Hero() {
           }}>
             Installation clé en main — pose, entretien et retrait inclus
           </div>
+          {/* « Sans monter dans l'échelle » vendait le confort — l'argument
+              d'un service qu'on achète pour s'éviter une corvée. Le
+              positionnement change : ce n'est plus une corvée déléguée,
+              c'est un résultat confié à des professionnels. */}
           <h1 className="hero-h1" style={{ color: ivory }}>
-            Des Fêtes éclatantes,<br />sans monter dans l'échelle
+            Votre maison,<br />illuminée par des professionnels.
           </h1>
-          {/* DRAFT COPY — reconstruite dans la voix de marque */}
           <p style={{ color: "rgba(243,233,210,0.85)", fontSize: 18, lineHeight: 1.5, margin: "20px 0 28px", maxWidth: "52ch" }}>
-            Conception, installation, entretien et retrait de vos lumières de Noël et de votre
-            éclairage architectural. On s'occupe de tout — résidentiel et commercial.
+            Conception, installation, entretien et retrait. Un nombre limité de
+            propriétés chaque saison.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
             <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
             <CTAButton href={company.phoneHref} variant="outlineLight">Appeler {company.phoneDisplay}</CTAButton>
           </div>
-          {/* Ligne datée — donne le QUAND dans les 3 premières secondes */}
+          {/* ⚠️ La ligne de rareté, SOUS le bouton, avec le chiffre du CRM.
+              Elle disait « les dates de novembre partent en premier » — une
+              affirmation qu'on ne pouvait ni prouver ni démentir. Elle dit
+              maintenant combien de dates restent vraiment, et elle
+              DISPARAÎT quand le CRM ne répond pas. Une rareté vague est du
+              décor ; un chiffre faux se retourne contre le prix. */}
           <p style={{
             color: "rgba(243,233,210,0.78)", fontSize: 14, lineHeight: 1.55,
             margin: "0 0 18px", maxWidth: 560, fontWeight: 500,
           }}>
             Installations octobre–novembre 2026 · retrait et entreposage en janvier
-            · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>les dates de novembre partent en premier</strong>.
+            {rarete?.texte && (
+              <> · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>{rarete.texte}</strong></>
+            )}
           </p>
           {/* Le territoire, en une ligne : trois mots qui répondent au
               « est-ce que vous venez chez moi ? » avant le formulaire. */}
@@ -110,7 +124,7 @@ export default function Hero() {
           </div>
           {/* Les quatre puces qui vivaient ici disaient exactement ce que dit
               maintenant la barre des objections, juste en dessous : « tout
-              inclus », l'entreposage, la un nombre limité de propriétés chaque saison. Les garder, c'est
+              inclus », l'entreposage, les places limitées. Les garder, c'est
               faire lire deux fois la même chose au visiteur et repousser le
               formulaire vers le bas. La barre le dit mieux : chaque réponse y
               est cliquable et mène à la page qui la détaille.

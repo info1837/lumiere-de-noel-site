@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Hero from "@/components/Hero";
+import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
 import ObjectionBar from "@/components/ObjectionBar";
 import HowItWorks from "@/components/HowItWorks";
 import Testimonials from "@/components/Testimonials";
@@ -10,7 +11,11 @@ import {
   navy, offWhite, ivory, gold, charcoal, goldText,
 } from "@/components/data";
 
-export default function Home() {
+export default async function Home() {
+  // La page lit le CRM (serveur) et passe le message au hero, qui est
+  // « use client » a cause de son formulaire. Null quand le CRM se tait :
+  // la ligne de rarete disparait alors du hero.
+  const rarete = messageRarete(await lireDisponibilites());
   return (
     <>
       {/* SEO : rich results FAQ */}
@@ -28,7 +33,7 @@ export default function Home() {
           }),
         }}
       />
-      <Hero />
+      <Hero rarete={rarete} />
 
       {/* 1b — Les quatre objections, répondues avant qu'on demande quoi que ce
           soit au visiteur. Elle doit rester COLLÉE au hero : plus bas, elle
