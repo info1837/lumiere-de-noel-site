@@ -3,12 +3,12 @@ import { SectionTag } from "@/components/ui";
 import { company, navy, ivory } from "@/components/data";
 
 export const metadata = {
-  title: "Calculatrice de prix",
+  title: "Estimer mon projet",
   description:
     "Tracez votre ligne de toit sur l'image satellite et voyez votre prix. Installation, entretien, retrait et entreposage inclus.",
   alternates: { canonical: "/calculatrice" },
   openGraph: {
-    title: "Calculatrice de prix | Solution Lumière de Noël",
+    title: "Estimer mon projet | Solution Lumière de Noël",
     description: "Votre prix à l'écran, en deux minutes.",
     url: "/calculatrice",
   },
@@ -19,7 +19,7 @@ export default function CalculatricePage() {
     <section className="snowy" style={{ background: navy, paddingTop: 140 }}>
       <div className="container grid-2" style={{ alignItems: "start" }}>
         <div>
-          <SectionTag dark>Calculatrice</SectionTag>
+          <SectionTag dark>Estimer mon projet</SectionTag>
           <h1 style={{ color: ivory, marginBottom: 18 }}>Votre prix, à l'écran</h1>
           <p style={{ color: "rgba(243,233,210,0.85)", fontSize: 19, marginBottom: 22, maxWidth: 560 }}>
             Tracez votre ligne de toit sur l'image satellite. Vous voyez le prix tout de suite —

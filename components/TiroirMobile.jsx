@@ -163,14 +163,14 @@ export function TiroirMobile({ ouvert, onFermer, declencheurRef }) {
               <ul className="tiroir__sous" data-colonnes="2">{MENU_SECTEURS.map(sousLien)}</ul>
             </Accordeon>
             {item("/realisations", "Réalisations")}
-            {item("/calculatrice", "Calculatrice")}
+            {item("/calculatrice", "Estimer mon projet")}
             {item("/blog", "Blog")}
-            {item("/soumission", "Soumission")}
+            {item("/soumission", "Réserver ma date")}
           </ul>
         </nav>
 
         <div className="tiroir__pied">
-          <Link href="/calculatrice" onClick={onFermer} className="tiroir__cta">Prix en 60 s</Link>
+          <Link href="/calculatrice" onClick={onFermer} className="tiroir__cta">Estimer mon projet</Link>
           <a href={company.phoneHref} className="tiroir__tel">
             <PhoneIcon /> Appeler {company.phoneDisplay}
           </a>

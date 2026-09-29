@@ -71,7 +71,7 @@ export default function RenouvellementPage() {
                 {company.email}
               </a>
               <div style={{ color: "rgba(243,233,210,0.6)" }}>
-                Pas encore client ? <Link href="/soumission" style={{ color: "rgba(243,233,210,0.9)", textDecoration: "underline" }}>Soumission gratuite</Link>.
+                Pas encore client ? <Link href="/soumission" style={{ color: "rgba(243,233,210,0.9)", textDecoration: "underline" }}>Réserver ma date</Link>.
               </div>
             </div>
           </div>

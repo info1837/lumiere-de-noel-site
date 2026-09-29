@@ -6,13 +6,13 @@ import { company, homePortfolio, navy, ivory, gold, offWhite, charcoal } from "@
 import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
-  title: "Soumission gratuite",
+  title: "Réserver ma date",
   description:
-    "Demandez votre soumission pour vos lumières de Noël ou votre éclairage architectural permanent. Réponse en moins de 24 h, sans obligation.",
+    "Réservez votre date pour vos lumières de Noël ou votre éclairage architectural permanent. Un nombre limité de propriétés chaque saison.",
   alternates: { canonical: "/soumission" },
   openGraph: {
-    title: { absolute: "Soumission gratuite | Solution Lumière de Noël" },
-    description: "Estimation gratuite et sans obligation pour vos lumières de Noël ou votre éclairage permanent.",
+    title: { absolute: "Réserver ma date | Solution Lumière de Noël" },
+    description: "Réservez votre date pour vos lumières de Noël ou votre éclairage permanent. Un nombre limité de propriétés chaque saison.",
     url: "/soumission",
     images: [PHOTOS["blainville-01"].src],
   },
@@ -50,10 +50,9 @@ export default function Soumission() {
                 Vous étiez client l'an dernier ? Réservez votre date →
               </Link>
             </div>
-            <h1 style={{ color: ivory, marginBottom: 18 }}>Demande de soumission</h1>
+            <h1 style={{ color: ivory, marginBottom: 18 }}>Réservez votre date</h1>
             <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 19, marginBottom: 20 }}>
-              Décrivez votre projet — on vous rappelle en moins de 24 h avec une estimation claire,
-              gratuite et sans obligation.
+              Nous confirmons votre place et votre prix après une courte consultation.
             </p>
 
             {/* Rappel garantie — argument de réassurance sur la page de conversion */}

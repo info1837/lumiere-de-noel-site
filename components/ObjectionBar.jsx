@@ -39,10 +39,16 @@ const CARTES = [
     externe: true,
   },
   {
-    badge: [{ t: "Dès" }, { t: company.priceFrom, or: true }],
+    // ⚠️ Le badge est ASSEMBLÉ à partir de fragments : « Dès » et le prix
+    // vivent dans deux objets. Aucune recherche de « Dès 1 000 $ » dans le
+    // code ne le trouvait — il n'apparaît entier qu'à l'écran. C'est le
+    // navigateur qui l'a révélé, pas la lecture du source.
+    //
+    // « Dès » annonce un prix d'appel ; « à partir de » annonce un seuil.
+    badge: [{ t: "À partir de" }, { t: company.priceFrom, or: true }],
     sous: "Prix ferme, écrit avant l'installation",
     phrase: "Aucune surprise en janvier.",
-    lien: "Calculer mon prix",
+    lien: "Estimer mon projet",
     href: "/calculatrice",
   },
   {

@@ -590,7 +590,7 @@ export default function CalculatriceToiture() {
               <h3 style={{ marginBottom: 10 }}>On vient mesurer avec vous</h3>
               <p style={{ color: "#444", marginBottom: 18 }}>
                 {resultat.reason || "Votre toiture demande une évaluation sur place."} On vous rappelle
-                pour fixer un moment — c'est gratuit et sans obligation.
+                pour fixer un moment et confirmer votre place.
               </p>
             </>
           )}
@@ -713,7 +713,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
         <button style={btn()} onClick={() => setMaquette((p) => ({
           ...p, ouvert: true, adresse: p.adresse || adresse,
         }))}>
-          Recevoir ma maquette gratuite
+          Recevoir ma maquette
         </button>
       ) : (
         <div style={{ display: "grid", gap: 12, background: offWhite, borderRadius: 14, padding: 18 }}>
@@ -738,7 +738,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
           <button style={btn()}
             disabled={maquette.statut === "envoi" || !maquette.nom || !maquette.telephone || !maquette.consent}
             onClick={demanderMaquette}>
-            {maquette.statut === "envoi" ? "Envoi…" : "Recevoir ma maquette gratuite"}
+            {maquette.statut === "envoi" ? "Envoi…" : "Recevoir ma maquette"}
           </button>
           {maquette.statut === "erreur" && (
             <p style={{ color: "#9E2A2A", fontSize: 14, margin: 0 }}>

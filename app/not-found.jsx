@@ -24,7 +24,7 @@ export default function NotFound() {
         Mais on peut quand même illuminer votre propriété. 🎄
       </p>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center" }}>
-        <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+        <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
         <CTAButton href="/" variant="outlineLight">Retour à l'accueil</CTAButton>
       </div>
       <p style={{ marginTop: 28 }}>

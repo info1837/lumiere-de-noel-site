@@ -66,7 +66,7 @@ export default function BlogIndex() {
           </div>
 
           <div style={{ textAlign: "center", marginTop: 56 }}>
-            <CTAButton href="/soumission">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>

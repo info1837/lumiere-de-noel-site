@@ -48,7 +48,7 @@ const desktopNav = [
   // la barre desktop qui manque de place.
   { label: "Secteurs", href: "/secteur" },
   { label: "Réalisations", href: "/realisations" },
-  { label: "Calculatrice", href: "/calculatrice" },
+  { label: "Estimer mon projet", href: "/calculatrice" },
 ];
 
 export function NavBar() {
@@ -156,7 +156,7 @@ export function NavBar() {
 
           {/* CTA header — visible à toutes les largeurs, label réduit sur très petit écran */}
           <Link href="/soumission" className="header-cta">
-            <span className="cta-label">Soumission gratuite</span>
+            <span className="cta-label">Réserver ma date</span>
             <svg className="cta-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
               <path d="M5 12h14M13 5l7 7-7 7" />
             </svg>
@@ -204,7 +204,7 @@ export function MobileBottomBar() {
         Appeler
       </a>
       <Link href="/soumission" className="bottom-bar-quote">
-        Soumission gratuite
+        Réserver ma date
       </Link>
     </div>
   );

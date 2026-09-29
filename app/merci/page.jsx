@@ -9,7 +9,7 @@ import { company, navy, ivory, gold, charcoal, offWhite } from "@/components/dat
 export const metadata = {
   title: "Merci — nous vous répondons sous 24 h",
   description:
-    "Votre demande est bien reçue. Un membre de l'équipe Solution Lumière de Noël inc. vous répond en moins de 24 h avec votre soumission gratuite.",
+    "Votre demande est bien reçue. Un membre de l'équipe Solution Lumière de Noël inc. vous répond en moins de 24 h avec votre un nombre limité de propriétés chaque saison.",
   robots: { index: false, follow: true },
   alternates: { canonical: "/merci" },
 };
@@ -22,12 +22,12 @@ const steps = [
   },
   {
     n: "02",
-    title: "Visite d'évaluation gratuite",
+    title: "Consultation design sur place",
     body: "On vient chez vous mesurer la propriété, comprendre votre vision et proposer un design personnalisé.",
   },
   {
     n: "03",
-    title: "Soumission ferme, sans obligation",
+    title: "Soumission ferme",
     body: "Vous recevez un prix ferme, écrit — pas d'estimation vague. Vous décidez si vous allez de l'avant.",
   },
   {
@@ -96,7 +96,7 @@ export default function MerciPage() {
           <p style={{ color: "rgba(243,233,210,0.88)", fontSize: 19, margin: "0 auto 34px", maxWidth: 620 }}>
             Votre demande est bien arrivée. Un membre de l'équipe Solution Lumière de Noël inc.
             vous rappelle rapidement pour planifier votre visite d'évaluation
-            gratuite — sans obligation.
+            sur place, à votre porte.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center" }}>
             <a href={company.phoneHref} style={{

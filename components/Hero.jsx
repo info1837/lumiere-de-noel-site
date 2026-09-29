@@ -89,7 +89,7 @@ export default function Hero() {
             éclairage architectural. On s'occupe de tout — résidentiel et commercial.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
-            <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
             <CTAButton href={company.phoneHref} variant="outlineLight">Appeler {company.phoneDisplay}</CTAButton>
           </div>
           {/* Ligne datée — donne le QUAND dans les 3 premières secondes */}
@@ -110,7 +110,7 @@ export default function Hero() {
           </div>
           {/* Les quatre puces qui vivaient ici disaient exactement ce que dit
               maintenant la barre des objections, juste en dessous : « tout
-              inclus », l'entreposage, la soumission gratuite. Les garder, c'est
+              inclus », l'entreposage, la un nombre limité de propriétés chaque saison. Les garder, c'est
               faire lire deux fois la même chose au visiteur et repousser le
               formulaire vers le bas. La barre le dit mieux : chaque réponse y
               est cliquable et mène à la page qui la détaille.
@@ -127,7 +127,7 @@ export default function Hero() {
             <form onSubmit={submit} noValidate>
               <h3 style={{ color: charcoal, marginBottom: 2, fontSize: 24 }}>Réservez votre date</h3>
               <p style={{ fontSize: 13, color: "#666", marginBottom: 14 }}>
-                Réponse rapide — soumission gratuite et sans obligation.
+                Un nombre limité de propriétés chaque saison.
               </p>
               <div className="hero-form-grid">
                 <div className="hero-field">

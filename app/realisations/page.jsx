@@ -24,7 +24,7 @@ export default function LumiereDeNoel() {
         subtitle={p.heroSubtitle}
         image={p.heroImage}
         imageAlt={p.heroImageAlt}
-        ctaLabel="Soumission gratuite"
+        ctaLabel="Réserver ma date"
       />
 
       <section id="realisations" style={{ background: offWhite, scrollMarginTop: 100 }}>
@@ -46,9 +46,9 @@ export default function LumiereDeNoel() {
             Réservez votre installation dès maintenant
           </SectionTitle>
           <p style={{ color: "rgba(243,233,210,0.75)", fontSize: 18, margin: "0 auto 30px", maxWidth: 560 }}>
-            Soumission gratuite et sans obligation. Les meilleures dates partent vite.
+            Les places de la saison sont limitées — les meilleures dates partent vite.
           </p>
-          <CTAButton href="/soumission" variant="gold">Soumission gratuite</CTAButton>
+          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
         </div>
       </section>
     </>

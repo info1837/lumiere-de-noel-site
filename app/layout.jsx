@@ -26,7 +26,7 @@ export const metadata = {
     template: `%s | ${company.titleSuffix}`,
   },
   description:
-    "Pose, entretien et retrait inclus — dès 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Soumission gratuite en 24 h.",
+    "Pose, entretien et retrait inclus — projets à partir de 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Un nombre limité de propriétés chaque saison.",
   authors: [{ name: company.name }],
   alternates: { canonical: "/", languages: { "fr-CA": "/" } },
   openGraph: {
@@ -35,14 +35,14 @@ export const metadata = {
     siteName: company.name,
     title: "Installation de lumières de Noël | Solution Lumière de Noël",
     description:
-      "Pose, entretien et retrait inclus — dès 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Soumission gratuite en 24 h.",
+      "Pose, entretien et retrait inclus — projets à partir de 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Un nombre limité de propriétés chaque saison.",
     images: [PHOTOS["blainville-01"].src],
     locale: "fr_CA",
   },
   twitter: {
     card: "summary_large_image",
     title: "Installation de lumières de Noël | Solution Lumière de Noël",
-    description: "Pose, entretien et retrait inclus — dès 1 000 $. Rive-Nord, Montréal et Rive-Sud. Soumission gratuite en 24 h.",
+    description: "Pose, entretien et retrait inclus — projets à partir de 1 000 $. Rive-Nord, Montréal et Rive-Sud. Un nombre limité de propriétés chaque saison.",
     images: [PHOTOS["blainville-01"].src],
   },
   // L'ancien /favicon.svg reste volontairement retiré : un favicon SVG a
