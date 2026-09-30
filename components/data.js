@@ -29,6 +29,7 @@ export const textMuted = "#5A5A5A";
 // les previews Vercel et un override par variable d'environnement.
 import { getSiteUrl } from "@/lib/site-url";
 import { PHOTOS, cityPhoto, servicePhoto } from "@/components/photos";
+import { lireUtm } from "@/lib/utm";
 
 const DOMAIN = "lumieredenoelinc.com";
 
@@ -557,10 +558,16 @@ export const serviceOptions = [
 // donc true/false, et c'est elle qui décide du succès.
 async function sendLeadToCrm(payload) {
   try {
+    // ⚠️ LES UTM S'ATTACHENT ICI, PAS DANS CHAQUE FORMULAIRE.
+    //
+    // Quatre composants appellent sendLead (Hero, QuoteForm, les deux
+    // RenewalForm, la calculatrice). Les ajouter formulaire par
+    // formulaire, c'est en oublier un au cinquième — et une campagne
+    // qui a payé du carton ne serait créditée nulle part.
     const res = await fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify({ ...payload, utm: lireUtm() }),
     });
     if (!res.ok && typeof console !== "undefined") {
       console.warn("[Lumière] CRM intake a répondu", res.status);

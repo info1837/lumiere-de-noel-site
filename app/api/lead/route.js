@@ -35,6 +35,22 @@ export async function POST(request) {
     return Response.json({ ok: false, error: 'intake_not_configured' }, { status: 500 });
   }
 
+  // ── LES UTM DU VISITEUR ──────────────────────────────────────────
+  //
+  // Retenus par lib/utm.js pour la durée de la visite, parce que le code
+  // QR de l'accroche-porte mène à `/?utm_campaign=voisin_2026` et que le
+  // visiteur remplit le formulaire deux écrans plus loin, quand l'URL ne
+  // porte plus rien.
+  //
+  // ⚠️ NETTOYÉS COMME LE RESTE. C'est une valeur d'URL fournie par le
+  // visiteur : elle atterrit dans la base et s'affiche dans Operatr. Un
+  // `utm_campaign` de 4 000 caractères n'est pas une campagne.
+  const utm = {};
+  for (const c of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing']) {
+    const v = clean(body?.utm?.[c], 120);
+    if (v) utm[c] = v;
+  }
+
   // Notes : le CRM n'a pas encore de colonnes pour budget/service Noël
   // (étape 7). On les met dans les notes pour ne rien perdre.
   const notes = [
@@ -75,6 +91,13 @@ export async function POST(request) {
         source: clean(body.source, 80) || 'Site — Lumière de Noël',
         notes,
         language: 'fr',
+        // Les UTM partent dans `formAnswers`, la colonne JSON que le CRM
+        // persiste déjà : aucune migration, aucune colonne neuve.
+        // `lib/offre-voisin.js` y lit `utm_campaign` et pose l'étiquette
+        // « Offre voisin 250 $ » sur la fiche. Omis quand il n'y en a
+        // pas — `formAnswers: {}` écraserait ce qu'un autre chemin
+        // aurait pu y mettre.
+        ...(Object.keys(utm).length ? { formAnswers: utm } : {}),
         // Aucun business_id ici, volontairement : le CRM le déduit de la
         // clé. Un champ envoyé par le client serait ignoré de toute façon.
       }),

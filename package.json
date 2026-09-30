@@ -12,7 +12,9 @@
     "check:logo": "node scripts/check-logo.mjs",
     "check:menu": "node scripts/check-tiroir-mobile.mjs",
     "check:entete": "node scripts/check-entete-mobile.mjs",
-    "check:calc": "node scripts/check-calculatrice.mjs && node --import ./scripts/next-alias-register.mjs scripts/check-ancrage-calculatrice.mjs"
+    "check:calc": "node scripts/check-calculatrice.mjs && node --import ./scripts/next-alias-register.mjs scripts/check-ancrage-calculatrice.mjs",
+    "check:utm": "node scripts/check-relais-utm.mjs",
+    "check:utm-navigateur": "node scripts/check-utm-vers-crm.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
