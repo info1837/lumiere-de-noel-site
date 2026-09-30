@@ -84,11 +84,11 @@ export async function POST(request) {
     if (!nomM || !telM) return json({ ok: false, error: 'contact_incomplet' }, 400);
 
     const piedsM = Number(body.linearFt);
-    const prixM = Number(body.estimatedPrice);
+    const ancrageM = Number(body.ancrage);
     const notesM = [
       'DEMANDE DE MAQUETTE depuis la calculatrice.',
       Number.isFinite(piedsM) && piedsM > 0 ? `Mesure : ${Math.round(piedsM)} pi linéaires (${body.measure_method === 'manual' ? 'saisis à la main' : 'tracés sur la carte'}).` : '',
-      Number.isFinite(prixM) && prixM > 0 ? `Prix affiché au client : ${prixM} $.` : '',
+      Number.isFinite(ancrageM) && ancrageM > 0 ? `Ancrage montré au client : à partir de ${ancrageM} $.` : '',
       'Le client attend une maquette de sa maison avec le design proposé.',
       body.photoParTexto ? 'A dit vouloir envoyer sa photo par texto.' : '',
     ].filter(Boolean).join('\n');
@@ -104,7 +104,7 @@ export async function POST(request) {
           source: 'calculatrice',
           notes: notesM, language: 'fr',
           linear_ft: Number.isFinite(piedsM) && piedsM > 0 ? Math.round(piedsM) : undefined,
-          estimated_price: Number.isFinite(prixM) && prixM > 0 ? prixM : undefined,
+          estimated_price: undefined,
           measure_method: body.measure_method === 'manual' ? 'manual' : 'map',
         }),
       });
@@ -158,6 +158,19 @@ export async function POST(request) {
   const extras = body.extras || {};
   const surPlace = ['colonnes', 'arbres', 'arbustes'].filter((k) => extras[k] === true);
 
+  // ── L'ANCRAGE, pas le prix ─────────────────────────────────────────
+  //
+  // ⚠️ La règle de Sophie s'applique ici aussi : deux chiffres, pas un de
+  // plus. 1 000 $ plancher, 1 500 $ « à partir de » pour une maison à
+  // 2 étages. Trois étages et plus : AUCUN chiffre — Yahir confirme après
+  // avoir vu la maison.
+  //
+  // Le tarif au pied linéaire ne sort plus vers le navigateur. Un prix
+  // affiché avant d'avoir vu la maison est un prix qu'il faudra renier sur
+  // place, et le client s'en souvient.
+  const etages = propre(body.etages, 20);
+  const ancrage = etages === '1' ? 1000 : etages === '2' ? 1500 : null;
+
   // --- 2. Le prix vient du CRM, jamais d'ici -------------------------------
   let devis = null;
   try {
@@ -204,7 +217,11 @@ export async function POST(request) {
         ? `Calculatrice toiture — PIEDS SAISIS À LA MAIN par le client : ${linearFt || '—'} pi linéaires`
           + `${manuelHorsBornes ? ' (valeur hors bornes, aucun prix affiché)' : ''}. À vérifier sur place.`
         : `Calculatrice toiture : ${linearFt} pi linéaires sur ${nbLignes} section(s).`,
-      devis.quotable ? `Prix affiché au client : ${devis.total} $.` : `Aucun prix affiché (évaluation).`,
+      // Le prix calculé reste ICI, dans la fiche, pour la soumission de
+      // Yahir. Le client, lui, n'a vu qu'un ancrage.
+      devis.quotable ? `Prix calculé (NON montré au client) : ${devis.total} $.` : `Aucun prix calculé (évaluation sur place).`,
+      etages ? `Étages : ${etages}.` : '',
+      `Ancrage montré au client : ${ancrage ? `à partir de ${ancrage} $` : 'aucun chiffre (3 étages et +)'}.`,
       // La même phrase que le client a lue à l'écran — pour que Yahir
       // ouvre le lead et voie exactement ce qui lui a été montré.
       devis.note ? `Note affichée : ${devis.note}` : '',
@@ -226,6 +243,13 @@ export async function POST(request) {
           linear_ft: linearFt,
           measure_method: manuel ? 'manual' : 'map',
           line_count: nbLignes,
+          // ⚠️ Les étages vont sur la fiche. C'est la PREMIÈRE question de
+          // Sophie : sans eux, elle la pose à quelqu'un qui vient de la
+          // répondre à l'écran.
+          ...(etages ? { etages } : {}),
+          // Le consentement voyage avec le lead, comme pour les autres
+          // formulaires du site.
+          ...(propre(body.consentement, 200) ? { consentement: propre(body.consentement, 200) } : {}),
           // Bloc du pixel relaye tel quel : le CRM renvoie le jumeau
           // serveur avec le MEME event_id et Meta deduplique. La
           // calculatrice ne tirait AUCUN Lead avant le 2026-09-28.
@@ -238,8 +262,8 @@ export async function POST(request) {
         await alerter(`lead-refuse-${res.status}`,
           `⚠️ UN LEAD DE LA CALCULATRICE N'A PAS ÉTÉ ENREGISTRÉ (HTTP ${res.status}).\n\n`
           + `${nom} — ${telephone || courriel}\n${adresse || 'adresse non fournie'}\n`
-          + `${linearFt} pi linéaires${devis.quotable ? `, prix affiché ${devis.total} $` : ''}\n\n`
-          + `Rappeler cette personne à la main : elle a vu un prix et croit être inscrite.\n`
+          + `${linearFt} pi linéaires${devis.quotable ? `, prix calculé ${devis.total} $ (non montré)` : ''}\n\n`
+          + `Rappeler cette personne à la main : elle a tracé sa toiture et croit être inscrite.\n`
           + `${detail.slice(0, 200)}`);
       }
     } catch (e) {
@@ -253,16 +277,20 @@ export async function POST(request) {
   // --- 5. Ce que le navigateur reçoit --------------------------------------
   // Exactement ce que le CRM a autorisé, plus l'état d'enregistrement. On ne
   // recompose aucun prix ici : ce fichier ne connaît ni tarif ni plancher.
+  // ⚠️ AUCUN PRIX NE TRAVERSE LE RÉSEAU.
+  //
+  // `total` ne fait plus partie de la réponse : il ne peut donc plus être
+  // affiché, ni lu dans l'onglet réseau, ni ressortir par une future
+  // modification de l'écran. Le chiffre continue d'être calculé — il vit
+  // dans les NOTES du lead, pour la soumission de Yahir — mais il ne
+  // revient plus au navigateur.
   return json({
     ok: true,
-    quotable: devis.quotable === true,
-    total: devis.total ?? null,
+    ancrage,                       // 1000 | 1500 | null (3 étages et +)
     linearFt: devis.linearFt ?? linearFt,
-    note: devis.note || null,
     includes: Array.isArray(devis.includes) ? devis.includes : [],
     needsOnSiteAssessment: devis.needsOnSiteAssessment === true,
     surPlace,
-    reason: devis.reason || null,
     measureMethod: manuel ? 'manual' : 'map',
     leadEnregistre,
   });

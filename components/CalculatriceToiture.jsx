@@ -112,6 +112,11 @@ export default function CalculatriceToiture() {
   const [piApercu, setPiApercu] = useState(0);
   const [extras, setExtras] = useState({ colonnes: false, arbres: false, arbustes: false });
   const [contact, setContact] = useState({ nom: "", telephone: "", courriel: "" });
+  // ⚠️ Les étages décident de l'ancrage (1 000 $ ou 1 500 $) — c'est la
+  // règle de Sophie, appliquée ici aussi. Et comme ils partent sur la
+  // fiche, elle ne les redemande pas par texto.
+  const [etages, setEtages] = useState("");
+  const [consent, setConsent] = useState(false);
   const [pot, setPot] = useState("");
   const [envoi, setEnvoi] = useState(false);
   const [resultat, setResultat] = useState(null);
@@ -320,6 +325,16 @@ export default function CalculatriceToiture() {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           lines: lignes, address: adresse, extras, contact, website: pot,
+          // ⚠️ Les étages. Sans eux, le serveur ne peut pas choisir entre
+          // 1 000 $ et 1 500 $ — il rendait `ancrage: null`, l'écran
+          // affichait « Votre projet mérite une visite » à tout le monde,
+          // et Sophie reposait la question par texto. Collectés à l'écran
+          // et jamais envoyés : le harnais de fichiers ne pouvait pas le
+          // voir, c'est le parcours en navigateur qui l'a attrapé.
+          etages,
+          consentement: consent
+            ? `accordé le ${new Date().toISOString().slice(0, 10)} via Calculatrice toiture`
+            : null,
           meta_pixel: metaPixelBlock(eventId),
           ...(manuel ? { measure_method: "manual", linearFt: Number(piedsManuels) } : {}),
         }),
@@ -337,7 +352,7 @@ export default function CalculatriceToiture() {
       void trackLead(eventId);
       setResultat(d); setEtape("prix");
       evenement("calc_price_shown", {
-        price: d.quotable ? d.total : null,
+        ancrage: d.ancrage ?? null,
         linear_ft: d.linearFt ?? null,
         measure_method: d.measureMethod || (manuel ? "manual" : "map"),
       });
@@ -526,24 +541,57 @@ export default function CalculatriceToiture() {
               );
             })}
           </div>
-          <button style={btn()} onClick={() => setEtape("contact")}>Voir mon prix →</button>
+          <button style={btn()} onClick={() => setEtape("contact")}>Continuer →</button>
         </>
       )}
 
       {etape === "contact" && (
         <>
-          <h3 style={{ marginBottom: 8 }}>Où vous envoyer votre prix</h3>
+          <h3 style={{ marginBottom: 8 }}>Réservez votre place</h3>
+          {/* ⚠️ Plus de « votre prix s'affiche à l'écran ».
+              La page promettait un chiffre avant d'avoir vu la maison — un
+              chiffre qu'il faut ensuite renier sur place, et le client s'en
+              souvient. On promet ce qu'on tient : une fourchette de départ
+              et un appel. */}
           <p style={{ color: "#444", marginBottom: 18, fontSize: 15 }}>
-            {piApercu} pi linéaires sur {sections} section{sections > 1 ? "s" : ""}. Votre prix s'affiche à l'écran.
+            {piApercu} pi linéaires tracés. On vous rappelle pour confirmer votre place
+            et votre prix exact.
           </p>
           <div style={{ display: "grid", gap: 12 }}>
             <input style={champ} placeholder="Votre nom" value={contact.nom} onChange={(e) => setContact({ ...contact, nom: e.target.value })} />
             <input style={champ} placeholder="Téléphone" inputMode="tel" value={contact.telephone} onChange={(e) => setContact({ ...contact, telephone: e.target.value })} />
             <input style={champ} placeholder="Courriel (facultatif)" inputMode="email" value={contact.courriel} onChange={(e) => setContact({ ...contact, courriel: e.target.value })} />
+
+            {/* Les étages : une question, deux mots de réponse, et c'est
+                elle qui décide de l'ancrage. */}
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 700, color: charcoal, marginBottom: 8 }}>
+                Votre maison a combien d’étages ?
+              </div>
+              <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                {[["1", "1 étage"], ["2", "2 étages"], ["3+", "3 étages et +"]].map(([v, l]) => (
+                  <button
+                    key={v}
+                    type="button"
+                    onClick={() => setEtages(v)}
+                    style={{
+                      padding: "10px 16px", borderRadius: 300, cursor: "pointer",
+                      border: `1px solid ${etages === v ? "#0B1D3A" : "#d9d5cc"}`,
+                      background: etages === v ? "#0B1D3A" : "#fff",
+                      color: etages === v ? "#F3E9D2" : "#444",
+                      fontSize: 14, fontWeight: 600, fontFamily: "inherit",
+                    }}
+                  >{l}</button>
+                ))}
+              </div>
+            </div>
+
+            <CaseConsentement id="calc-consent" checked={consent} onChange={setConsent} />
+
             <input tabIndex={-1} autoComplete="off" aria-hidden="true" value={pot} onChange={(e) => setPot(e.target.value)}
               style={{ position: "absolute", left: "-9999px", width: 1, height: 1 }} />
-            <button style={btn()} disabled={envoi || !contact.nom || !contact.telephone} onClick={envoyer}>
-              {envoi ? "Calcul…" : "Afficher mon prix"}
+            <button style={btn()} disabled={envoi || !contact.nom || !contact.telephone || !etages || !consent} onClick={envoyer}>
+              {envoi ? "Envoi…" : "Réserver ma place"}
             </button>
             {erreur && <p style={{ color: "#9E2A2A", fontSize: 14, margin: 0 }}>{erreur}</p>}
           </div>
@@ -552,48 +600,40 @@ export default function CalculatriceToiture() {
 
       {etape === "prix" && resultat && (
         <div style={{ textAlign: "center" }}>
-          {resultat.quotable ? (
-            <>
-              <div style={{ color: "#666", fontSize: 14, marginBottom: 6 }}>
-                {resultat.linearFt} pi linéaires de toiture
-              </div>
-              <div style={{
-                fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(40px,10vw,64px)",
-                color: charcoal, lineHeight: 1, marginBottom: 8,
-              }}>
-                Votre prix : {Number(resultat.total).toLocaleString("fr-CA")} $ tout inclus
-              </div>
-              <div style={{ color: "#444", fontSize: 15, marginBottom: 4 }}>
-                Colonnes, arbres et arbustes en sus, évalués sur place.
-              </div>
-              <div style={{ color: "#444", fontSize: 15, marginBottom: 16 }}>
-                Prix ferme confirmé lors de la visite.
-              </div>
-              {/* Phrase composée par le serveur. On l'affiche, on ne la fabrique pas. */}
-              {resultat.note && (
-                <div style={{ color: "#666", fontSize: 14, marginBottom: 16 }}>{resultat.note}</div>
-              )}
-              <div style={{ background: offWhite, borderRadius: 14, padding: 18, textAlign: "left", marginBottom: 18 }}>
-                <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 14 }}>Tout inclus :</div>
-                <ul style={{ margin: 0, paddingLeft: 20, color: "#444", fontSize: 15, lineHeight: 1.7 }}>
-                  {resultat.includes.map((i) => <li key={i}>{i}</li>)}
-                </ul>
-              </div>
-              {resultat.surPlace?.length > 0 && (
-                <p style={{ color: "#444", fontSize: 15, marginBottom: 18 }}>
-                  <strong>{resultat.surPlace.join(", ")}</strong> : évalués séparément, sur place.
-                </p>
-              )}
-            </>
-          ) : (
-            <>
-              <h3 style={{ marginBottom: 10 }}>On vient mesurer avec vous</h3>
-              <p style={{ color: "#444", marginBottom: 18 }}>
-                {resultat.reason || "Votre toiture demande une évaluation sur place."} On vous rappelle
-                pour fixer un moment et confirmer votre place.
-              </p>
-            </>
+          {/* ⚠️ L'ANCRAGE, JAMAIS LE PRIX.
+              Cet écran affichait « Votre prix : 2 400 $ tout inclus » —
+              un montant calculé à partir de pieds tracés sur une image
+              satellite, avant que personne n'ait vu la maison. C'est un
+              chiffre qu'il faut renier sur place une fois sur deux, et le
+              client s'en souvient mieux que du reste de la page.
+              C'est la règle de Sophie, appliquée ici : deux chiffres, pas
+              un de plus, et rien du tout au-dessus de 2 étages. */}
+          <div style={{
+            fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(32px,7vw,48px)",
+            color: charcoal, lineHeight: 1.05, marginBottom: 12,
+          }}>
+            {resultat.ancrage
+              ? `Projets à partir de ${Number(resultat.ancrage).toLocaleString("fr-CA")} $`
+              : "Votre projet mérite une visite"}
+          </div>
+          <p style={{ color: "#444", fontSize: 16, lineHeight: 1.6, marginBottom: 18, maxWidth: 420, marginInline: "auto" }}>
+            Yahir confirme votre prix exact après une courte consultation.
+          </p>
+
+          <div style={{ background: offWhite, borderRadius: 14, padding: 18, textAlign: "left", marginBottom: 18 }}>
+            <div style={{ fontWeight: 700, marginBottom: 8, fontSize: 14 }}>Tout inclus :</div>
+            <ul style={{ margin: 0, paddingLeft: 20, color: "#444", fontSize: 15, lineHeight: 1.7 }}>
+              {resultat.includes.map((i) => <li key={i}>{i}</li>)}
+            </ul>
+          </div>
+          {resultat.surPlace?.length > 0 && (
+            <p style={{ color: "#444", fontSize: 15, marginBottom: 18 }}>
+              <strong>{resultat.surPlace.join(", ")}</strong> : évalués séparément, sur place.
+            </p>
           )}
+          <p style={{ color: "#666", fontSize: 14, marginBottom: 18 }}>
+            Vous recevez un texto dans la minute.
+          </p>
           <BlocMaquette
             resultat={resultat}
             adresse={adresse}
@@ -657,7 +697,10 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
           contact: { nom: maquette.nom, telephone: maquette.telephone },
           address: maquette.adresse,
           linearFt: resultat.linearFt,
-          estimatedPrice: resultat.quotable ? resultat.total : null,
+          // ⚠️ Plus de `total` dans la réponse — ces deux lignes lisaient
+          // `undefined` depuis que le prix ne traverse plus le réseau. On
+          // envoie l'ANCRAGE, qui est ce que le client a réellement vu.
+          ancrage: resultat.ancrage ?? null,
           measure_method: manuel ? "manual" : "map",
           photoParTexto: true,
         }),
@@ -667,7 +710,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
       majM("statut", "envoye");
       evenement("maquette_requested", {
         linear_ft: resultat.linearFt ?? null,
-        price: resultat.quotable ? resultat.total : null,
+        ancrage: resultat.ancrage ?? null,
       });
     } catch { majM("statut", "erreur"); }
   }
