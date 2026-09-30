@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
+import { dateEnFrancais } from "@/lib/disponibilites";
 import Select from "@/components/Select";
 import { sendLead, serviceOptions, navy, ivory, charcoal, company, HONEYPOT_FIELD } from "@/components/data";
 import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
@@ -114,6 +115,18 @@ export default function Hero({ rarete = null }) {
               <> · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>{rarete.texte}</strong></>
             )}
           </p>
+          {/* ⚠️ La fermeture des réservations, sur TÉLÉPHONE seulement.
+              Sous 480 px, le bandeau passe sur une seule ligne et la
+              lâche pour tenir. Elle ne disparaît pas pour autant : elle
+              descend ici, sous le bouton, à l'endroit exact où quelqu'un
+              hésite à cliquer. Au-dessus de 480 px elle reste dans le
+              bandeau — l'afficher aux deux endroits la ferait lire deux
+              fois. */}
+          {rarete?.fermetureLe && dateEnFrancais(rarete.fermetureLe) && (
+            <p className="hero-fermeture">
+              Réservations fermées le {dateEnFrancais(rarete.fermetureLe)}.
+            </p>
+          )}
           {/* Le territoire, en une ligne : trois mots qui répondent au
               « est-ce que vous venez chez moi ? » avant le formulaire. */}
           <div style={{

@@ -1058,6 +1058,17 @@ body.avec-bandeau [id] { scroll-margin-top: calc(var(--bandeau-h) + var(--entete
 @media (prefers-reduced-motion: reduce) {
   .bandeau-rarete__pastille { animation: none; }
 }
+/* Deux écritures de la même donnée. Le CSS choisit : au-dessus de 480 px
+   la version complète, en dessous la version d'un seul tenant. */
+.bandeau-rarete__large,
+.bandeau-rarete__compact {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.bandeau-rarete__compact { display: none; }
+@media (max-width: 480px) {
+  .bandeau-rarete__large { display: none; }
+  .bandeau-rarete__compact { display: flex; flex-wrap: nowrap; gap: 8px; }
+}
 .bandeau-rarete__texte { font-weight: 700; letter-spacing: 0.01em; }
 .bandeau-rarete__mois {
   font-weight: 700;
@@ -1083,14 +1094,48 @@ body.avec-bandeau [id] { scroll-margin-top: calc(var(--bandeau-h) + var(--entete
    token suit — sinon la pilule se replacerait sur l'ancienne mesure et
    recouvrirait la deuxième ligne. */
 @media (max-width: 720px) {
-  /* Valeur de DÉPART seulement : MesureBandeau la corrige au rendu. Elle
-     est calée sur la ligne la plus longue mesurée (86 px à 390 px), pour
-     qu'il n'y ait pas de sursaut avant que le script tourne. */
-  :root { --bandeau-h: 88px; }
+  /* Valeur de DÉPART seulement : MesureBandeau la corrige au rendu. */
+  :root { --bandeau-h: 62px; }
   .bandeau-rarete { font-size: 14.5px; }
   .bandeau-rarete__contenu { padding: 7px 16px; gap: 6px 10px; }
   .bandeau-rarete__mois,
   .bandeau-rarete__note { border-left: 0; padding-left: 0; }
   .bandeau-rarete__note { flex-basis: 100%; }
   .bandeau-rarete__lien { margin-left: 0; }
+}
+
+/* ── ≤ 480 px : UNE seule ligne ──────────────────────────────────────
+   La ligne complète se repliait sur trois niveaux et le bandeau prenait
+   88 px — un quart de l'écran d'un téléphone, avant même d'avoir vu la
+   marque. La version compacte tient sur une ligne, et le token descend
+   avec elle (MesureBandeau le confirme au rendu). */
+@media (max-width: 480px) {
+  :root { --bandeau-h: 38px; }
+  .bandeau-rarete { font-size: 14px; }
+  .bandeau-rarete__contenu { padding: 6px 14px; gap: 8px; flex-wrap: nowrap; }
+  .bandeau-rarete__mois {
+    border-left: 0; padding-left: 0;
+    color: rgba(10, 21, 36, 0.78);
+    white-space: nowrap;
+  }
+  .bandeau-rarete__texte { white-space: nowrap; }
+  /* Le séparateur remplace le filet vertical : plus léger sur une ligne. */
+  .bandeau-rarete__compact > strong + strong::before {
+    content: "·"; margin-right: 8px; color: rgba(10, 21, 36, 0.45);
+  }
+}
+
+/* La mention de fermeture sous le bouton du hero — téléphone seulement.
+   Le bandeau la porte au-dessus de 480 px ; l'afficher aux deux endroits
+   la ferait lire deux fois. */
+.hero-fermeture { display: none; }
+@media (max-width: 480px) {
+  .hero-fermeture {
+    display: block;
+    margin: 0 0 18px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: rgba(243, 233, 210, 0.72);
+    font-weight: 500;
+  }
 }

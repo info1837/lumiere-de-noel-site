@@ -38,12 +38,26 @@ export default function BandeauRarete({ rarete }) {
         {/* Un segment par mois, le rabais collé à celui qui y a droit.
             Avant, « Octobre » apparaissait deux fois : une dans le mois,
             une dans la mention du rabais posée à côté. */}
-        {msg.segments.map((seg, i) => (
-          <strong key={seg} className={i === 0 ? "bandeau-rarete__texte" : "bandeau-rarete__mois"}>{seg}</strong>
-        ))}
-        {fermeture && !msg.complet && (
-          <span className="bandeau-rarete__note">Réservations fermées le {fermeture}</span>
-        )}
+        {/* Deux écritures de la MÊME donnée, une seule visible à la fois.
+            Le CSS choisit — pas de JavaScript, donc pas de sursaut entre
+            le rendu serveur et l'hydratation. */}
+        <span className="bandeau-rarete__large">
+          {msg.segments.map((seg, i) => (
+            <strong key={seg} className={i === 0 ? "bandeau-rarete__texte" : "bandeau-rarete__mois"}>{seg}</strong>
+          ))}
+          {fermeture && !msg.complet && (
+            <span className="bandeau-rarete__note">Réservations fermées le {fermeture}</span>
+          )}
+        </span>
+
+        {/* ≤ 480 px : une seule ligne. La mention de fermeture descend sous
+            le bouton du hero — elle compte, mais pas au prix de trois
+            lignes en haut de chaque page. */}
+        <span className="bandeau-rarete__compact">
+          {(msg.compacts || [msg.texte]).map((seg, i) => (
+            <strong key={seg} className={i === 0 ? "bandeau-rarete__texte" : "bandeau-rarete__mois"}>{seg}</strong>
+          ))}
+        </span>
         {msg.listeAttente && (
           <Link href="/soumission?liste-attente=1" className="bandeau-rarete__lien">
             Liste d’attente
