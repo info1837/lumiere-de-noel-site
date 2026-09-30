@@ -348,9 +348,19 @@ header > .container { max-width: 1320px; }
 
 
 /* --- Barre fixe mobile (Appeler / Soumission) ------------------------------ */
+/* La barre attend hors de l'écran et glisse quand le bouton du hero est parti.
+   Motif relevé sur palenciaservicesexterieur.com à 390 px : opacity 0 → 1,
+   translateY(80px) → 0, pointer-events none → auto, jamais retirée du DOM.
+   La retirer ferait sauter la fin de page et perdrait le focus clavier ; d'où
+   aussi tabIndex={-1} sur les deux liens tant qu'elle est cachée. */
 .mobile-bottom-bar {
   position: fixed; bottom: 0; left: 0; right: 0;
   z-index: 95;
+  transform: translateY(96px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 340ms cubic-bezier(0.22, 0.61, 0.36, 1), opacity 240ms ease;
+  will-change: transform, opacity;
   display: flex; gap: 10px;
   padding: 10px 12px;
   padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
@@ -374,6 +384,15 @@ header > .container { max-width: 1320px; }
 }
 .mobile-bottom-bar .bottom-bar-quote {
   background: var(--gold); color: var(--charcoal);
+}
+.mobile-bottom-bar.est-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+/* Qui a demandé moins de mouvement la voit apparaître, sans glissade. */
+@media (prefers-reduced-motion: reduce) {
+  .mobile-bottom-bar { transition: none; transform: none; }
 }
 @media (min-width: 1024px) {
   .mobile-bottom-bar { display: none; }

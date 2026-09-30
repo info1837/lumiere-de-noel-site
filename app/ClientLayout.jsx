@@ -201,19 +201,76 @@ export function NavBar() {
 
 // Barre fixe en bas d'écran (mobile / tablette) — Appeler / Soumission.
 // Masquée à ≥1024px où la nav horizontale + CTA d'entête suffisent.
+//
+// ⚠️ ELLE N'EST PLUS LÀ EN PERMANENCE. Au premier écran, elle doublait le
+// bouton du hero : « Réserver ma date » deux fois sur la même image, à 300 px
+// d'écart. Elle ne sert que quand le bouton du hero est parti — c'est-à-dire
+// quand le visiteur n'a plus de porte sous les yeux.
+//
+// La règle, en un mot : la barre se tient à l'écart tant qu'une ANCRE est à
+// l'écran. Deux sortes d'ancres, un seul observateur :
+//   · [data-barre-ancre]  — le bouton du hero, et un repère de 55 vh collé en
+//                           haut du document pour les pages sans hero (blog,
+//                           services…) : « on est encore en haut ».
+//   · [data-barre-masque] — le formulaire de réservation. Proposer « Réserver
+//                           ma date » à quelqu'un qui remplit déjà le
+//                           formulaire, c'est lui demander de recommencer.
+//
+// On ne retire jamais la barre du DOM : opacité + translation + pointer-events,
+// comme chez Palencia (mesuré : translateY(80px), opacity 0, pointer-events
+// none). La retirer ferait sauter la page et perdrait le focus clavier.
 export function MobileBottomBar() {
+  const [visible, setVisible] = useState(false);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    const cibles = document.querySelectorAll("[data-barre-ancre], [data-barre-masque]");
+    if (!cibles.length) return;                 // aucune ancre : on se tait
+    if (typeof IntersectionObserver === "undefined") { setVisible(true); return; }
+
+    // On compte les ancres VUES, on ne se contente pas de la dernière entrée :
+    // l'observateur rapporte chaque cible séparément, et un « sortie du hero »
+    // arrivant après un « entrée du formulaire » aurait rallumé la barre.
+    const vues = new Set();
+    const io = new IntersectionObserver((entrees) => {
+      for (const e of entrees) {
+        if (e.isIntersecting) vues.add(e.target); else vues.delete(e.target);
+      }
+      setVisible(vues.size === 0);
+    }, { threshold: 0 });
+
+    cibles.forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, [pathname]);
+
   return (
-    <div className="mobile-bottom-bar" role="navigation" aria-label="Actions rapides">
-      <a href={company.phoneHref} className="bottom-bar-call">
+    <>
+      {/* Repère de haut de page. Absolu, collé en haut du document : tant
+          qu'il touche l'écran, on est « en haut », et la barre attend. 55 vh
+          plutôt qu'un écouteur de défilement — même observateur, un seul
+          chemin de code à tester, et rien qui s'exécute à chaque pixel. */}
+      <span
+        data-barre-ancre
+        aria-hidden="true"
+        style={{ position: "absolute", top: 0, left: 0, width: 1, height: "55vh", pointerEvents: "none" }}
+      />
+    <div
+      className={`mobile-bottom-bar${visible ? " est-visible" : ""}`}
+      role="navigation"
+      aria-label="Actions rapides"
+      aria-hidden={visible ? undefined : "true"}
+    >
+      <a href={company.phoneHref} className="bottom-bar-call" tabIndex={visible ? undefined : -1}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.24 1.02z" />
         </svg>
         Appeler
       </a>
-      <Link href="/soumission" className="bottom-bar-quote">
+      <Link href="/soumission" className="bottom-bar-quote" tabIndex={visible ? undefined : -1}>
         Réserver ma date
       </Link>
     </div>
+    </>
   );
 }
 

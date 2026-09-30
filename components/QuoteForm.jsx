@@ -70,7 +70,7 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
   };
 
   return (
-    <form onSubmit={submit} noValidate style={{
+    <form onSubmit={submit} noValidate data-barre-masque style={{
       background: "#fff", borderRadius: 18, padding: compact ? 24 : "clamp(24px, 4vw, 40px)",
       boxShadow: "0 18px 50px rgba(11,27,43,0.12)",
     }}>
