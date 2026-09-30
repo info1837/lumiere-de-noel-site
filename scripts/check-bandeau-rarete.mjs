@@ -60,9 +60,9 @@ console.log('\n--- 1. 🚨 Sans réponse du CRM, AUCUN bandeau ---');
 console.log('\n--- 2. 🚨 Un segment par mois, le rabais collé au sien ---');
 {
   const m = messageRarete(OUVERT);
-  t('🚨 « Octobre : 18 dates restantes, −15 % »',
-    m.segments[0] === 'Octobre : 18 dates restantes, −15 %', m.segments[0]);
-  t('🚨 « Novembre : 4 dates »', m.segments[1] === 'Novembre : 4 dates', m.segments[1]);
+  t('🚨 « Octobre : 18 places restantes, −15 % »',
+    m.segments[0] === 'Octobre : 18 places restantes, −15 %', m.segments[0]);
+  t('🚨 « Novembre : 4 places »', m.segments[1] === 'Novembre : 4 places', m.segments[1]);
   t('🚨 « Octobre » n\'apparaît QU\'UNE FOIS dans toute la ligne',
     (m.segments.join(' · ').match(/Octobre/g) || []).length === 1, m.segments.join(' · '));
   t('🚨 plus d\'année dans les noms de mois — on est dedans',
@@ -78,13 +78,60 @@ console.log('\n--- 2. 🚨 Un segment par mois, le rabais collé au sien ---');
     !/%/.test(m2.segments.join(' ')), m2.segments.join(' · '));
 
   const une = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 1, rabais: 0 }] };
-  t('🚨 « 1 date restante », au singulier',
-    messageRarete(une).segments[0] === 'Octobre : 1 date restante', messageRarete(une).segments[0]);
+  t('🚨 « 1 place restante », au singulier',
+    messageRarete(une).segments[0] === 'Octobre : 1 place restante', messageRarete(une).segments[0]);
   const deux = { ...OUVERT, mois: [OUVERT.mois[0], { ...OUVERT.mois[1], restantes: 1 }] };
   t('le second mois au singulier aussi',
-    messageRarete(deux).segments[1] === 'Novembre : 1 date', messageRarete(deux).segments[1]);
+    messageRarete(deux).segments[1] === 'Novembre : 1 place', messageRarete(deux).segments[1]);
   t('moisSansAnnee retire l\'année', moisSansAnnee('Octobre 2026') === 'Octobre');
   t('…et ne casse pas un nom sans année', moisSansAnnee('Octobre') === 'Octobre');
+}
+
+console.log('\n--- 2b. 🚨 « PLACES », jamais « dates » ---');
+{
+  // Une date, c'est un jour du calendrier. Ce qu'on vend, c'est une place
+  // dans la saison : un client peut occuper le 14 novembre sans que le
+  // 14 novembre disparaisse pour tout le monde. « 35 dates restantes »
+  // laissait croire qu'il restait 35 JOURS ouvrables — un visiteur qui
+  // compte les jours de novembre trouve autre chose et doute du chiffre.
+  const m = messageRarete(OUVERT);
+  t('🚨 plus aucune « date » dans la ligne',
+    !/\bdates?\b/i.test(m.segments.join(' ')), m.segments.join(' · '));
+  t('🚨 ni dans la version compacte',
+    !/\bdates?\b/i.test((m.compacts || []).join(' ')), (m.compacts || []).join(' · '));
+  t('le mot « places » est bien là', /places/.test(m.segments.join(' ')));
+}
+
+console.log('\n--- 2c. 🚨 ≤ 480 px : une seule ligne ---');
+{
+  const m = messageRarete(OUVERT);
+  t('🚨 « Octobre −15 % · 35 places · Novembre 34 »',
+    (m.compacts || []).join(' · ') === 'Octobre −15 % · 18 places · Novembre 4',
+    (m.compacts || []).join(' · '));
+  t('le rabais colle au mois, sans deux-points', /^Octobre −15 %$/.test((m.compacts || [])[0] || ''));
+  t('🚨 le deuxième mois n\'a que son chiffre', /^Novembre \d+$/.test((m.compacts || [])[2] || ''));
+  t('🚨 pas de « restantes » — c\'est ce qui faisait déborder', !/restantes/.test((m.compacts || []).join(' ')));
+
+  const sansRabais = { ...OUVERT, rabais_octobre: 0, mois: OUVERT.mois.map((x) => ({ ...x, rabais: 0 })) };
+  t('sans rabais, le mois reste seul', (messageRarete(sansRabais).compacts || [])[0] === 'Octobre',
+    (messageRarete(sansRabais).compacts || [])[0]);
+  const une = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 1 }] };
+  t('« 1 place » au singulier', (messageRarete(une).compacts || [])[1] === '1 place',
+    (messageRarete(une).compacts || [])[1]);
+
+  const css = lire('app/globals.css');
+  const composant = lire('components/BandeauRarete.jsx');
+  t('🚨 les deux écritures sont rendues', /bandeau-rarete__large/.test(composant) && /bandeau-rarete__compact/.test(composant));
+  t('🚨 le CSS choisit, pas le JavaScript',
+    /@media \(max-width: 480px\)[\s\S]{0,200}\.bandeau-rarete__large \{ display: none; \}/.test(css));
+  t('la compacte ne se replie pas', /\.bandeau-rarete__compact \{ display: flex; flex-wrap: nowrap;/.test(css));
+
+  // ⚠️ La mention de fermeture DESCEND, elle ne disparaît pas.
+  const hero = lire('components/Hero.jsx');
+  t('🚨 la fermeture passe sous le bouton du hero', /className="hero-fermeture"/.test(hero));
+  t('🚨 …et n\'y apparaît QUE sous 480 px',
+    /\.hero-fermeture \{ display: none; \}/.test(css)
+    && /@media \(max-width: 480px\)[\s\S]{0,120}\.hero-fermeture \{[\s\S]{0,40}display: block;/.test(css));
 }
 
 console.log('\n--- 3. 🚨 DÉCEMBRE ne doit jamais apparaître ---');
