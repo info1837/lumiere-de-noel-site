@@ -160,7 +160,10 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
         gauche: s.textAlign, jc: s.justifyContent, fw: s.fontWeight, fs: s.fontSize, col: s.color, ff: s.fontFamily,
         tag: e.tagName, exp: e.getAttribute('aria-expanded'), ctl: e.getAttribute('aria-controls'), href: e.getAttribute('href'), target: e.getAttribute('target'), rel: e.getAttribute('rel') };
     }));
-    ok(items.map(i => i.txt).join(' · ') === 'Accueil · Services · Secteurs · Réalisations · Calculatrice · Blog · Soumission',
+    // Libellés mis à jour par la refonte du positionnement : « Calculatrice »
+    // → « Estimer mon projet », « Soumission » → « Réserver ma date ». Ce
+    // harnais était resté rouge sur l'ancien vocabulaire depuis.
+    ok(items.map(i => i.txt).join(' · ') === 'Accueil · Services · Secteurs · Réalisations · Estimer mon projet · Blog · Réserver ma date',
       `${t} entrées : ${items.map(i => i.txt).join(' · ')}`);
     for (const i of items) {
       ok(i.h === 56, `${t} entrée « ${i.txt} » : ${i.h}px (attendu 56)`);
@@ -185,7 +188,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
         telHref: e.querySelector('.tiroir__tel').getAttribute('href') };
     });
     ok(pied.bas === 0, `${t} pied : ${pied.bas}px du bas (attendu 0, épinglé)`);
-    ok(pied.enfants.length === 2 && pied.enfants[0] === 'A:Prix en 60 s' && /^A:Appeler \(438\) 812-6635$/.test(pied.enfants[1]), `${t} pied : ${JSON.stringify(pied.enfants)}`);
+    ok(pied.enfants.length === 2 && pied.enfants[0] === 'A:Estimer mon projet' && /^A:Appeler \(438\) 812-6635$/.test(pied.enfants[1]), `${t} pied : ${JSON.stringify(pied.enfants)}`);
     ok(pied.ctaW === pied.largeurUtile, `${t} pied : CTA ${pied.ctaW} / ${pied.largeurUtile} (attendu pleine largeur)`);
     ok(pied.ctaFond === OR, `${t} pied : CTA non champagne (${pied.ctaFond})`);
     ok(pied.ctaHref === '/calculatrice', `${t} pied : CTA → ${pied.ctaHref}`);
