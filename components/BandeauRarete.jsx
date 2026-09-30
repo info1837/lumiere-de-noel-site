@@ -25,8 +25,12 @@ export default async function BandeauRarete() {
     <div className="bandeau-rarete" role="status" aria-live="polite">
       <div className="bandeau-rarete__contenu">
         <span className="bandeau-rarete__pastille" aria-hidden="true" />
-        <strong className="bandeau-rarete__texte">{msg.texte}</strong>
-        {msg.rabais && <span className="bandeau-rarete__rabais">{msg.rabais}</span>}
+        {/* Un segment par mois, le rabais collé à celui qui y a droit.
+            Avant, « Octobre » apparaissait deux fois : une dans le mois,
+            une dans la mention du rabais posée à côté. */}
+        {msg.segments.map((seg, i) => (
+          <strong key={seg} className={i === 0 ? "bandeau-rarete__texte" : "bandeau-rarete__mois"}>{seg}</strong>
+        ))}
         {fermeture && !msg.complet && (
           <span className="bandeau-rarete__note">Réservations fermées le {fermeture}</span>
         )}

@@ -10,8 +10,17 @@ const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", 
 
 // Formulaire « Demande de soumission » — 7 champs, incl. groupe radio budget.
 // Envoi via sendLead() (Web3Forms) — même endpoint que le hero.
-export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote" }) {
-  const [data, setData] = useState(empty);
+export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote", serviceInitial = null }) {
+  // ⚠️ Le service PRÉSÉLECTIONNÉ, rien d'autre.
+  //
+  // Un gestionnaire d'immeuble qui clique « Demander notre preuve
+  // d'assurance » depuis la page commerciale ne devrait pas avoir à
+  // rechoisir « commercial » dans une liste — il vient de le dire en
+  // cliquant. Les champs, le consentement et l'envoi ne changent pas :
+  // c'est la MÊME valeur que le menu déroulant propose, posée d'avance.
+  const [data, setData] = useState(
+    serviceInitial ? { ...empty, service: serviceInitial } : empty,
+  );
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [erreurConsent, setErreurConsent] = useState(false);
 
