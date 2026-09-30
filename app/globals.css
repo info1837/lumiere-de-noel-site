@@ -733,31 +733,83 @@ textarea:focus-visible,
   .festoon::before, .bulb--tw { animation: none; }
 }
 
-/* Neige douce, subtile et professionnelle — globale (toutes les pages) */
-.snow { position: fixed; inset: 0; pointer-events: none; z-index: 45; overflow: hidden; }
+/* Neige douce — DANS LE HERO SEULEMENT.
+   Elle était `position: fixed` sur le viewport : elle tombait sur toute la
+   page, y compris derrière les champs du formulaire et dans le pied de page.
+   Montée par un portail dans .hero-section (déjà `position: relative`), elle
+   s'arrête où le hero s'arrête. Les flocons passent de 34 à 17 et de 9-21 s
+   à 18-42 s de chute. */
+.snow { position: absolute; inset: 0; pointer-events: none; z-index: 3; overflow: hidden; }
 .flake {
-  position: absolute; top: -8vh; border-radius: 50%; background: #ffffff;
+  position: absolute; top: 0; border-radius: 50%; background: #ffffff;
   filter: blur(0.4px); will-change: transform, opacity;
   animation-name: snowFall; animation-timing-function: linear;
   animation-iteration-count: infinite;
 }
+/* La course est en % du conteneur (le hero), plus en vh : dans un conteneur
+   absolu, 110vh enverrait les flocons bien au-delà du bas du hero — ils
+   disparaîtraient d'un coup au lieu de sortir par le bas. */
 @keyframes snowFall {
-  0%   { transform: translate3d(0, -8vh, 0); opacity: 0; }
+  0%   { transform: translate3d(0, -10%, 0); opacity: 0; }
   12%  { opacity: var(--o, 0.5); }
   88%  { opacity: var(--o, 0.5); }
-  100% { transform: translate3d(var(--dx, 14px), 110vh, 0); opacity: 0; }
+  100% { transform: translate3d(var(--dx, 14px), 105%, 0); opacity: 0; }
 }
 
-/* Apparition en fondu au scroll — vivant mais sobre */
-.reveal { opacity: 0; transform: translateY(24px); }
-.reveal.is-visible {
+/* Apparitions au défilement — TITRES DE SECTION ET IMAGES MAÎTRESSES, pas les
+   sections entières. Faire monter un bloc de 1 800 px, c'est faire attendre ;
+   faire apparaître son titre, c'est montrer où regarder.
+   Trois effets qui alternent A · B · C · B · A… (voir FestiveLayer) : aucun
+   voisin ne répète le précédent. 420 à 600 ms, une seule fois par élément.
+   Les classes sont posées par le JS : sans JS, rien n'est masqué. */
+.reveal { will-change: opacity, transform; }
+
+/* A — fondu et légère montée */
+.reveal--a { opacity: 0; transform: translateY(18px); }
+.reveal--a.is-visible {
   opacity: 1; transform: none;
-  transition: opacity 0.7s ease, transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity 420ms ease, transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* B — dévoilement gauche → droite.
+   ⚠️ PAS de clip-path. `clip-path: inset(0 100% 0 0)` réduit l'aire
+   d'intersection de l'élément à zéro : l'IntersectionObserver ne le voit
+   jamais entrer à l'écran, ne pose jamais .is-visible, et le titre reste
+   invisible POUR TOUJOURS. Mesuré : les cinq éléments en effet B, et eux
+   seuls, ne se déclenchaient pas.
+   Un masque est un effet de peinture, comme l'opacité : il ne change pas la
+   géométrie que l'observateur mesure. mask-position s'anime, contrairement
+   aux positions d'arrêt d'un dégradé. */
+.reveal--b {
+  opacity: 0;
+  -webkit-mask-image: linear-gradient(90deg, #000 42%, transparent 58%);
+          mask-image: linear-gradient(90deg, #000 42%, transparent 58%);
+  -webkit-mask-size: 260% 100%;  mask-size: 260% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: 100% 0;  mask-position: 100% 0;
+}
+.reveal--b.is-visible {
+  opacity: 1;
+  -webkit-mask-position: 0 0; mask-position: 0 0;
+  transition: -webkit-mask-position 560ms cubic-bezier(0.22, 1, 0.36, 1),
+                      mask-position 560ms cubic-bezier(0.22, 1, 0.36, 1),
+                      opacity 220ms ease;
+}
+
+/* C — léger dézoom, 1,05 → 1 */
+.reveal--c { opacity: 0; transform: scale(1.05); }
+.reveal--c.is-visible {
+  opacity: 1; transform: scale(1);
+  transition: opacity 300ms ease, transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .snow { display: none; }
-  .reveal, .reveal.is-visible { opacity: 1; transform: none; transition: none; }
+  .reveal, .reveal--a, .reveal--b, .reveal--c,
+  .reveal.is-visible, .reveal--a.is-visible, .reveal--b.is-visible, .reveal--c.is-visible {
+    opacity: 1; transform: none; transition: none;
+    -webkit-mask-image: none; mask-image: none;
+  }
 }
 
 /* Guirlande réaliste (composant LightString) — vague lumineuse gauche→droite */
