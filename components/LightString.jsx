@@ -45,13 +45,12 @@ export default function LightString({ height = 70 }) {
         {/* halo flou (derrière) */}
         <g filter="url(#lsGlow)">
           {BULBS.map((b) => (
-            <circle key={b.i} className="ls-bulb" cx={b.x} cy={b.y + 13} r="9"
-              fill={b.c} style={{ animationDelay: `${(b.i * 0.09).toFixed(2)}s` }} />
+            <circle key={b.i} className="ls-bulb" cx={b.x} cy={b.y + 13} r="9" fill={b.c} />
           ))}
         </g>
         {/* ampoules nettes */}
         {BULBS.map((b) => (
-          <g key={b.i} className="ls-bulb" style={{ animationDelay: `${(b.i * 0.09).toFixed(2)}s` }}>
+          <g key={b.i} className="ls-bulb">
             <line x1={b.x} y1={b.y} x2={b.x} y2={b.y + 5} stroke="#1b1f27" strokeWidth="2.4" />
             <ellipse cx={b.x} cy={b.y + 13} rx="5.4" ry="7.4" fill={b.c} />
             <ellipse cx={b.x - 1.6} cy={b.y + 10.5} rx="1.5" ry="2.4" fill="rgba(255,255,255,0.65)" />
