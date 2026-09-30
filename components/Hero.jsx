@@ -98,23 +98,22 @@ export default function Hero({ rarete = null }) {
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
             <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
-            <CTAButton href={company.phoneHref} variant="outlineLight">Appeler {company.phoneDisplay}</CTAButton>
           </div>
-          {/* ⚠️ La ligne de rareté, SOUS le bouton, avec le chiffre du CRM.
-              Elle disait « les dates de novembre partent en premier » — une
-              affirmation qu'on ne pouvait ni prouver ni démentir. Elle dit
-              maintenant combien de dates restent vraiment, et elle
-              DISPARAÎT quand le CRM ne répond pas. Une rareté vague est du
-              décor ; un chiffre faux se retourne contre le prix. */}
-          <p style={{
-            color: "rgba(243,233,210,0.78)", fontSize: 14, lineHeight: 1.55,
-            margin: "0 0 18px", maxWidth: 560, fontWeight: 500,
-          }}>
-            Installations octobre–novembre 2026 · retrait et entreposage en janvier
-            {rarete?.texte && (
-              <> · <strong style={{ color: "#E9DCC0", fontWeight: 700 }}>{rarete.texte}</strong></>
-            )}
+
+          {/* ⚠️ Le téléphone devient un LIEN, pas un deuxième gros bouton.
+              Deux boutons de même poids ne donnent pas le choix : ils le
+              retirent. Celui qui veut appeler le voit ; celui qui hésitait
+              n'a plus qu'une porte devant lui. */}
+          <p className="hero-tel">
+            ou appelez-nous : <a href={company.phoneHref}>{company.phoneDisplay}</a>
           </p>
+          {/* ⚠️ La ligne de rareté a été RETIRÉE d'ici.
+              Elle répétait, mot pour mot, ce que le bandeau du haut dit
+              déjà — « Octobre : 35 places restantes, −15 % » lu deux fois
+              sur le même écran. Le deuxième affaiblit le premier : un
+              chiffre qu'on répète ressemble à un argument, pas à un fait.
+              Le bandeau garde les données du CRM. Seule la fermeture des
+              réservations reste ici, en petit, sous le bouton. */}
           {/* ⚠️ La fermeture des réservations, sur TÉLÉPHONE seulement.
               Sous 480 px, le bandeau passe sur une seule ligne et la
               lâche pour tenir. Elle ne disparaît pas pour autant : elle

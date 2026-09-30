@@ -811,6 +811,11 @@ textarea:focus-visible,
 @media (max-width: 1023.98px) {
   /* Doublon de la barre du bas — on récupère ~50px pour le hamburger. */
   .header-cta { display: none; }
+  /* ⚠️ La pilule téléphone sort aussi. L'entête d'un téléphone porte le
+     logo et le menu, rien d'autre — comme sur palenciaservicesexterieur.com.
+     Le numéro reste à un geste : sous le bouton du hero, dans le tiroir, et
+     dans la barre du bas dès qu'on défile. */
+  .header-tel { display: none !important; }
 }
 @media (max-width: 359.98px) {
   .phone-label { display: none; }
@@ -1138,4 +1143,20 @@ body.avec-bandeau [id] { scroll-margin-top: calc(var(--bandeau-h) + var(--entete
     color: rgba(243, 233, 210, 0.72);
     font-weight: 500;
   }
+}
+
+/* Le téléphone sous le bouton du hero : un lien, pas un bouton.
+   Deux boutons de même poids ne donnent pas le choix, ils le retirent. */
+.hero-tel {
+  margin: 12px 0 18px;
+  font-size: 15px;
+  color: rgba(243, 233, 210, 0.7);
+  font-weight: 500;
+}
+.hero-tel a {
+  color: #E9DCC0;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  white-space: nowrap;
 }

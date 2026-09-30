@@ -141,8 +141,15 @@ export function NavBar() {
         </nav>
 
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {/* Tap-to-call persistant */}
-          <a href={company.phoneHref} style={{
+          {/* ⚠️ La pilule téléphone : BUREAU SEULEMENT.
+              Au premier écran d'un téléphone, il y avait cinq appels à
+              l'action en même temps — cette pilule, « Réserver ma date »,
+              « Appeler … », et les deux de la barre du bas. Cinq portes
+              côte à côte, c'est une hésitation, pas un choix.
+              L'entête garde le logo et le menu. Le numéro reste à un geste :
+              il est sous le bouton du hero, dans le tiroir, et dans la
+              barre du bas dès qu'on défile. */}
+          <a href={company.phoneHref} className="header-tel" style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "10px 18px", borderRadius: 300,
             background: gold, color: charcoal, textDecoration: "none",
