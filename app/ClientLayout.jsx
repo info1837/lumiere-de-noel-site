@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { company, ivory, gold, charcoal } from "@/components/data";
 import { TiroirMobile } from "@/components/TiroirMobile";
+import { capturerUtm } from "@/lib/utm";
 
 // Items du menu horizontal desktop.
 //
@@ -60,6 +61,14 @@ export function NavBar() {
   // (Le ResizeObserver qui publiait --hauteur-entete / --hauteur-barre-bas
   // est parti avec le voile plein écran : le tiroir couvre toute la hauteur,
   // au-dessus de l'entête et de la barre du bas, il n'a rien à réserver.)
+
+  // Les UTM de l'URL d'arrivée, retenus pour la visite.
+  //
+  // Ici et pas dans le formulaire : le code QR de l'accroche-porte mène
+  // à `/?utm_campaign=voisin_2026`, et le visiteur clique « Soumission »
+  // deux écrans plus loin — l'URL ne porte alors plus rien. Voir
+  // lib/utm.js.
+  useEffect(() => { capturerUtm(); }, []);
 
   useEffect(() => {
     // 24 px : l'entête devient opaque dès le premier geste de défilement,
