@@ -91,6 +91,38 @@ export default function ServicePage({ params }) {
         </div>
       </section>
 
+      {/* ⚠️ L'ASSURANCE, SUR LA PAGE COMMERCIALE SEULEMENT.
+          Pour un propriétaire, c'est une ligne rassurante parmi d'autres.
+          Pour un gestionnaire d'immeuble, c'est un CRITÈRE D'ACHAT : il ne
+          peut pas signer sans preuve, et s'il doit la demander par courriel
+          il appelle d'abord le concurrent qui l'affiche.
+
+          Pas de cinquième carte dans la grille résidentielle : décision de
+          Yahir (2026-09-30). Un bloc dédié, ici, où la question se pose. */}
+      {s.slug === "lumieres-de-noel-commercial" && (
+        <section style={{ background: offWhite }}>
+          <div className="container" style={{ maxWidth: 820 }}>
+            <div style={{
+              background: "#fff", border: "1px solid rgba(11,27,43,0.12)", borderRadius: 16,
+              padding: "30px 30px 26px", textAlign: "left",
+            }}>
+              <SectionTag>Assurance</SectionTag>
+              <h2 style={{ color: charcoal, fontSize: 28, margin: "10px 0 12px" }}>
+                Assurance responsabilité en vigueur, preuve fournie sur demande
+              </h2>
+              <p style={{ color: "#5a5a58", fontSize: 17, lineHeight: 1.65, margin: "0 0 22px" }}>
+                Nos équipes travaillent en hauteur sur vos façades, vos marquises et vos
+                vitrines. La police est active pour toute la saison, et nous transmettons
+                l’attestation directement à votre gestionnaire ou à votre service des achats.
+              </p>
+              <CTAButton href="/soumission?service=commercial" variant="gold">
+                Demander notre preuve d’assurance
+              </CTAButton>
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Villes desservies pour ce service (maillage interne — service × ville) */}
       <section className="snowy" style={{ background: navy }}>
         <div className="container">

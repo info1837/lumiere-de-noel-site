@@ -87,7 +87,12 @@ console.log('\n--- 6. Un seul formulaire par page ---');
   t('la bande de conversion pointe vers /soumission', /href="\/soumission" variant="gold">Réserver ma date/.test(accueil));
   const soum = sansCommentaires(lire('app/soumission/page.jsx'));
   t('/soumission n\'en a qu\'un', (soum.match(/<QuoteForm/g) || []).length === 1);
-  t('🚨 et il porte sa source (liste d\'attente comprise)', /<QuoteForm source=\{sourceFormulaire\} \/>/.test(soum));
+  // ⚠️ Ne PAS épingler la ligne entière : elle porte maintenant aussi
+  // `serviceInitial`, et l'assertion échouait sur du code correct. On
+  // vérifie ce qui compte — que la source voyage — pas la forme exacte
+  // de la balise.
+  t('🚨 et il porte sa source (liste d\'attente comprise)', /<QuoteForm source=\{sourceFormulaire\}/.test(soum));
+  t('🚨 …et le service présélectionné, quand il y en a un', /serviceInitial=\{serviceInitial\}/.test(soum));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

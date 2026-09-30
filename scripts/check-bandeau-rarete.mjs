@@ -24,7 +24,7 @@ const sansCommentaires = (x) => x
   .replace(/\{\/\*[\s\S]*?\*\/\}/g, '')
   .replace(/^\s*\/\/.*$/gm, '');
 
-const { messageRarete, dateEnFrancais, FRAICHEUR_SECONDES, lireDisponibilites } =
+const { messageRarete, moisSansAnnee, dateEnFrancais, FRAICHEUR_SECONDES, lireDisponibilites } =
   await import(path.join(ROOT, 'lib/disponibilites.js'));
 
 const OUVERT = {
@@ -33,9 +33,13 @@ const OUVERT = {
   mois: [
     { cle: '2026-10', nom: 'Octobre 2026', capacite: 23, planifiees: 5, restantes: 18, complet: false, rabais: 15 },
     { cle: '2026-11', nom: 'Novembre 2026', capacite: 34, planifiees: 30, restantes: 4, complet: false, rabais: 0 },
-    { cle: '2026-12', nom: 'Décembre 2026', capacite: 35, planifiees: 0, restantes: 35, complet: false, rabais: 0 },
   ],
 };
+// ⚠️ Pas de décembre dans cette fixture, et c'est le point : la route ne
+// l'envoie plus depuis que la fermeture des réservations borne la liste
+// (CRM #225). Le site affiche ce qu'on lui donne — il n'invente rien et
+// ne filtre rien. Deux règles « pas décembre », une ici et une dans le
+// CRM, finiraient par diverger.
 
 console.log('\n--- 1. 🚨 Sans réponse du CRM, AUCUN bandeau ---');
 {
@@ -53,30 +57,50 @@ console.log('\n--- 1. 🚨 Sans réponse du CRM, AUCUN bandeau ---');
     /return null;/.test(lecteur) && !/restantes: \d/.test(lecteur));
 }
 
-console.log('\n--- 2. 🚨 Le chiffre annoncé est le PREMIER mois qui a des dates ---');
+console.log('\n--- 2. 🚨 Un segment par mois, le rabais collé au sien ---');
 {
   const m = messageRarete(OUVERT);
-  t('🚨 « Octobre 2026 : 18 dates restantes »', m.texte === 'Octobre 2026 : 18 dates restantes', m.texte);
-  t('l\'état est « ouvert »', m.etat === 'ouvert');
-  t('pas de liste d\'attente quand il reste des dates', m.listeAttente === false);
+  t('🚨 « Octobre : 18 dates restantes, −15 % »',
+    m.segments[0] === 'Octobre : 18 dates restantes, −15 %', m.segments[0]);
+  t('🚨 « Novembre : 4 dates »', m.segments[1] === 'Novembre : 4 dates', m.segments[1]);
+  t('🚨 « Octobre » n\'apparaît QU\'UNE FOIS dans toute la ligne',
+    (m.segments.join(' · ').match(/Octobre/g) || []).length === 1, m.segments.join(' · '));
+  t('🚨 plus d\'année dans les noms de mois — on est dedans',
+    !/\d{4}/.test(m.segments.join(' ')), m.segments.join(' · '));
+  t('seul le premier dit « restantes » en toutes lettres',
+    /restantes/.test(m.segments[0]) && !/restantes/.test(m.segments[1]));
 
-  const octComplet = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1], OUVERT.mois[2]] };
+  const octComplet = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1]] };
   const m2 = messageRarete(octComplet);
-  t('🚨 octobre complet → on annonce NOVEMBRE', m2.texte === 'Novembre 2026 : 4 dates restantes', m2.texte);
-  t('🚨 …et plus le rabais d\'octobre — on ne peut plus le tenir', m2.rabais === null, String(m2.rabais));
+  t('🚨 octobre complet → il disparaît, novembre passe en tête',
+    m2.segments.length === 1 && /^Novembre/.test(m2.segments[0]), m2.segments.join(' · '));
+  t('🚨 …et son rabais part avec lui — on ne peut plus le tenir',
+    !/%/.test(m2.segments.join(' ')), m2.segments.join(' · '));
 
-  const une = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 1 }] };
-  t('🚨 « 1 date restante », au singulier', /1 date restante$/.test(messageRarete(une).texte), messageRarete(une).texte);
+  const une = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 1, rabais: 0 }] };
+  t('🚨 « 1 date restante », au singulier',
+    messageRarete(une).segments[0] === 'Octobre : 1 date restante', messageRarete(une).segments[0]);
+  const deux = { ...OUVERT, mois: [OUVERT.mois[0], { ...OUVERT.mois[1], restantes: 1 }] };
+  t('le second mois au singulier aussi',
+    messageRarete(deux).segments[1] === 'Novembre : 1 date', messageRarete(deux).segments[1]);
+  t('moisSansAnnee retire l\'année', moisSansAnnee('Octobre 2026') === 'Octobre');
+  t('…et ne casse pas un nom sans année', moisSansAnnee('Octobre') === 'Octobre');
 }
 
-console.log('\n--- 3. Le rabais d\'octobre ---');
+console.log('\n--- 3. 🚨 DÉCEMBRE ne doit jamais apparaître ---');
 {
-  t('🚨 « Octobre : −15 % » quand octobre a des dates', messageRarete(OUVERT).rabais === 'Octobre : −15 %',
-    String(messageRarete(OUVERT).rabais));
-  const sansRabais = { ...OUVERT, rabais_octobre: 0 };
-  t('un rabais à 0 ne s\'annonce pas', messageRarete(sansRabais).rabais === null);
-  const sansOctobre = { ...OUVERT, mois: [OUVERT.mois[1], OUVERT.mois[2]] };
-  t('🚨 hors octobre, aucun rabais annoncé', messageRarete(sansOctobre).rabais === null);
+  // La route ne l'envoie plus (PR #225). Le site ne doit pas non plus le
+  // fabriquer : il n'affiche QUE ce qu'on lui donne.
+  const m = messageRarete(OUVERT);
+  t('🚨 aucun « Décembre » dans le bandeau', !/Décembre/i.test(m.segments.join(' ')), m.segments.join(' · '));
+  t('🚨 le site affiche exactement ce que la route envoie — ni plus, ni moins',
+    m.segments.length === OUVERT.mois.filter((x) => x.restantes > 0).length, `${m.segments.length}`);
+  const composant = lire('components/BandeauRarete.jsx');
+  t('🚨 aucun mois écrit en dur dans le composant',
+    !/Octobre|Novembre|Décembre/.test(sansCommentaires(composant)));
+  const lecteur = lire('lib/disponibilites.js');
+  t('🚨 ni dans le lecteur — sauf la table des noms de mois',
+    !/Décembre/.test(sansCommentaires(lecteur).replace(/'décembre'/g, '')));
 }
 
 console.log('\n--- 4. 🚨 Complet, et la liste d\'attente ---');
@@ -139,7 +163,7 @@ console.log('\n--- 8. 🚨 La liste d\'attente passe par le MÊME envoi ---');
   const page = lire('app/soumission/page.jsx');
   t('🚨 le paramètre est lu', /liste-attente/.test(page));
   t('🚨 seule la SOURCE change', /Liste d'attente — site Lumière/.test(page));
-  t('🚨 c\'est le même QuoteForm', /<QuoteForm source=\{sourceFormulaire\} \/>/.test(page));
+  t('🚨 c\'est le même QuoteForm', /<QuoteForm source=\{sourceFormulaire\}/.test(page));
   t('un seul formulaire dans la page', (page.match(/<QuoteForm/g) || []).length === 1);
   const form = lire('components/QuoteForm.jsx');
   t('🚨 le consentement dérive toujours de la source', /consentement: `accordé le .*via \$\{source\}`/.test(form));

@@ -1046,3 +1046,16 @@ textarea:focus-visible,
 @media (max-width: 720px) {
   .gallery-grid--large .gallery-grid { grid-template-columns: 1fr; gap: 16px; }
 }
+
+/* Les mois qui suivent le premier : même poids typographique, séparés par
+   un filet. Le premier reste en ivoire plein, les suivants légèrement
+   retenus — on lit le mois le plus proche d'abord. */
+.bandeau-rarete__mois {
+  color: rgba(243, 233, 210, 0.82);
+  font-weight: 700;
+  border-left: 1px solid rgba(243, 233, 210, 0.25);
+  padding-left: 12px;
+}
+@media (max-width: 560px) {
+  .bandeau-rarete__mois { border-left: 0; padding-left: 0; }
+}

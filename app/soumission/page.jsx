@@ -2,7 +2,7 @@ import Link from "next/link";
 import QuoteForm from "@/components/QuoteForm";
 import Testimonials from "@/components/Testimonials";
 import { SectionTag } from "@/components/ui";
-import { company, homePortfolio, navy, ivory, gold, offWhite, charcoal } from "@/components/data";
+import { company, homePortfolio, navy, ivory, gold, offWhite, charcoal, serviceOptions } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
@@ -39,6 +39,14 @@ export default function Soumission({ searchParams }) {
   const sourceFormulaire = listeAttente
     ? "Liste d'attente — site Lumière"
     : "Formulaire de soumission (complet)";
+
+  // ?service=commercial — présélectionne l'option du menu déroulant. La
+  // valeur vient de serviceOptions, pas d'une chaîne écrite ici : si
+  // l'option est renommée, elle bouge d'un seul endroit.
+  const serviceDemande = String(searchParams?.service || "");
+  const serviceInitial = serviceDemande === "commercial"
+    ? serviceOptions.find((o) => /commercial/i.test(o)) || null
+    : null;
   // 2 photos représentatives (Rive-Nord + Rive-Sud) pour la colonne de gauche.
   const leftPhotos = [homePortfolio[0], homePortfolio[2]];
 
@@ -150,7 +158,7 @@ export default function Soumission({ searchParams }) {
             </div>
           </div>
           <div style={{ paddingBottom: 24 }}>
-            <QuoteForm source={sourceFormulaire} />
+            <QuoteForm source={sourceFormulaire} serviceInitial={serviceInitial} />
           </div>
         </div>
       </section>
