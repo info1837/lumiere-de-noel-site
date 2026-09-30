@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
+import { dateEnFrancais } from "@/lib/disponibilites";
+import MesureBandeau from "@/components/MesureBandeau";
 
 // Le bandeau de rareté — le premier chiffre que le visiteur voit.
 //
@@ -14,16 +15,25 @@ import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponi
 // Rendu sur le SERVEUR (composant asynchrone) : la route du CRM n'autorise
 // pas le domaine du site en CORS, et le rafraîchissement horaire vient de
 // `revalidate`.
-export default async function BandeauRarete() {
-  const dispos = await lireDisponibilites();
-  const msg = messageRarete(dispos);
+export default function BandeauRarete({ rarete }) {
+  // La donnée vient du LAYOUT, qui l'a déjà lue pour décider s'il pose la
+  // classe `avec-bandeau` sur le <body>. Deux lectures donneraient deux
+  // réponses possibles : une barre affichée sans décalage, ou un décalage
+  // sans barre.
+  const msg = rarete;
   if (!msg) return null;
 
   const fermeture = dateEnFrancais(msg.fermetureLe);
 
   return (
     <div className="bandeau-rarete" role="status" aria-live="polite">
+      {/* La hauteur réelle, posée sur --bandeau-h. C'est elle qui décale
+          l'en-tête flottant — un chiffre écrit en dur se trompait de 24 px
+          sur téléphone, et la pilule recouvrait la barre. */}
+      <MesureBandeau />
       <div className="bandeau-rarete__contenu">
+        {/* Le point devant « Octobre » — discret : il respire, il ne
+            clignote pas. Un point qui bat vite ressemble à une alarme. */}
         <span className="bandeau-rarete__pastille" aria-hidden="true" />
         {/* Un segment par mois, le rabais collé à celui qui y a droit.
             Avant, « Octobre » apparaissait deux fois : une dans le mois,

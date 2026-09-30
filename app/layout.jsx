@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import { NavBar, MobileBottomBar } from "./ClientLayout";
 import BandeauRarete from "@/components/BandeauRarete";
+import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
 import { ServerFooter } from "./ServerFooter";
 import TelemetryClient from "./TelemetryClient";
 import FestiveLayer from "@/components/FestiveLayer";
@@ -76,7 +77,16 @@ export const metadata = {
   },
 };
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
+  // ⚠️ Le layout lit les disponibilités UNE fois et marque le <body>.
+  //
+  // C'est ce marqueur qui décale l'en-tête flottant de la hauteur du
+  // bandeau. Sans lui, la pilule reste collée en haut et RECOUVRE le
+  // bandeau dès qu'on défile — c'est ce que Yahir a vu sur /calculatrice.
+  //
+  // Et quand le CRM se tait, la classe n'est pas posée : aucun décalage,
+  // aucun espace vide en haut de page.
+  const rarete = messageRarete(await lireDisponibilites());
   return (
     <html lang="fr">
       <head>
@@ -151,7 +161,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>
+      <body className={rarete ? "avec-bandeau" : undefined}>
         <a href="#contenu" className="skip-link">Aller au contenu</a>
         <FestiveLayer />
 
@@ -171,7 +181,7 @@ export default function RootLayout({ children }) {
             le visiteur lit, et il ne doit pas disparaître au défilement
             comme le ferait un élément de la nav. Il rend null quand le CRM
             ne répond pas — aucun espace réservé, aucun squelette. */}
-        <BandeauRarete />
+        <BandeauRarete rarete={rarete} />
         <NavBar />
         <main id="contenu">{children}</main>
         <ServerFooter />

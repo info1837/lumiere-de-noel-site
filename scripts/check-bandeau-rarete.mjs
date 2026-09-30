@@ -136,7 +136,14 @@ console.log('\n--- 6. 🚨 Lecture côté SERVEUR, rafraîchie chaque heure ---'
   t('🚨 le fetch passe par `revalidate`', /next: \{ revalidate: FRAICHEUR_SECONDES \}/.test(lecteur));
   t('🚨 il ne bloque pas le rendu indéfiniment', /AbortSignal\.timeout/.test(lecteur));
   const composant = lire('components/BandeauRarete.jsx');
-  t('🚨 le composant est asynchrone (donc serveur)', /export default async function BandeauRarete/.test(composant));
+  // ⚠️ Ce n'est plus le BANDEAU qui lit, c'est le LAYOUT — il a besoin de
+  // la réponse pour décider s'il pose `avec-bandeau` sur le <body>. Deux
+  // lectures donneraient deux réponses possibles : une barre sans décalage,
+  // ou un décalage sans barre.
+  t('🚨 le layout lit côté serveur', /export default async function RootLayout/.test(lire('app/layout.jsx')));
+  t('🚨 le bandeau reçoit la donnée, il ne la relit pas',
+    /export default function BandeauRarete\(\{ rarete \}\)/.test(composant)
+    && !/lireDisponibilites/.test(composant));
   t('aucun "use client" — le CORS du CRM refuserait le navigateur',
     !/use client/.test(composant) && !/use client/.test(lecteur));
   t('🚨 en cas de panne réseau, le lecteur rend null', /catch \{\s*return null;\s*\}/.test(lecteur));
@@ -145,20 +152,61 @@ console.log('\n--- 6. 🚨 Lecture côté SERVEUR, rafraîchie chaque heure ---'
   t('🚨 il ne lève jamais, même sans réseau', !leve);
 }
 
-console.log('\n--- 7. Le bandeau est au-dessus de l\'entête ---');
+console.log('\n--- 7. 🚨 Le bandeau est AU-DESSUS de l\'entête, jamais recouvert ---');
 {
   const layout = lire('app/layout.jsx');
-  t('🚨 il est monté', /<BandeauRarete \/>/.test(layout));
-  t('🚨 AVANT la NavBar', layout.indexOf('<BandeauRarete />') < layout.indexOf('<NavBar />'));
   const css = lire('app/globals.css');
-  t('il a son style', /\.bandeau-rarete \{/.test(css));
-  t('🚨 aucune hauteur réservée quand il n\'existe pas',
-    !/\.bandeau-rarete \{[^}]*min-height/.test(css));
+  t('🚨 il est monté', /<BandeauRarete rarete=\{rarete\} \/>/.test(layout));
+  t('🚨 AVANT la NavBar', layout.indexOf('<BandeauRarete') < layout.indexOf('<NavBar />'));
+
+  // ⚠️ L'entête est une pilule `position: fixed`. Un bandeau dans le flux
+  // normal défilait, et la pilule lui passait dessus dès le premier geste.
+  t('🚨 le bandeau est FIXE en haut',
+    /\.bandeau-rarete \{[\s\S]{0,220}position: fixed;[\s\S]{0,120}top: 0;/.test(css));
+  t('🚨 il passe au-dessus de la pilule (z-index)',
+    /\.bandeau-rarete \{[\s\S]{0,400}z-index: 200;/.test(css));
+  t('🚨 …mais sous le tiroir mobile, qui doit tout couvrir',
+    /\.tiroir[\s\S]{0,200}z-index: 10\d\d/.test(css) || /z-index: 1090/.test(css));
+  t('🚨 l\'entête est décalée de la hauteur du bandeau',
+    /body\.avec-bandeau \.entete-pilule \{[\s\S]{0,120}calc\(var\(--bandeau-h\) \+ var\(--entete-encart\)\)/.test(css));
+  t('🚨 le contenu aussi', /body\.avec-bandeau \{ padding-top: var\(--bandeau-h\); \}/.test(css));
+  t('les ancres n\'atterrissent pas sous la barre', /scroll-margin-top: calc\(var\(--bandeau-h\)/.test(css));
+
+  // ⚠️ La classe n'est posée QUE si le CRM a répondu : sans bandeau,
+  // aucun décalage et aucun espace vide en haut de page.
+  t('🚨 la classe dépend de la réponse du CRM',
+    /className=\{rarete \? "avec-bandeau" : undefined\}/.test(layout));
+
   t('l\'animation se coupe si le visiteur la refuse',
     /prefers-reduced-motion[\s\S]{0,120}animation: none/.test(css));
 }
 
-console.log('\n--- 8. 🚨 La liste d\'attente passe par le MÊME envoi ---');
+console.log('\n--- 8. 🚨 Lisible : ambre plein, marine, 15 px ---');
+{
+  const css = lire('app/globals.css');
+  t('🚨 fond ambre #F0BA54', /background: #F0BA54;/.test(css));
+  t('🚨 texte marine #0A1524', /\.bandeau-rarete \{[\s\S]{0,400}color: #0A1524;/.test(css));
+  t('🚨 15 px', /\.bandeau-rarete \{[\s\S]{0,500}font-size: 15px;/.test(css));
+  // Contraste mesuré : 10,35:1. Le seuil AA est 4,5:1, le AAA 7:1.
+  const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
+  const lum = (h) => { const n = parseInt(h, 16); return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255); };
+  const a = lum('F0BA54'), b = lum('0A1524');
+  const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  t('🚨 le contraste dépasse le AAA (7:1)', ratio >= 7, `${ratio.toFixed(2)}:1`);
+
+  t('🚨 le point respire devant le premier mois', /\.bandeau-rarete__pastille \{[\s\S]{0,400}animation: bandeau-respire/.test(css));
+  t('…lentement (2,8 s), pas en alarme', /bandeau-respire 2\.8s/.test(css));
+
+  // ⚠️ La hauteur se MESURE. Un chiffre en dur se trompait de 24 px sur
+  // téléphone, et la pilule recouvrait la barre.
+  const mesure = lire('components/MesureBandeau.jsx');
+  t('🚨 la hauteur réelle est posée sur --bandeau-h', /setProperty\("--bandeau-h"/.test(mesure));
+  t('🚨 elle se recalcule quand le texte se replie', /ResizeObserver/.test(mesure));
+  t('…et quand les polices arrivent', /document\.fonts/.test(mesure));
+  t('le composant est monté dans le bandeau', /<MesureBandeau \/>/.test(lire('components/BandeauRarete.jsx')));
+}
+
+console.log('\n--- 9. 🚨 La liste d\'attente passe par le MÊME envoi ---');
 {
   const page = lire('app/soumission/page.jsx');
   t('🚨 le paramètre est lu', /liste-attente/.test(page));
