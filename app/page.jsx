@@ -49,7 +49,7 @@ export default async function Home() {
           seule chose de cette page qu'on ne peut pas inventer.
           `gallery-grid--large` la passe à deux colonnes : trois vignettes
           de 4/3 sur une largeur de 1180 px, ça fait des timbres-poste. */}
-      <section style={{ background: navy, paddingTop: 72, paddingBottom: 72 }}>
+      <section className="section-y-large" style={{ background: navy }}>
         <div className="container">
           <div style={{ textAlign: "center", marginBottom: 34 }}>
             <SectionTag dark>Réalisations</SectionTag>
@@ -128,7 +128,7 @@ export default async function Home() {
                   {s.image && <img src={s.image} alt={s.imageAlt} loading="lazy"
                     style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
                 </div>
-                <div style={{ padding: 24, display: "flex", flexDirection: "column", flex: 1 }}>
+                <div className="carte-corps" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
                   <h3 style={{ color: ivory, marginBottom: 14 }}>{s.title}</h3>
                   <ul style={{ listStyle: "none", marginBottom: 20, flex: 1 }}>
                     {s.bullets.map((b, i) => (
@@ -137,12 +137,17 @@ export default async function Home() {
                       </li>
                     ))}
                   </ul>
-                  <CTAButton href="/soumission" variant="outlineLight" style={{ padding: "13px 24px", fontSize: 13, alignSelf: "flex-start" }}>
-                    Réserver ma date
-                  </CTAButton>
+                  {/* ⚠️ Le bouton par carte a été RETIRÉ. Les trois portaient
+                      le même mot et menaient au même endroit — /soumission,
+                      sans même dire de quel service on venait. Trois fois la
+                      même porte au même étage : le visiteur ne choisit pas, il
+                      recompte. La section garde UNE porte, sous la grille. */}
                 </div>
               </article>
             ))}
+          </div>
+          <div style={{ textAlign: "center", marginTop: 40 }}>
+            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>
@@ -185,7 +190,7 @@ export default async function Home() {
       </section>
 
       {/* AMÉLIORATION — Zone de service (SEO local) */}
-      <section className="snowy" style={{ background: navy, paddingTop: 56, paddingBottom: 56 }}>
+      <section className="snowy section-y-moyen" style={{ background: navy }}>
         <div className="container" style={{ textAlign: "center" }}>
           <SectionTag dark>Zone de service</SectionTag>
           <SectionTitle light style={{ margin: "0 auto 22px" }}>De la Rive-Sud à la Rive-Nord</SectionTitle>
@@ -206,7 +211,7 @@ export default async function Home() {
       </section>
 
       {/* AMÉLIORATION — Bandeau urgence saisonnière */}
-      <section style={{ background: gold, paddingTop: 40, paddingBottom: 40 }}>
+      <section className="section-y-serre" style={{ background: gold }}>
         <div className="container" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
           <div>
             <h3 style={{ color: charcoal, marginBottom: 4 }}>Les agendas se remplissent vite</h3>

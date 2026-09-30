@@ -63,6 +63,15 @@ img { max-width: 100%; display: block; }
 
 section { padding: clamp(56px, 8vw, 104px) 24px; }
 
+/* Rythme vertical des sections hors gabarit. Ces valeurs vivaient en style
+   inline dans page.jsx : un style inline bat toute feuille, donc la
+   respiration mobile ne pouvait pas les atteindre. */
+.section-y-large  { padding-top: 72px; padding-bottom: 72px; }
+.section-y-moyen  { padding-top: 56px; padding-bottom: 56px; }
+.section-y-serre  { padding-top: 40px; padding-bottom: 40px; }
+
+
+
 .container { max-width: var(--maxw); margin: 0 auto; }
 
 /* --- Utilitaires de grille (breakpoints repris du pattern palencia) ------- */
@@ -877,7 +886,7 @@ textarea:focus-visible,
      forcé après « éclatantes, » fixe le reste : deux lignes, partout. */
   max-width: 26ch;
 }
-.hero-card { max-width: 440px; }
+.hero-card { max-width: 440px; padding: 24px; }
 .hero-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1057,6 +1066,26 @@ body.avec-bandeau { padding-top: var(--bandeau-h); }
 /* Une ancre cliquée ne doit pas atterrir SOUS la barre. */
 body.avec-bandeau [id] { scroll-margin-top: calc(var(--bandeau-h) + var(--entete-h) + 12px); }
 
+/* ⚠️ Un CHAMP de formulaire arrive seul. Mesuré sur /soumission à 390 px,
+   entête jusqu'à 110 px : le champ atterrissait à y=114 — correct — mais son
+   étiquette, 28 px plus haut, à y=85, sous l'entête. On voyait une case vide
+   sans sa question ; pour « Comment avez-vous entendu parler de nous ? »,
+   dont l'étiquette fait deux lignes, elle tombait à y=64. D'où « Choisir… »
+   affiché sans rien au-dessus.
+   Le navigateur fait défiler vers le CHAMP (validation, focus, ancre) : c'est
+   donc au champ de réserver la place de son étiquette. 72 px couvrent une
+   étiquette sur deux lignes avec de la marge.
+   Le [id] n'est pas décoratif : la règle d'ancre juste au-dessus pèse (0,2,1)
+   et l'emporterait sur un sélecteur qui ne compte que des éléments. Le
+   navigateur ne fait défiler que vers des champs qui ont un id, de toute
+   façon — c'est par leur id que la validation les désigne.
+   Les Select sur mesure sont des <button class="ld-select__trigger"> : d'où
+   `button` dans la liste, et non un nom de classe deviné. */
+form :is(input, select, textarea, button)[id],
+body.avec-bandeau form :is(input, select, textarea, button)[id] {
+  scroll-margin-top: calc(var(--bandeau-h, 0px) + var(--entete-h) + 72px);
+}
+
 .bandeau-rarete__contenu {
   width: 100%;
   max-width: 1180px;
@@ -1178,4 +1207,20 @@ body.avec-bandeau [id] { scroll-margin-top: calc(var(--bandeau-h) + var(--entete
   text-decoration: underline;
   text-underline-offset: 3px;
   white-space: nowrap;
+}
+
+/* --- Respiration mobile -----------------------------------------------------
+   Mesuré à 390 px : nos sections tenaient sur 56 px de marge haut/bas, celles
+   de palenciaservicesexterieur.com sur 80. Le ×1,5 demandé tombe à 84 — à
+   quatre pixels de la référence. Les cartes suivent : 24 px de marge autour
+   d'un texte de 15 px, c'est serré au doigt. */
+@media (max-width: 767.98px) {
+  section { padding-top: 84px; padding-bottom: 84px; }
+  .section-y-large { padding-top: 108px; padding-bottom: 108px; }
+  .section-y-moyen { padding-top: 84px;  padding-bottom: 84px; }
+  .section-y-serre { padding-top: 60px;  padding-bottom: 60px; }
+  .trust-section   { padding-bottom: 108px; }
+  .trust-card  { padding: 32px 26px; }
+  .hero-card   { padding: 30px 22px; }
+  .carte-corps { padding: 30px 24px; }
 }
