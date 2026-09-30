@@ -48,18 +48,25 @@ console.log('\n--- 3. Le bouton ---');
 {
   t('🚨 « Réserver ma date » en bouton principal',
     /variant="gold">Réserver ma date</.test(heroCode));
-  t('le bouton d\'appel reste à côté', /Appeler \{company\.phoneDisplay\}/.test(heroCode));
+  // Le 2e gros bouton « Appeler … » est devenu un lien texte discret sous le
+  // bouton (respiration, bloc 1) : cinq portes au premier écran, ce n'était
+  // pas un choix. Le numéro n'est pas parti — il a changé de poids.
+  t('🚨 plus de 2e gros bouton d\'appel', !/variant="outlineLight">Appeler/.test(heroCode));
+  t('🚨 le téléphone survit en lien texte', /<p className="hero-tel">[\s\S]{0,140}<a href=\{company\.phoneHref\}>/.test(heroCode));
 }
 
 console.log('\n--- 4. 🚨 La ligne de rareté est VRAIE, ou absente ---');
 {
-  t('🚨 elle vient d\'une prop, pas d\'un texte en dur', /\{rarete\?\.texte &&/.test(heroCode));
+  // Depuis le bloc 1 elle ne s'affiche plus DANS le hero : le bandeau du haut
+  // la porte déjà, et la lire deux fois de suite affaiblit les deux. Ce qui
+  // reste protégé ici, c'est l'interdit qui compte : aucun chiffre inventé.
+  t('🚨 le hero ne redit plus la rareté du bandeau', !/rarete\?\.texte/.test(heroCode));
   t('🚨 plus de « les dates de novembre partent en premier »',
     !/dates de novembre partent en premier/.test(heroCode));
   t('🚨 aucun nombre de dates écrit en dur dans le hero',
     !/\d+ dates? restantes?/.test(heroCode));
-  t('🚨 elle est SOUS le bouton',
-    heroCode.indexOf('Réserver ma date') < heroCode.indexOf('rarete?.texte'));
+  t('🚨 la fermeture, elle, reste sous le bouton',
+    heroCode.indexOf('Réserver ma date') < heroCode.indexOf('hero-fermeture'));
   t('le hero accepte null par défaut', /rarete = null/.test(hero));
 }
 

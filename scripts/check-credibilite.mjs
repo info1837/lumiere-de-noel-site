@@ -88,7 +88,8 @@ console.log('\n--- 5. Ce à quoi on ne touche pas ---');
   // Il reçoit maintenant sa donnée du layout — ne pas épingler la balise
   // entière, elle porte une prop de plus.
   t('le bandeau de rareté est toujours monté', /<BandeauRarete/.test(lire('app/layout.jsx')));
-  t('le hero garde sa ligne de rareté', /rarete\?\.texte/.test(lire('components/Hero.jsx')));
+  // La rareté vit dans le bandeau du haut, plus dans le hero (bloc 1).
+  t('le hero garde la date de fermeture du CRM', /rarete\?\.fermetureLe/.test(lire('components/Hero.jsx')));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);
