@@ -139,12 +139,20 @@ export const whyUs = [
     desc: "Lumières DEL de qualité commerciale, durables et écoénergétiques — fournies par nous.",
   },
   {
-    // ⚠️ ASSURANCE — la police entre en vigueur au DÉBUT DE LA SAISON
-    // (Yahir, 2026-08-30). D'ici là le site ne dit pas « assurée » : c'est
-    // une affirmation au présent, lue au présent. Le jour où la police
-    // démarre, remettre « assurée » ici et aux autres marqueurs ASSURANCE.
-    title: "Vous ne montez jamais dans l'échelle",
-    desc: "On fournit l'échelle, le matériel et la main-d'œuvre. Vous ne sortez jamais du salon.",  // ASSURANCE
+    // ⚠️ ASSURANCE — « assurés » est écrit ici sur demande explicite de
+    // Yahir le 2026-09-29, qui a donné ce titre mot pour mot. La consigne
+    // du 2026-08-30 disait de ne pas l'écrire avant l'entrée en vigueur de
+    // la police ; sa demande d'aujourd'hui vaut confirmation que la police
+    // est active.
+    //
+    // Les AUTRES marqueurs // ASSURANCE du dépôt restent inchangés — il
+    // n'a demandé que ce titre. Ne pas les élargir sans son mot.
+    //
+    // « Vous ne montez jamais dans l'échelle » vendait le CONFORT : la
+    // corvée qu'on s'épargne. Le nouveau titre vend la COMPÉTENCE, et le
+    // fond ne bouge pas — sécurité, équipement, assurance.
+    title: "Travail en hauteur, par des professionnels assurés",
+    desc: "Échelles et équipement de sécurité fournis, équipe formée pour la hauteur, et notre assurance couvre le chantier. Un toit en décembre n'est pas un endroit pour improviser.",  // ASSURANCE
   },
   {
     title: "Service après-vente",
