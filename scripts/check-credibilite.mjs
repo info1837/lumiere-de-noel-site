@@ -85,7 +85,9 @@ console.log('\n--- 5. Ce à quoi on ne touche pas ---');
     (pageCode.match(/<QuoteForm/g) || []).length === 0);
   t('🚨 le pixel est intact', /eventID/.test(lire('lib/meta-lead-event.js')));
   t('l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
-  t('le bandeau de rareté est toujours monté', /<BandeauRarete \/>/.test(lire('app/layout.jsx')));
+  // Il reçoit maintenant sa donnée du layout — ne pas épingler la balise
+  // entière, elle porte une prop de plus.
+  t('le bandeau de rareté est toujours monté', /<BandeauRarete/.test(lire('app/layout.jsx')));
   t('le hero garde sa ligne de rareté', /rarete\?\.texte/.test(lire('components/Hero.jsx')));
 }
 

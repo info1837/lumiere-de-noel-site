@@ -965,71 +965,15 @@ textarea:focus-visible,
   .trust-badge { font-size: 40px; }
 }
 
-/* ── Bandeau de rareté ───────────────────────────────────────────────
-   Le premier chiffre que le visiteur voit, donc le plus scruté. Il vit
-   AU-DESSUS de l'entête, en pleine largeur : un bandeau qu'on peut
-   confondre avec une pub se fait ignorer.
+/* ── La galerie de réalisations, en grand ─────────────────────────────
+   ⚠️ Ce bloc avait DISPARU : en réécrivant le bandeau juste en dessous,
+   ma découpe a emporté les lignes qui le suivaient. Personne ne l'aurait
+   vu en lisant le diff du bandeau — c'est check-credibilite qui l'a
+   attrapé, en mesurant les colonnes.
 
-   Il n'existe que quand le CRM répond — le composant rend null sinon, il
-   n'y a donc aucun état « vide » à styler. */
-.bandeau-rarete {
-  background: #0d1b2a;
-  color: #f3e9d2;
-  border-bottom: 1px solid rgba(201, 169, 110, 0.35);
-  font-size: 13.5px;
-  line-height: 1.45;
-}
-.bandeau-rarete__contenu {
-  max-width: 1180px;
-  margin: 0 auto;
-  padding: 9px 20px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-.bandeau-rarete__pastille {
-  width: 7px; height: 7px; border-radius: 50%;
-  background: #c9a96e;
-  flex-shrink: 0;
-  /* Elle respire doucement. Un point qui clignote vite ressemble à une
-     alarme ; celui-ci dit « c'est vivant », pas « dépêchez-vous ». */
-  animation: bandeau-respire 2.8s ease-in-out infinite;
-}
-@keyframes bandeau-respire {
-  0%, 100% { opacity: 1; }
-  50%      { opacity: 0.35; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .bandeau-rarete__pastille { animation: none; }
-}
-.bandeau-rarete__texte { font-weight: 700; letter-spacing: 0.01em; }
-.bandeau-rarete__rabais {
-  color: #c9a96e;
-  font-weight: 700;
-  border-left: 1px solid rgba(243, 233, 210, 0.25);
-  padding-left: 12px;
-}
-.bandeau-rarete__note {
-  color: rgba(243, 233, 210, 0.62);
-  border-left: 1px solid rgba(243, 233, 210, 0.25);
-  padding-left: 12px;
-}
-.bandeau-rarete__lien {
-  color: #f3e9d2;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  margin-left: auto;
-  font-weight: 600;
-}
-/* Sur téléphone, la note de fermeture passe à la ligne plutôt que de
-   serrer le chiffre, qui est l'information. */
-@media (max-width: 560px) {
-  .bandeau-rarete__contenu { padding: 8px 16px; gap: 8px; font-size: 13px; }
-  .bandeau-rarete__note { flex-basis: 100%; border-left: 0; padding-left: 0; }
-  .bandeau-rarete__lien { margin-left: 0; }
-}
-
+   Trois vignettes de 4/3 sur 1180 px font des timbres-poste : chacune
+   tient 370 px, soit moins que la photo d'un téléphone. Deux colonnes sur
+   écran, une seule sur téléphone. */
 /* ── La galerie de réalisations, en grand ─────────────────────────────
    Trois vignettes de 4/3 sur 1180 px font des timbres-poste : chacune
    tient 370 px de large, soit moins que la photo d'un téléphone. Sur un
@@ -1047,15 +991,106 @@ textarea:focus-visible,
   .gallery-grid--large .gallery-grid { grid-template-columns: 1fr; gap: 16px; }
 }
 
-/* Les mois qui suivent le premier : même poids typographique, séparés par
-   un filet. Le premier reste en ivoire plein, les suivants légèrement
-   retenus — on lit le mois le plus proche d'abord. */
+/* ── Bandeau de rareté ───────────────────────────────────────────────
+   ⚠️ IL EST FIXE, EN PLEINE LARGEUR, ET RIEN NE PASSE PAR-DESSUS.
+
+   Il vivait dans le flux normal : il défilait, et l'en-tête — une pilule
+   `position: fixed` — lui passait dessus dès le premier geste de
+   défilement. Sur /calculatrice, où le contenu commence haut, il était
+   recouvert avant même qu'on bouge.
+
+   Deux règles indissociables :
+     1. le bandeau est `fixed` à top:0, au-dessus de la pilule (z-index) ;
+     2. `body.avec-bandeau` pousse la pilule ET le contenu de sa hauteur.
+
+   La classe n'est posée que si le CRM a répondu. Sans bandeau, aucun
+   décalage, aucun espace vide.
+
+   Ambre plein plutôt que marine : sur un hero sombre, une barre foncée se
+   confondait avec l'entête. L'ambre #F0BA54 sur marine #0A1524 donne un
+   contraste de 8,9:1 — bien au-delà du 4,5:1 exigé, et lisible à 15 px. */
+:root { --bandeau-h: 40px; }
+
+.bandeau-rarete {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  /* Au-dessus de la pilule (100) et de la neige (45), sous le tiroir
+     (1090) qui doit pouvoir tout couvrir. */
+  z-index: 200;
+  min-height: var(--bandeau-h);
+  display: flex;
+  align-items: center;
+  background: #F0BA54;
+  color: #0A1524;
+  border-bottom: 1px solid rgba(10, 21, 36, 0.18);
+  font-size: 15px;
+  line-height: 1.35;
+}
+body.avec-bandeau .entete-pilule {
+  top: calc(var(--bandeau-h) + var(--entete-encart)) !important;
+}
+body.avec-bandeau { padding-top: var(--bandeau-h); }
+/* Une ancre cliquée ne doit pas atterrir SOUS la barre. */
+body.avec-bandeau [id] { scroll-margin-top: calc(var(--bandeau-h) + var(--entete-h) + 12px); }
+
+.bandeau-rarete__contenu {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.bandeau-rarete__pastille {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: #0A1524;
+  flex-shrink: 0;
+  /* Elle respire. Un point qui bat vite ressemble à une alarme ; celui-ci
+     dit « c'est vivant », pas « dépêchez-vous ». */
+  animation: bandeau-respire 2.8s ease-in-out infinite;
+}
+@keyframes bandeau-respire {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.3; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .bandeau-rarete__pastille { animation: none; }
+}
+.bandeau-rarete__texte { font-weight: 700; letter-spacing: 0.01em; }
 .bandeau-rarete__mois {
-  color: rgba(243, 233, 210, 0.82);
   font-weight: 700;
-  border-left: 1px solid rgba(243, 233, 210, 0.25);
+  color: rgba(10, 21, 36, 0.82);
+  border-left: 1px solid rgba(10, 21, 36, 0.28);
   padding-left: 12px;
 }
-@media (max-width: 560px) {
-  .bandeau-rarete__mois { border-left: 0; padding-left: 0; }
+.bandeau-rarete__note {
+  color: rgba(10, 21, 36, 0.72);
+  border-left: 1px solid rgba(10, 21, 36, 0.28);
+  padding-left: 12px;
+}
+.bandeau-rarete__lien {
+  color: #0A1524;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  margin-left: auto;
+  font-weight: 700;
+}
+
+/* Sur téléphone la ligne passe à deux niveaux : le chiffre du mois le plus
+   proche reste seul sur la première, c'est lui l'information. La hauteur du
+   token suit — sinon la pilule se replacerait sur l'ancienne mesure et
+   recouvrirait la deuxième ligne. */
+@media (max-width: 720px) {
+  /* Valeur de DÉPART seulement : MesureBandeau la corrige au rendu. Elle
+     est calée sur la ligne la plus longue mesurée (86 px à 390 px), pour
+     qu'il n'y ait pas de sursaut avant que le script tourne. */
+  :root { --bandeau-h: 88px; }
+  .bandeau-rarete { font-size: 14.5px; }
+  .bandeau-rarete__contenu { padding: 7px 16px; gap: 6px 10px; }
+  .bandeau-rarete__mois,
+  .bandeau-rarete__note { border-left: 0; padding-left: 0; }
+  .bandeau-rarete__note { flex-basis: 100%; }
+  .bandeau-rarete__lien { margin-left: 0; }
 }
