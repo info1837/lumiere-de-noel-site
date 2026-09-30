@@ -24,8 +24,16 @@ const AVIS_PALENCIA_URL =
 // (« Rappels sans frais et illimités, de la pose au retrait ») : elle ne doit
 // jamais être élargie. Les 100+ avis sont ceux de Palencia Services Extérieur
 // — c'est écrit sur la carte, en toutes lettres, parce que les attribuer à
-// Lumière de Noël serait faux. Aucune mention d'assurance ici tant que la
-// police n'est pas active — voir les marqueurs // ASSURANCE dans le dépôt.
+// Lumière de Noël serait faux.
+//
+// ASSURANCE — la police est ACTIVE depuis le 2026-09-29 (confirmé par Yahir).
+// La règle « pas un mot avant l'entrée en vigueur » est donc levée, et les
+// marqueurs // ASSURANCE du dépôt le disent maintenant.
+//
+// Cette barre n'en parle toujours pas, et c'est un choix qui reste à faire,
+// pas un oubli : ajouter une cinquième carte change la grille, et pour un
+// client COMMERCIAL l'assurance est un critère d'achat — elle vaut mieux
+// qu'une ligne parmi quatre. Yahir tranche.
 // =============================================================================
 
 const CARTES = [

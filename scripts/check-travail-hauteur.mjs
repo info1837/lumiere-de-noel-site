@@ -43,22 +43,69 @@ console.log('\n--- 2. 🚨 Le fond est gardé : sécurité, équipement, assuran
   t('la formation de l\'équipe', /formée pour la hauteur/.test(carte));
 }
 
-console.log('\n--- 3. 🚨 Les autres marqueurs ASSURANCE n\'ont PAS bougé ---');
+console.log('\n--- 3. 🚨 La police est active : tous les marqueurs le disent ---');
 {
-  // Yahir n'a demandé QUE ce titre. Élargir « assurés » ailleurs sans son
-  // mot, c'est exactement ce que la consigne du 2026-08-30 interdisait.
+  // La consigne du 2026-08-30 disait : « le jour où la police démarre,
+  // remettre « assurée » ici ET AUX AUTRES MARQUEURS ». Yahir a confirmé
+  // le 2026-09-29. Ce test vérifie qu'aucun n'a été oublié — un marqueur
+  // resté muet, c'est un argument qu'on a payé et qu'on n'utilise pas.
+  const blog = sansCommentaires(lire('app/blog/posts.js'));
+  t('🚨 le billet de blogue dit l\'assurance', /assurance qui couvre le chantier/.test(blog));
+  t('🚨 …et plus « fini les chutes d\'échelle » (c\'était la peur, pas le métier)',
+    !/fini les chutes d'échelle/.test(blog));
+
+  t('🚨 le commercial dit « formée et assurée »',
+    /travail en hauteur fait par notre équipe, formée et assurée/.test(dataCode));
+  t('🚨 sa puce aussi', /Travail en hauteur par une équipe formée et assurée/.test(dataCode));
+
+  t('🚨 le résidentiel ne vend plus le confort',
+    !/sans que vous touchiez à une échelle/.test(dataCode));
+  t('…il dit la compétence', /par une équipe formée pour le travail en hauteur/.test(dataCode));
+
+  const marqueurs = (data.match(/\/\/ ASSURANCE/g) || []).length
+    + (lire('app/blog/posts.js').match(/\/\/ ASSURANCE/g) || []).length;
+  t('🚨 les étiquettes ASSURANCE restent, pour pouvoir tout repasser si la police s\'interrompt',
+    marqueurs >= 4, `${marqueurs}`);
+
+  // La barre des objections est le SEUL endroit laissé muet, et c'est un
+  // choix documenté, pas un oubli.
   const barre = lire('components/ObjectionBar.jsx');
-  t('🚨 la barre des objections ne parle toujours PAS d\'assurance',
-    !/assur(é|e|ance)/i.test(sansCommentaires(barre)));
-  t('…et garde sa note qui explique pourquoi', /Aucune mention d'assurance ici/.test(barre));
-  const blog = lire('app/blog/posts.js');
-  t('le billet de blogue garde sa formulation d\'origine',
-    /Le travail en hauteur, c'est notre métier/.test(blog));
-  const marqueurs = (data.match(/\/\/ ASSURANCE/g) || []).length;
-  t('les marqueurs ASSURANCE restent en place pour le prochain lecteur', marqueurs >= 3, `${marqueurs}`);
+  t('la barre des objections reste muette — choix, pas oubli',
+    !/assur(é|e|ance)/i.test(sansCommentaires(barre)) && /Yahir tranche/.test(barre));
+  t('🚨 aucune note périmée ne dit plus « tant que la police n\'est pas active »',
+    !/tant que la\s*\n?\/\/ police n'est pas active/.test(barre) && !/police n'est pas active/.test(barre));
 }
 
-console.log('\n--- 4. La carte reste rendue là où elle était ---');
+console.log('\n--- 4. 🚨 Plus aucun argument de CONFORT dans tout le dépôt ---');
+{
+  // Yahir : « reformule en argument de pro, pas de confort ». C'est un
+  // PRINCIPE, pas une chaîne. Le même argument vivait à cinq endroits :
+  // le titre du hero, la carte « travail en hauteur », la carte « clé en
+  // main », une puce du service résidentiel et son intro par ville.
+  //
+  // Les commentaires qui CITENT l'ancienne formulation pour expliquer
+  // pourquoi elle a changé sont légitimes — on ne les compte pas.
+  const marcher = (d, acc = []) => {
+    for (const e of fs.readdirSync(d, { withFileTypes: true })) {
+      if (['node_modules', '.next', '.git', 'scripts'].includes(e.name)) continue;
+      const q = path.join(d, e.name);
+      if (e.isDirectory()) marcher(q, acc);
+      else if (/\.(jsx?|mjs|css)$/.test(e.name)) acc.push(q);
+    }
+    return acc;
+  };
+  const CONFORT = /touchez jamais à une échelle|touchiez à une échelle|ne sortez jamais du salon|fini les chutes/i;
+  const fautifs = [...marcher(path.join(ROOT, 'app')), ...marcher(path.join(ROOT, 'components'))]
+    .filter((f) => CONFORT.test(sansCommentaires(fs.readFileSync(f, 'utf8'))));
+  t('🚨 aucune formulation de confort ne reste', fautifs.length === 0,
+    fautifs.map((f) => path.relative(ROOT, f)).join(' '));
+  t('la carte « Clé en main » dit maintenant l\'interlocuteur unique',
+    /Un seul interlocuteur, du premier croquis au retrait de janvier/.test(dataCode));
+  t('🚨 la puce du résidentiel dit l\'équipe assurée',
+    /travail en hauteur par une équipe assurée/.test(dataCode));
+}
+
+console.log('\n--- 5. La carte reste rendue là où elle était ---');
 {
   const page = lire('app/page.jsx');
   t('whyUs est toujours parcouru', /whyUs\.map/.test(page));

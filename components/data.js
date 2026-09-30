@@ -132,21 +132,21 @@ export const serviceCards = [
 export const whyUs = [
   {
     title: "Clé en main",
-    desc: "On conçoit, installe, entretient et désinstalle. Vous ne touchez jamais à une échelle.",
+    desc: "On conçoit, installe, entretient et désinstalle. Un seul interlocuteur, du premier croquis au retrait de janvier.",
   },
   {
     title: "Matériel commercial",
     desc: "Lumières DEL de qualité commerciale, durables et écoénergétiques — fournies par nous.",
   },
   {
-    // ⚠️ ASSURANCE — « assurés » est écrit ici sur demande explicite de
-    // Yahir le 2026-09-29, qui a donné ce titre mot pour mot. La consigne
-    // du 2026-08-30 disait de ne pas l'écrire avant l'entrée en vigueur de
-    // la police ; sa demande d'aujourd'hui vaut confirmation que la police
-    // est active.
+    // ⚠️ ASSURANCE — la police est ACTIVE depuis le 2026-09-29, confirmé
+    // par Yahir en une ligne (« Assurance Lumière : yes »). La consigne du
+    // 2026-08-30 disait de ne pas écrire « assurée » avant son entrée en
+    // vigueur ; elle est levée, et tous les marqueurs // ASSURANCE du dépôt
+    // le disent maintenant.
     //
-    // Les AUTRES marqueurs // ASSURANCE du dépôt restent inchangés — il
-    // n'a demandé que ce titre. Ne pas les élargir sans son mot.
+    // Si la police s'interrompait, il faudrait repasser sur CHACUN d'eux :
+    // c'est pour ça qu'ils gardent leur étiquette.
     //
     // « Vous ne montez jamais dans l'échelle » vendait le CONFORT : la
     // corvée qu'on s'épargne. Le nouveau titre vend la COMPÉTENCE, et le
@@ -232,12 +232,12 @@ export const services = [
     bullets: [
       "Toiture, corniches, arbres, arbustes et façade",
       "DEL commerciales blanc-chaud ou multicolores",
-      "Pose, entretien et retrait inclus — vous ne touchez jamais à une échelle",
+      "Pose, entretien et retrait inclus — travail en hauteur par une équipe assurée",  // ASSURANCE
       "Rappels sans frais et illimités, de la pose au retrait",
     ],
     body: "Notre équipe se déplace, mesure votre propriété et propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
     forCity: (city) =>
-      `Lumières de Noël résidentielles à ${city} : conception, pose, entretien et retrait — tout inclus, sans que vous touchiez à une échelle. On planifie selon la météo locale et les premières neiges.`,
+      `Lumières de Noël résidentielles à ${city} : conception, pose, entretien et retrait — tout inclus, par une équipe formée pour le travail en hauteur. On planifie selon la météo locale et les premières neiges.`,
   },
   {
     slug: "lumieres-de-noel-commercial",
@@ -250,11 +250,11 @@ export const services = [
     metaDescription:
       "Façades, vitrines et entrées illuminées pour les Fêtes. Installation hors des heures d'ouverture, entretien inclus, retrait en janvier. Sur soumission.",
     intro:
-      "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, et le travail en hauteur fait par notre équipe.",  // ASSURANCE
+      "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, et le travail en hauteur fait par notre équipe, formée et assurée.",  // ASSURANCE
     bullets: [
       "Façades, vitrines, marquises, entrées",
       "Planification hors-heures (soir / nuit) si requis",
-      "Travail en hauteur fait par notre équipe",  // ASSURANCE
+      "Travail en hauteur par une équipe formée et assurée",  // ASSURANCE
       "Maintenance pendant la saison incluse",
     ],
     body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
