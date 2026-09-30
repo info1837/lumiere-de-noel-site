@@ -96,7 +96,7 @@ export default function Hero({ rarete = null }) {
             Conception, installation, entretien et retrait. Un nombre limité de
             propriétés chaque saison.
           </p>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 14, marginBottom: 18 }} data-barre-ancre>
             <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
           </div>
 
@@ -150,7 +150,10 @@ export default function Hero({ rarete = null }) {
           boxShadow: "0 24px 64px rgba(0,0,0,0.35)", alignSelf: "start",
         }}>
           {(
-            <form onSubmit={submit} noValidate>
+            /* Le formulaire fait taire la barre du bas : proposer
+               « Réserver ma date » à quelqu'un qui le remplit déjà, c'est lui
+               demander de recommencer. */
+            <form onSubmit={submit} noValidate data-barre-masque>
               <h3 style={{ color: charcoal, marginBottom: 2, fontSize: 24 }}>Réservez votre date</h3>
               {/* Le sous-titre dit ce qui se passe APRÈS l'envoi, et dans quel
                   ordre : on confirme la place, puis le prix, et les deux
