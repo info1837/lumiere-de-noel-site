@@ -146,7 +146,7 @@ export default function Hero({ rarete = null }) {
 
         {/* Carte de réservation rapide */}
         <div className="hero-card" style={{
-          background: "rgba(255,255,255,0.96)", borderRadius: 16, padding: 24,
+          background: "rgba(255,255,255,0.96)", borderRadius: 16,
           boxShadow: "0 24px 64px rgba(0,0,0,0.35)", alignSelf: "start",
         }}>
           {(
