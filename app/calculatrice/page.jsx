@@ -5,11 +5,11 @@ import { company, navy, ivory } from "@/components/data";
 export const metadata = {
   title: "Estimer mon projet",
   description:
-    "Tracez votre ligne de toit sur l'image satellite et voyez votre prix. Installation, entretien, retrait et entreposage inclus.",
+    "Tracez votre ligne de toit sur l'image satellite et obtenez votre fourchette de départ. Installation, entretien, retrait et entreposage inclus.",
   alternates: { canonical: "/calculatrice" },
   openGraph: {
     title: "Estimer mon projet | Solution Lumière de Noël",
-    description: "Votre prix à l'écran, en deux minutes.",
+    description: "Votre fourchette de départ, en deux minutes.",
     url: "/calculatrice",
   },
 };
@@ -20,13 +20,15 @@ export default function CalculatricePage() {
       <div className="container grid-2" style={{ alignItems: "start" }}>
         <div>
           <SectionTag dark>Estimer mon projet</SectionTag>
-          <h1 style={{ color: ivory, marginBottom: 18 }}>Votre prix, à l'écran</h1>
+          <h1 style={{ color: ivory, marginBottom: 18 }}>Estimez votre projet</h1>
           <p style={{ color: "rgba(243,233,210,0.85)", fontSize: 19, marginBottom: 22, maxWidth: 560 }}>
-            Tracez votre ligne de toit sur l'image satellite. Vous voyez le prix tout de suite —
-            installation, entretien pendant la saison, retrait en janvier et entreposage compris.
+            Tracez votre ligne de toit sur l'image satellite. On vous donne la fourchette de
+            départ — installation, entretien pendant la saison, retrait en janvier et
+            entreposage compris.
           </p>
           <p style={{ color: "rgba(243,233,210,0.7)", fontSize: 15, marginBottom: 26, maxWidth: 560 }}>
-            Colonnes, arbres et arbustes s'évaluent sur place : ils ne changent pas le prix affiché.
+            Yahir confirme votre prix exact après une courte consultation. Colonnes, arbres et
+            arbustes s'évaluent sur place.
           </p>
           <div style={{ display: "grid", gap: 10, color: "rgba(243,233,210,0.85)", fontSize: 16 }}>
             <a href={company.phoneHref} style={{ color: "#E9DCC0", textDecoration: "none", fontWeight: 700 }}>
