@@ -950,6 +950,19 @@ textarea:focus-visible,
   max-width: 26ch;
 }
 .hero-card { max-width: 440px; padding: 24px; }
+
+/* ⚠️ MA RÉGRESSION, ET SA RÉPARATION.
+   La PR « Respiration 3/4 » a remplacé le `padding: 24` en style inline du
+   corps des cartes de service par cette classe — mais ne l'a définie QUE
+   sous 768 px. Au-dessus, la zone texte n'avait donc AUCUNE marge : le
+   titre « RÉSIDENTIEL » touchait le bord, et les puces étaient coupées en
+   deux par le bord de la carte.
+   Mesuré sur la production : 18 textes collés au bord à 1440 px, 0 à
+   390 px. Le défaut était desktop seulement — invisible sur le téléphone
+   où toute la refonte se vérifiait.
+   La photo, elle, garde sa pleine largeur : c'est la boîte TEXTE qui
+   porte la marge, pas la carte. */
+.carte-corps { padding: 24px; }
 .hero-form-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
