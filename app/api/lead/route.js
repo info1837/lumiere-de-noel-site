@@ -11,7 +11,8 @@
 //
 // Variable requise (Vercel, sur ce projet) : LUMIERE_INTAKE_KEY
 
-const CRM_INTAKE_URL = 'https://palencia-crm.vercel.app/api/leads';
+const CRM_BASE = (process.env.CRM_BASE_URL || 'https://palencia-crm.vercel.app').replace(/\/$/, '');
+const CRM_INTAKE_URL = `${CRM_BASE}/api/leads`;
 
 function clean(v, max = 500) {
   return typeof v === 'string' ? v.trim().slice(0, max) : '';
@@ -107,7 +108,12 @@ export async function POST(request) {
       console.error('[lumiere/intake] CRM a refusé:', res.status, detail.slice(0, 200));
       return Response.json({ ok: false, error: 'crm_rejected', status: res.status }, { status: 502 });
     }
-    return Response.json({ ok: true });
+    // L'id de la fiche remonte jusqu'au navigateur. Le simulateur crée le
+    // lead à l'écran 1 et rattache la photo à l'écran 2 : sans cet id, il
+    // faudrait retrouver la fiche par téléphone, et un numéro suffirait
+    // alors à accrocher une image à la fiche de quelqu'un d'autre.
+    const corpsCrm = await res.json().catch(() => ({}));
+    return Response.json({ ok: true, id: corpsCrm?.id ?? null });
   } catch (e) {
     console.error('[lumiere/intake] échec réseau:', e?.message);
     return Response.json({ ok: false, error: 'network' }, { status: 502 });

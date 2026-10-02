@@ -585,6 +585,35 @@ async function sendLeadToCrm(payload) {
 // silencieusement sans alerter le bot.
 export const HONEYPOT_FIELD = "_website";
 
+/**
+ * Comme sendLead, mais rend aussi l'ID de la fiche créée.
+ *
+ * Fonction SÉPARÉE à dessein : quatre formulaires appellent sendLead et se
+ * contentent d'un booléen. Changer son type de retour, c'est toucher quatre
+ * chemins qui marchent pour le besoin d'un cinquième.
+ *
+ * @returns {Promise<{ok: boolean, id: string|null}>}
+ */
+export async function sendLeadEtRendreId(payload) {
+  if (payload && (payload[HONEYPOT_FIELD] || payload.honeypot)) {
+    if (typeof console !== "undefined") console.warn("[Lumière] Honeypot déclenché — envoi ignoré.");
+    return { ok: true, id: null };
+  }
+  try {
+    const res = await fetch("/api/lead", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ ...payload, utm: lireUtm() }),
+    });
+    const corps = await res.json().catch(() => ({}));
+    if (!res.ok && typeof console !== "undefined") console.warn("[Lumière] CRM intake a répondu", res.status);
+    return { ok: res.ok, id: corps?.id ?? null };
+  } catch (e) {
+    if (typeof console !== "undefined") console.warn("[Lumière] CRM intake indisponible:", e?.message);
+    return { ok: false, id: null };
+  }
+}
+
 export async function sendLead(payload) {
   if (payload && (payload[HONEYPOT_FIELD] || payload.honeypot)) {
     if (typeof console !== "undefined") console.warn("[Lumière] Honeypot déclenché — envoi ignoré.");

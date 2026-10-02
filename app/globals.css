@@ -1300,3 +1300,82 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   .hero-card   { padding: 30px 22px; }
   .carte-corps { padding: 30px 24px; }
 }
+
+/* --- Simulateur « Voyez votre maison illuminée » -----------------------------
+   Mobile d'abord : le visiteur arrive d'un QR ou d'une pub, sur son téléphone,
+   et prend la photo avec l'appareil qu'il tient. Un écran à la fois, une
+   décision à la fois — même règle que la refonte « respiration ». */
+.sim { color: #F3E9D2; }
+.sim-titre { font-size: clamp(1.7rem, 7vw, 2.3rem); line-height: 1.08; margin: 0 0 10px; color: #F3E9D2; }
+.sim-sous  { font-size: 15.5px; line-height: 1.5; color: rgba(243,233,210,0.78); margin: 0 0 24px; }
+
+/* Le fil d'étapes : savoir où on en est évite d'abandonner au milieu. */
+.sim-fil { display: flex; gap: 6px; list-style: none; padding: 0; margin: 0 0 26px; }
+.sim-fil li {
+  flex: 1; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
+  color: rgba(243,233,210,0.4); padding-top: 9px; border-top: 2px solid rgba(243,233,210,0.16);
+}
+.sim-fil li.ici  { color: #F0BA54; border-top-color: #F0BA54; }
+.sim-fil li.fait { color: rgba(243,233,210,0.7); border-top-color: rgba(240,186,84,0.5); }
+
+.sim label { display: block; font-size: 13px; margin: 16px 0 5px; color: rgba(243,233,210,0.8); }
+.sim input[type="text"], .sim input[type="tel"], .sim input:not([type]), .sim select {
+  width: 100%; height: 48px; padding: 0 14px; border-radius: 10px;
+  border: 1px solid rgba(243,233,210,0.25); background: rgba(255,255,255,0.06);
+  color: #F3E9D2; font-size: 16px;   /* 16px : sous ça, iOS zoome au focus */
+}
+.sim input::placeholder { color: rgba(243,233,210,0.4); }
+
+.sim-cta {
+  display: block; width: 100%; margin-top: 24px; padding: 16px 20px;
+  background: #E9DCC0; color: #0A1524; border: 0; border-radius: 300px;
+  font-size: 16px; font-weight: 800; text-align: center; text-decoration: none; cursor: pointer;
+}
+.sim-lien {
+  display: block; width: 100%; margin-top: 14px; padding: 10px; background: none; border: 0;
+  color: rgba(243,233,210,0.8); font-size: 15px; text-decoration: underline;
+  text-underline-offset: 3px; cursor: pointer;
+}
+.sim-erreur {
+  background: rgba(240,186,84,0.14); border: 1px solid rgba(240,186,84,0.5);
+  color: #F0BA54; padding: 12px 14px; border-radius: 10px; font-size: 14.5px; margin: 0 0 18px;
+}
+/* Le pot de miel et l'input fichier : hors écran, jamais display:none —
+   un champ en display:none n'est pas soumis, et certains navigateurs
+   refusent de cliquer dessus par programme. */
+.sim-miel { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+
+.sim-conseils { list-style: none; padding: 0; margin: 0 0 26px; }
+.sim-conseils li { font-size: 15px; color: rgba(243,233,210,0.78); padding: 7px 0 7px 24px; position: relative; }
+.sim-conseils li::before { content: "·"; position: absolute; left: 8px; color: #F0BA54; font-size: 22px; line-height: 1; }
+
+.sim-styles { display: grid; gap: 10px; }
+.sim-style {
+  display: flex; flex-direction: column; gap: 3px; text-align: left;
+  padding: 16px 18px; border-radius: 12px; cursor: pointer;
+  border: 1px solid rgba(243,233,210,0.22); background: rgba(255,255,255,0.05); color: #F3E9D2;
+}
+.sim-style strong { font-size: 16px; }
+.sim-style span { font-size: 13px; color: rgba(243,233,210,0.6); }
+.sim-style.actif { border-color: #F0BA54; background: rgba(240,186,84,0.12); }
+.sim-bascule { display: flex !important; align-items: center; gap: 10px; margin-top: 18px; font-size: 15px; cursor: pointer; }
+.sim-bascule input { width: 20px; height: 20px; accent-color: #F0BA54; }
+
+.sim-attente { text-align: center; padding: 40px 0; color: rgba(243,233,210,0.85); font-size: 15.5px; }
+.sim-barre { height: 6px; border-radius: 300px; background: rgba(243,233,210,0.16); overflow: hidden; margin-bottom: 18px; }
+.sim-barre span { display: block; height: 100%; background: #F0BA54; transition: width 400ms ease; }
+
+/* Le comparateur : l'après est posé SUR l'avant et sa largeur suit le
+   curseur. L'image de dessus garde la largeur du cadre, sinon elle se
+   comprimerait au lieu de se dévoiler. */
+.sim-compare { position: relative; border-radius: 14px; overflow: hidden; line-height: 0; }
+.sim-compare img { width: 100%; display: block; }
+.sim-apres { position: absolute; inset: 0 auto 0 0; overflow: hidden; }
+.sim-apres img { width: 100vw; max-width: 560px; }
+.sim-compare input[type="range"] { position: absolute; left: 0; right: 0; bottom: 10px; width: calc(100% - 24px); margin: 0 12px; accent-color: #F0BA54; }
+
+.sim-prix { font-size: 19px; margin: 22px 0 4px; color: #F3E9D2; }
+.sim-prix strong { color: #F0BA54; }
+.sim-note { font-size: 14px; color: rgba(243,233,210,0.7); margin: 0; }
+.sim-tel { margin: 14px 0 0; font-size: 15px; color: rgba(243,233,210,0.7); text-align: center; }
+.sim-tel a { color: #E9DCC0; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
