@@ -1305,7 +1305,27 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
    Mobile d'abord : le visiteur arrive d'un QR ou d'une pub, sur son téléphone,
    et prend la photo avec l'appareil qu'il tient. Un écran à la fois, une
    décision à la fois — même règle que la refonte « respiration ». */
-.sim { color: #F3E9D2; }
+.sim {
+  color: #F3E9D2;
+  /* 🚨 Le fil d'étapes passait SOUS l'entête fixe. Mesuré au navigateur sur
+     1440 px : le fil occupait y 96→126, la pilule d'entête descendait à 128,
+     et `document.elementFromPoint` au centre du fil renvoyait l'entête — les
+     quatre étapes « Vous · Photo · Style · Résultat » étaient invisibles sur
+     ordinateur, dès l'écran 1. La section est en `section-y-moyen` (56 px),
+     ce qui ne suffit pas à dégager une entête de 72 px posée par-dessus.
+     Le dégagement s'ajoute ICI plutôt que sur la section : il ne concerne
+     que cette page, et `--entete-total` suit l'entête si elle change. */
+}
+/* Le dégagement est écrit en `min-width`, et non en `max-width: 767.98px`,
+   pour deux raisons. Il ne sert QUE sur ordinateur : mesuré à 390 px, le fil
+   est déjà dégagé. Et scripts/check-respiration.mjs localise le bloc de
+   respiration par le DERNIER `@media (max-width: 767.98px)` du fichier — ce
+   bloc n'est pas en fin de fichier (l. 1293), donc toute nouvelle règle
+   mobile écrite plus bas lui volerait sa place et ferait tomber sept
+   assertions. Vérifié : ça l'a fait. */
+@media (min-width: 768px) {
+  .sim { padding-top: calc(var(--entete-total, 72px) - 32px); }
+}
 .sim-titre { font-size: clamp(1.7rem, 7vw, 2.3rem); line-height: 1.08; margin: 0 0 10px; color: #F3E9D2; }
 .sim-sous  { font-size: 15.5px; line-height: 1.5; color: rgba(243,233,210,0.78); margin: 0 0 24px; }
 
@@ -1379,3 +1399,90 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 .sim-note { font-size: 14px; color: rgba(243,233,210,0.7); margin: 0; }
 .sim-tel { margin: 14px 0 0; font-size: 15px; color: rgba(243,233,210,0.7); text-align: center; }
 .sim-tel a { color: #E9DCC0; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; white-space: nowrap; }
+
+/* ── Écran 2 : la photo, et les deux façons d'en fournir une ──────────────
+   Sur téléphone, l'appareil photo est dans la main : deux boutons.
+   Sur ordinateur, la photo est sur le téléphone : téléversement À GAUCHE,
+   code QR À DROITE. Le QR n'est pas un repli discret — c'est la voie que la
+   plupart des visiteurs d'ordinateur vont prendre, donc elle a le même poids
+   visuel que l'autre.
+
+   ⚠️ AUCUNE ANIMATION ICI. L'attente de la photo est signalée par un point
+   fixe et un décompte en minutes, pas par un pouls : la règle « aucune
+   animation permanente sur la page » tient, et un décompte dit en plus
+   quelque chose d'utile. Voir scripts/check-rien-ne-boucle.mjs. */
+
+/* Le second bouton pèse moins que le premier, sans devenir un lien : sur un
+   téléphone, « choisir dans mes photos » est un vrai choix, pas une note. */
+.sim-cta--doux {
+  margin-top: 10px;
+  background: transparent;
+  color: #F3E9D2;
+  border: 1px solid rgba(243,233,210,0.35);
+}
+
+.sim-deux-voies { display: grid; gap: 18px; }
+@media (min-width: 768px) {
+  /* 1fr auto : le dépôt prend la place restante, le QR garde sa largeur
+     naturelle. En 1fr 1fr, un QR de 208 px flotterait au milieu d'une
+     colonne deux fois trop large. */
+  .sim-deux-voies { grid-template-columns: 1fr auto; gap: 22px; align-items: stretch; }
+}
+
+.sim-depot {
+  display: flex; flex-direction: column; justify-content: center;
+  border: 1px dashed rgba(243,233,210,0.32);
+  border-radius: 14px;
+  padding: 26px 20px;
+  text-align: center;
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+.sim-depot.glisse { border-color: #F0BA54; background: rgba(240,186,84,0.10); }
+.sim-depot-titre { font-size: 15.5px; color: rgba(243,233,210,0.82); margin: 0 0 4px; }
+.sim-depot-ou { font-size: 13px; color: rgba(243,233,210,0.5); margin: 0 0 12px; }
+.sim-depot .sim-cta { margin-top: 0; }
+
+.sim-qr {
+  border: 1px solid rgba(243,233,210,0.18);
+  border-radius: 14px;
+  padding: 20px 18px;
+  text-align: center;
+  background: rgba(243,233,210,0.04);
+}
+@media (min-width: 768px) { .sim-qr { width: 252px; } }
+.sim-qr-titre { font-size: 14.5px; line-height: 1.45; color: rgba(243,233,210,0.86); margin: 0 0 14px; }
+
+/* Le QR est encodé en SVG noir sur blanc. Le fond blanc est OBLIGATOIRE :
+   sur le bleu nuit du simulateur, un QR sans quiet zone claire n'est lu par
+   aucun appareil. Les 8 px de padding sont cette marge. */
+.sim-qr-image {
+  display: inline-block; line-height: 0;
+  background: #fff; padding: 8px; border-radius: 10px;
+}
+.sim-qr-image svg { display: block; width: 208px; height: 208px; }
+
+.sim-qr-note { font-size: 14px; color: rgba(243,233,210,0.7); margin: 10px 0 0; }
+.sim-qr-attente { font-size: 13.5px; color: rgba(243,233,210,0.72); margin: 12px 0 0; line-height: 1.5; }
+.sim-qr-point {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%;
+  background: #F0BA54; margin-right: 7px; vertical-align: 1px;
+}
+.sim-qr-reste { display: block; color: rgba(243,233,210,0.5); font-size: 12.5px; }
+
+/* Le lien tapé à la main. Hôte et chemin sont deux <span> INSÉCABLES : s'il
+   faut passer à la ligne, ça se fait ENTRE eux, jamais au milieu du code.
+   Mesuré sans ça : « …/p/J47F7-Q » puis « ZREZ » — un code recopié de
+   travers. */
+.sim-qr-lien { font-size: 12.5px; color: rgba(243,233,210,0.55); margin: 12px 0 0; line-height: 1.6; }
+.sim-qr-lien strong { color: rgba(243,233,210,0.85); font-weight: 700; }
+.sim-qr-lien strong span { white-space: nowrap; }
+
+/* ── La page /simulateur/photo, atteinte en scannant le QR ───────────────
+   Elle ne fait qu'une chose. Pas de menu, pas de prix, aucun autre lien :
+   quelqu'un est debout dehors devant sa maison, au froid. */
+.sim-tele-marque {
+  font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: rgba(240,186,84,0.9); margin: 0 0 14px;
+}
+.sim-tele-pictogramme { font-size: 44px; line-height: 1; margin: 0 0 14px; }
+
