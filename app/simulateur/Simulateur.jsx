@@ -1,9 +1,10 @@
 "use client";
-import { useState, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import Link from "next/link";
 import { company, sendLeadEtRendreId, HONEYPOT_FIELD } from "@/components/data";
 import { CaseConsentement } from "@/components/ConsentementAttribution";
 import { newLeadEventId, metaPixelBlock, trackLead } from "@/lib/meta-lead-event";
+import EtapePhoto from "./EtapePhoto";
 
 // ⚠️ LA PHOTO VIENT DU CLIENT, JAMAIS DE STREET VIEW.
 // Google Maps Platform §3.2.3(c) interdit de créer du contenu à partir de
@@ -17,22 +18,9 @@ const STYLES = [
   { cle: "multi", titre: "Multicolore", detail: "rouge, vert, bleu, ambre" },
 ];
 
-// 1280 px de large suffisent au modèle (mesuré) et ramènent une photo de
-// téléphone de 4 Mo à ~500 Ko. Sans ça, le base64 dépasse la limite de
-// corps de Vercel et l'envoi échoue APRÈS que le visiteur ait attendu.
-const LARGEUR_MAX = 1280;
-
-async function redimensionner(fichier) {
-  const bitmap = await createImageBitmap(fichier);
-  const ratio = Math.min(1, LARGEUR_MAX / bitmap.width);
-  const l = Math.round(bitmap.width * ratio);
-  const h = Math.round(bitmap.height * ratio);
-  const toile = document.createElement("canvas");
-  toile.width = l; toile.height = h;
-  toile.getContext("2d").drawImage(bitmap, 0, 0, l, h);
-  bitmap.close?.();
-  return toile.toDataURL("image/jpeg", 0.85);
-}
+// Le redimensionnement, la validation et le redressement EXIF vivent dans
+// lib/photo-maison.js : la page /simulateur/photo, atteinte en scannant le QR,
+// fait exactement le même travail, et deux copies auraient divergé.
 
 export default function Simulateur() {
   const [etape, setEtape] = useState(1);
@@ -44,7 +32,6 @@ export default function Simulateur() {
   const [avance, setAvance] = useState(0);
   const [resultat, setResultat] = useState(null);
   const [curseur, setCurseur] = useState(50);
-  const fichierRef = useRef(null);
 
   // ── Écran 1 : les coordonnées, et le lead existe ───────────────────
   // Créé AVANT la photo, à dessein : quelqu'un qui abandonne à l'écran 2
@@ -74,12 +61,11 @@ export default function Simulateur() {
     setLeadId(id); setEtape(2);
   };
 
-  const choisirPhoto = useCallback(async (e) => {
-    const f = e.target.files?.[0];
-    if (!f) return;
-    setErreur("");
-    try { setPhoto(await redimensionner(f)); setEtape(3); }
-    catch { setErreur("Nous n'arrivons pas à lire cette image. Essayez une photo JPEG ou PNG."); }
+  // La photo arrive de trois endroits — l'appareil, la pellicule, le disque —
+  // ou d'un quatrième : le téléphone, après un scan de QR. Tous passent par
+  // ici, et aucun ne connaît la suite.
+  const recevoirPhoto = useCallback((dataUrl) => {
+    setErreur(""); setPhoto(dataUrl); setEtape(3);
   }, []);
 
   // ── Écran 3 → 4 : la génération ────────────────────────────────────
@@ -110,8 +96,13 @@ export default function Simulateur() {
   return (
     <div className="sim">
       <ol className="sim-fil" aria-label="Étapes">
+        {/* L'étape COURANTE se teste en premier. Dans l'ordre inverse — celui
+            d'avant — `Math.floor(etape) > i` attrapait déjà l'étape en cours
+            (à l'écran 2, « Photo » est l'indice 1, et 2 > 1), donc elle
+            s'affichait « faite » et la classe `ici` ne s'appliquait JAMAIS :
+            le fil n'a jamais surligné où on en était. */}
         {["Vous", "Photo", "Style", "Résultat"].map((n, i) => (
-          <li key={n} className={Math.floor(etape) > i ? "fait" : Math.floor(etape) === i + 1 ? "ici" : ""}>{n}</li>
+          <li key={n} className={Math.floor(etape) === i + 1 ? "ici" : Math.floor(etape) > i ? "fait" : ""}>{n}</li>
         ))}
       </ol>
 
@@ -140,20 +131,8 @@ export default function Simulateur() {
       {etape === 1.5 && <p className="sim-attente">Un instant…</p>}
 
       {etape === 2 && (
-        <div>
-          <h2 className="sim-titre">Une photo de votre façade</h2>
-          <ul className="sim-conseils">
-            <li>De face, toute la maison dans le cadre</li>
-            <li>De jour — on s&apos;occupe de la nuit</li>
-            <li>Reculez de quelques pas si besoin</li>
-          </ul>
-          <input ref={fichierRef} type="file" accept="image/*" capture="environment"
-            onChange={choisirPhoto} className="sim-miel" id="sim-photo" />
-          <button type="button" className="sim-cta" onClick={() => fichierRef.current?.click()}>Prendre une photo</button>
-          <button type="button" className="sim-lien" onClick={() => { fichierRef.current.removeAttribute("capture"); fichierRef.current.click(); }}>
-            ou téléverser une photo
-          </button>
-        </div>
+        <EtapePhoto leadId={leadId} telephone={coord.telephone}
+          onPhoto={recevoirPhoto} setErreur={setErreur} />
       )}
 
       {etape === 3 && (
