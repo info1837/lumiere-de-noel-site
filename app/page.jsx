@@ -6,7 +6,7 @@ import QuoteForm from "@/components/QuoteForm";
 import RevelationLumiere from "@/components/RevelationLumiere";
 import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
-import { PHOTOS } from "@/components/photos";
+import { paireAvantApres } from "@/components/photos";
 import { faqHome, company, homeVitrine, navy, creme } from "@/components/data";
 
 // =============================================================================
@@ -49,10 +49,19 @@ export default async function Home() {
   const rarete = messageRarete(await lireDisponibilites());
   const fermeture = dateEnFrancais(rarete?.fermetureLe);
 
-  // La maison du curseur : Sainte-Julienne est la seule photo du dossier
-  // prise à l'heure bleue. C'est celle où la différence entre « presque
-  // nuit » et « illuminée » se lit le mieux.
-  const vedette = PHOTOS["ste-julienne-01"];
+  // ⚠️ LE COMPARATEUR MONTRE MAINTENANT UN VRAI AVANT/APRÈS.
+  //
+  // Il montrait la MÊME photo des deux côtés, l'une assombrie au filtre :
+  // honnête — les étiquettes le disaient — mais ce n'était pas un
+  // avant/après, et c'est pourtant ce que la section promet.
+  //
+  // Le « avant » de Léry est une simulation (la vraie photo, lumières
+  // retirées), calée au pixel sur la vraie photo par
+  // scripts/preparer-avant-apres.mjs. Les étiquettes disent lequel est
+  // lequel : « Avant (simulation) » à gauche, « installation réelle » à
+  // droite. C'est le côté DROIT qui porte l'affirmation, et c'est le seul
+  // qui soit une photographie.
+  const paireAccueil = paireAvantApres("avant-lery");
 
   return (
     <>
@@ -122,7 +131,15 @@ export default async function Home() {
               avant de nous confier quoi que ce soit.
             </p>
           </div>
-          <RevelationLumiere photo={vedette} legende={`${vedette.ville} — glissez pour illuminer`} />
+          <RevelationLumiere
+            photo={paireAccueil.apres}
+            photoAvant={paireAccueil.avant}
+            etiquetteAvant="Avant (simulation)"
+            etiquetteApres="Après — installation réelle, Léry"
+            altAvant="La même maison, sans aucune lumière de Noël — simulation"
+            altApres="La même maison avec l'installation réelle de lumières de Noël, à Léry"
+            legende="Léry — glissez pour voir la différence"
+          />
           <p className="section-lien">
             <CTAButton href="/simulateur" variant="creme">Voir ma maison illuminée</CTAButton>
           </p>

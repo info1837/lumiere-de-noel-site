@@ -151,7 +151,11 @@ if (erreurs.length) {
 const avecPhoto = Object.values(CITY_PHOTO).filter(Boolean).length;
 const sansPhoto = Object.values(CITY_PHOTO).length - avecPhoto;
 console.log(
-  `✓ check-photos : ${Object.keys(PHOTOS).length} photos réelles, ` +
+  // ⚠️ Les SIMULATIONS ne sont pas des photos réelles, et ce compteur
+  // disait le contraire dès qu'on en a ajouté deux. C'est le genre de
+  // ligne qu'on relit en diagonale et qui finit par servir de preuve.
+  `✓ check-photos : ${Object.keys(PHOTOS).filter((k) => PHOTOS[k].src.startsWith(REEL_PREFIX)).length} photos réelles, ` +
+  `${Object.keys(PHOTOS).filter((k) => PHOTOS[k].simulation).length} simulation(s) avant/après, ` +
   `${refs.size} image(s) littérale(s) vérifiée(s), ${avecPhoto} ville(s) illustrée(s), ` +
   `${sansPhoto} sans photo (générique), ${CLES_GENERIQUES.length} générique(s), ` +
   `${PHOTOS_MANQUANTES.length} photo(s) attendue(s).`);

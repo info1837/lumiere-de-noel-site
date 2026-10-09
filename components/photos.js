@@ -149,7 +149,60 @@ const GENERIQUES = {
   },
 };
 
-export const PHOTOS = { ...SITUEES, ...GENERIQUES };
+// -----------------------------------------------------------------------------
+// Photos « AVANT » — des SIMULATIONS, pas des photos de chantier.
+// -----------------------------------------------------------------------------
+// 🚨 CE QUE C'EST, EXACTEMENT. La même photo que son « après », passée par
+// un modèle qui en a RETIRÉ les lumières de Noël. Ce n'est donc pas une
+// photo prise avant les travaux : c'est une reconstitution de l'état
+// « sans lumières » à partir de la vraie photo.
+//
+// ⚠️ ELLES NE VIVENT PAS SOUS /images/reel/, ET C'EST VOLONTAIRE.
+// La règle du dossier est que seule une image sous ce préfixe est une
+// vraie photo de chantier, et qu'elle seule peut nommer une ville. Une
+// simulation qui dirait « à Léry » laisserait croire qu'on a photographié
+// cette maison avant de poser quoi que ce soit. Leur alt décrit donc
+// l'ÉTAT, jamais le lieu — et scripts/check-photos.mjs casse le build si
+// quelqu'un l'oublie.
+//
+// Le côté « après » du comparateur, lui, est bien réel et nomme sa ville :
+// c'est lui qui porte l'affirmation.
+//
+// ⚠️ Les dimensions sont CALÉES sur celles de leur « après »
+// (scripts/preparer-avant-apres.mjs, fit: 'fill'). Sans ça la ligne de
+// toit se décale de part et d'autre de la couture du comparateur.
+const AVANT = {
+  "avant-lery": {
+    src: "/images/before-lery.jpg",
+    simulation: true,
+    pairAvec: "lery-01",
+    alt: "La même grande maison, simulation de la façade sans aucune lumière de Noël",
+  },
+  "avant-ste-julienne": {
+    src: "/images/before-ste-julienne.jpg",
+    simulation: true,
+    pairAvec: "ste-julienne-01",
+    alt: "La même résidence à l'heure bleue, simulation de la façade sans aucune lumière de Noël",
+  },
+};
+
+export const PHOTOS = { ...SITUEES, ...GENERIQUES, ...AVANT };
+
+/** Les clés qui sont des simulations, pas des photos de chantier. */
+export const CLES_SIMULATION = Object.keys(AVANT);
+
+/**
+ * La paire avant/après d'un chantier, ou null.
+ *
+ * Rend `{ avant, apres }` — `avant` est une simulation, `apres` la vraie
+ * photo. Les deux ont exactement les mêmes dimensions.
+ */
+export const paireAvantApres = (cleAvant) => {
+  const avant = AVANT[cleAvant];
+  if (!avant) return null;
+  const apres = { ...SITUEES, ...GENERIQUES }[avant.pairAvec];
+  return apres ? { avant, apres } : null;
+};
 
 /** Les clés dont la photo ne revendique aucun lieu. */
 export const CLES_GENERIQUES = Object.keys(GENERIQUES);

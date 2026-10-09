@@ -19,14 +19,34 @@ import Image from "next/image";
 // sans prétendre montrer un chantier avant travaux. Le côté sombre est
 // obtenu par filtre CSS sur l'image réelle, et les étiquettes le disent.
 //
-// Le jour où une vraie paire jour/soir d'une même adresse entre au dépôt,
-// `photoAvant` accepte une deuxième source et les étiquettes changent — la
-// mécanique du curseur, elle, ne bouge pas.
+// ⚠️ MISE À JOUR — LA VRAIE PAIRE EXISTE MAINTENANT.
+//
+// Deux « avant » ont été produits : la même photo, lumières retirées
+// (public/images/before-*.jpg, préparés par
+// scripts/preparer-avant-apres.mjs aux dimensions EXACTES de leur
+// « après »). Quand `photoAvant` est fourni, le filtre crépuscule n'est
+// plus rendu du tout et le comparateur montre un vrai avant/après.
+//
+// Le repli au filtre reste pour les chantiers qui n'ont pas encore leur
+// « avant » — et ses étiquettes continuent de dire ce qu'il est.
+//
+// ⚠️ LES ÉTIQUETTES SONT FOURNIES PAR L'APPELANT quand il y a une vraie
+// paire : « Avant (simulation) » dit que le côté gauche est reconstitué,
+// « Après — installation réelle, Léry » dit que le droit ne l'est pas.
+// La nuance porte toute l'honnêteté du bloc ; la coder en dur ici la
+// rendrait invisible aux pages qui l'affichent.
 export default function RevelationLumiere({
-  photo,              // { src, alt } — la photo illuminée, réelle
-  photoAvant = null,  // { src, alt } — une vraie photo de jour, si elle existe un jour
-  legende = null,     // la ville, par exemple
-  depart = 38,        // position initiale du curseur, en %
+  photo,                    // { src, alt } — la photo illuminée, RÉELLE
+  photoAvant,               // { src, alt } — la simulation « sans lumières »
+  legende = null,           // la ville, par exemple
+  etiquetteAvant = null,
+  etiquetteApres = null,
+  // Les alts décrivent l'ÉTAT de chaque moitié. Sans eux on reprend ceux
+  // du registre — mais sur l'accueil la photo de Léry porte aussi le
+  // hero, et un lecteur d'écran entendrait deux fois la même phrase.
+  altAvant = null,
+  altApres = null,
+  depart = 50,              // position initiale du curseur, en %
   hauteur = "clamp(280px, 58vw, 560px)",
 }) {
   const [position, setPosition] = useState(depart);
@@ -36,11 +56,20 @@ export default function RevelationLumiere({
   // l'annuler, et il est créé dans le callback de l'observateur — dont la
   // valeur de retour, elle, n'est pas un nettoyage.
   const frame = useRef(0);
+  // « La personne a touché au curseur » — en ref, pas en état : la boucle
+  // d'animation doit pouvoir le lire tout de suite.
+  const interrompu = useRef(false);
 
-  // Un seul balayage, la première fois que le cadre entre dans l'écran :
+  // UN seul balayage, la première fois que le cadre entre dans l'écran :
   // il montre que la poignée se déplace. Ensuite plus jamais — une
   // animation qui boucle sur une page calme devient du clignotement
   // (voir scripts/check-rien-ne-boucle.mjs).
+  //
+  // ⚠️ IL PART DE 50 % ET IL Y REVIENT. Un balayage qui s'arrête où il
+  // veut laisse le comparateur dans une position arbitraire : le visiteur
+  // qui arrive après l'animation voit 72 % d'« après » et croit que c'est
+  // l'état normal. Aller-retour, donc : le geste se montre, et la moitié
+  // de chaque image reste visible.
   useEffect(() => {
     if (aBouge) return;
     const el = cadre.current;
@@ -51,15 +80,20 @@ export default function RevelationLumiere({
       if (!entrees[0]?.isIntersecting) return;
       io.disconnect();
       const debut = performance.now();
-      const duree = 1100;
+      const duree = 1900;
       const de = depart;
-      const vers = 72;
+      const amplitude = 26;     // jusqu'à ~76 %, puis retour
       const pas = (t) => {
+        // ⚠️ Le garde-fou qui manquait : si la personne a saisi la
+        // poignée pendant l'animation, celle-ci continuait de lui
+        // reprendre la main à chaque frame. On sort pour de bon.
+        if (interrompu.current) return;
         const p = Math.min(1, (t - debut) / duree);
-        // Sortie douce : la poignée ralentit en arrivant.
-        const e = 1 - (1 - p) ** 3;
-        setPosition(de + (vers - de) * e);
+        // Un aller-retour doux : sin(πp) monte puis redescend, sans
+        // à-coup aux deux extrémités.
+        setPosition(de + Math.sin(Math.PI * p) * amplitude);
         if (p < 1) frame.current = requestAnimationFrame(pas);
+        else setPosition(de);
       };
       frame.current = requestAnimationFrame(pas);
     }, { threshold: 0.35 });
@@ -68,24 +102,53 @@ export default function RevelationLumiere({
     return () => { io.disconnect(); cancelAnimationFrame(frame.current); };
   }, [aBouge, depart]);
 
-  const bouger = (v) => { setABouge(true); setPosition(v); };
+  // La première interaction arrête le balayage DÉFINITIVEMENT : le ref
+  // est lu dans la boucle d'animation, qui tourne hors du cycle de
+  // rendu et ne verrait pas un état React posé à la même frame.
+  const bouger = (v) => {
+    interrompu.current = true;
+    cancelAnimationFrame(frame.current);
+    setABouge(true);
+    setPosition(v);
+  };
+
+  // ⚠️ PAS DE COMPARATEUR SANS VRAIE PAIRE — ET LE GARDE EST ICI,
+  // APRÈS LES HOOKS.
+  //
+  // Le repli d'avant assombrissait la photo réelle au filtre CSS pour
+  // fabriquer un « avant ». Honnête tant que les étiquettes le disaient,
+  // mais les deux appelants ont maintenant une vraie simulation : garder
+  // ce chemin en dormance, c'était garder une <img alt=""> et des
+  // étiquettes qui mentiraient le jour où quelqu'un oublierait
+  // `photoAvant`.
+  //
+  // Le `return null` ne peut PAS monter au-dessus des `useState` :
+  // React compte les hooks à chaque rendu, et un retour anticipé en
+  // changerait le nombre dès que la condition bouge. Première version
+  // écrite comme ça — corrigée avant de partir.
+  if (!photoAvant?.src || !photo?.src) {
+    if (process.env.NODE_ENV !== "production") {
+      console.error("[RevelationLumiere] paire incomplète — rien n'est rendu.", { photo, photoAvant });
+    }
+    return null;
+  }
 
   return (
     <figure className="revel" ref={cadre} style={{ "--revel-h": hauteur, "--revel-pos": `${position}%` }}>
       <div className="revel-cadre">
-        {/* ── Le côté sombre ───────────────────────────────────────────
-            Soit une vraie photo de jour (si elle existe), soit la même
-            photo passée au crépuscule par filtre. Dans les deux cas,
-            c'est une image RÉELLE de ce chantier. */}
-        {photoAvant ? (
-          <Image className="revel-img" src={photoAvant.src} alt={photoAvant.alt}
-            fill sizes="(max-width: 900px) 100vw, 900px" style={{ objectFit: "cover" }} />
-        ) : (
-          <Image className="revel-img revel-img--crepuscule" src={photo.src} alt="" aria-hidden
-            fill sizes="(max-width: 900px) 100vw, 900px" style={{ objectFit: "cover" }} />
-        )}
+        {/* ⚠️ LE CALQUE DU DESSOUS EST L'« APRÈS ».
+            Le découpage ci-dessous révèle depuis le BORD GAUCHE. Le
+            calque découpé occupe donc la gauche, et le calque de fond ce
+            qui reste — la droite. Comme l'étiquette de gauche dit
+            « Avant » et celle de droite « Après », c'est l'APRÈS qui va
+            au fond. L'inverse donnait exactement ce qu'on a vu sur la
+            première capture : la maison illuminée à gauche sous
+            « Avant (simulation) », la maison nue à droite sous
+            « installation réelle ». */}
+        <Image className="revel-img" src={photo.src}
+          alt={altApres || photo.alt}
+          fill sizes="(max-width: 900px) 100vw, 900px" style={{ objectFit: "cover" }} />
 
-        {/* ── Le côté illuminé, révélé par la largeur ──────────────── */}
         {/* ⚠️ Le découpage se fait au `clip-path`, PAS à la largeur.
             Le motif de .sim-apres (largeur variable + `img { width: 100vw;
             max-width: 560px }`) marche parce que ce conteneur-là a une
@@ -95,8 +158,13 @@ export default function RevelationLumiere({
             L'IntersectionObserver est posé sur le <figure>, un ancêtre
             jamais découpé — un observateur sur l'élément clippé, lui, ne se
             déclencherait jamais. */}
-        <div className="revel-apres">
-          <Image className="revel-img" src={photo.src} alt={photo.alt}
+        {/* Le calque découpé : l'AVANT, révélé de la gauche jusqu'à la
+            couture. La classe s'appelle `revel-avant` — elle s'appelait
+            `revel-apres` et contenait l'après, ce qui rendait le défaut
+            invisible à la relecture. */}
+        <div className="revel-avant">
+          <Image className="revel-img" src={photoAvant.src}
+            alt={altAvant || photoAvant.alt}
             fill sizes="(max-width: 900px) 100vw, 900px" style={{ objectFit: "cover" }} />
         </div>
 
@@ -111,9 +179,11 @@ export default function RevelationLumiere({
         </span>
 
         <span className="revel-etiq revel-etiq--gauche" aria-hidden="true">
-          {photoAvant ? "De jour" : "Au crépuscule"}
+          {etiquetteAvant || "Avant (simulation)"}
         </span>
-        <span className="revel-etiq revel-etiq--droite" aria-hidden="true">Illuminée</span>
+        <span className="revel-etiq revel-etiq--droite" aria-hidden="true">
+          {etiquetteApres || "Après"}
+        </span>
 
         {/* ⚠️ Le vrai contrôle est un <input type="range"> : il est au
             clavier, il est annoncé, et il marche sans JavaScript de
