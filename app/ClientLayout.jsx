@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { company, ivory, gold, charcoal } from "@/components/data";
+import { company, ivory, gold, charcoal, creme } from "@/components/data";
 import { TiroirMobile } from "@/components/TiroirMobile";
 import { capturerUtm } from "@/lib/utm";
 
@@ -161,7 +161,13 @@ export function NavBar() {
           <a href={company.phoneHref} className="header-tel" style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "10px 18px", borderRadius: 300,
-            background: gold, color: charcoal, textDecoration: "none",
+            /* ⚠️ Contour, plus un aplat ambre. `gold` vaut maintenant
+               l'ambre du kit, et l'ambre est la couleur de la lumière :
+               en fond de pilule, à côté du bouton crème, elle criait plus
+               fort que l'action principale. Le numéro reste visible, il
+               cesse d'être un deuxième bouton. */
+            background: "transparent", color: creme,
+            border: "1px solid rgba(240,234,222,0.42)", textDecoration: "none",
             fontWeight: 700, fontSize: 14, letterSpacing: "0.03em",
           }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">

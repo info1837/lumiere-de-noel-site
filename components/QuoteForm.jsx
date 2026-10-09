@@ -10,7 +10,7 @@ const empty = { nom: "", telephone: "", courriel: "", adresse: "", service: "", 
 
 // Formulaire « Demande de soumission » — 7 champs, incl. groupe radio budget.
 // Envoi via sendLead() (Web3Forms) — même endpoint que le hero.
-export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote", serviceInitial = null }) {
+export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote", serviceInitial = null, prerempli = null }) {
   // ⚠️ Le service PRÉSÉLECTIONNÉ, rien d'autre.
   //
   // Un gestionnaire d'immeuble qui clique « Demander notre preuve
@@ -18,9 +18,28 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
   // rechoisir « commercial » dans une liste — il vient de le dire en
   // cliquant. Les champs, le consentement et l'envoi ne changent pas :
   // c'est la MÊME valeur que le menu déroulant propose, posée d'avance.
-  const [data, setData] = useState(
-    serviceInitial ? { ...empty, service: serviceInitial } : empty,
-  );
+  //
+  // ⚠️ `prerempli` : LE MÊME PRINCIPE, APPLIQUÉ AU SIMULATEUR.
+  //
+  // Quelqu'un qui arrive de /simulateur vient d'écrire son adresse, son
+  // prénom et son numéro pour débloquer son image. Le renvoyer vers un
+  // formulaire vide le ferait tout retaper — et c'est le clic le plus
+  // précieux de la page, celui qui suit « Réserver ma date » juste après
+  // avoir vu sa maison illuminée.
+  //
+  // ⚠️ LE CONSENTEMENT N'EST JAMAIS PRÉREMPLI. Il reste décoché, même si
+  // la personne l'a donné au simulateur : une case cochée d'avance n'est
+  // pas un consentement au sens de la Loi 25. Les champs seulement.
+  const [data, setData] = useState({
+    ...empty,
+    ...(serviceInitial ? { service: serviceInitial } : null),
+    ...(prerempli ? {
+      nom: prerempli.nom || "",
+      telephone: prerempli.telephone || "",
+      adresse: prerempli.adresse || "",
+      message: prerempli.message || "",
+    } : null),
+  });
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const [erreurConsent, setErreurConsent] = useState(false);
 

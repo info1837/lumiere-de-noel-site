@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useRef, useState, useCallback } from "react";
-import { navy, ivory, gold, charcoal, offWhite } from "@/components/data";
+import { navy, ivory, gold, charcoal, offWhite, company } from "@/components/data";
 import { evenement } from "@/lib/evenements";
 import { CAS_DEMO, PANNEAUX, cheminPanneau } from "@/components/demos";
 import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
@@ -774,7 +774,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
           </div>
           <p style={{ fontSize: 14, color: "#444", margin: 0 }}>
             Une photo de votre maison aide au design — envoyez-la par texto au{" "}
-            <a href="tel:4388126635" style={{ color: charcoal, fontWeight: 700 }}>(438) 812-6635</a>.
+            <a href={company.phoneHref} style={{ color: charcoal, fontWeight: 700 }}>{company.phoneDisplay}</a>.
           </p>
           <CaseConsentement id="mq-consent" checked={maquette.consent}
             onChange={(v) => majM("consent", v)} />
@@ -785,7 +785,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
           </button>
           {maquette.statut === "erreur" && (
             <p style={{ color: "#9E2A2A", fontSize: 14, margin: 0 }}>
-              On n'a pas pu enregistrer votre demande. Appelez-nous au (438) 812-6635.
+              On n'a pas pu enregistrer votre demande. Appelez-nous au {company.phoneDisplay}.
             </p>
           )}
           <NoteSoumission />

@@ -1,7 +1,7 @@
 import Simulateur from "./Simulateur";
 
 export const metadata = {
-  title: "Voyez votre maison illuminée | Solution Lumière de Noël",
+  title: "Voyez votre maison illuminée",
   description:
     "Envoyez une photo de votre façade et voyez votre maison illuminée en moins d'une minute. Rive-Nord, Montréal, Rive-Sud.",
   alternates: { canonical: "https://lumieredenoelinc.com/simulateur" },

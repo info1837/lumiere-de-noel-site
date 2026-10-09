@@ -21,8 +21,14 @@ const SOUS_TITRE = 'Nous confirmons votre place et votre prix après une courte 
 
 console.log('\n--- 1. 🚨 Titre et sous-titre, aux trois endroits ---');
 {
+  // ⚠️ LE HERO N'EST PLUS DANS CETTE LISTE.
+  //
+  // Il portait une carte de réservation à cinq champs au premier écran.
+  // Elle est descendue en section 8 de l'accueil : un service haut de
+  // gamme ne demande pas un numéro avant d'avoir montré une maison
+  // illuminée. Le titre et le sous-titre, eux, n'ont pas changé d'un mot —
+  // ils sont juste 1 800 px plus bas.
   const endroits = [
-    ['la carte du hero', 'components/Hero.jsx'],
     ['la bande de l\'accueil', 'app/page.jsx'],
     ['la page /soumission', 'app/soumission/page.jsx'],
   ];
@@ -83,15 +89,26 @@ console.log('\n--- 5. 🚨 L\'envoi vers /api/lead n\'a PAS changé ---');
 console.log('\n--- 6. Un seul formulaire par page ---');
 {
   const accueil = sansCommentaires(lire('app/page.jsx'));
-  t('🚨 l\'accueil n\'a que celui du hero', (accueil.match(/<QuoteForm/g) || []).length === 0);
-  t('la bande de conversion pointe vers /soumission', /href="\/soumission" variant="gold">Réserver ma date/.test(accueil));
+  // ⚠️ L'ACCUEIL PORTE MAINTENANT LE FORMULAIRE, ET UN SEUL.
+  //
+  // Avant : zéro ici, parce que le hero l'avait. Maintenant : exactement un,
+  // en bas de page. Zéro serait une régression (plus aucun envoi depuis
+  // l'accueil), deux seraient l'ancien défaut — deux formulaires ne
+  // doublent pas les leads, ils partagent l'attention.
+  t('🚨 l\'accueil a UN formulaire, en bas', (accueil.match(/<QuoteForm/g) || []).length === 1);
+  t('🚨 …et il est après la preuve, pas avant',
+    accueil.indexOf('<QuoteForm') > accueil.indexOf('RevelationLumiere'));
   const soum = sansCommentaires(lire('app/soumission/page.jsx'));
   t('/soumission n\'en a qu\'un', (soum.match(/<QuoteForm/g) || []).length === 1);
   // ⚠️ Ne PAS épingler la ligne entière : elle porte maintenant aussi
   // `serviceInitial`, et l'assertion échouait sur du code correct. On
   // vérifie ce qui compte — que la source voyage — pas la forme exacte
   // de la balise.
-  t('🚨 et il porte sa source (liste d\'attente comprise)', /<QuoteForm source=\{sourceFormulaire\}/.test(soum));
+  // `sourceFinale` distingue une arrivée depuis /simulateur (fiche
+  // préremplie) d'une arrivée directe ; la liste d'attente passe toujours
+  // par `sourceFormulaire`, qui l'alimente.
+  t('🚨 et il porte sa source (liste d\'attente comprise)',
+    /<QuoteForm source=\{sourceFinale\}/.test(soum) && /sourceFormulaire/.test(soum));
   t('🚨 …et le service présélectionné, quand il y en a un', /serviceInitial=\{serviceInitial\}/.test(soum));
 }
 

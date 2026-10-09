@@ -107,8 +107,21 @@ console.log('\n--- 4. 🚨 Plus aucun argument de CONFORT dans tout le dépôt -
 
 console.log('\n--- 5. La carte reste rendue là où elle était ---');
 {
-  const page = lire('app/page.jsx');
-  t('whyUs est toujours parcouru', /whyUs\.map/.test(page));
+  // ⚠️ « POURQUOI NOUS CHOISIR » A QUITTÉ L'ACCUEIL, et il faut le savoir.
+  //
+  // La refonte fusionne cette grille de quatre cartes dans la section de
+  // l'offre, dont la liste tient quatre lignes : conception, installation,
+  // rappels illimités, retrait + entreposage. LA MENTION DE L'ASSURANCE
+  // N'Y EST PAS — elle ne vit donc plus que sur /services et dans data.js.
+  // Pour un client COMMERCIAL, l'assurance est un critère d'achat : c'est
+  // signalé dans la PR pour que Yahir tranche.
+  //
+  // Ce qui reste verrouillé ici : la formulation elle-même, qui ne doit
+  // jamais s'élargir, et le fait que la police est bien active.
+  const data_ = lire('components/data.js');
+  t('🚨 la carte « travail en hauteur » existe toujours dans data.js',
+    /title: "Travail en hauteur, par des professionnels assurés"/.test(data_));
+  t('whyUs reste la source unique de ces quatre faits', /export const whyUs = \[/.test(data_));
   const cartes = (dataCode.match(/^\s{2}\{/gm) || []).length;
   t('les quatre cartes « pourquoi nous » existent toujours',
     /export const whyUs = \[/.test(data) && cartes > 0);

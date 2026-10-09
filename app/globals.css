@@ -7,16 +7,32 @@
    ========================================================================= */
 
 :root {
-  --navy: #0B1B2B;
-  --navy-deep: #06121F;
+  /* ⚠️ LES QUATRE COULEURS DU KIT — les mêmes qu'en JS.
+     components/data.js portait déjà la palette du kit pendant que cette
+     feuille gardait celle de la spec Squarespace : marine verdâtre
+     (#0B1B2B) et champagne (#E9DCC0). Deux palettes sur un site, c'est une
+     seule palette mal appliquée. Les deux fichiers disent maintenant la
+     même chose.
+
+     ⚠️ --gold VAUT MAINTENANT L'AMBRE, et l'ambre ne sert PAS de fond.
+     C'est la couleur de la lumière : une puce qui brille, un état actif,
+     une lueur. Les trois endroits qui s'en servaient comme d'un fond de
+     BOUTON (tiroir, barre du bas, pastille de confiance) sont passés au
+     crème — un bouton ambre pleine largeur lit comme un avertissement. */
+  --navy: #0A1524;
+  --navy-deep: #060E18;
   --charcoal: #1C1C1C;
   --off-white: #FAFAFA;
-  --gold: #E9DCC0;
-  /* Or foncé accessible : contraste ≥4.5:1 sur --off-white (WCAG AA). */
+  --creme: #F0EADE;
+  --ambre: #F0BA54;
+  --acier: #A2B4CC;
+  --gold: var(--ambre);
+  /* Or foncé accessible : contraste ≥4.5:1 sur --off-white (WCAG AA).
+     L'ambre, lui, ne passe PAS le AA sur fond clair (2,0:1). */
   --gold-text: #8A6A1C;
-  --ivory: #F3E9D2;
+  --ivory: var(--creme);
   --hero-scrim: rgba(5, 10, 20, 0.82);
-  --line: rgba(233, 220, 192, 0.22);
+  --line: rgba(240, 234, 222, 0.20);
   --maxw: 1180px;
 
   /* Géométrie de l'entête pilule, déclarée UNE fois.
@@ -61,12 +77,16 @@ a { color: inherit; }
 
 img { max-width: 100%; display: block; }
 
-section { padding: clamp(56px, 8vw, 104px) 24px; }
+/* Rythme vertical. Le plancher monte de 56 à 72 px et le plafond de 104 à
+   128 px : une page qui ne garde qu'une idée par section a besoin que le
+   blanc fasse la séparation, puisqu'il n'y a plus de cartes pour la
+   faire. */
+section { padding: clamp(72px, 9vw, 128px) 24px; }
 
 /* Rythme vertical des sections hors gabarit. Ces valeurs vivaient en style
    inline dans page.jsx : un style inline bat toute feuille, donc la
    respiration mobile ne pouvait pas les atteindre. */
-.section-y-large  { padding-top: 72px; padding-bottom: 72px; }
+.section-y-large  { padding-top: 80px; padding-bottom: 80px; }
 .section-y-moyen  { padding-top: 56px; padding-bottom: 56px; }
 .section-y-serre  { padding-top: 40px; padding-bottom: 40px; }
 
@@ -209,7 +229,8 @@ section { padding: clamp(56px, 8vw, 104px) 24px; }
 .tiroir__cta {
   display: flex; align-items: center; justify-content: center;
   width: 100%; min-height: 52px; border-radius: 300px;
-  background: var(--gold); color: var(--charcoal); text-decoration: none;
+  /* Crème, pas ambre : c'est un bouton. */
+  background: var(--creme); color: var(--navy); text-decoration: none;
   font-family: 'Nunito Sans', system-ui, sans-serif; font-weight: 700; font-size: 16px; letter-spacing: 0.03em;
 }
 .tiroir__tel {
@@ -392,7 +413,8 @@ header > .container { max-width: 1320px; }
   border: 1px solid rgba(233,220,192,0.5);
 }
 .mobile-bottom-bar .bottom-bar-quote {
-  background: var(--gold); color: var(--charcoal);
+  /* Crème, pas ambre : c'est un bouton. */
+  background: var(--creme); color: var(--navy);
 }
 .mobile-bottom-bar.est-visible {
   transform: translateY(0);
@@ -925,8 +947,16 @@ textarea:focus-visible,
    ═══════════════════════════════════════════════════════════════════ */
 .hero-section {
   padding-top: calc(var(--entete-total) + 40px);
-  padding-bottom: 120px;           /* place pour le chevauchement des cartes */
+  /* ⚠️ 120 px réservaient la place des quatre cartes qui chevauchaient le
+     bas du hero. Les cartes sont parties (leurs faits sont dans la ligne
+     sobre du hero et dans la section « ce qui est inclus »), donc la
+     réserve aussi. */
+  padding-bottom: clamp(72px, 10vh, 112px);
   min-height: calc(100svh - var(--entete-total));
+  display: flex;
+  align-items: flex-end;
+  background: #0A1524;
+  overflow: hidden;
 }
 .hero-container {
   max-width: 1280px;
@@ -1049,7 +1079,8 @@ textarea:focus-visible,
 }
 .trust-pill {
   align-self: flex-start; display: inline-flex; align-items: center;
-  background: var(--gold); color: var(--navy);
+  /* Crème, pas ambre : c'est un aplat, pas une lumière. */
+  background: var(--creme); color: var(--navy);
   font-weight: 700; font-size: 13px; letter-spacing: 0.06em; text-transform: uppercase;
   padding: 10px 18px; border-radius: 999px; text-decoration: none;
   border: 1px solid var(--gold); transition: background 200ms ease, color 200ms ease;
@@ -1115,9 +1146,15 @@ textarea:focus-visible,
    La classe n'est posée que si le CRM a répondu. Sans bandeau, aucun
    décalage, aucun espace vide.
 
-   Ambre plein plutôt que marine : sur un hero sombre, une barre foncée se
-   confondait avec l'entête. L'ambre #F0BA54 sur marine #0A1524 donne un
-   contraste de 8,9:1 — bien au-delà du 4,5:1 exigé, et lisible à 15 px. */
+   ⚠️ L'APLAT AMBRE EST RETIRÉ, et ce n'est pas un choix de goût.
+   L'ambre est la couleur de la LUMIÈRE sur ce site : les points qui
+   brillent, les états actifs. Une bande jaune pleine largeur en haut de
+   chaque page s'en servait comme d'un fond, et lisait comme un
+   avertissement de navigateur — c'est le contraire d'une marque haut de
+   gamme. La barre passe en marine profond, le texte en crème (#F0EADE sur
+   #081220 : contraste 14,8:1), et l'ambre ne reste que sur la pastille.
+   La confusion avec l'entête que l'ancien commentaire redoutait est réglée
+   par le filet du bas, pas par la couleur. */
 :root { --bandeau-h: 40px; }
 
 .bandeau-rarete {
@@ -1129,10 +1166,10 @@ textarea:focus-visible,
   min-height: var(--bandeau-h);
   display: flex;
   align-items: center;
-  background: #F0BA54;
-  color: #0A1524;
-  border-bottom: 1px solid rgba(10, 21, 36, 0.18);
-  font-size: 15px;
+  background: #081220;
+  color: #F0EADE;
+  border-bottom: 1px solid rgba(240, 234, 222, 0.14);
+  font-size: 14px;
   line-height: 1.35;
 }
 body.avec-bandeau .entete-pilule {
@@ -1173,8 +1210,10 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   flex-wrap: wrap;
 }
 .bandeau-rarete__pastille {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #0A1524;
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #F0BA54;
+  /* La lueur fait la différence entre « une puce » et « une lumière ». */
+  box-shadow: 0 0 7px rgba(240, 186, 84, 0.85);
   flex-shrink: 0;
   /* Elle respire. Un point qui bat vite ressemble à une alarme ; celui-ci
      dit « c'est vivant », pas « dépêchez-vous ». */
@@ -1187,31 +1226,29 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 @media (prefers-reduced-motion: reduce) {
   .bandeau-rarete__pastille { animation: none; }
 }
-/* Deux écritures de la même donnée. Le CSS choisit : au-dessus de 480 px
-   la version complète, en dessous la version d'un seul tenant. */
-.bandeau-rarete__large,
-.bandeau-rarete__compact {
-  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+/* UN seul jeu de segments. Il y en avait deux — une version « large » et
+   une version « compacte » rendues en parallèle, le CSS cachant l'une ou
+   l'autre. Deux écritures de la même donnée dans le même HTML, c'était
+   deux occasions de les faire diverger. Maintenant lib/season.js compose
+   la phrase, et le CSS ne fait que la laisser respirer ou non. */
+.bandeau-rarete__seg {
+  color: rgba(240, 234, 222, 0.72);
+  white-space: nowrap;
 }
-.bandeau-rarete__compact { display: none; }
-@media (max-width: 480px) {
-  .bandeau-rarete__large { display: none; }
-  .bandeau-rarete__compact { display: flex; flex-wrap: nowrap; gap: 8px; }
-}
-.bandeau-rarete__texte { font-weight: 700; letter-spacing: 0.01em; }
-.bandeau-rarete__mois {
+.bandeau-rarete__seg--marque {
+  color: #F0EADE;
   font-weight: 700;
-  color: rgba(10, 21, 36, 0.82);
-  border-left: 1px solid rgba(10, 21, 36, 0.28);
-  padding-left: 12px;
+  letter-spacing: 0.02em;
 }
-.bandeau-rarete__note {
-  color: rgba(10, 21, 36, 0.72);
-  border-left: 1px solid rgba(10, 21, 36, 0.28);
-  padding-left: 12px;
+/* Le point médian sépare, plutôt qu'un filet vertical : sur une ligne fine
+   un filet pèse plus que le mot qu'il sépare. */
+.bandeau-rarete__seg + .bandeau-rarete__seg::before {
+  content: "·";
+  margin-right: 10px;
+  color: rgba(240, 234, 222, 0.38);
 }
 .bandeau-rarete__lien {
-  color: #0A1524;
+  color: #F0EADE;
   text-decoration: underline;
   text-underline-offset: 3px;
   margin-left: auto;
@@ -1224,12 +1261,9 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
    recouvrirait la deuxième ligne. */
 @media (max-width: 720px) {
   /* Valeur de DÉPART seulement : MesureBandeau la corrige au rendu. */
-  :root { --bandeau-h: 62px; }
-  .bandeau-rarete { font-size: 14.5px; }
-  .bandeau-rarete__contenu { padding: 7px 16px; gap: 6px 10px; }
-  .bandeau-rarete__mois,
-  .bandeau-rarete__note { border-left: 0; padding-left: 0; }
-  .bandeau-rarete__note { flex-basis: 100%; }
+  :root { --bandeau-h: 36px; }
+  .bandeau-rarete { font-size: 13.5px; }
+  .bandeau-rarete__contenu { padding: 7px 16px; gap: 8px; flex-wrap: nowrap; overflow: hidden; }
   .bandeau-rarete__lien { margin-left: 0; }
 }
 
@@ -1239,19 +1273,15 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
    marque. La version compacte tient sur une ligne, et le token descend
    avec elle (MesureBandeau le confirme au rendu). */
 @media (max-width: 480px) {
-  :root { --bandeau-h: 38px; }
-  .bandeau-rarete { font-size: 14px; }
-  .bandeau-rarete__contenu { padding: 6px 14px; gap: 8px; flex-wrap: nowrap; }
-  .bandeau-rarete__mois {
-    border-left: 0; padding-left: 0;
-    color: rgba(10, 21, 36, 0.78);
-    white-space: nowrap;
-  }
-  .bandeau-rarete__texte { white-space: nowrap; }
-  /* Le séparateur remplace le filet vertical : plus léger sur une ligne. */
-  .bandeau-rarete__compact > strong + strong::before {
-    content: "·"; margin-right: 8px; color: rgba(10, 21, 36, 0.45);
-  }
+  :root { --bandeau-h: 34px; }
+  .bandeau-rarete { font-size: 13px; }
+  .bandeau-rarete__contenu { padding: 6px 14px; gap: 7px; }
+  /* ⚠️ La DATE DE FERMETURE sort de la barre sous 480 px — elle n'est pas
+     perdue : la section de réservation la porte, en bas de l'accueil, à
+     l'endroit exact où quelqu'un hésite à remplir le formulaire. La garder
+     ici repliait la ligne sur trois niveaux : 88 px pris en haut de
+     l'écran, avant même d'avoir vu la marque. */
+  .bandeau-rarete__seg:nth-child(n+4) { display: none; }
 }
 
 /* La mention de fermeture sous le bouton du hero — téléphone seulement.
@@ -1292,7 +1322,7 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
    d'un texte de 15 px, c'est serré au doigt. */
 @media (max-width: 767.98px) {
   section { padding-top: 84px; padding-bottom: 84px; }
-  .section-y-large { padding-top: 108px; padding-bottom: 108px; }
+  .section-y-large { padding-top: 128px; padding-bottom: 128px; }
   .section-y-moyen { padding-top: 84px;  padding-bottom: 84px; }
   .section-y-serre { padding-top: 60px;  padding-bottom: 60px; }
   .trust-section   { padding-bottom: 108px; }
@@ -1330,25 +1360,50 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 .sim-sous  { font-size: 15.5px; line-height: 1.5; color: rgba(243,233,210,0.78); margin: 0 0 24px; }
 
 /* Le fil d'étapes : savoir où on en est évite d'abandonner au milieu. */
-.sim-fil { display: flex; gap: 6px; list-style: none; padding: 0; margin: 0 0 26px; }
-.sim-fil li {
-  flex: 1; font-size: 11.5px; letter-spacing: 0.06em; text-transform: uppercase;
-  color: rgba(243,233,210,0.4); padding-top: 9px; border-top: 2px solid rgba(243,233,210,0.16);
+/* ⚠️ QUATRE POINTS, PLUS DE NOMS D'ÉTAPE.
+   Le fil disait « Vous · Photo · Style · Résultat ». Mettre « Vous » en
+   premier annonçait le formulaire avant la première question, sur un
+   parcours dont tout l'intérêt est qu'il ne demande rien au début. Un point
+   qui s'allume suffit à situer. */
+.sim-points {
+  display: flex; gap: 8px; justify-content: center;
+  list-style: none; padding: 0; margin: 0 0 30px;
 }
-.sim-fil li.ici  { color: #F0BA54; border-top-color: #F0BA54; }
-.sim-fil li.fait { color: rgba(243,233,210,0.7); border-top-color: rgba(240,186,84,0.5); }
+.sim-points li {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: rgba(240, 234, 222, 0.2);
+  transition: background 300ms ease, box-shadow 300ms ease;
+}
+.sim-points li.fait { background: rgba(240, 186, 84, 0.45); }
+.sim-points li.ici {
+  background: #F0BA54;
+  box-shadow: 0 0 9px rgba(240, 186, 84, 0.85);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim-points li { transition: none; }
+}
+/* Le libellé reste pour les lecteurs d'écran : un point n'est pas un mot. */
+.sim-sr {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
 
 .sim label { display: block; font-size: 13px; margin: 16px 0 5px; color: rgba(243,233,210,0.8); }
-.sim input[type="text"], .sim input[type="tel"], .sim input:not([type]), .sim select {
+/* ⚠️ `[type="email"]` MANQUAIT. Le champ courriel du nouvel écran 4
+   tombait donc sur le rendu par défaut du navigateur : un rectangle
+   BLANC au milieu de trois champs sombres. Vu sur la capture, pas
+   deviné. */
+.sim input[type="text"], .sim input[type="tel"], .sim input[type="email"],
+.sim input:not([type]), .sim select {
   width: 100%; height: 48px; padding: 0 14px; border-radius: 10px;
   border: 1px solid rgba(243,233,210,0.25); background: rgba(255,255,255,0.06);
-  color: #F3E9D2; font-size: 16px;   /* 16px : sous ça, iOS zoome au focus */
+  color: #F0EADE; font-size: 16px;   /* 16px : sous ça, iOS zoome au focus */
 }
 .sim input::placeholder { color: rgba(243,233,210,0.4); }
 
 .sim-cta {
   display: block; width: 100%; margin-top: 24px; padding: 16px 20px;
-  background: #E9DCC0; color: #0A1524; border: 0; border-radius: 300px;
+  background: #F0EADE; color: #0A1524; border: 0; border-radius: 300px;
   font-size: 16px; font-weight: 800; text-align: center; text-decoration: none; cursor: pointer;
 }
 .sim-lien {
@@ -1486,3 +1541,673 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 }
 .sim-tele-pictogramme { font-size: 44px; line-height: 1; margin: 0 0 14px; }
 
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LE CURSEUR QUI ALLUME — components/RevelationLumiere.jsx
+   ═══════════════════════════════════════════════════════════════════════
+   Deux calques de la MÊME photo réelle : l'un passé au crépuscule par
+   filtre, l'autre tel quel. Le curseur déplace la couture. Voir le
+   commentaire du composant pour la raison pour laquelle ce n'est pas
+   étiqueté « avant / après ».                                          */
+
+.revel { margin: 0; }
+
+.revel-cadre {
+  position: relative;
+  height: var(--revel-h, clamp(280px, 58vw, 560px));
+  border-radius: 18px;
+  overflow: hidden;
+  background: #060E18;
+  line-height: 0;
+  /* La poignée se saisit horizontalement : on laisse le défilement
+     vertical à la page, sinon la section devient un piège sur téléphone. */
+  touch-action: pan-y;
+}
+
+.revel-img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Le crépuscule, obtenu de la photo elle-même. Pas un « avant » inventé :
+   la même image, moins de lumière. */
+.revel-img--crepuscule {
+  filter: brightness(0.32) saturate(0.5) contrast(1.06) hue-rotate(196deg);
+}
+
+/* ⚠️ `clip-path`, pas une largeur. Les deux calques restent à taille
+   réelle, donc l'image ne s'écrase pas quand la couture se déplace. */
+.revel-apres {
+  position: absolute; inset: 0;
+  clip-path: inset(0 calc(100% - var(--revel-pos, 38%)) 0 0);
+}
+
+.revel-couture {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: var(--revel-pos, 38%);
+  width: 2px;
+  margin-left: -1px;
+  background: rgba(240, 234, 222, 0.9);
+  /* La lueur ambre : c'est la lumière qui passe, le seul accent du bloc. */
+  box-shadow: 0 0 18px 2px rgba(240, 186, 84, 0.55);
+  pointer-events: none;
+}
+
+.revel-poignee {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: #F0EADE;
+  color: #0A1524;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.revel-etiq {
+  position: absolute;
+  top: 14px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 11px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 6px 11px;
+  border-radius: 300px;
+  background: rgba(8, 18, 32, 0.66);
+  color: rgba(240, 234, 222, 0.92);
+  backdrop-filter: blur(3px);
+  line-height: 1;
+}
+.revel-etiq--gauche { left: 14px; }
+.revel-etiq--droite { right: 14px; }
+
+/* Le vrai contrôle : invisible mais pleine surface, au clavier comme au
+   doigt. La poignée dessinée n'est que son costume. */
+.revel-curseur {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+}
+.revel-curseur::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 56px; height: 100%;
+}
+.revel-curseur::-moz-range-thumb {
+  width: 56px; height: 100%;
+  border: 0; background: transparent;
+}
+/* Le focus clavier doit se VOIR : l'input est transparent, donc c'est le
+   cadre qui le montre. */
+.revel-curseur:focus-visible { outline: none; }
+.revel-curseur:focus-visible ~ .revel-couture,
+.revel-cadre:has(.revel-curseur:focus-visible) .revel-poignee {
+  box-shadow: 0 0 0 3px #F0BA54, 0 6px 20px rgba(0, 0, 0, 0.45);
+}
+
+.revel-legende {
+  margin-top: 14px;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 13px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: rgba(162, 180, 204, 0.95);
+}
+
+@media (max-width: 560px) {
+  .revel-cadre { border-radius: 14px; }
+  .revel-poignee { width: 40px; height: 40px; }
+  .revel-etiq { font-size: 10px; padding: 5px 9px; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   HERO — une photo, une phrase, deux portes
+   ═══════════════════════════════════════════════════════════════════════
+   Le formulaire à cinq champs a quitté le premier écran (voir le
+   commentaire de components/Hero.jsx). Il n'y a donc plus de grille à deux
+   colonnes à tenir : le texte s'aligne à gauche sur la photo, et le bas de
+   l'écran reste libre.                                                  */
+
+.hero-texte { max-width: 660px; }
+
+.hero-eyebrow {
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 12px; font-weight: 700;
+  letter-spacing: 0.2em; text-transform: uppercase;
+  color: rgba(240, 234, 222, 0.82);
+  margin-bottom: 22px;
+}
+
+.hero-phrase {
+  color: rgba(240, 234, 222, 0.86);
+  font-size: 18px;
+  line-height: 1.55;
+  margin: 22px 0 32px;
+  max-width: 52ch;
+}
+
+.hero-boutons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 30px;
+}
+
+/* La ligne sobre : trois faits, un filet de points médians, rien de
+   cliquable sauf la preuve qui doit pouvoir être vérifiée. */
+.hero-ligne {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin: 0;
+  font-size: 14px;
+  color: rgba(162, 180, 204, 0.95);
+}
+.hero-ligne strong { color: rgba(240, 234, 222, 0.95); font-weight: 700; }
+.hero-ligne a { color: rgba(240, 234, 222, 0.95); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+.hero-ligne > * + *::before {
+  content: "·";
+  margin-right: 14px;
+  color: rgba(162, 180, 204, 0.5);
+}
+
+@media (max-width: 640px) {
+  .hero-phrase { font-size: 17px; margin: 18px 0 26px; }
+  /* Les deux boutons prennent toute la largeur : le pouce ne cherche pas. */
+  .hero-boutons { gap: 12px; }
+  .hero-boutons > * { width: 100%; }
+  .hero-ligne { font-size: 13px; gap: 4px 10px; }
+  .hero-ligne > * + *::before { margin-right: 10px; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LA FRISE — cinq points sur un filet (HowItWorks variant="ligne")
+   ═══════════════════════════════════════════════════════════════════════
+   Le filet est tracé en arrière-plan de la liste, pas entre les éléments :
+   un ::after par étape laissait un bout de trait qui dépassait après le
+   cinquième point. Ici il part du centre du premier point et s'arrête au
+   centre du dernier, parce que les deux extrémités sont en `space-between`.
+*/
+.frise {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  position: relative;
+}
+/* Le filet : derrière les points, d'un dixième à neuf dixièmes — c'est-à-dire
+   exactement du centre de la première colonne au centre de la dernière. */
+.frise::before {
+  content: "";
+  position: absolute;
+  top: 5px;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: rgba(240, 234, 222, 0.22);
+}
+.frise-etape {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+  padding: 0 6px;
+}
+.frise-point {
+  width: 11px; height: 11px;
+  border-radius: 50%;
+  background: #0A1524;
+  border: 2px solid rgba(240, 234, 222, 0.45);
+  position: relative;
+  z-index: 1;
+}
+/* La PREMIÈRE étape est celle où en est le visiteur : c'est la seule qui
+   s'allume. L'ambre marque un état actif — son seul emploi permis. */
+.frise-etape:first-child .frise-point {
+  background: #F0BA54;
+  border-color: #F0BA54;
+  box-shadow: 0 0 10px rgba(240, 186, 84, 0.8);
+}
+.frise-mot {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 20px;
+  letter-spacing: 0.06em;
+  color: #F0EADE;
+  line-height: 1;
+}
+.frise-quand {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(162, 180, 204, 0.85);
+  line-height: 1.3;
+}
+
+/* ⚠️ Sous 720 px la frise passe à la VERTICALE.
+   Cinq mots côte à côte sur 375 px donnent 67 px par colonne :
+   « Installation » se coupait en trois. Le filet devient vertical et les
+   points s'alignent à gauche — la lecture reste une ligne, elle tourne
+   simplement d'un quart de tour. */
+@media (max-width: 720px) {
+  .frise {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .frise::before {
+    top: 5px; bottom: 5px;
+    left: 5px; right: auto;
+    width: 1px; height: auto;
+  }
+  .frise-etape {
+    flex-direction: row;
+    align-items: baseline;
+    text-align: left;
+    gap: 14px;
+    padding: 0;
+  }
+  .frise-point { flex: none; align-self: flex-start; margin-top: 4px; }
+  .frise-quand { margin-left: auto; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   L'ACCUEIL SIMPLIFIÉ — huit sections, presque plus de boîtes
+   ═══════════════════════════════════════════════════════════════════════
+   Règle du bloc : une idée par section, le blanc fait la séparation. Il
+   n'y a plus de carte bordée sur cette page, sauf le formulaire — qui en
+   est une parce qu'il est, lui, un objet qu'on manipule.               */
+
+/* En-tête de section : étiquette + titre + une phrase, centrés. */
+.section-entete {
+  text-align: center;
+  max-width: 760px;
+  margin: 0 auto 46px;
+}
+.section-phrase {
+  color: rgba(240, 234, 222, 0.78);
+  font-size: 18px;
+  line-height: 1.6;
+  max-width: 56ch;
+  margin: 16px auto 0;
+}
+.section-phrase--clair { color: #444; }
+
+.section-lien {
+  text-align: center;
+  margin: 34px 0 0;
+}
+.section-lien a:not([class]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #F0BA54;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.section-lien a:not([class]):hover { text-decoration: underline; text-underline-offset: 4px; }
+
+/* ── 2 · La vitrine : quatre photos, deux colonnes ─────────────────── */
+.vitrine {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.vitrine-item {
+  position: relative;
+  margin: 0;
+  border-radius: 18px;
+  overflow: hidden;
+  /* 3/2 plutôt que 4/3 : une façade est large, et le ciel au-dessus du toit
+     n'apprend rien. */
+  aspect-ratio: 3 / 2;
+  background: #060E18;
+  line-height: 0;
+}
+.vitrine-item img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  /* Une photo qui bouge à peine au survol dit « c'est cliquable » sans
+     animation permanente. */
+  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.vitrine-item:hover img { transform: scale(1.03); }
+@media (prefers-reduced-motion: reduce) {
+  .vitrine-item img { transition: none; }
+  .vitrine-item:hover img { transform: none; }
+}
+.vitrine-item figcaption {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  padding: 36px 18px 15px;
+  background: linear-gradient(to top, rgba(6, 14, 24, 0.9), transparent);
+  color: #F0EADE;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 19px;
+  letter-spacing: 0.07em;
+  line-height: 1;
+}
+
+/* ── 4 · L'offre : le texte à gauche, ce qu'on achète à droite ─────── */
+.offre {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.85fr);
+  gap: 72px;
+  align-items: start;
+}
+.offre-texte {
+  color: rgba(240, 234, 222, 0.8);
+  font-size: 18px;
+  line-height: 1.6;
+  margin-bottom: 18px;
+  max-width: 48ch;
+}
+/* Pas de bordure, pas de fond : juste un filet à gauche. La colonne se
+   distingue par sa position, pas par une boîte. */
+.offre-carte {
+  border-left: 1px solid rgba(240, 234, 222, 0.18);
+  padding-left: 38px;
+}
+.offre-liste {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 32px;
+}
+.offre-liste li {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  color: #F0EADE;
+  font-size: 17px;
+  line-height: 1.45;
+  padding: 13px 0;
+  border-bottom: 1px solid rgba(240, 234, 222, 0.1);
+}
+.offre-liste li:last-child { border-bottom: 0; }
+
+.offre-prix {
+  font-size: 17px;
+  color: rgba(240, 234, 222, 0.8);
+  margin: 0 0 26px;
+}
+.offre-prix strong {
+  display: block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(2.4rem, 5vw, 3.4rem);
+  line-height: 1;
+  color: #F0EADE;
+  margin: 4px 0 6px;
+}
+.offre-prix span {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #F0BA54;
+}
+
+/* ── 6 · Un bloc court et centré ───────────────────────────────────── */
+.bloc-etroit {
+  max-width: 660px;
+  text-align: center;
+}
+
+/* ── 8 · Le formulaire, seule boîte de la page ─────────────────────── */
+.bloc-formulaire { max-width: 680px; }
+.bloc-formulaire__pied {
+  margin: 24px 0 0;
+  text-align: center;
+  font-size: 16px;
+  color: #444;
+  line-height: 1.7;
+}
+.bloc-formulaire__pied a {
+  color: #8A6A1C;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .offre { grid-template-columns: 1fr; gap: 42px; }
+  .offre-carte { border-left: 0; padding-left: 0; border-top: 1px solid rgba(240, 234, 222, 0.18); padding-top: 34px; }
+}
+@media (max-width: 640px) {
+  .section-entete { margin-bottom: 34px; }
+  .section-phrase { font-size: 17px; }
+  /* Une colonne : deux photos côte à côte sur 375 px font 170 px de large,
+     soit le format vignette qu'on vient justement de supprimer. */
+  .vitrine { grid-template-columns: 1fr; gap: 14px; }
+  .vitrine-item { aspect-ratio: 4 / 3; border-radius: 14px; }
+  .offre-liste li { font-size: 16px; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   SIMULATEUR — ce que le nouvel ordre a demandé en plus
+   ═══════════════════════════════════════════════════════════════════════ */
+
+/* ── Écran 1 : le champ d'adresse et ses suggestions ────────────────── */
+.adresse { position: relative; }
+.adresse-liste {
+  position: absolute; z-index: 40;
+  top: calc(100% + 6px); left: 0; right: 0;
+  list-style: none; margin: 0; padding: 6px;
+  background: #0E1B2C;
+  border: 1px solid rgba(240, 234, 222, 0.22);
+  border-radius: 12px;
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.5);
+  max-height: 260px; overflow-y: auto;
+}
+.adresse-liste li {
+  padding: 11px 12px; border-radius: 8px;
+  font-size: 15px; line-height: 1.35;
+  color: rgba(240, 234, 222, 0.88);
+  cursor: pointer;
+}
+.adresse-liste li.visee,
+.adresse-liste li:hover { background: rgba(240, 186, 84, 0.14); color: #F0EADE; }
+
+.sim-note--centre {
+  text-align: center;
+  margin-top: 14px;
+  font-size: 13.5px;
+  color: rgba(162, 180, 204, 0.9);
+}
+.sim-option { color: rgba(162, 180, 204, 0.75); font-weight: 400; }
+
+/* ── Écran 3 : les échantillons de couleur ──────────────────────────── */
+.sim-swatch {
+  display: flex; gap: 4px; margin-bottom: 9px;
+}
+/* ⚠️ Surcharge nécessaire : `.sim-style span` impose 13 px et une couleur
+   grise à TOUT span de la carte, y compris aux pastilles de couleur, qui
+   deviendraient des rectangles gris de 13 px. */
+.sim-swatch span {
+  width: 26px; height: 10px;
+  border-radius: 300px;
+  font-size: 0;
+  flex: none;
+  box-shadow: 0 0 8px rgba(240, 186, 84, 0.25);
+}
+.sim-style-detail { font-size: 13px; }
+/* Deux colonnes dès qu'il y a la place : quatre styles empilés sur un
+   écran de bureau font une colonne de 600 px pour quatre mots. */
+@media (min-width: 420px) {
+  .sim-styles { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Écran 3.5 : la guirlande qui s'allume ──────────────────────────── */
+.sim-guirlande {
+  display: flex; justify-content: center; align-items: center;
+  gap: 14px; margin-bottom: 22px;
+}
+.sim-guirlande span {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: rgba(240, 234, 222, 0.14);
+  /* Pas de transition sur la forme : seule la lumière change. */
+  transition: background 260ms ease, box-shadow 260ms ease;
+}
+.sim-guirlande span.allumee {
+  background: #F0BA54;
+  box-shadow: 0 0 14px 2px rgba(240, 186, 84, 0.8);
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim-guirlande span { transition: none; }
+}
+
+/* ── Écran 4 : le résultat sous verre dépoli ────────────────────────── */
+.sim-teaser {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  margin-bottom: 22px;
+  line-height: 0;
+  background: #060E18;
+}
+.sim-teaser img {
+  width: 100%; display: block;
+  /* ⚠️ Le flou est GÉNÉREUX, et c'est un choix de produit : à 8 px on
+     devinait déjà le résultat, donc plus personne n'avait de raison de
+     donner son numéro. À 22 px on voit qu'il y a de la lumière, pas où. */
+  filter: blur(22px) saturate(1.15);
+  /* L'image floutée rétrécit sur ses bords : l'échelle masque le liseré
+     transparent que `blur` laisse apparaître. */
+  transform: scale(1.12);
+}
+.sim-teaser-voile {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 12px;
+  background: linear-gradient(to top, rgba(6, 14, 24, 0.75), rgba(6, 14, 24, 0.35));
+  color: #F0EADE;
+  line-height: 1.4;
+}
+.sim-teaser-voile p {
+  margin: 0;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 23px;
+  letter-spacing: 0.06em;
+}
+.sim-cadenas {
+  display: flex; align-items: center; justify-content: center;
+  width: 50px; height: 50px; border-radius: 50%;
+  background: rgba(240, 186, 84, 0.16);
+  color: #F0BA54;
+}
+
+/* ── Écran 5 : la comparaison révélée ───────────────────────────────── */
+/* L'apparition se fait par un fondu du flou vers le net. Le composant
+   monte l'image nette directement : la transition sert au cas où le
+   navigateur a déjà l'image en cache et l'affiche d'un coup. */
+.sim-compare--revele { animation: sim-devoiler 900ms ease-out both; }
+@keyframes sim-devoiler {
+  from { filter: blur(16px); opacity: 0.4; }
+  to   { filter: blur(0);    opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .sim-compare--revele { animation: none; }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════════
+   LISTES DE LIENS — ce qui remplace les grilles de cartes
+   ═══════════════════════════════════════════════════════════════════════
+   Les pages de service et de ville portaient leur maillage interne dans
+   des cartes bordées : six villes = six boîtes de 22 px de padding, soit
+   presque un écran pour une liste de noms. Les liens sont les MÊMES —
+   mêmes href, mêmes textes d'ancrage, donc même valeur SEO. Ce sont les
+   boîtes qui disparaissent.
+
+   Un filet par ligne, et la flèche n'apparaît qu'au survol : une liste
+   qui porte six flèches ambre en permanence redevient une grille.      */
+
+.liste-liens {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  border-top: 1px solid rgba(240, 234, 222, 0.14);
+}
+.liste-liens li { border-bottom: 1px solid rgba(240, 234, 222, 0.14); }
+
+.liste-liens a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 4px 18px;
+  padding: 20px 4px;
+  text-decoration: none;
+  transition: padding-left 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.liste-liens a:hover,
+.liste-liens a:focus-visible { padding-left: 10px; }
+@media (prefers-reduced-motion: reduce) {
+  .liste-liens a { transition: none; }
+  .liste-liens a:hover, .liste-liens a:focus-visible { padding-left: 4px; }
+}
+
+.liste-liens__region {
+  grid-column: 1;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(162, 180, 204, 0.9);
+}
+.liste-liens__nom {
+  grid-column: 1;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 25px;
+  letter-spacing: 0.03em;
+  line-height: 1.05;
+  color: #F0EADE;
+}
+.liste-liens__note {
+  grid-column: 1;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: rgba(240, 234, 222, 0.62);
+  max-width: 62ch;
+  margin-top: 4px;
+}
+/* La flèche vit dans la deuxième colonne, et elle n'arrive qu'au survol. */
+.liste-liens a::after {
+  content: "→";
+  grid-column: 2;
+  grid-row: 1 / -1;
+  align-self: center;
+  color: #F0BA54;
+  font-size: 20px;
+  opacity: 0;
+  transform: translateX(-6px);
+  transition: opacity 220ms ease, transform 220ms ease;
+}
+.liste-liens a:hover::after,
+.liste-liens a:focus-visible::after { opacity: 1; transform: translateX(0); }
+@media (prefers-reduced-motion: reduce) {
+  .liste-liens a::after { transition: none; }
+}
+
+.liste-liens--large .liste-liens__nom { font-size: 28px; }
+
+@media (max-width: 560px) {
+  .liste-liens a { padding: 17px 2px; }
+  .liste-liens__nom,
+  .liste-liens--large .liste-liens__nom { font-size: 22px; }
+  .liste-liens__note { font-size: 14px; }
+}

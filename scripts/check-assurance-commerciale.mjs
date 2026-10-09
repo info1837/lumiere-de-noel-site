@@ -59,8 +59,17 @@ console.log('\n--- 3. 🚨 Le bouton ouvre le formulaire COMMERCIAL ---');
   t('elle est passée au formulaire', /serviceInitial=\{serviceInitial\}/.test(soum));
 
   const form = sansCommentaires(lire('components/QuoteForm.jsx'));
-  t('🚨 le formulaire présélectionne le service', /serviceInitial \? \{ \.\.\.empty, service: serviceInitial \}/.test(form));
-  t('sans paramètre, il reste vierge', /: empty,/.test(form));
+  // L'initialisation est passée du ternaire à un étalement d'objets, pour
+  // accueillir `prerempli` (nom/téléphone/adresse venus du simulateur) en
+  // plus de `serviceInitial`. Le comportement est le même : sans
+  // paramètre, le formulaire part de `empty`.
+  t('🚨 le formulaire présélectionne le service',
+    /\.\.\.\(serviceInitial \? \{ service: serviceInitial \} : null\)/.test(form));
+  t('sans paramètre, il reste vierge', /\.\.\.empty,/.test(form));
+  // ⚠️ LE CONSENTEMENT N'EST JAMAIS PRÉREMPLI, même quand la personne l'a
+  // déjà donné au simulateur : une case cochée d'avance n'est pas un
+  // consentement au sens de la Loi 25.
+  t('🚨 le consentement n\'est jamais prérempli', !/consent: true/.test(form));
 }
 
 console.log('\n--- 4. 🚨 Rien d\'autre ne bouge dans le formulaire ---');

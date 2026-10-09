@@ -8,7 +8,7 @@ import { navy, ivory, gold, charcoal, offWhite, textMuted, company } from "@/com
 // Server-rendered, indexable : quelqu'un qui cherche « lumière de noël
 // politique de confidentialité » doit tomber dessus.
 export const metadata = {
-  title: "Politique de confidentialité | Solution Lumière de Noël",
+  title: "Politique de confidentialité",
   description:
     "Comment Solution Lumière de Noël inc. recueille, utilise et protège vos renseignements personnels — conforme à la Loi 25 (Québec).",
   alternates: { canonical: "/confidentialite" },

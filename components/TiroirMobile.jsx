@@ -144,7 +144,14 @@ export function TiroirMobile({ ouvert, onFermer, declencheurRef }) {
       >
         <div className="tiroir__entete">
           <Link href="/" onClick={onFermer} className="tiroir__marque" aria-label={`${company.shortName} — accueil`}>
-            <img src="/images/logo-horizontal-transparent-fonce.svg" alt="" width={82} height={28} />
+            {/* ⚠️ `alt=""` EST CORRECT ICI, et `aria-hidden` le rend explicite.
+                Le <Link> parent porte déjà `aria-label="… — accueil"` : donner
+                un alt à l'image ferait annoncer deux fois le nom de
+                l'entreprise au lecteur d'écran. Ce qui manquait, c'est de
+                DIRE que l'image est décorative — un alt vide sans
+                `aria-hidden` est signalé par les audits d'accessibilité,
+                parce que rien ne distingue « décoratif » de « oublié ». */}
+            <img src="/images/logo-horizontal-transparent-fonce.svg" alt="" aria-hidden="true" width={82} height={28} />
           </Link>
           <button type="button" ref={fermerRef} className="tiroir__fermer" onClick={onFermer} aria-label="Fermer le menu">
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">

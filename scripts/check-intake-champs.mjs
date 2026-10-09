@@ -30,11 +30,17 @@ const champsDe = (f) => {
   return [...m[1].matchAll(/(\w+)\s*:/g)].map((x) => x[1]);
 };
 
-const hero = champsDe('components/Hero.jsx');
+// ⚠️ LE HERO N'A PLUS DE FORMULAIRE. Il portait une carte à cinq champs au
+// premier écran ; elle est descendue en bas de l'accueil, où c'est le MÊME
+// QuoteForm que /soumission qui la rend. Lire `const empty` dans Hero.jsx
+// rendait donc une liste vide, et la ligne imprimée mentait par omission.
+// Le simulateur, lui, a maintenant ses propres champs.
 const complet = champsDe('components/QuoteForm.jsx');
+const simulateur = (src('app/simulateur/Simulateur.jsx').match(/const \[coord, setCoord\] = useState\(\{([^}]*)\}/) || [, ''])[1]
+  .match(/(\w+):/g)?.map((x) => x.slice(0, -1)) || [];
 console.log('\n--- 1. Ce que les formulaires collectent ---');
-console.log(`  hero    : ${hero.join(', ')}`);
-console.log(`  complet : ${complet.join(', ')}`);
+console.log(`  complet    : ${complet.join(', ')}`);
+console.log(`  simulateur : ${simulateur.join(', ')}`);
 
 const envoyes = [];
 globalThis.fetch = async (url, init) => {
@@ -102,7 +108,7 @@ console.log('\n--- 4. 🚨 Aucun champ collecté n\'est perdu en silence ---');
     if (!paquet.includes(valeur)) perdus.push(champ);
   }
   t('🚨 aucun champ perdu', perdus.length === 0, perdus.length ? `perdus : ${perdus.join(', ')}` : '');
-  const collectes = new Set([...hero, ...complet].filter((c) => !IGNORES.has(c) && !c.startsWith('_')));
+  const collectes = new Set([...complet, ...simulateur].filter((c) => !IGNORES.has(c) && !c.startsWith('_')));
   console.log(`  champs collectés suivis : ${[...collectes].join(', ')}`);
 }
 

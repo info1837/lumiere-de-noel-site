@@ -31,12 +31,21 @@ console.log('\n--- 1. 🚨 La galerie monte AVANT les arguments ---');
 
 console.log('\n--- 2. 🚨 Elle est plus GRANDE ---');
 {
-  t('🚨 elle porte la classe large', /gallery-grid--large/.test(pageCode));
+  // ⚠️ LA GALERIE DEVIENT UNE VITRINE.
+  //
+  // `gallery-grid--large` passait les SIX vignettes à deux colonnes. Six
+  // photos en 4/3 sur 1180 px font encore 380 px chacune — à cette taille
+  // une maison illuminée n'est plus une preuve, c'est une texture. Quatre
+  // photos en 3/2 font 580 px : on voit la ligne de toit, et c'est elle
+  // qu'on vend.
   const css = lire('app/globals.css');
-  t('🚨 deux colonnes au lieu de trois',
-    /\.gallery-grid--large \.gallery-grid \{[\s\S]{0,120}repeat\(2, 1fr\)/.test(css));
+  t('🚨 la vitrine remplace la grille de vignettes',
+    /className="vitrine"/.test(pageCode) && !/gallery-grid--large/.test(pageCode));
+  t('🚨 deux colonnes', /\.vitrine \{[\s\S]{0,120}grid-template-columns: 1fr 1fr;/.test(css));
   t('une seule colonne sur téléphone',
-    /max-width: 720px[\s\S]{0,160}\.gallery-grid--large \.gallery-grid \{ grid-template-columns: 1fr/.test(css));
+    /max-width: 640px[\s\S]{0,400}\.vitrine \{ grid-template-columns: 1fr/.test(css));
+  t('🚨 QUATRE photos, pas six', /HOME_VITRINE_INDICES = \[0, 2, 10, 9\]/.test(lire('components/data.js')));
+  t('🚨 chacune nomme sa ville', /<figcaption>\{p\.caption\}<\/figcaption>/.test(pageCode));
   t('la grille générique à 3 colonnes existe toujours pour /realisations',
     /\.gallery-grid \{ display: grid; grid-template-columns: repeat\(3, 1fr\)/.test(css));
 }
@@ -48,8 +57,17 @@ console.log('\n--- 3. 🚨 « Nos clients reviennent chaque année » ---');
   t('🚨 elle parle d\'entreposage chez nous', /Entreposées chez nous/.test(c));
   t('🚨 elle parle de renouvellement', /<SectionTag>Renouvellement<\/SectionTag>/.test(c));
   t('elle mène à /renouvellement', /href="\/renouvellement"/.test(c));
-  t('🚨 elle est montée dans la page', /<ClientsFideles \/>/.test(pageCode));
-  t('après le parcours', pageCode.indexOf('<ClientsFideles />') > pageCode.indexOf('<HowItWorks'));
+  // ⚠️ LE COMPOSANT N'EST PLUS MONTÉ SUR L'ACCUEIL.
+  //
+  // Il disait, en trois cartes, ce que la section 6 dit maintenant en deux
+  // phrases : le matériel est chez nous, la date de l'an dernier est
+  // gardée, et /renouvellement détaille. Le fichier reste — sa copie est
+  // soignée et /renouvellement peut la reprendre — mais l'accueil ne le
+  // rend plus. L'idée, elle, doit survivre : c'est ce qu'on vérifie.
+  t('🚨 l\'idée de renouvellement survit sur l\'accueil',
+    /Déjà client/.test(pageCode) && /Votre matériel est déjà chez nous/.test(pageCode));
+  t('🚨 …et elle mène à /renouvellement', /href="\/renouvellement"/.test(pageCode));
+  t('après le parcours', pageCode.indexOf('Déjà client') > pageCode.indexOf('<HowItWorks'));
 
   // ⚠️ Aucun pourcentage : l'historique est d'une seule saison, le
   // dénominateur serait de 21 clients, et le chiffre bougerait de cinq
@@ -81,15 +99,20 @@ console.log('\n--- 4. Le parcours est renommé ---');
 
 console.log('\n--- 5. Ce à quoi on ne touche pas ---');
 {
-  t('🚨 un seul formulaire sur l\'accueil (celui du hero)',
-    (pageCode.match(/<QuoteForm/g) || []).length === 0);
+  // Avant : zéro QuoteForm ici, le hero portant sa propre carte. Depuis la
+  // refonte, le hero n'a plus de formulaire et c'est QuoteForm qui le rend,
+  // une seule fois, en bas de page.
+  t('🚨 un seul formulaire sur l\'accueil (en bas, après la preuve)',
+    (pageCode.match(/<QuoteForm/g) || []).length === 1);
   t('🚨 le pixel est intact', /eventID/.test(lire('lib/meta-lead-event.js')));
   t('l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
   // Il reçoit maintenant sa donnée du layout — ne pas épingler la balise
   // entière, elle porte une prop de plus.
   t('le bandeau de rareté est toujours monté', /<BandeauRarete/.test(lire('app/layout.jsx')));
   // La rareté vit dans le bandeau du haut, plus dans le hero (bloc 1).
-  t('le hero garde la date de fermeture du CRM', /rarete\?\.fermetureLe/.test(lire('components/Hero.jsx')));
+  // La date de fermeture a quitté le hero avec le formulaire : elle est
+  // dans la section de réservation, en bas, là où quelqu'un hésite.
+  t('la page garde la date de fermeture du CRM', /rarete\?\.fermetureLe/.test(lire('app/page.jsx')));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

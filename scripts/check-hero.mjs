@@ -44,45 +44,94 @@ console.log('\n--- 2. Le sous-titre ---');
   t('plus de « On s\'occupe de tout »', !/On s'occupe de tout/.test(heroCode));
 }
 
-console.log('\n--- 3. Le bouton ---');
+console.log('\n--- 3. 🚨 DEUX portes, et pas une troisième ---');
 {
-  t('🚨 « Réserver ma date » en bouton principal',
-    /variant="gold">Réserver ma date</.test(heroCode));
-  // Le 2e gros bouton « Appeler … » est devenu un lien texte discret sous le
-  // bouton (respiration, bloc 1) : cinq portes au premier écran, ce n'était
-  // pas un choix. Le numéro n'est pas parti — il a changé de poids.
-  t('🚨 plus de 2e gros bouton d\'appel', !/variant="outlineLight">Appeler/.test(heroCode));
-  t('🚨 le téléphone survit en lien texte', /<p className="hero-tel">[\s\S]{0,140}<a href=\{company\.phoneHref\}>/.test(heroCode));
+  // ⚠️ CE TEST A ÉTÉ RETOURNÉ, ET IL FAUT SAVOIR POURQUOI.
+  //
+  // Il exigeait avant UNE SEULE porte au premier écran (« Respiration
+  // 1/4 »), parce que cinq boutons en haut de page ne donnaient aucun
+  // choix. L'argument était juste contre CINQ. Il ne l'est plus contre
+  // DEUX, parce que les deux ne demandent pas la même chose :
+  //
+  //   « Réserver ma date »          → pour qui est déjà décidé
+  //   « Voir ma maison illuminée »  → pour tous les autres
+  //
+  // C'est la décision de la refonte : le simulateur est la signature du
+  // site, et une signature cachée dans la nav n'en est pas une. Le
+  // troisième bouton, lui, reste interdit.
+  t('🚨 « Réserver ma date » en primaire crème',
+    /variant="creme">Réserver ma date</.test(heroCode));
+  t('🚨 « Voir ma maison illuminée » en secondaire, vers /simulateur',
+    /href="\/simulateur" variant="outlineCreme">Voir ma maison illuminée</.test(heroCode));
+  t('🚨 EXACTEMENT deux boutons — jamais trois',
+    (heroCode.match(/<CTAButton/g) || []).length === 2,
+    `${(heroCode.match(/<CTAButton/g) || []).length}`);
+  t('🚨 plus de gros bouton d\'appel', !/variant="outlineLight">Appeler/.test(heroCode));
+  // Le numéro n'a pas disparu du site : il est dans la section de
+  // réservation (bas de l'accueil), dans le pied de page et sur
+  // /soumission. Le sortir du hero était le point de la refonte — un
+  // numéro au premier écran est une porte de plus.
+  t('🚨 le téléphone n\'est PLUS dans le hero', !/hero-tel/.test(heroCode));
 }
 
-console.log('\n--- 4. 🚨 La ligne de rareté est VRAIE, ou absente ---');
+console.log('\n--- 4. 🚨 Aucun chiffre de rareté dans le hero ---');
 {
-  // Depuis le bloc 1 elle ne s'affiche plus DANS le hero : le bandeau du haut
-  // la porte déjà, et la lire deux fois de suite affaiblit les deux. Ce qui
-  // reste protégé ici, c'est l'interdit qui compte : aucun chiffre inventé.
-  t('🚨 le hero ne redit plus la rareté du bandeau', !/rarete\?\.texte/.test(heroCode));
+  // La ligne de saison vit en haut de page (components/BandeauRarete.jsx),
+  // composée par lib/season.js. Le hero n'en parle plus du tout : il n'a
+  // même plus la donnée.
+  t('🚨 le hero ne reçoit plus la rareté', !/rarete/.test(heroCode));
+  t('🚨 aucun nombre de places écrit en dur',
+    !/\d+ (dates?|places?) restantes?/.test(heroCode));
   t('🚨 plus de « les dates de novembre partent en premier »',
     !/dates de novembre partent en premier/.test(heroCode));
-  t('🚨 aucun nombre de dates écrit en dur dans le hero',
-    !/\d+ dates? restantes?/.test(heroCode));
-  t('🚨 la fermeture, elle, reste sous le bouton',
-    heroCode.indexOf('Réserver ma date') < heroCode.indexOf('hero-fermeture'));
-  t('le hero accepte null par défaut', /rarete = null/.test(hero));
+  // La date de fermeture est descendue dans la section de réservation,
+  // à l'endroit où quelqu'un hésite devant le formulaire.
+  t('🚨 la fermeture est dans la page, pas dans le hero',
+    /Réservations fermées le \{fermeture\}/.test(sansCommentaires(page))
+    && !/hero-fermeture/.test(heroCode));
 }
 
 console.log('\n--- 5. La page lit le CRM côté serveur ---');
 {
   t('🚨 la page est asynchrone', /export default async function/.test(page));
   t('🚨 elle lit les disponibilités', /await lireDisponibilites\(\)/.test(page));
-  t('🚨 et passe le message au hero', /<Hero rarete=\{rarete\} \/>/.test(page));
-  t('le hero reste « use client » (il porte un formulaire)', /^"use client";/.test(hero));
-  t('🚨 le hero ne fetch RIEN lui-même — le CORS du CRM le refuserait',
-    !/fetch\(/.test(heroCode.split('submit')[0] || heroCode));
+  t('🚨 le hero est monté sans props — il n\'affiche plus de chiffre',
+    /<Hero \/>/.test(page));
+  // ⚠️ L'ANCIEN TEST EXIGEAIT « use client ». Il le justifiait par le
+  // formulaire : « le hero reste use client (il porte un formulaire) ».
+  // Le formulaire est descendu en section 8, donc la raison est tombée
+  // avec lui — et le premier écran redevient du HTML, ce qui est tout
+  // bénéfice pour le LCP.
+  t('🚨 le hero n\'est PLUS « use client » — plus d\'état à y tenir',
+    !/^"use client";/.test(hero));
+  t('🚨 le hero ne fetch RIEN lui-même', !/fetch\(/.test(heroCode));
 }
 
-console.log('\n--- 6. Ce à quoi on ne touche pas ---');
+console.log('\n--- 6. 🚨 La preuve sociale reste VRAIE ---');
 {
-  t('🚨 le formulaire du hero envoie toujours', /sendLead|onSubmit=\{submit\}/.test(hero));
+  // Les 100+ avis sont ceux de PALENCIA SERVICES EXTÉRIEUR. Solution
+  // Lumière de Noël n'a pas encore d'avis publiés (components/reviews.js,
+  // REVIEWS_PENDING = true). Les écrire sans dire à qui ils appartiennent
+  // les attribuerait à Lumière — c'est faux, et la barre des objections
+  // qui portait la mention a été retirée du bas du hero.
+  t('🚨 l\'attribution à Palencia est écrite', /chez Palencia/.test(heroCode));
+  t('🚨 …et vérifiable : la fiche Google est en lien',
+    /AVIS_PALENCIA_URL/.test(heroCode) && /place_id:/.test(hero));
+  const avis = lire('components/reviews.js');
+  t('🚨 aucun avis inventé dans reviews.js',
+    /REVIEWS_PENDING = true/.test(avis) && /aggregateRating = null/.test(avis));
+}
+
+console.log('\n--- 6b. Ce à quoi on ne touche pas ---');
+{
+  // ⚠️ LE FORMULAIRE N'EST PAS SUPPRIMÉ, IL EST DÉPLACÉ. Un seul sur la
+  // page, en bas, après la preuve. Zéro formulaire serait une régression,
+  // deux seraient l'ancien défaut.
+  t('🚨 UN formulaire sur l\'accueil, et un seul',
+    (page.match(/<QuoteForm/g) || []).length === 1,
+    `${(page.match(/<QuoteForm/g) || []).length}`);
+  t('🚨 il est APRÈS les réalisations et le simulateur',
+    page.indexOf('<QuoteForm') > page.indexOf('RevelationLumiere'));
   t('🚨 le pixel est intact', /eventID/.test(lire('lib/meta-lead-event.js')));
   t('l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
 }
