@@ -43,9 +43,16 @@ export const heroScrim = "rgba(5,10,20,0.82)"; // voile sur image hero
 // Dérivés utilitaires (contraste / états)
 export const navyDeep = "#060E18";
 // ⚠️ L'ambre #F0BA54 sur fond clair ne passe PAS le AA (2,0:1). Ce brun doré
-// est sa doublure pour le texte sur #FAFAFA : contraste ≈ 4,8:1.
-// Ne pas remonter cette valeur sans vérifier WCAG 2.1 4.5:1 minimum.
-export const goldText = "#8A6A1C";
+// est sa doublure pour le texte sur fond clair.
+//
+// ⚠️ ASSOMBRI DE #8A6A1C À #7A5E17, ET C'EST MESURÉ.
+// L'ancienne valeur avait été réglée sur #FAFAFA (4,84:1, juste au-dessus
+// du seuil). La section de réservation est maintenant sur le CRÈME du kit
+// (#F0EADE), plus sombre : le même brun n'y donnait plus que 4,21:1, donc
+// SOUS le minimum AA — Lighthouse l'a signalé sur l'accueil. La nouvelle
+// valeur passe sur les deux fonds : 5,09:1 sur crème, 5,85:1 sur #FAFAFA.
+// Ne pas l'éclaircir sans revérifier les DEUX.
+export const goldText = "#7A5E17";
 export const line = "rgba(240,234,222,0.20)"; // séparateurs sur fond sombre
 export const textMuted = "#5A5A5A";
 

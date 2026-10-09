@@ -148,7 +148,7 @@ export default async function Home() {
               Vous, vous profitez du spectacle. Nous, on s&apos;occupe de tout le reste.
             </p>
           </div>
-          <div className="offre-carte">
+          <div className="offre-colonne">
             <ul className="offre-liste">
               {[
                 "Conception sur mesure",

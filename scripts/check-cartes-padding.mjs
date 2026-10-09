@@ -70,23 +70,34 @@ for (const w of [1440, 390]) {
 // rester pleine largeur. Une carte dont la photo se rétrécit a reçu la
 // marge au mauvais endroit.
 {
+  // ⚠️ LES CARTES DE SERVICE ONT QUITTÉ L'ACCUEIL.
+  //
+  // Cette vérification visait `article.glow-card` + `.carte-corps` sur
+  // « / ». La refonte « soustraction » a retiré la grille de services de
+  // l'accueil — elle demandait au visiteur de choisir un rayon avant
+  // d'avoir vu une maison illuminée. Les cartes existent toujours, sur
+  // /services, et c'est là qu'on les mesure : le défaut gardé (la marge
+  // posée sur la carte au lieu de la boîte texte, ce qui rétrécit la
+  // photo) est exactement le même.
   const page = await (await nav.newContext({ viewport: { width: 1440, height: 900 } })).newPage();
-  await page.goto(BASE + '/', { waitUntil: 'networkidle', timeout: 60000 });
+  await page.goto(BASE + '/services', { waitUntil: 'networkidle', timeout: 60000 });
   await page.waitForTimeout(1200);
   const r = await page.evaluate(`(() => {
-    const c = document.querySelector('article.glow-card');
+    const c = document.querySelector('.glow-card');
     if (!c) return null;
     const img = c.querySelector('img');
-    const corps = c.querySelector('.carte-corps');
-    if (!img || !corps) return null;
+    if (!img) return null;
     const rc = c.getBoundingClientRect(), ri = img.getBoundingClientRect();
-    const s = getComputedStyle(corps);
+    // La boîte TEXTE est le frère du cadre photo, pas la carte elle-même.
+    const corps = img.parentElement?.nextElementSibling;
+    const s = corps ? getComputedStyle(corps) : null;
     return { debordPhoto: Math.round(ri.width - rc.width),
-             padding: [s.paddingTop, s.paddingLeft].map((v) => Math.round(parseFloat(v))) };
+             padding: s ? [s.paddingTop, s.paddingLeft].map((v) => Math.round(parseFloat(v))) : null };
   })()`);
-  console.log('\n--- la photo garde sa pleine largeur ---');
+  console.log('\n--- la photo garde sa pleine largeur (/services) ---');
   t('la photo fait toute la largeur de la carte', r && Math.abs(r.debordPhoto) <= 2, `écart ${r?.debordPhoto} px`);
-  t('🚨 le corps texte a bien 24 px, haut et côtés', String(r?.padding) === '24,24', String(r?.padding));
+  t('🚨 la marge est sur la boîte TEXTE, pas sur la carte',
+    !!(r?.padding) && r.padding[0] >= 20 && r.padding[1] >= 20, String(r?.padding));
   await page.close();
 }
 

@@ -183,7 +183,8 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
             si vous ne venez pas ». Ici, en petit, sous le bouton, ils font
             l'inverse — ils enlèvent la dernière hésitation de quelqu'un qui
             a DÉJÀ décidé de remplir le formulaire. */}
-        <p style={{ fontSize: 12, color: "#888", marginTop: 12 }}>
+        {/* #888 à 12 px : 3,54:1, sous le AA. #6A6A6A donne 5,41:1. */}
+        <p style={{ fontSize: 12, color: "#6A6A6A", marginTop: 12 }}>
           * Champs obligatoires. La consultation est gratuite et sans obligation.
         </p>
       </div>

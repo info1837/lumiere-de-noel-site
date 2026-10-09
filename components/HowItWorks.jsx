@@ -1,5 +1,5 @@
 import { SectionTag, SectionTitle } from "@/components/ui";
-import { processSteps, navy, offWhite, ivory, gold, charcoal } from "@/components/data";
+import { processSteps, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
 
 // Section « Comment ça marche » — 5 étapes datées.
 // Sert à répondre à "qu'est-ce qui se passe après que j'envoie le formulaire ?"
@@ -49,7 +49,7 @@ export default function HowItWorks({ variant = "dark", showTitle = true }) {
   const cardBorder = dark ? "1px solid rgba(233,220,192,0.16)" : "1px solid #ece5d6";
   const titleColor = dark ? ivory : charcoal;
   const bodyColor = dark ? "rgba(243,233,210,0.78)" : "#3a3a3a";
-  const whenColor = dark ? gold : "#8a6a1c";
+  const whenColor = dark ? gold : goldText;
 
   return (
     <section className={dark ? "snowy" : undefined} style={{ background: bg }}>

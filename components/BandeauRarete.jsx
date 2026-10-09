@@ -4,6 +4,11 @@ import Link from "next/link";
 import MesureBandeau from "@/components/MesureBandeau";
 import { ligneSaison } from "@/lib/season";
 
+// La valeur retenue pour la durée de la visite. `session` et non `local` :
+// le chiffre change toutes les heures, et un onglet rouvert demain doit
+// repartir de zéro plutôt que d'afficher la capacité d'hier.
+const CLE_SESSION = "lumiere:dispos";
+
 // La ligne de saison — le premier fait que le visiteur lit.
 //
 // ⚠️ ELLE N'EXISTE QUE SI ELLE EST VRAIE.
@@ -38,12 +43,38 @@ export default function BandeauRarete({ rarete }) {
     // l'en-tête, sans le décalage qui lui fait sa place. Le cas qu'on
     // répare est la DÉRIVE entre deux pages, pas l'absence.
     if (!rarete) return;
-    const stop = new AbortController();
-    fetch("/api/disponibilites", { signal: stop.signal })
+
+    // ⚠️ UNE SEULE LECTURE PAR VISITE.
+    //
+    // Le but est que toutes les pages affichent le MÊME chiffre, pas que
+    // chaque page aille le redemander. La première page de la visite lit,
+    // les suivantes reprennent ce qu'elle a trouvé. Un visiteur qui
+    // parcourt six pages faisait six appels pour une donnée qui change
+    // une fois l'heure.
+    let vivant = true;
+    try {
+      const garde = sessionStorage.getItem(CLE_SESSION);
+      if (garde) { setMsg(JSON.parse(garde)); return; }
+    } catch { /* navigation privée, stockage refusé : on lit, c'est tout */ }
+
+    // ⚠️ PAS D'AbortController ICI, ET C'EST DÉLIBÉRÉ.
+    //
+    // La version précédente annulait la requête au démontage. Mesuré :
+    // l'entrée annulée restait comptée comme « en vol » par le navigateur,
+    // la page n'atteignait jamais `networkidle`, et
+    // scripts/check-logo.mjs — qui enchaîne treize routes sur un même
+    // onglet — expirait au bout de 30 s. Annuler ne faisait rien gagner
+    // sur 2 Ko de JSON ; on laisse donc la requête finir et on se contente
+    // d'ignorer le résultat si le composant est parti.
+    fetch("/api/disponibilites")
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => { if (d && d.rarete) setMsg(d.rarete); })
+      .then((d) => {
+        if (!d || !d.rarete) return;
+        try { sessionStorage.setItem(CLE_SESSION, JSON.stringify(d.rarete)); } catch { /* tant pis */ }
+        if (vivant) setMsg(d.rarete);
+      })
       .catch(() => {});
-    return () => stop.abort();
+    return () => { vivant = false; };
   }, [rarete]);
 
   if (!msg) return null;

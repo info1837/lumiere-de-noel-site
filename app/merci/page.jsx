@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Script from "next/script";
-import { company, navy, ivory, gold, charcoal, offWhite } from "@/components/data";
+import { company, navy, ivory, gold, charcoal, offWhite, goldText } from "@/components/data";
 
 // Page de remerciement — atterrissage post-envoi de formulaire.
 // - Sert d'événement de conversion mesurable (GA4/Meta Pixel : /merci PageView).
@@ -118,7 +118,7 @@ export default function MerciPage() {
         <div className="container" style={{ maxWidth: 900 }}>
           <div style={{
             fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
-            textTransform: "uppercase", color: "#8a6a1c", marginBottom: 10, textAlign: "center",
+            textTransform: "uppercase", color: goldText, marginBottom: 10, textAlign: "center",
           }}>
             Ce qui se passe ensuite
           </div>

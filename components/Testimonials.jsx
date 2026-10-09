@@ -1,6 +1,6 @@
 import { SectionTag, SectionTitle, Stars } from "@/components/ui";
 import { reviews, REVIEWS_PENDING, aggregateRating, googleReviewUrl } from "@/components/reviews";
-import { charcoal, offWhite, ivory, gold } from "@/components/data";
+import { charcoal, offWhite, ivory, gold, goldText } from "@/components/data";
 
 // Bloc témoignages — ne rend RIEN tant que REVIEWS_PENDING est true ou que
 // le tableau reviews est vide. C'est volontaire : on ne veut pas de faux
@@ -62,7 +62,7 @@ export default function Testimonials({ limit = 3, variant = "light", showTitle =
         {googleReviewUrl && (
           <div style={{ textAlign: "center", marginTop: 24 }}>
             <a href={googleReviewUrl} target="_blank" rel="noopener" style={{
-              color: dark ? gold : "#8A6A1C",
+              color: dark ? gold : goldText,
               textDecoration: "none", fontWeight: 700, fontSize: 14,
               letterSpacing: "0.06em", textTransform: "uppercase",
             }}>

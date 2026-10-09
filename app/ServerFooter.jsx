@@ -32,7 +32,7 @@ export function ServerFooter() {
 
           {/* Services (maillage interne pour SEO) */}
           <div>
-            <h4 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Services</h4>
+            <h2 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Services</h2>
             {services.map((s) => (
               <div key={s.slug}>
                 <Link href={`/services/${s.slug}`} style={linkStyle}>{s.title}</Link>
@@ -45,7 +45,7 @@ export function ServerFooter() {
 
           {/* Zones desservies (maillage interne) */}
           <div>
-            <h4 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Zones desservies</h4>
+            <h2 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Zones desservies</h2>
             {cities.map((c) => (
               <div key={c.slug}>
                 <Link href={`/secteur/${c.slug}`} style={linkStyle}>{c.name}</Link>
@@ -58,7 +58,7 @@ export function ServerFooter() {
 
           {/* Ressources */}
           <div>
-            <h4 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Ressources</h4>
+            <h2 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Ressources</h2>
             <div><Link href="/blog" style={linkStyle}>Blog</Link></div>
             <div><Link href="/realisations" style={linkStyle}>Réalisations</Link></div>
             <div><Link href="/eclairage-architectural" style={linkStyle}>Éclairage architectural</Link></div>
