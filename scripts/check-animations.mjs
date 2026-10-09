@@ -29,7 +29,7 @@ console.log('\n--- 1. 🚨 La neige ne tombe que dans le hero ---');
 {
   t('🚨 deux fois moins de flocons (34 → 17)', /const FLOCONS = 17;/.test(codeNu));
   t('🚨 elle est montée DANS le hero, par un portail',
-    /createPortal\(\s*<div className="snow"[\s\S]{0,80}hero\s*\)/.test(codeNu));
+    /createPortal\(\s*<div className="snow"[\s\S]{0,120}hero,?\s*\)/.test(codeNu));
   t('🚨 …et la cible est bien la section du hero', /querySelector\("\.hero-section"\)/.test(codeNu));
   t('🚨 sans hero, aucune neige', /if \(!hero\) return null;/.test(codeNu));
   t('🚨 la couche n\'est plus fixée au viewport',
@@ -40,51 +40,83 @@ console.log('\n--- 1. 🚨 La neige ne tombe que dans le hero ---');
     /translate3d\(var\(--dx, 14px\), 105%, 0\)/.test(cssNu) && !/110vh/.test(cssNu));
 }
 
-console.log('\n--- 2. 🚨 Les apparitions visent les titres, pas les sections ---');
+console.log('\n--- 2. 🚨 Les apparitions : le texte monte, les photos se dévoilent ---');
 {
-  t('🚨 on cible le titre de la section', /section\.querySelector\("h2"\)/.test(codeNu));
-  t('🚨 …et son image maîtresse', /r\.height >= 140/.test(codeNu));
-  t('🚨 pas une image de fond en absolu',
-    /getComputedStyle\(img\)\.position !== "absolute"/.test(codeNu));
-  t('🚨 le hero ne s\'anime pas (c\'est le premier écran)',
+  // ⚠️ LE JEU D'EFFETS A CHANGÉ (passe « vie », 2026-10-09).
+  //
+  // Avant : trois effets (A · B · C · B) posés sur le TITRE de chaque
+  // section et son image maîtresse, en alternant pour ne jamais répéter
+  // le voisin. C'était la bonne réponse à « ne pas faire monter un bloc
+  // de 1 800 px » — mais ça ne révélait que deux éléments par section,
+  // et la page restait plate entre les deux.
+  //
+  // Maintenant : un seul vocabulaire, appliqué à ce qui se lit — titres,
+  // paragraphes, boutons, items de liste — avec un décalage de 60 ms
+  // dans l'ordre du document. Les photos ont leur propre effet.
+  // Plus besoin d'alterner : il n'y a plus qu'un effet par nature
+  // d'élément, donc deux voisins ne peuvent pas « tomber sur le même ».
+  t('🚨 le texte visé est celui qui se lit',
+    /"h2, h3, p, \.section-lien, \.offre-liste li, \.frise-etape/.test(codeNu));
+  t('🚨 un décalage de 60 ms, dans l\'ordre du document', /const PAS_MS = 60;/.test(codeNu));
+  t('🚨 …borné, pour qu\'un long bloc ne finisse pas une seconde plus tard',
+    /Math\.min\(rang, 6\) \* PAS_MS/.test(codeNu));
+  t('🚨 le hero ne s\'anime pas (il a sa propre entrée)',
     /!s\.classList\.contains\("hero-section"\)/.test(codeNu));
   t('🚨 une seule fois par élément', /io\.unobserve\(e\.target\)/.test(codeNu));
-  t('🚨 plus de classe posée sur les sections entières',
-    !/el\.classList\.add\("reveal"/.test(codeNu));
+  t('🚨 rien n\'est révélé deux fois', /el\.closest\("\.rv-t, \.rv-p"\)/.test(codeNu));
+  t('🚨 déjà à l\'écran au chargement → affiché sans animer (pas de clignotement)',
+    /getBoundingClientRect\(\)\.top < vh \* 0\.92/.test(codeNu));
 }
 
-console.log('\n--- 3. 🚨 Trois effets, jamais deux fois le même d\'affilée ---');
+console.log('\n--- 3. 🚨 Deux effets : le texte, et la photo ---');
 {
-  t('🚨 la séquence est A · B · C · B',
-    /const EFFETS = \["reveal--a", "reveal--b", "reveal--c", "reveal--b"\];/.test(codeNu));
-  // ⚠️ Indexer sur la position de la section faisait sauter des cases pour
-  // celles sans titre ni image : deux voisines tombaient sur le même effet.
-  t('🚨 le rang n\'avance QUE pour une section qui reçoit un effet',
-    /if \(!cibles\.length\) return;/.test(codeNu) && /EFFETS\[rang % EFFETS\.length\]/.test(codeNu));
-  t('…et il avance bien', /rang \+= 1;/.test(codeNu));
-  t('🚨 A — fondu et légère montée', /\.reveal--a \{ opacity: 0; transform: translateY\(18px\); \}/.test(cssNu));
-  t('🚨 B — dévoilement gauche → droite', /\.reveal--b \{[\s\S]{0,400}mask-position: 100% 0;/.test(cssNu));
-  t('🚨 C — dézoom 1,05 → 1', /\.reveal--c \{ opacity: 0; transform: scale\(1\.05\); \}/.test(cssNu));
-  // ⚠️ clip-path: inset(0 100% 0 0) met l'aire d'intersection à zéro :
-  // l'observateur ne voit JAMAIS l'élément entrer et le titre reste invisible.
-  // On ne lit QUE la règle .reveal--b : un clip-path décoratif sans rapport
-  // vit plus bas dans la feuille (une diagonale de section).
-  const regleB = cssNu.slice(cssNu.indexOf('.reveal--b {'), cssNu.indexOf('.reveal--c {'));
-  t('🚨 B n\'utilise PAS clip-path (il rendrait le titre invisible à jamais)',
-    regleB.length > 40 && !/clip-path/.test(regleB));
-  t('🚨 les durées d\'effet sont entre 400 et 600 ms',
-    /transform 420ms/.test(cssNu) && /mask-position 560ms/.test(cssNu) && /transform 600ms/.test(cssNu));
+  t('🚨 texte — fondu + 16 px de montée',
+    /html\.mvt \.rv-t \{[\s\S]{0,80}translateY\(16px\);/.test(cssNu));
+  t('🚨 photo — dévoilement au découpage + dézoom 1,04 → 1',
+    /clip-path: inset\(0 100% 0 0\);[\s\S]{0,60}scale\(1\.04\)/.test(cssNu));
+  t('…et elle revient à 1', /clip-path: inset\(0 0 0 0\);[\s\S]{0,60}scale\(1\)/.test(cssNu));
+
+  // ⚠️ LE PIÈGE DU clip-path, QUI N'A PAS DISPARU.
+  //
+  // L'ancienne garde interdisait clip-path sur l'effet B parce qu'une
+  // aire d'intersection nulle empêche l'observateur de se déclencher —
+  // et le titre restait invisible à jamais. Le piège est le même ici :
+  // la photo EST découpée. Ce qui le désamorce, c'est qu'on observe le
+  // PARENT (`.rv-p`) et jamais l'image.
+  t('🚨 on observe le PARENT, jamais l\'image découpée',
+    /querySelectorAll\("figure, \.revel"\)/.test(codeNu)
+    && /html\.mvt \.rv-p > img/.test(cssNu));
+  t('🚨 …et le texte, lui, n\'est jamais découpé',
+    !/\.rv-t[^{]*\{[^}]*clip-path/.test(cssNu));
+  t('les durées restent sobres (≤ 900 ms)',
+    /transition: opacity 520ms/.test(cssNu) && /clip-path 820ms/.test(cssNu));
 }
 
 console.log('\n--- 4. 🚨 Rien ne bouge pour qui l\'a demandé ---');
 {
+  // Le test `matchMedia` vit maintenant dans lib/mouvement.js, derrière
+  // `mouvementReduit()` — une seule écriture pour tous les composants
+  // qui bougent, au lieu de quatre copies qui finiraient par diverger.
+  const mvt = lire('lib/mouvement.js');
+  t('🚨 le garde existe, en un seul endroit',
+    /prefers-reduced-motion: reduce/.test(mvt) && /export function mouvementReduit/.test(mvt));
   t('🚨 on sort avant de poser quoi que ce soit',
-    /matchMedia\("\(prefers-reduced-motion: reduce\)"\)\.matches\) return;/.test(codeNu));
-  t('🚨 …donc rien n\'est masqué en attendant une apparition qui ne vient pas',
-    codeNu.indexOf('matchMedia("(prefers-reduced-motion: reduce)")') < codeNu.indexOf('classList.add("reveal"'));
+    /if \(mouvementReduit\(\)\) return;/.test(codeNu));
+  t('🚨 …donc avant même la classe racine',
+    codeNu.indexOf('if (mouvementReduit()) return;') < codeNu.indexOf('classList.add(CLASSE_RACINE)'));
+
+  // ⚠️ LA RÈGLE QUI COMPTE VRAIMENT : l'état masqué n'existe QUE si le
+  // script a posé la classe sur <html>. Sans JS, aucune règle
+  // `html.mvt .rv-*` ne s'applique et la page s'affiche entière.
+  t('🚨 tout état masqué est préfixé par la classe racine',
+    !/^\.rv-t \{/m.test(cssNu) && /html\.mvt \.rv-t \{/.test(cssNu));
+  t('🚨 …et la classe est posée par le script', /classList\.add\(CLASSE_RACINE\)/.test(codeNu));
   t('🚨 la neige est coupée aussi en CSS',
     /@media \(prefers-reduced-motion: reduce\) \{[\s\S]{0,60}\.snow \{ display: none; \}/.test(cssNu));
-  t('🚨 et les masques sont retirés', /-webkit-mask-image: none; mask-image: none;/.test(cssNu));
+  t('🚨 et toutes les apparitions sont neutralisées',
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,900}html\.mvt \.rv-t\.est-la \{ opacity: 1; transform: none; transition: none; \}/.test(cssNu));
+  t('🚨 le hero ne s\'allume pas non plus',
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,1200}html\.mvt \.hero-section > img \{ animation: none;/.test(cssNu));
 }
 
 console.log('\n--- 5. Ce à quoi on ne touche pas ---');

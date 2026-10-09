@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { mouvementReduit, surDefilement, progressionDansEcran } from "@/lib/mouvement";
 
 // Le curseur qui allume la maison.
 //
@@ -35,6 +36,12 @@ import Image from "next/image";
 // « Après — installation réelle, Léry » dit que le droit ne l'est pas.
 // La nuance porte toute l'honnêteté du bloc ; la coder en dur ici la
 // rendrait invisible aux pages qui l'affichent.
+// Les bornes du pilotage au défilement. Pas 0 et 100 : aux extrémités,
+// une des deux images disparaît complètement et il n'y a plus rien à
+// comparer.
+const DEBUT_PILOTE = 15;
+const FIN_PILOTE = 85;
+
 export default function RevelationLumiere({
   photo,                    // { src, alt } — la photo illuminée, RÉELLE
   photoAvant,               // { src, alt } — la simulation « sans lumières »
@@ -52,62 +59,46 @@ export default function RevelationLumiere({
   const [position, setPosition] = useState(depart);
   const [aBouge, setABouge] = useState(false);
   const cadre = useRef(null);
-  // L'id de la frame vit dans un ref : le nettoyage de l'effet doit pouvoir
-  // l'annuler, et il est créé dans le callback de l'observateur — dont la
-  // valeur de retour, elle, n'est pas un nettoyage.
-  const frame = useRef(0);
   // « La personne a touché au curseur » — en ref, pas en état : la boucle
   // d'animation doit pouvoir le lire tout de suite.
   const interrompu = useRef(false);
 
-  // UN seul balayage, la première fois que le cadre entre dans l'écran :
-  // il montre que la poignée se déplace. Ensuite plus jamais — une
-  // animation qui boucle sur une page calme devient du clignotement
-  // (voir scripts/check-rien-ne-boucle.mjs).
+  // ⚠️ LE DÉFILEMENT PILOTE LA POIGNÉE — il ne la déclenche plus.
   //
-  // ⚠️ IL PART DE 50 % ET IL Y REVIENT. Un balayage qui s'arrête où il
-  // veut laisse le comparateur dans une position arbitraire : le visiteur
-  // qui arrive après l'animation voit 72 % d'« après » et croit que c'est
-  // l'état normal. Aller-retour, donc : le geste se montre, et la moitié
-  // de chaque image reste visible.
+  // Avant : un aller-retour unique à l'entrée dans l'écran. Il montrait
+  // que la poignée bouge, et c'était tout : quelqu'un qui arrivait après
+  // l'animation ne voyait jamais la maison s'allumer.
+  //
+  // Maintenant la position SUIT le défilement pendant que le comparateur
+  // traverse l'écran — de 15 % à 85 %. La maison s'allume parce qu'on
+  // descend, et le geste a une cause. On ne va pas jusqu'à 0/100 : les
+  // deux extrémités garderaient une bande d'image invisible, et on perd
+  // la comparaison au moment précis où elle devrait être la plus nette.
+  //
+  // ⚠️ LA PREMIÈRE INTERACTION REND LA MAIN POUR DE BON. Tant que le
+  // défilement pilote, la personne qui saisit la poignée se la fait
+  // reprendre à chaque frame — c'est le défaut qu'on avait déjà avec le
+  // balayage. `interrompu` est un ref parce qu'il est lu dans un
+  // écouteur de défilement, hors du cycle de rendu.
   useEffect(() => {
     if (aBouge) return;
     const el = cadre.current;
     if (!el) return;
-    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+    if (mouvementReduit()) return;   // il reste à 50 %, et manuel
 
-    const io = new IntersectionObserver((entrees) => {
-      if (!entrees[0]?.isIntersecting) return;
-      io.disconnect();
-      const debut = performance.now();
-      const duree = 1900;
-      const de = depart;
-      const amplitude = 26;     // jusqu'à ~76 %, puis retour
-      const pas = (t) => {
-        // ⚠️ Le garde-fou qui manquait : si la personne a saisi la
-        // poignée pendant l'animation, celle-ci continuait de lui
-        // reprendre la main à chaque frame. On sort pour de bon.
-        if (interrompu.current) return;
-        const p = Math.min(1, (t - debut) / duree);
-        // Un aller-retour doux : sin(πp) monte puis redescend, sans
-        // à-coup aux deux extrémités.
-        setPosition(de + Math.sin(Math.PI * p) * amplitude);
-        if (p < 1) frame.current = requestAnimationFrame(pas);
-        else setPosition(de);
-      };
-      frame.current = requestAnimationFrame(pas);
-    }, { threshold: 0.35 });
-
-    io.observe(el);
-    return () => { io.disconnect(); cancelAnimationFrame(frame.current); };
-  }, [aBouge, depart]);
+    const stop = surDefilement(() => {
+      if (interrompu.current) return;
+      const q = progressionDansEcran(el);
+      setPosition(DEBUT_PILOTE + q * (FIN_PILOTE - DEBUT_PILOTE));
+    });
+    return stop;
+  }, [aBouge]);
 
   // La première interaction arrête le balayage DÉFINITIVEMENT : le ref
   // est lu dans la boucle d'animation, qui tourne hors du cycle de
   // rendu et ne verrait pas un état React posé à la même frame.
   const bouger = (v) => {
     interrompu.current = true;
-    cancelAnimationFrame(frame.current);
     setABouge(true);
     setPosition(v);
   };

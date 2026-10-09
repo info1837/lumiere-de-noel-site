@@ -114,7 +114,12 @@ console.log('\n--- 7. Ce à quoi on NE touche pas ---');
   const envoi = lire(path.join(ROOT, 'components/data.js'));
   t('🚨 l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(envoi));
   const routeLead = lire(path.join(ROOT, 'app/api/lead/route.js'));
-  t('🚨 la route qui relaie au CRM est intacte', /palencia-crm[^']*\/api\/leads/.test(routeLead));
+  // Même correctif que scripts/check-formulaire.mjs §5 : l'URL du CRM
+  // est composée (`CRM_BASE_URL` + `/api/leads`), donc le littéral
+  // contigu n'existe plus. On vérifie les deux moitiés.
+  t('🚨 la route qui relaie au CRM est intacte',
+    /CRM_BASE_URL \|\| 'https:\/\/palencia-crm\.vercel\.app'/.test(routeLead)
+    && /\$\{CRM_BASE\}\/api\/leads/.test(routeLead));
   t('🚨 le consentement est intact', fs.existsSync(path.join(ROOT, 'components/ConsentementAttribution.jsx')));
   const pixel = lire(path.join(ROOT, 'lib/meta-lead-event.js'));
   t('🚨 le pixel et l\'event_id sont intacts', /eventID/.test(pixel) && /event_id/.test(pixel));

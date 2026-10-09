@@ -39,13 +39,24 @@ console.log('\n--- 2. 🚨 Elle est plus GRANDE ---');
   // photos en 3/2 font 580 px : on voit la ligne de toit, et c'est elle
   // qu'on vend.
   const css = lire('app/globals.css');
-  t('🚨 la vitrine remplace la grille de vignettes',
-    /className="vitrine"/.test(pageCode) && !/gallery-grid--large/.test(pageCode));
+  // ⚠️ LA VITRINE EST DEVENUE UNE BANDE QUI DÉFILE (passe « vie »).
+  // Mêmes quatre photos, mêmes villes : c'est le mouvement qui change,
+  // pas le contenu — donc ce qu'on garde, c'est « quatre vraies photos,
+  // chacune nommant sa ville », pas la forme de la grille.
+  t('🚨 la bande défilante remplace la grille de vignettes',
+    /<VitrineDefilante items=\{homeVitrine\}/.test(pageCode) && !/gallery-grid--large/.test(pageCode));
   t('🚨 deux colonnes', /\.vitrine \{[\s\S]{0,120}grid-template-columns: 1fr 1fr;/.test(css));
   t('une seule colonne sur téléphone',
     /max-width: 640px[\s\S]{0,400}\.vitrine \{ grid-template-columns: 1fr/.test(css));
   t('🚨 QUATRE photos, pas six', /HOME_VITRINE_INDICES = \[0, 2, 10, 9\]/.test(lire('components/data.js')));
-  t('🚨 chacune nomme sa ville', /<figcaption>\{p\.caption\}<\/figcaption>/.test(pageCode));
+  t('🚨 chacune nomme sa ville',
+    /<figcaption aria-hidden=\{clone \|\| undefined\}>\{p\.caption\}<\/figcaption>/
+      .test(lire('components/VitrineDefilante.jsx')));
+  // Les clones de bouclage ne doivent pas être relus par un lecteur
+  // d'écran — ni compter comme une deuxième apparition de la photo.
+  t('🚨 les clones de bouclage sont muets',
+    /alt=\{clone \? "" : p\.alt\} aria-hidden=\{clone \|\| undefined\}/
+      .test(lire('components/VitrineDefilante.jsx')));
   t('la grille générique à 3 colonnes existe toujours pour /realisations',
     /\.gallery-grid \{ display: grid; grid-template-columns: repeat\(3, 1fr\)/.test(css));
 }

@@ -101,9 +101,47 @@ console.log('\n--- 5. Le pixel est-il vraiment allumé ? ---');
   const layout = lire('app/layout.jsx');
   t('le code du pixel est bien dans le layout', /fbevents\.js/.test(layout));
   t('il est conditionné à la variable', /PIXEL_ENABLED/.test(layout));
+  // ⚠️ AUCUN IDENTIFIANT EN DUR. C'est la seule chose vérifiable ici, et
+  // c'est celle qui compte : un id écrit dans le code suivrait le dépôt
+  // d'un environnement à l'autre.
+  t('🚨 aucun identifiant de pixel écrit en dur',
+    !/fbq\('init','\d{10,}'\)/.test(layout) && /process\.env\.NEXT_PUBLIC_META_PIXEL_ID/.test(layout));
+  t('la variable est documentée', /NEXT_PUBLIC_META_PIXEL_ID/.test(lire('.env.example')));
+
+  // ⚠️ CE QUI SUIT N'EST PLUS UNE ASSERTION, ET VOICI POURQUOI.
+  //
+  // L'ancienne version EXIGEAIT que `NEXT_PUBLIC_META_PIXEL_ID` soit
+  // définie dans l'environnement COURANT. Elle ne l'est sur aucun poste
+  // de développement — les secrets locaux sont des bouchons — donc ce
+  // test échouait partout, tout le temps, en le disant lui-même dans son
+  // propre message : « absente en local — ce qui compte est Vercel
+  // Production ». Un test qui admet qu'il regarde au mauvais endroit
+  // n'est pas un test : c'est une note. Il devient donc une note.
+  //
+  // Ce qu'il mesurait vraiment — « le pixel est-il allumé en prod ? » —
+  // ne se vérifie pas depuis un build : ça se lit sur la page servie.
   const id = (process.env.NEXT_PUBLIC_META_PIXEL_ID || '').trim();
-  t('⚠️ NEXT_PUBLIC_META_PIXEL_ID est définie ICI', id !== '',
-    id ? `id=${id}` : 'absente en local — ce qui compte est Vercel Production (voir la PR)');
+  console.log(`  ℹ️  NEXT_PUBLIC_META_PIXEL_ID ${id ? `= ${id}` : 'absente dans CET environnement'}` +
+              ` — l'état qui compte est celui de Vercel Production.`);
+
+  // ⚠️ LE PIXEL DE PALENCIA N'EST PAS CELUI DE LUMIÈRE.
+  //
+  // Vérifié le 2026-10-09 : la production de lumieredenoelinc sert
+  // `fbq('init','961485159955231')`, qui est le pixel de PALENCIA. Celui
+  // de Solution Lumière de Noël est 1332912981798183 (il vit encore sur
+  // le sous-domaine orphelin formulaire.lumieredenoelinc.ca). Les
+  // conversions de Lumière sont donc attribuées au pixel de l'autre
+  // entreprise.
+  //
+  // Avertissement, PAS échec : c'est une variable Vercel et une décision
+  // de publicité — la changer déplace l'attribution de campagnes en
+  // cours. À Yahir de trancher. Mais si la variable est présente au
+  // build (c'est le cas sur Vercel), on le dit fort.
+  const PIXEL_PALENCIA = '961485159955231';
+  if (id === PIXEL_PALENCIA) {
+    console.log(`  ⚠️  ATTENTION — c'est le pixel de PALENCIA sur le site de LUMIÈRE.`);
+    console.log(`      Celui de Lumière est 1332912981798183. Voir la PR.`);
+  }
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

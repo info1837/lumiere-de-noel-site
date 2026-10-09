@@ -1,9 +1,9 @@
 import Link from "next/link";
-import Image from "next/image";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
 import QuoteForm from "@/components/QuoteForm";
 import RevelationLumiere from "@/components/RevelationLumiere";
+import VitrineDefilante from "@/components/VitrineDefilante";
 import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
 import { paireAvantApres } from "@/components/photos";
@@ -96,20 +96,17 @@ export default async function Home() {
               De vraies propriétés, de vraies installations
             </SectionTitle>
           </div>
-          <div className="vitrine">
-            {homeVitrine.map((p) => (
-              <figure key={p.image} className="vitrine-item">
-                {/* `fill` : la figure porte déjà son ratio 3/2, donc
-                    l'image s'y coule. `sizes` dit la vérité au navigateur —
-                    pleine largeur sur téléphone, une demi-colonne au-delà —
-                    sinon il télécharge la variante la plus large. */}
-                <Image src={p.image} alt={p.alt} fill
-                  sizes="(max-width: 640px) 100vw, 50vw"
-                  style={{ objectFit: "cover" }} />
-                <figcaption>{p.caption}</figcaption>
-              </figure>
-            ))}
-          </div>
+          {/* ⚠️ LA GRILLE DEVIENT UNE BANDE QUI DÉFILE.
+              Mêmes quatre photos, mêmes villes — c'est le mouvement qui
+              change, pas le contenu. Les clones de bouclage sont
+              `aria-hidden` : la boucle a besoin de matière qui entre par
+              la droite, un lecteur d'écran n'a pas besoin d'entendre les
+              quatre villes deux fois.
+              Les images ne passent pas par next/image ici : la piste est
+              en `width: max-content` et chaque carte a une largeur
+              fluide en `clamp()`, donc `fill` n'aurait aucune boîte de
+              référence. Elles restent en `loading="lazy"`. */}
+          <VitrineDefilante items={homeVitrine} />
           <p className="section-lien">
             <Link href="/realisations">Voir toutes les réalisations →</Link>
           </p>

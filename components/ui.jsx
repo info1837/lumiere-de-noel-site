@@ -147,14 +147,26 @@ export function FaqAccordion({ items, dark }) {
                 {isOpen ? "–" : "+"}
               </span>
             </button>
-            {isOpen && (
-              <p style={{
-                padding: "0 4px 24px", color: dark ? "rgba(243,233,210,0.8)" : "#444",
-                fontSize: 16, maxWidth: "none",
-              }}>
-                {it.a}
-              </p>
-            )}
+            {/* ⚠️ LA RÉPONSE EST TOUJOURS DANS LE DOM, repliée à zéro.
+                Avant, elle n'était montée qu'à l'ouverture : impossible
+                d'animer une hauteur depuis « rien », et le panneau
+                apparaissait d'un coup. `grid-template-rows: 0fr → 1fr`
+                est la seule façon d'animer vers une hauteur AUTO sans
+                la mesurer en JavaScript.
+                Effet de bord heureux : les réponses deviennent lisibles
+                par un robot d'indexation même repliées — c'est la même
+                information que le JSON-LD FAQPage de la page affirme
+                déjà. */}
+            <div className="faq-panneau" data-ouvert={isOpen ? "1" : "0"} aria-hidden={!isOpen}>
+              <div>
+                <p style={{
+                  padding: "0 4px 24px", color: dark ? "rgba(243,233,210,0.8)" : "#444",
+                  fontSize: 16, maxWidth: "none",
+                }}>
+                  {it.a}
+                </p>
+              </div>
+            </div>
           </div>
         );
       })}
