@@ -1,6 +1,9 @@
 // Le succès d'une soumission dépend du CRM, jamais de Web3Forms.
 //
-//   node scripts/check-succes-envoi.mjs
+//   node --import ./scripts/next-alias-register.mjs scripts/check-succes-envoi.mjs
+//
+// (le registre d'alias est nécessaire : ce script importe components/data.js,
+//  qui importe `@/lib` — un alias que Node seul ne sait pas résoudre.)
 //
 // Mesuré en vrai navigateur sur la production le 2026-09-28 : depuis
 // www.lumieredenoelinc.com, api.web3forms.com est bloqué par CORS. Le

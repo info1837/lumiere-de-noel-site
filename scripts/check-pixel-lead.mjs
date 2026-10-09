@@ -1,7 +1,11 @@
-// Vérifie que les QUATRE formulaires envoient un Lead avec event_id, et
-// que /merci ne compte pas une deuxième conversion.
+// Vérifie que les QUATRE formulaires envoient un Lead avec event_id, que
+// /merci ne compte pas une deuxième conversion, et qu'un SEUL pixel Meta
+// vit sur ce site : celui qui est partagé avec Palencia.
 //
 //   node scripts/check-pixel-lead.mjs
+//
+// Cette garde tourne APRÈS `next build` (voir package.json) : c'est ce qui
+// lui permet de relire la sortie de build au lieu de la deviner.
 //
 // Le 2026-09-28, sur lumieredenoelinc.com :
 //   - le pixel était CODÉ mais mort en production
@@ -20,6 +24,19 @@ const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), '..');
 let pass = 0, fail = 0;
 const t = (nom, ok, d = '') => { console.log(`  ${ok ? '✅' : '❌'} ${nom}${d ? ` — ${d}` : ''}`); ok ? pass++ : fail++; };
 const lire = (f) => { try { return fs.readFileSync(path.join(ROOT, f), 'utf8'); } catch { return ''; } };
+
+// Parcours de dossier, sans dépendance : rend les chemins des fichiers que
+// `garder` accepte, en sautant les dossiers nommés dans `ignorer`.
+function* fichiersDe(dir, garder, ignorer = new Set()) {
+  let entrees;
+  try { entrees = fs.readdirSync(dir, { withFileTypes: true }); } catch { return; }
+  for (const e of entrees) {
+    if (ignorer.has(e.name)) continue;
+    const p = path.join(dir, e.name);
+    if (e.isDirectory()) yield* fichiersDe(p, garder, ignorer);
+    else if (garder(e.name)) yield p;
+  }
+}
 
 // ⚠️ LE HERO N'A PLUS DE FORMULAIRE — il est descendu en section 8 de
 // l'accueil, où c'est le MÊME QuoteForm que /soumission qui le rend. Son
@@ -96,52 +113,138 @@ console.log('\n--- 4. Le module fait ce qu\'il annonce ---');
   t('laisserPartir existe pour les redirections', typeof m.laisserPartir === 'function');
 }
 
-console.log('\n--- 5. Le pixel est-il vraiment allumé ? ---');
+// ════════════════════════════════════════════════════════════════════════
+// ⚠️ UN SEUL PIXEL, PARTAGÉ AVEC PALENCIA. C'EST UNE DÉCISION, PAS UN BOGUE.
+//
+// Décision du 2026-09-28 : un SEUL pixel Meta, 961485159955231, sert à la
+// fois Multiservices Palencia et Solution Lumière de Noël. La séparation
+// des deux entreprises ne se fait pas par deux pixels — elle se fait DANS
+// Meta, par deux conversions personnalisées :
+//
+//     « Lead Lumière »   1628133445697419   (URL contient lumieredenoelinc.com)
+//     « Lead Palencia »  38658775160436170
+//
+// L'API Conversions de Lumière (CRM #203) poste sur CE MÊME pixel : c'est
+// ce qui permet à l'événement navigateur et à l'événement serveur de se
+// dédupliquer sur event_id.
+//
+// Conséquence : un deuxième pixel sur ce site ne « séparerait » rien du
+// tout. Il couperait les données en deux et désarmerait les deux
+// conversions personnalisées d'un seul coup, sans que rien n'ait l'air
+// cassé. D'où cette garde : le build de production ÉCHOUE s'il initialise
+// autre chose que ce pixel-là.
+// ════════════════════════════════════════════════════════════════════════
+const PIXEL_PARTAGE = '961485159955231';
+const CONVERSIONS = ['1628133445697419', '38658775160436170'];
+
+console.log('\n--- 5. Un seul pixel, et c\'est le pixel partagé ---');
 {
   const layout = lire('app/layout.jsx');
   t('le code du pixel est bien dans le layout', /fbevents\.js/.test(layout));
   t('il est conditionné à la variable', /PIXEL_ENABLED/.test(layout));
-  // ⚠️ AUCUN IDENTIFIANT EN DUR. C'est la seule chose vérifiable ici, et
-  // c'est celle qui compte : un id écrit dans le code suivrait le dépôt
-  // d'un environnement à l'autre.
-  t('🚨 aucun identifiant de pixel écrit en dur',
+  // L'id vient de l'environnement et n'est PAS écrit dans le composant :
+  // écrit en dur, il suivrait le dépôt d'un environnement à l'autre, y
+  // compris dans les préproductions où l'on ne veut pas de conversions.
+  // C'est la garde, ici, qui dit lequel est le bon.
+  t('🚨 aucun identifiant de pixel écrit en dur dans le layout',
     !/fbq\('init','\d{10,}'\)/.test(layout) && /process\.env\.NEXT_PUBLIC_META_PIXEL_ID/.test(layout));
   t('la variable est documentée', /NEXT_PUBLIC_META_PIXEL_ID/.test(lire('.env.example')));
 
-  // ⚠️ CE QUI SUIT N'EST PLUS UNE ASSERTION, ET VOICI POURQUOI.
+  // (a) CE QUE LE BUILD S'APPRÊTE À INITIALISER — la variable.
   //
-  // L'ancienne version EXIGEAIT que `NEXT_PUBLIC_META_PIXEL_ID` soit
-  // définie dans l'environnement COURANT. Elle ne l'est sur aucun poste
-  // de développement — les secrets locaux sont des bouchons — donc ce
-  // test échouait partout, tout le temps, en le disant lui-même dans son
-  // propre message : « absente en local — ce qui compte est Vercel
-  // Production ». Un test qui admet qu'il regarde au mauvais endroit
-  // n'est pas un test : c'est une note. Il devient donc une note.
-  //
-  // Ce qu'il mesurait vraiment — « le pixel est-il allumé en prod ? » —
-  // ne se vérifie pas depuis un build : ça se lit sur la page servie.
+  // En production Vercel elle doit être là ET valoir le pixel partagé :
+  // absente, le pixel meurt en silence — c'est exactement ce qui s'était
+  // passé avant le 2026-09-28 ; fausse, les deux conversions
+  // personnalisées ne voient plus rien passer. Hors production, une
+  // variable absente est normale (les secrets locaux sont des bouchons),
+  // mais une variable PRÉSENTE et fausse reste une erreur.
   const id = (process.env.NEXT_PUBLIC_META_PIXEL_ID || '').trim();
-  console.log(`  ℹ️  NEXT_PUBLIC_META_PIXEL_ID ${id ? `= ${id}` : 'absente dans CET environnement'}` +
-              ` — l'état qui compte est celui de Vercel Production.`);
-
-  // ⚠️ LE PIXEL DE PALENCIA N'EST PAS CELUI DE LUMIÈRE.
-  //
-  // Vérifié le 2026-10-09 : la production de lumieredenoelinc sert
-  // `fbq('init','961485159955231')`, qui est le pixel de PALENCIA. Celui
-  // de Solution Lumière de Noël est 1332912981798183 (il vit encore sur
-  // le sous-domaine orphelin formulaire.lumieredenoelinc.ca). Les
-  // conversions de Lumière sont donc attribuées au pixel de l'autre
-  // entreprise.
-  //
-  // Avertissement, PAS échec : c'est une variable Vercel et une décision
-  // de publicité — la changer déplace l'attribution de campagnes en
-  // cours. À Yahir de trancher. Mais si la variable est présente au
-  // build (c'est le cas sur Vercel), on le dit fort.
-  const PIXEL_PALENCIA = '961485159955231';
-  if (id === PIXEL_PALENCIA) {
-    console.log(`  ⚠️  ATTENTION — c'est le pixel de PALENCIA sur le site de LUMIÈRE.`);
-    console.log(`      Celui de Lumière est 1332912981798183. Voir la PR.`);
+  const enProd = process.env.VERCEL_ENV === 'production';
+  if (enProd) {
+    t('🚨 production : la variable porte le pixel partagé', id === PIXEL_PARTAGE,
+      id ? `lue : ${id}` : 'ABSENTE — le pixel serait mort, comme avant le 2026-09-28');
+  } else if (id) {
+    t('🚨 la variable lue porte le pixel partagé', id === PIXEL_PARTAGE, `lue : ${id}`);
+  } else {
+    console.log('  ℹ️  NEXT_PUBLIC_META_PIXEL_ID absente de CET environnement' +
+                ' (normal hors Vercel) — rien à vérifier côté variable.');
   }
+
+  // (b) CE QUE LE BUILD A VRAIMENT ÉMIS — la sortie de build.
+  //
+  // La seule lecture littérale de « ce que le build de production
+  // initialise » : on relit les fichiers émis et on y cherche chaque
+  // fbq('init', …) et chaque facebook.com/tr?id=…. Un build local sans la
+  // variable n'en contient aucun, et c'est normal — on ne fait échouer
+  // que sur un identifiant ÉTRANGER, jamais sur une absence.
+  const INIT = /fbq\(\s*["'`]init["'`]\s*,\s*["'`](\d{6,20})["'`]/g;
+  const TR = /facebook\.com\/tr\?id=(\d{6,20})/g;
+  const emis = [];
+  const garderJs = (n) => /\.(js|mjs|cjs|html|txt|rsc)$/.test(n);
+  for (const f of fichiersDe(path.join(ROOT, '.next'), garderJs, new Set(['cache']))) {
+    let s;
+    try {
+      if (fs.statSync(f).size > 8 * 1024 * 1024) continue;
+      s = fs.readFileSync(f, 'utf8');
+    } catch { continue; }
+    for (const re of [INIT, TR]) {
+      re.lastIndex = 0;
+      let m;
+      while ((m = re.exec(s))) emis.push({ id: m[1], fichier: path.relative(ROOT, f) });
+    }
+  }
+  if (emis.length === 0) {
+    console.log('  ℹ️  la sortie de build n\'initialise aucun pixel' +
+                ' (build sans la variable, ou .next absent) — rien à relire.');
+  } else {
+    const intrus = emis.filter((x) => x.id !== PIXEL_PARTAGE);
+    // Un identifiant se retrouve dans CHAQUE page prérendue — 256 fois sur
+    // ce site. On regroupe par identifiant : une ligne illisible dans un
+    // journal de build Vercel ne sert personne.
+    const parId = new Map();
+    for (const x of intrus) {
+      if (!parId.has(x.id)) parId.set(x.id, { n: 0, ou: x.fichier });
+      parId.get(x.id).n++;
+    }
+    t('🚨 la sortie de build n\'initialise QUE le pixel partagé', intrus.length === 0,
+      intrus.length
+        ? [...parId].map(([id, v]) => `${id} — ${v.n}× (ex. ${v.ou})`).join(' · ')
+        : `${emis.length} occurrence(s), toutes ${PIXEL_PARTAGE}`);
+  }
+}
+
+console.log('\n--- 6. Aucun autre identifiant Meta ne traîne dans le dépôt ---');
+{
+  // Un identifiant Meta oublié dans un commentaire, un .env.example ou une
+  // note de passation finit tôt ou tard recopié dans Vercel par quelqu'un
+  // de pressé. Deux l'ont déjà été ici : le pixel du sous-domaine orphelin
+  // formulaire.lumieredenoelinc.ca, et un pixel vide créé par erreur.
+  //
+  // Ils ne sont VOLONTAIREMENT pas nommés dans ce fichier : les écrire ici
+  // pour les interdire les ferait rentrer dans le dépôt par la porte de la
+  // garde elle-même. La règle est donc générale — à part le pixel partagé
+  // et les deux conversions personnalisées, aucun nombre de 14 à 18
+  // chiffres n'a le droit d'exister dans le code.
+  const AUTORISES = new Set([PIXEL_PARTAGE, ...CONVERSIONS]);
+  const EXT = /\.(js|jsx|ts|tsx|mjs|cjs|json|md|css|txt|ya?ml|example|html)$/;
+  const garderTexte = (n) => n !== 'package-lock.json' && (EXT.test(n) || n.startsWith('.env'));
+  const IGNORER = new Set(['node_modules', '.next', '.git', '.vercel', '.audit-visuel', 'coverage']);
+  const intrus = [];
+  for (const f of fichiersDe(ROOT, garderTexte, IGNORER)) {
+    let s;
+    try {
+      if (fs.statSync(f).size > 4 * 1024 * 1024) continue;
+      s = fs.readFileSync(f, 'utf8');
+    } catch { continue; }
+    const lignes = s.split('\n');
+    for (let i = 0; i < lignes.length; i++) {
+      for (const m of lignes[i].matchAll(/\d{14,18}/g)) {
+        if (!AUTORISES.has(m[0])) intrus.push(`${path.relative(ROOT, f)}:${i + 1} → ${m[0]}`);
+      }
+    }
+  }
+  t('🚨 aucun identifiant Meta étranger dans les fichiers texte', intrus.length === 0,
+    intrus.length ? intrus.slice(0, 6).join(' · ') : 'pixel partagé + 2 conversions, rien d\'autre');
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);
