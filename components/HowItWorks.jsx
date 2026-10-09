@@ -1,5 +1,5 @@
 import { SectionTag, SectionTitle } from "@/components/ui";
-import { processSteps, navy, offWhite, ivory, gold, charcoal } from "@/components/data";
+import { processSteps, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
 
 // Section « Comment ça marche » — 5 étapes datées.
 // Sert à répondre à "qu'est-ce qui se passe après que j'envoie le formulaire ?"
@@ -10,13 +10,46 @@ import { processSteps, navy, offWhite, ivory, gold, charcoal } from "@/component
 //                     sombres (défaut).
 //   variant="light" — cartes claires sur fond off-white.
 export default function HowItWorks({ variant = "dark", showTitle = true }) {
+  // ── variant="ligne" : la frise de l'accueil ────────────────────────
+  //
+  // Cinq cartes pour dire « on vient, on pose, on retire » faisaient cinq
+  // boîtes de 24 px de padding et presque un écran entier de défilement,
+  // pour une information qui tient sur une ligne. Ici : un filet, cinq
+  // points, cinq mots. Le détail de chaque étape vit sur /services, qui
+  // garde les cartes.
+  if (variant === "ligne") {
+    return (
+      <section style={{ background: navy }}>
+        <div className="container">
+          {showTitle && (
+            <div style={{ textAlign: "center", marginBottom: 46 }}>
+              <SectionTag dark>Le parcours</SectionTag>
+              <SectionTitle light style={{ margin: "0 auto" }}>
+                De la consultation au rangement, c&apos;est nous.
+              </SectionTitle>
+            </div>
+          )}
+          <ol className="frise">
+            {processSteps.map((s) => (
+              <li key={s.num} className="frise-etape">
+                <span className="frise-point" aria-hidden="true" />
+                <span className="frise-mot">{s.court || s.title}</span>
+                <span className="frise-quand">{s.when}</span>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+    );
+  }
+
   const dark = variant === "dark";
   const bg = dark ? navy : offWhite;
   const cardBg = dark ? "#10202f" : "#fff";
   const cardBorder = dark ? "1px solid rgba(233,220,192,0.16)" : "1px solid #ece5d6";
   const titleColor = dark ? ivory : charcoal;
   const bodyColor = dark ? "rgba(243,233,210,0.78)" : "#3a3a3a";
-  const whenColor = dark ? gold : "#8a6a1c";
+  const whenColor = dark ? gold : goldText;
 
   return (
     <section className={dark ? "snowy" : undefined} style={{ background: bg }}>

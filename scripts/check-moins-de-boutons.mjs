@@ -32,25 +32,47 @@ console.log('\n--- 1. 🚨 L\'entête : logo + menu, rien d\'autre ---');
   t('le hamburger reste', /header-hamburger/.test(layout));
 }
 
-console.log('\n--- 2. 🚨 UN bouton dans le hero ---');
+console.log('\n--- 2. 🚨 DEUX portes dans le hero, jamais trois ---');
 {
+  // ⚠️ CE TEST EXIGEAIT UN SEUL BOUTON. Il a été retourné sciemment.
+  //
+  // Le défaut d'origine était CINQ appels à l'action sur le premier écran
+  // à 390 px. Passer à un seul l'a réglé — mais a aussi enterré le
+  // simulateur, qui est la seule chose du site qu'aucun concurrent du coin
+  // n'offre. Deux boutons de poids DIFFÉRENTS ne refont pas le défaut de
+  // cinq boutons identiques : l'un décide, l'autre fait voir.
+  //
+  // Ce qui reste verrouillé : le total. Deux, et la porte du téléphone
+  // n'est plus au premier écran.
   const boutons = heroCode.match(/<CTAButton[^>]*href=/g) || [];
-  t('🚨 un seul CTAButton avec un lien', boutons.length === 1, `${boutons.length}`);
-  t('🚨 c\'est « Réserver ma date »', /<CTAButton href="\/soumission" variant="gold">Réserver ma date<\/CTAButton>/.test(heroCode));
+  t('🚨 exactement deux boutons', boutons.length === 2, `${boutons.length}`);
+  t('🚨 le primaire est « Réserver ma date », en crème',
+    /<CTAButton href="\/soumission" variant="creme">Réserver ma date<\/CTAButton>/.test(heroCode));
+  t('🚨 le secondaire mène au simulateur, en contour',
+    /<CTAButton href="\/simulateur" variant="outlineCreme">Voir ma maison illuminée<\/CTAButton>/.test(heroCode));
+  t('🚨 les deux poids sont DIFFÉRENTS — sinon c\'est deux fois la même porte',
+    /variant="creme"/.test(heroCode) && /variant="outlineCreme"/.test(heroCode));
   t('🚨 plus de gros bouton « Appeler … »', !/variant="outlineLight">Appeler/.test(heroCode));
-  t('🚨 le téléphone est un LIEN texte', /<p className="hero-tel">[\s\S]{0,140}<a href=\{company\.phoneHref\}>/.test(heroCode));
-  t('il se lit « ou appelez-nous »', /ou appelez-nous/.test(heroCode));
-  t('le lien est discret, pas un bouton', /\.hero-tel a \{[\s\S]{0,200}text-decoration: underline/.test(css));
+  t('🚨 le téléphone a quitté le premier écran', !/hero-tel/.test(heroCode));
+  // Sur téléphone les deux boutons prennent toute la largeur : le pouce ne
+  // doit pas viser.
+  t('…et sur mobile ils sont pleine largeur',
+    /\.hero-boutons > \* \{ width: 100%; \}/.test(css));
 }
 
-console.log('\n--- 3. 🚨 La ligne de rareté ne se lit plus deux fois ---');
+console.log('\n--- 3. 🚨 La ligne de saison ne se lit qu\'UNE fois ---');
 {
-  t('🚨 elle a quitté le hero', !/rarete\?\.texte/.test(heroCode), 'plus de rarete.texte');
+  const bandeau = lire('components/BandeauRarete.jsx');
+  t('🚨 elle a quitté le hero', !/rarete/.test(heroCode));
   t('🚨 plus de « Installations octobre–novembre »', !/Installations octobre/.test(heroCode));
-  t('🚨 le BANDEAU la porte toujours', /msg\.segments\.map/.test(lire('components/BandeauRarete.jsx')));
-  t('🚨 la fermeture reste sous le bouton, en petit',
-    /className="hero-fermeture"/.test(heroCode));
-  t('…et elle est bien petite', /\.hero-fermeture \{[\s\S]{0,260}font-size: 13\.5px/.test(css));
+  t('🚨 le bandeau la porte, et il la compose par lib/season.js',
+    /ligneSaison/.test(bandeau) && /segments\.map/.test(bandeau));
+  t('🚨 UNE seule écriture de la phrase dans tout le dépôt',
+    /export function ligneSaison/.test(lire('lib/season.js')));
+  // La date de fermeture est descendue en bas de l'accueil, dans la
+  // section de réservation.
+  t('🚨 la fermeture est dans la section de réservation',
+    /Réservations fermées le \{fermeture\}/.test(lire('app/page.jsx')));
 }
 
 console.log('\n--- 4. Ce à quoi on ne touche pas ---');
@@ -58,8 +80,11 @@ console.log('\n--- 4. Ce à quoi on ne touche pas ---');
   t('🚨 le bandeau de rareté est intact', /<BandeauRarete/.test(lire('app/layout.jsx')));
   t('🚨 le pixel est intact', /eventID/.test(lire('lib/meta-lead-event.js')));
   t('🚨 l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
-  t('le formulaire du hero envoie toujours', /onSubmit=\{submit\}/.test(hero));
-  t('le consentement est intact', /ConsentementAttribution/.test(lire('components/QuoteForm.jsx')) || fs.existsSync(path.join(ROOT, 'components/ConsentementAttribution.jsx')));
+  // Le formulaire a changé de place, pas de nature : il est en section 8
+  // de l'accueil, et c'est le MÊME QuoteForm que /soumission.
+  t('🚨 le formulaire vit en bas de l\'accueil et envoie toujours',
+    /<QuoteForm/.test(lire('app/page.jsx')) && /onSubmit=\{submit\}/.test(lire('components/QuoteForm.jsx')));
+  t('le consentement est intact', fs.existsSync(path.join(ROOT, 'components/ConsentementAttribution.jsx')));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

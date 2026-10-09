@@ -2,9 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
+import QuoteForm from "@/components/QuoteForm";
 import {
-  services, cities, findService, serviceArea, inCity,
-  navy, offWhite, ivory, gold, charcoal, goldText,
+  services, cities, findService, serviceArea, inCity, serviceOptions,
+  navy, offWhite, ivory, gold, charcoal, goldText, creme,
 } from "@/components/data";
 
 export function generateStaticParams() {
@@ -32,6 +33,15 @@ export default function ServicePage({ params }) {
   if (!s) return notFound();
 
   const otherServices = services.filter((x) => x.slug !== s.slug);
+
+  // Le formulaire du bas arrive avec LE service de cette page déjà choisi :
+  // quelqu'un qui lit la page du commercial vient de le dire en y arrivant.
+  // La valeur sort de `serviceOptions`, jamais d'une chaîne écrite ici — si
+  // une option est renommée, elle bouge d'un seul endroit.
+  const motCle = s.slug.includes("commercial") ? /commercial/i
+    : s.slug.includes("permanent") ? /permanent|architectural/i
+    : /résidentiel|residentiel/i;
+  const serviceInitial = serviceOptions.find((o) => motCle.test(o)) || null;
 
   return (
     <>
@@ -124,67 +134,68 @@ export default function ServicePage({ params }) {
       )}
 
       {/* Villes desservies pour ce service (maillage interne — service × ville) */}
-      <section className="snowy" style={{ background: navy }}>
+      {/* ⚠️ MÊME MAILLAGE, SANS LES CARTES.
+          Les six liens étaient six cartes bordées de 22 px de padding, soit
+          presque un écran entier pour une liste de villes. Les liens sont
+          identiques — même href, même texte d'ancrage — donc le maillage
+          interne et sa valeur SEO ne bougent pas d'un pouce. C'est la boîte
+          autour qui disparaît. */}
+      <section style={{ background: navy }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div className="section-entete">
             <SectionTag dark>Zones desservies</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>{s.title} — partout dans le Grand Montréal</SectionTitle>
+            <SectionTitle light style={{ margin: 0 }}>{s.title} — partout dans le Grand Montréal</SectionTitle>
           </div>
-          <div className="grid-3">
+          <ul className="liste-liens">
             {cities.map((c) => (
-              <Link key={c.slug} href={`/secteur/${c.slug}/${s.slug}`} className="glow-card" style={{
-                display: "block", textDecoration: "none",
-                background: "#10202f", borderRadius: 14, padding: 22,
-                border: "1px solid rgba(233,220,192,0.18)",
-              }}>
-                <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
-                  {c.regionLabel}
-                </div>
-                <div style={{ color: ivory, fontFamily: "'Bebas Neue', sans-serif", fontSize: 26, letterSpacing: "0.03em", marginBottom: 8 }}>
-                  {s.title} {inCity(c.name)}
-                </div>
-                <div style={{ color: "rgba(243,233,210,0.65)", fontSize: 14 }}>
-                  Voir les détails →
-                </div>
-              </Link>
+              <li key={c.slug}>
+                <Link href={`/secteur/${c.slug}/${s.slug}`}>
+                  <span className="liste-liens__region">{c.regionLabel}</span>
+                  <span className="liste-liens__nom">{s.title} {inCity(c.name)}</span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* Autres services */}
-      <section style={{ background: offWhite }}>
+      {/* Autres services — une ligne par service, plus de cartes. */}
+      <section style={{ background: "#060E18" }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <SectionTag>Nos autres services</SectionTag>
-            <SectionTitle style={{ margin: "0 auto" }}>Un seul fournisseur pour tout</SectionTitle>
+          <div className="section-entete">
+            <SectionTag dark>Nos autres services</SectionTag>
+            <SectionTitle light style={{ margin: 0 }}>Un seul fournisseur pour tout</SectionTitle>
           </div>
-          <div className="grid-3">
+          <ul className="liste-liens liste-liens--large">
             {otherServices.map((o) => (
-              <Link key={o.slug} href={`/services/${o.slug}`} className="glow-card-light" style={{
-                display: "block", textDecoration: "none",
-                background: "#fff", borderRadius: 14, padding: 22,
-                border: "1px solid #ece5d6",
-              }}>
-                <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
-                  {o.kicker}
-                </div>
-                <div style={{ color: charcoal, fontFamily: "'Bebas Neue', sans-serif", fontSize: 24, letterSpacing: "0.03em", marginBottom: 8 }}>
-                  {o.title}
-                </div>
-                <div style={{ color: "#555", fontSize: 14 }}>Voir le service →</div>
-              </Link>
+              <li key={o.slug}>
+                <Link href={`/services/${o.slug}`}>
+                  <span className="liste-liens__region">{o.kicker}</span>
+                  <span className="liste-liens__nom">{o.title}</span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
-      {/* CTA final */}
-      <section className="snowy" style={{ background: navy }}>
-        <div className="container" style={{ textAlign: "center" }}>
-          <SectionTag dark>Prêt à commencer ?</SectionTag>
-          <SectionTitle light style={{ margin: "0 auto 22px" }}>Réservez votre date</SectionTitle>
-          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
+      {/* ⚠️ UN FORMULAIRE, EN BAS, PLUTÔT QU'UN TROISIÈME BOUTON.
+          La page finissait sur « Réserver ma date » — le même mot, vers le
+          même endroit, pour la troisième fois. Quelqu'un qui a lu la page
+          entière est décidé : lui demander un clic de plus pour ARRIVER sur
+          un formulaire est un clic qu'on peut perdre. C'est le MÊME
+          QuoteForm que /soumission, avec sa source à lui pour que Yahir
+          sache de quelle page vient la fiche. */}
+      <section id="soumission" style={{ background: creme }}>
+        <div className="container bloc-formulaire">
+          <div className="section-entete">
+            <SectionTag>Réservation</SectionTag>
+            <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
+            <p className="section-phrase section-phrase--clair">
+              Nous confirmons votre place et votre prix après une courte consultation.
+            </p>
+          </div>
+          <QuoteForm source={`Page service — ${s.title}`} redirectSrc="service" serviceInitial={serviceInitial} />
         </div>
       </section>
     </>

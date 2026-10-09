@@ -14,7 +14,11 @@
     "check:entete": "node scripts/check-entete-mobile.mjs",
     "check:calc": "node scripts/check-calculatrice.mjs && node --import ./scripts/next-alias-register.mjs scripts/check-ancrage-calculatrice.mjs",
     "check:utm": "node scripts/check-relais-utm.mjs",
-    "check:utm-navigateur": "node scripts/check-utm-vers-crm.mjs"
+    "check:utm-navigateur": "node scripts/check-utm-vers-crm.mjs",
+    "check:sim": "node scripts/check-simulateur-ordre.mjs",
+    "check:accueil": "node scripts/check-hero.mjs && node scripts/check-respiration.mjs && node scripts/check-credibilite.mjs && node scripts/check-moins-de-boutons.mjs",
+    "check:saison": "node scripts/check-bandeau-rarete.mjs",
+    "check:lead": "node scripts/check-lead-simulateur.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

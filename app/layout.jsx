@@ -18,6 +18,12 @@ const PIXEL_ENABLED = Boolean(META_PIXEL_ID);
 
 const BASE = company.baseUrl;
 
+// Une seule écriture de l'URL des polices : elle apparaît trois fois dans
+// le <head> (preload, feuille différée, repli sans JavaScript), et trois
+// copies finiraient par diverger d'une graisse.
+const POLICES =
+  "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;500;600;700&display=swap";
+
 export const metadata = {
   metadataBase: new URL(BASE),
   // SEO P0 §5.1 — le titre faisait 111 caractères et la description 200 :
@@ -90,12 +96,32 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        {/* Polices : preconnect + stylesheet (remplace l'@import CSS bloquant) */}
+        {/* ⚠️ LES POLICES NE BLOQUENT PLUS LE RENDU.
+            Un <link rel="stylesheet"> est bloquant par construction : le
+            navigateur ne peint rien tant qu'il n'a pas la feuille. Mesuré
+            par Lighthouse mobile sur l'accueil : 1 374 ms de rendu bloqué,
+            à lui seul.
+
+            Le motif ci-dessous est le classique « media=print puis onload » :
+            une feuille dont le media ne correspond pas est téléchargée
+            SANS bloquer, et on la bascule sur `all` dès qu'elle est là. Le
+            `preload` lance le téléchargement tôt pour que la bascule arrive
+            vite, et le <noscript> garde les polices pour qui coupe le
+            JavaScript.
+
+            `display=swap` était déjà là : le texte s'affiche en police de
+            secours puis bascule, au lieu de rester invisible. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;500;600;700&display=swap"
+        <link rel="preload" as="style" href={POLICES} />
+        <link rel="stylesheet" href={POLICES} media="print" data-polices="" />
+        <noscript><link rel="stylesheet" href={POLICES} /></noscript>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "(function(){var l=document.querySelector('link[data-polices]');"
+              + "if(!l)return;function go(){l.media='all';}"
+              + "if(l.sheet)go();else l.addEventListener('load',go);})();",
+          }}
         />
 
         <script

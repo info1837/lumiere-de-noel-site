@@ -108,10 +108,14 @@ export async function POST(request) {
       console.error('[lumiere/intake] CRM a refusé:', res.status, detail.slice(0, 200));
       return Response.json({ ok: false, error: 'crm_rejected', status: res.status }, { status: 502 });
     }
-    // L'id de la fiche remonte jusqu'au navigateur. Le simulateur crée le
-    // lead à l'écran 1 et rattache la photo à l'écran 2 : sans cet id, il
-    // faudrait retrouver la fiche par téléphone, et un numéro suffirait
-    // alors à accrocher une image à la fiche de quelqu'un d'autre.
+    // L'id de la fiche remonte jusqu'au navigateur.
+    //
+    // ⚠️ L'ORDRE DU SIMULATEUR A CHANGÉ. Il créait la fiche à l'écran 1 et
+    // rattachait la photo à l'écran 2. Il montre maintenant le résultat
+    // d'abord et ne crée la fiche qu'à l'écran 4, derrière l'image floutée.
+    // L'id reste nécessaire : c'est par lui que la génération se rattache à
+    // la bonne fiche. Retrouver celle-ci par téléphone suffirait à
+    // accrocher une image à la fiche de quelqu'un d'autre.
     const corpsCrm = await res.json().catch(() => ({}));
     return Response.json({ ok: true, id: corpsCrm?.id ?? null });
   } catch (e) {

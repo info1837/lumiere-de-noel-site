@@ -1,7 +1,7 @@
 import PhotoCellulaire from "./PhotoCellulaire";
 
 export const metadata = {
-  title: "Envoyer la photo | Solution Lumière de Noël",
+  title: "Envoyer la photo",
   // 🚨 JAMAIS INDEXÉE. Cette page n'existe que pendant quinze minutes, pour un
   // visiteur précis, et son URL porte un code. Elle n'a rien à faire dans un
   // index — et un code moissonné par un robot serait un code brûlé.

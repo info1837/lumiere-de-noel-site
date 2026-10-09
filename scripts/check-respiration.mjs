@@ -27,7 +27,10 @@ console.log('\n--- 1. 🚨 Le rythme vertical mobile, ×1,5 ---');
   t('🚨 le bloc mobile existe', mq.length > 40);
   t('🚨 les sections passent de 56 à 84 px',
     /section \{ padding-top: 84px; padding-bottom: 84px; \}/.test(mq));
-  t('🚨 les sections larges, de 72 à 108', /\.section-y-large \{ padding-top: 108px/.test(mq));
+  // 108 → 128 px : la refonte « soustraction » demande ≥ 120 px entre deux
+  // sections au bureau, puisqu'il n'y a plus de cartes pour marquer les
+  // séparations. C'est le blanc qui les fait maintenant.
+  t('🚨 les sections larges, de 80 à 128', /\.section-y-large \{ padding-top: 128px/.test(mq));
   t('🚨 les serrées, de 40 à 60', /\.section-y-serre \{ padding-top: 60px/.test(mq));
   t('🚨 la bande de confiance suit', /\.trust-section\s+\{ padding-bottom: 108px; \}/.test(mq));
   // ⚠️ La cascade : ces classes sont définies plus haut dans le fichier. Un
@@ -54,15 +57,30 @@ console.log('\n--- 3. 🚨 Une idée par section ---');
   // Trois cartes de service portaient le MÊME bouton vers le MÊME endroit.
   t('🚨 plus de bouton par carte de service',
     !/variant="outlineLight" style=\{\{ padding: "13px 24px", fontSize: 13, alignSelf: "flex-start" \}\}/.test(page));
-  t('🚨 la section garde UNE porte, sous la grille',
-    /marginTop: 40 \}\}>\s*<CTAButton href="\/soumission" variant="gold">Réserver ma date<\/CTAButton>/.test(page));
+  // ⚠️ LA GRILLE DE CARTES DE SERVICE N'EST PLUS SUR L'ACCUEIL.
+  // Elle demandait au visiteur de choisir un rayon avant d'avoir vu une
+  // maison illuminée. Les trois pages existent toujours (nav + pied de
+  // page), et /services garde ses cartes. Ce qui est vérifié ici, c'est
+  // qu'elle n'est pas revenue — et que « Réserver ma date » ne dépasse pas
+  // trois occurrences sur la page.
+  t('🚨 plus de grille de cartes de service sur l\'accueil',
+    !/serviceCards\.map/.test(page));
+  const portes = (page.match(/Réserver ma date/g) || []).length;
+  t('🚨 « Réserver ma date » au plus 3 fois dans la page', portes <= 3, `${portes}`);
   t('les paddings inline sont devenus des classes',
     !/paddingTop: 72, paddingBottom: 72/.test(page) &&
     !/paddingTop: 56, paddingBottom: 56/.test(page) &&
     !/paddingTop: 40, paddingBottom: 40/.test(page));
-  t('…et les classes sont posées',
-    /className="section-y-large"/.test(page) && /section-y-moyen/.test(page) && /className="section-y-serre"/.test(page));
-  t('le corps des cartes porte sa classe', /className="carte-corps"/.test(page));
+  // ⚠️ Les classes `section-y-*` ne sont plus POSÉES sur l'accueil : chaque
+  // section utilise le rythme de base de `section { padding: clamp(...) }`,
+  // qui vaut maintenant 72→128 px. Les classes restent définies et servent
+  // aux pages internes (/soumission, /simulateur, /calculatrice) ; les
+  // vérifier ici reviendrait à exiger un réglage fin là où le réglage par
+  // défaut est devenu le bon.
+  t('🚨 le rythme de base porte la page',
+    /section \{ padding: clamp\(72px, 9vw, 128px\) 24px; \}/.test(cssNu));
+  t('🚨 aucune carte bordée sur l\'accueil — sauf le formulaire',
+    !/className="glow-card"/.test(page) && !/className="carte-corps"/.test(page));
 }
 
 console.log('\n--- 4. 🚨 Un champ arrive avec son étiquette ---');
@@ -88,8 +106,11 @@ console.log('\n--- 5. Ce à quoi on ne touche pas ---');
   t('🚨 le bandeau de rareté est intact', /<BandeauRarete/.test(lire('app/layout.jsx')));
   t('🚨 la barre du bas reste conditionnelle (bloc 2)',
     /mobile-bottom-bar\$\{visible \? " est-visible" : ""\}/.test(lire('app/ClientLayout.jsx')));
-  t('🚨 un seul bouton dans le hero (bloc 1)',
-    (hero.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').match(/<CTAButton[^>]*href=/g) || []).length === 1);
+  // Deux, depuis la refonte : « Réserver ma date » et « Voir ma maison
+  // illuminée ». Voir scripts/check-moins-de-boutons.mjs, qui porte le
+  // raisonnement complet.
+  t('🚨 deux boutons dans le hero, pas trois',
+    (hero.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').match(/<CTAButton[^>]*href=/g) || []).length === 2);
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

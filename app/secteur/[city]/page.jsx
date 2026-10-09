@@ -2,10 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/jsonld";
-import { cityHeroPhoto, servicePhoto } from "@/components/photos";
+import QuoteForm from "@/components/QuoteForm";
+import { cityHeroPhoto } from "@/components/photos";
 import {
   services, cities, findCity, inCity,
-  navy, offWhite, ivory, gold, charcoal, goldText,
+  navy, offWhite, ivory, gold, charcoal, goldText, creme,
 } from "@/components/data";
 
 export function generateStaticParams() {
@@ -92,39 +93,31 @@ export default function CityPage({ params }) {
       </section>
 
       {/* Services pour cette ville (maillage interne — service × ville) */}
-      <section className="snowy" style={{ background: navy }}>
+      {/* ⚠️ MÊMES LIENS, SANS LES CARTES À PHOTO.
+          Trois cartes de 16/9 plus 24 px de padding : la page montrait ici
+          les mêmes photos que l'accueil et /realisations, en plus petit.
+          Les href et les textes d'ancrage sont identiques — le maillage
+          service × ville, qui est la raison d'être de cette page côté SEO,
+          ne perd rien. */}
+      <section style={{ background: navy }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
+          <div className="section-entete">
             <SectionTag dark>Nos services {inCity(c.name)}</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>Pour chaque type de propriété</SectionTitle>
+            <SectionTitle light style={{ margin: 0 }}>Pour chaque type de propriété</SectionTitle>
           </div>
-          <div className="grid-2">
+          <ul className="liste-liens liste-liens--large">
             {services.map((s) => (
-              <Link key={s.slug} href={`/secteur/${c.slug}/${s.slug}`} className="glow-card" style={{
-                display: "block", textDecoration: "none",
-                background: "#10202f", borderRadius: 16, overflow: "hidden",
-                border: "1px solid rgba(233,220,192,0.16)",
-              }}>
-                <div style={{ aspectRatio: "16 / 9", background: "#0b1b2b" }}>
-                  {(() => { const ph = servicePhoto(s.slug, c.slug); return ph && (
-                    <img src={ph.src} alt={ph.alt} loading="lazy"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }} />); })()}
-                </div>
-                <div style={{ padding: 24 }}>
-                  <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
-                    {s.kicker}
-                  </div>
-                  <h3 style={{ color: ivory, marginBottom: 8, fontSize: 26 }}>{s.title} {inCity(c.name)}</h3>
-                  <p style={{ color: "rgba(243,233,210,0.7)", fontSize: 15, margin: 0 }}>
+              <li key={s.slug}>
+                <Link href={`/secteur/${c.slug}/${s.slug}`}>
+                  <span className="liste-liens__region">{s.kicker}</span>
+                  <span className="liste-liens__nom">{s.title} {inCity(c.name)}</span>
+                  <span className="liste-liens__note">
                     {s.forCity ? s.forCity(c.name) : s.intro}
-                  </p>
-                  <div style={{ color: gold, fontSize: 13, fontWeight: 700, marginTop: 14, textTransform: "uppercase", letterSpacing: "0.08em" }}>
-                    Voir les détails →
-                  </div>
-                </div>
-              </Link>
+                  </span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         </div>
       </section>
 
@@ -144,9 +137,27 @@ export default function CityPage({ params }) {
               <p style={{ color: "#444", fontSize: 16, marginTop: 10 }}>{f.a}</p>
             </details>
           ))}
-          <div style={{ textAlign: "center", marginTop: 32 }}>
-            <CTAButton href="/soumission">Réserver ma date</CTAButton>
+          {/* ⚠️ Le bouton qui était ici est parti : c'était le deuxième
+              « Réserver ma date » de la page, et le formulaire est
+              maintenant juste en dessous. Proposer un clic vers un
+              formulaire qu'on va croiser trois centimètres plus bas, c'est
+              ajouter une étape pour en retirer une. */}
+        </div>
+      </section>
+
+      {/* LE formulaire de la page — le même QuoteForm que /soumission. */}
+      <section id="soumission" style={{ background: creme }}>
+        <div className="container bloc-formulaire">
+          <div className="section-entete">
+            <SectionTag>Réservation</SectionTag>
+            <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
+            <p className="section-phrase section-phrase--clair">
+              Nous confirmons votre place et votre prix après une courte consultation.
+            </p>
           </div>
+          {/* La ville de la page voyage dans la source : Yahir voit d'où
+              vient la fiche sans avoir à deviner. */}
+          <QuoteForm source={`Page ville — ${c.name}`} redirectSrc="ville" />
         </div>
       </section>
 

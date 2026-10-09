@@ -30,7 +30,20 @@ const BYPASS = process.env.VERCEL_AUTOMATION_BYPASS_SECRET || '';
 const ENTETES = BYPASS ? { 'x-vercel-protection-bypass': BYPASS } : {};
 const echecs = [];
 const ok = (c, m) => { if (!c) echecs.push(m); return c; };
-const OR = 'rgb(233, 220, 192)';   // --gold (champagne)
+// ⚠️ LE CHAMPAGNE A ÉTÉ REMPLACÉ PAR LA PALETTE DU KIT.
+//
+// `--gold` valait #E9DCC0 (champagne de la spec Squarespace) et sert ici à
+// deux choses très différentes, que la refonte sépare :
+//
+//   AMBRE  #F0BA54 → ce qui BRILLE ou qui est ACTIF : le bord allumé du
+//                    tiroir, la page courante, les puces de service.
+//   CRÈME  #F0EADE → ce qu'on CLIQUE : le bouton du pied du tiroir.
+//
+// Un bouton ambre pleine largeur lisait comme un avertissement ; une puce
+// crème ne ressemble plus à une lumière. Les deux assertions existent donc
+// séparément maintenant.
+const AMBRE = 'rgb(240, 186, 84)';  // --ambre : lumière et états actifs
+const CREME = 'rgb(240, 234, 222)'; // --creme : texte et boutons
 const NAVY = 'rgba(11, 27, 43, 0.96)';
 
 // L'alias « @/ » de Next n'existe pas sous node : les hrefs attendus sont
@@ -126,7 +139,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     ok(Math.abs(o.w - wAttendu) <= 1, `${t} ouvert : largeur ${o.w} (attendu ${wAttendu})`);
     ok(o.h === vp.height && o.haut === 0, `${t} ouvert : hauteur ${o.h}/haut ${o.haut} (attendu pleine hauteur)`);
     ok(o.droite === 0, `${t} ouvert : collé à droite ? right=${o.droite}`);
-    ok(o.bord === '3px' && o.bordCouleur === OR, `${t} ouvert : bord gauche ${o.bord} ${o.bordCouleur}`);
+    ok(o.bord === '3px' && o.bordCouleur === AMBRE, `${t} ouvert : bord gauche ${o.bord} ${o.bordCouleur}`);
     ok(o.fond === NAVY, `${t} ouvert : fond ${o.fond}`);
     ok(/blur\(14px\)/.test(o.flou), `${t} ouvert : backdrop-filter ${o.flou}`);
     ok(o.role === 'dialog' && o.modal === 'true' && o.label, `${t} ouvert : role/aria-modal/aria-label = ${o.role}/${o.modal}/${o.label}`);
@@ -177,7 +190,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     ok(sect.tag === 'BUTTON' && sect.exp === 'false' && sect.ctl === 'tiroir-secteurs', `${t} Secteurs : ${sect.tag} expanded=${sect.exp} controls=${sect.ctl}`);
     ok(await p.locator('#tiroir-services a:visible').count() === 0 && await p.locator('#tiroir-secteurs a:visible').count() === 0, `${t} : un accordéon est ouvert par défaut`);
     // Sur l'accueil, « Accueil » est la page courante : doré ; « Blog » non.
-    ok(items[0].col === OR && items[5].col !== OR, `${t} : page courante — Accueil ${items[0].col}, Blog ${items[5].col}`);
+    ok(items[0].col === AMBRE && items[5].col !== AMBRE, `${t} : page courante — Accueil ${items[0].col}, Blog ${items[5].col}`);
 
     // Pied
     const pied = await p.locator('#tiroir-mobile .tiroir__pied').evaluate(e => {
@@ -190,7 +203,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     ok(pied.bas === 0, `${t} pied : ${pied.bas}px du bas (attendu 0, épinglé)`);
     ok(pied.enfants.length === 2 && pied.enfants[0] === 'A:Estimer mon projet' && /^A:Appeler \(438\) 812-6635$/.test(pied.enfants[1]), `${t} pied : ${JSON.stringify(pied.enfants)}`);
     ok(pied.ctaW === pied.largeurUtile, `${t} pied : CTA ${pied.ctaW} / ${pied.largeurUtile} (attendu pleine largeur)`);
-    ok(pied.ctaFond === OR, `${t} pied : CTA non champagne (${pied.ctaFond})`);
+    ok(pied.ctaFond === CREME, `${t} pied : le CTA doit être CRÈME, pas ambre (${pied.ctaFond})`);
     ok(pied.ctaHref === '/calculatrice', `${t} pied : CTA → ${pied.ctaHref}`);
     ok(pied.telHref === 'tel:+14388126635', `${t} pied : tel ${pied.telHref}`);
     if (SHOTS) await p.screenshot({ path: `${SHOTS}/tiroir-${nomM}-${vp.nom}-2-ouvert.png` });
@@ -218,7 +231,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     for (const l of sv.liens) {
       ok(l.h === 48, `${t} service « ${l.txt} » : ${l.h}px (attendu 48)`);
       ok(l.fs === '16px', `${t} service « ${l.txt} » : ${l.fs}`);
-      ok(l.puce === `6px 6px ${OR} 50%`, `${t} service « ${l.txt} » : puce ${l.puce}`);
+      ok(l.puce === `6px 6px ${AMBRE} 50%`, `${t} service « ${l.txt} » : puce ${l.puce}`);
     }
     ok(sv.liens[0].x - sv.xItem === 20, `${t} Services : retrait ${sv.liens[0].x - sv.xItem}px (attendu 20)`);
     ok(sv.liens.every(l => l.x === sv.liens[0].x), `${t} Services : liens non alignés`);
@@ -286,7 +299,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     await burger.tap(); await p.waitForTimeout(300);
     await p.locator('#tiroir-mobile button[aria-controls="tiroir-services"]').tap(); await p.waitForTimeout(300);
     const cur = await p.locator('#tiroir-mobile').evaluate(e => [...e.querySelectorAll('a[aria-current="page"]')].map(a => ({ txt: a.textContent.trim(), col: getComputedStyle(a).color })));
-    ok(cur.length === 1 && cur[0].txt === 'Lumières de Noël — commercial' && cur[0].col === OR, `${t} page courante : ${JSON.stringify(cur)}`);
+    ok(cur.length === 1 && cur[0].txt === 'Lumières de Noël — commercial' && cur[0].col === AMBRE, `${t} page courante : ${JSON.stringify(cur)}`);
     // Le tiroir passe AU-DESSUS de la barre d'action du bas (Appeler /
     // Soumission), pas dessous : c'est ce qui rend l'ancien calcul de
     // réserve inutile.

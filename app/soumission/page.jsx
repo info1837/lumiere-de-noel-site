@@ -47,6 +47,31 @@ export default function Soumission({ searchParams }) {
   const serviceInitial = serviceDemande === "commercial"
     ? serviceOptions.find((o) => /commercial/i.test(o)) || null
     : null;
+  // ── Ce qui arrive du simulateur ────────────────────────────────────
+  //
+  // /simulateur envoie ?nom=&tel=&adresse=&style= après la révélation. Le
+  // visiteur vient de taper tout ça pour débloquer son image : le
+  // formulaire doit arriver rempli, sinon le bouton « Réserver ma date »
+  // le fait recommencer au moment précis où il est le plus décidé.
+  //
+  // Les valeurs sont BORNÉES ici : ce sont des paramètres d'URL, donc du
+  // texte fourni par qui veut. Elles finissent dans un champ de
+  // formulaire, puis dans le CRM. Même traitement que dans
+  // app/api/lead/route.js, où `clean()` borne déjà tout.
+  const borne = (v, max) => String(v ?? "").slice(0, max);
+  const styleSim = borne(searchParams?.style, 60);
+  const prerempli = (searchParams?.nom || searchParams?.tel || searchParams?.adresse)
+    ? {
+      nom: borne(searchParams?.nom, 120),
+      telephone: borne(searchParams?.tel, 40),
+      adresse: borne(searchParams?.adresse, 240),
+      message: styleSim ? `Style choisi au simulateur : ${styleSim}` : "",
+    }
+    : null;
+  // La source dit d'où vient la fiche : Yahir voit dans le CRM que
+  // celle-ci a vu sa maison illuminée avant d'écrire.
+  const sourceFinale = prerempli ? "Simulateur — réservation" : sourceFormulaire;
+
   // 2 photos représentatives (Rive-Nord + Rive-Sud) pour la colonne de gauche.
   const leftPhotos = [homePortfolio[0], homePortfolio[2]];
 
@@ -158,7 +183,7 @@ export default function Soumission({ searchParams }) {
             </div>
           </div>
           <div style={{ paddingBottom: 24 }}>
-            <QuoteForm source={sourceFormulaire} serviceInitial={serviceInitial} />
+            <QuoteForm source={sourceFinale} serviceInitial={serviceInitial} prerempli={prerempli} />
           </div>
         </div>
       </section>

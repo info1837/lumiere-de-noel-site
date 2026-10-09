@@ -6,20 +6,54 @@
 // dans la voix de marque — à remplacer si le texte original est récupéré.
 // =============================================================================
 
-// --- Palette de couleurs (HEX exacts de la spec) -----------------------------
-export const navy = "#0B1B2B"; // arrière-plans sombres
-export const charcoal = "#1C1C1C"; // boutons primaires, texte sur fond clair
-export const offWhite = "#FAFAFA"; // arrière-plans clairs
-export const gold = "#E9DCC0"; // accent champagne
-export const ivory = "#F3E9D2"; // titres hero sur fond sombre
+// --- Palette — LES QUATRE COULEURS DU KIT, et rien d'autre -------------------
+//
+// La spec Squarespace d'origine donnait un marine un peu vert (#0B1B2B) et
+// un champagne (#E9DCC0). Le kit logo, lui, est déjà en service sur
+// /simulateur, dans app/manifest.js et dans tout le CSS du simulateur. Deux
+// palettes sur un site, c'est une seule palette mal appliquée : on retient
+// celle du kit.
+//
+//   Marine nuit  #0A1524  fond principal
+//   Crème        #F0EADE  texte, bouton primaire
+//   Ambre        #F0BA54  LA LUMIÈRE — seul accent
+//   Bleu acier   #A2B4CC  texte secondaire, avec parcimonie
+//
+// ⚠️ L'AMBRE NE SERT PAS DE FOND, NI DE BORDURE, NI DE BOUTON.
+// C'est la couleur de ce qu'on vend : la lumière. Une puce qui brille, un
+// état actif, une lueur. Dès qu'elle devient un aplat — un bandeau jaune,
+// un bouton jaune — elle cesse de signifier « lumière » et se met à
+// signifier « avertissement ». Le bouton primaire est CRÈME.
+export const marine = "#0A1524";
+export const creme = "#F0EADE";
+export const ambre = "#F0BA54";
+export const acier = "#A2B4CC";
+
+// --- Les anciens noms, maintenant des alias ---------------------------------
+// Ils sont importés par une trentaine de fichiers. Les repointer ici fait
+// basculer tout le site d'un coup, sans trente diffs qui diraient la même
+// chose.
+export const navy = marine;          // arrière-plans sombres
+export const ivory = creme;          // titres et texte sur fond sombre
+export const gold = ambre;           // accent — TEXTE et lueurs seulement
+export const charcoal = "#1C1C1C";   // texte sur fond clair
+export const offWhite = "#FAFAFA";   // arrière-plans clairs (pages internes)
 export const heroScrim = "rgba(5,10,20,0.82)"; // voile sur image hero
 
 // Dérivés utilitaires (contraste / états)
-export const navyDeep = "#06121F";
-// Or foncé — texte AA sur fond clair (#FAFAFA) : contraste ≈ 4.8:1.
-// Ne pas remonter cette valeur sans vérifier WCAG 2.1 4.5:1 minimum.
-export const goldText = "#8A6A1C";
-export const line = "rgba(233,220,192,0.22)"; // séparateurs sur fond sombre
+export const navyDeep = "#060E18";
+// ⚠️ L'ambre #F0BA54 sur fond clair ne passe PAS le AA (2,0:1). Ce brun doré
+// est sa doublure pour le texte sur fond clair.
+//
+// ⚠️ ASSOMBRI DE #8A6A1C À #7A5E17, ET C'EST MESURÉ.
+// L'ancienne valeur avait été réglée sur #FAFAFA (4,84:1, juste au-dessus
+// du seuil). La section de réservation est maintenant sur le CRÈME du kit
+// (#F0EADE), plus sombre : le même brun n'y donnait plus que 4,21:1, donc
+// SOUS le minimum AA — Lighthouse l'a signalé sur l'accueil. La nouvelle
+// valeur passe sur les deux fonds : 5,09:1 sur crème, 5,85:1 sur #FAFAFA.
+// Ne pas l'éclaircir sans revérifier les DEUX.
+export const goldText = "#7A5E17";
+export const line = "rgba(240,234,222,0.20)"; // séparateurs sur fond sombre
 export const textMuted = "#5A5A5A";
 
 // --- Coordonnées de l'entreprise ---------------------------------------------
@@ -189,12 +223,16 @@ export const faqHome = [
 // --- « Comment ça marche » — 5 étapes datées (accueil + /services) -----------
 // Datées pour répondre à "qu'est-ce qui se passe après que j'envoie le formulaire"
 // dans les 3 premières secondes.
+// `court` : l'étiquette d'UN MOT pour la frise de l'accueil. Les cinq
+// cartes sont devenues cinq points sur une ligne, et « Retrait et
+// entreposage » sous un point de 10 px se replie sur trois lignes.
+// Le titre long reste : /services l'affiche encore en cartes.
 export const processSteps = [
-  { num: "01", title: "Consultation design", when: "Aujourd'hui", desc: "Vous réservez votre date. On confirme votre place et on prépare votre design." },
-  { num: "02", title: "Visite et design", when: "Sous 3–5 jours", desc: "On vient mesurer la propriété, comprendre votre vision et confirmer un prix ferme, écrit." },
-  { num: "03", title: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
-  { num: "04", title: "Entretien pendant la saison", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
-  { num: "05", title: "Retrait et entreposage", when: "Janvier", desc: "On désinstalle après les Fêtes et on garde le matériel chez nous jusqu'à la prochaine saison. Rien à ranger." },
+  { num: "01", title: "Consultation design", court: "Consultation", when: "Aujourd'hui", desc: "Vous réservez votre date. On confirme votre place et on prépare votre design." },
+  { num: "02", title: "Visite et design", court: "Visite", when: "Sous 3–5 jours", desc: "On vient mesurer la propriété, comprendre votre vision et confirmer un prix ferme, écrit." },
+  { num: "03", title: "Installation", court: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
+  { num: "04", title: "Entretien pendant la saison", court: "Entretien", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
+  { num: "05", title: "Retrait et entreposage", court: "Retrait", when: "Janvier", desc: "On désinstalle après les Fêtes et on garde le matériel chez nous jusqu'à la prochaine saison. Rien à ranger." },
 ];
 
 // (Pas de section témoignages : aucune avis client réel pour l'instant —
@@ -522,8 +560,24 @@ export const noelPage = {
   ],
 };
 
-// 6 vignettes pour l'aperçu portfolio sur l'accueil.
+// 6 vignettes pour l'aperçu portfolio — gardé pour /services et les pages
+// de ville, qui montrent encore une grille.
 export const homePortfolio = HOME_PORTFOLIO_INDICES.map((i) => noelPage.gallery[i]);
+
+// ⚠️ QUATRE photos pour l'accueil, pas six.
+//
+// Six vignettes en 4/3 sur une largeur de 1180 px donnent des timbres-poste
+// de 380 px : à cette taille, une maison illuminée n'est plus une preuve,
+// c'est une texture. Quatre photos en deux colonnes font 580 px chacune —
+// on voit la ligne de toit, et c'est elle qu'on vend.
+//
+// Léry est EXCLUE : elle porte maintenant le hero en pleine page. La même
+// maison en haut et en vignette plus bas laisse croire qu'on n'en a qu'une.
+// Sainte-Julienne est exclue aussi — c'est elle qui tient le curseur de la
+// section du simulateur.
+//   0 Blainville · 2 Saint-Jérôme · 9 Mercier · 10 Montréal
+const HOME_VITRINE_INDICES = [0, 2, 10, 9];
+export const homeVitrine = HOME_VITRINE_INDICES.map((i) => noelPage.gallery[i]);
 
 // --- Formulaire de soumission (7 champs, incl. groupe radio budget) ----------
 export const budgetOptions = [

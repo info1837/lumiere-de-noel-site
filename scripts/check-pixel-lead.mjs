@@ -21,9 +21,14 @@ let pass = 0, fail = 0;
 const t = (nom, ok, d = '') => { console.log(`  ${ok ? '✅' : '❌'} ${nom}${d ? ` — ${d}` : ''}`); ok ? pass++ : fail++; };
 const lire = (f) => { try { return fs.readFileSync(path.join(ROOT, f), 'utf8'); } catch { return ''; } };
 
+// ⚠️ LE HERO N'A PLUS DE FORMULAIRE — il est descendu en section 8 de
+// l'accueil, où c'est le MÊME QuoteForm que /soumission qui le rend. Son
+// câblage de pixel est donc vérifié par la ligne QuoteForm ci-dessous, et
+// non plus par une ligne à lui. Le simulateur, lui, ENTRE dans la liste :
+// il crée désormais la fiche à l'écran 4, donc il tire un Lead.
 const FORMULAIRES = [
-  ['components/Hero.jsx', 'hero (réservation rapide)'],
   ['components/QuoteForm.jsx', 'soumission (complet)'],
+  ['app/simulateur/Simulateur.jsx', 'simulateur'],
   ['components/RenewalForm.jsx', 'renouvellement'],
   ['components/CalculatriceToiture.jsx', 'calculatrice toiture'],
 ];

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useState } from "react";
-import { charcoal, offWhite, gold, goldText, navy, ivory, line } from "@/components/data";
+import { charcoal, offWhite, gold, goldText, navy, ivory, line, creme, marine } from "@/components/data";
 
 // --- Bouton CTA pilule (border-radius 300px, pattern de la spec) -------------
 export function CTAButton({ children, href, onClick, variant = "primary", type, style = {} }) {
@@ -23,10 +23,24 @@ export function CTAButton({ children, href, onClick, variant = "primary", type, 
     transition: "transform 0.18s ease, opacity 0.18s ease",
     lineHeight: 1,
   };
+  // ⚠️ `gold` NE DONNE PLUS UN BOUTON AMBRE.
+  //
+  // `gold` vaut maintenant l'ambre du kit, et l'ambre est la couleur de la
+  // lumière : un aplat ambre pleine largeur se lit comme un avertissement,
+  // pas comme un bouton haut de gamme. Le bouton primaire sur fond marine
+  // est CRÈME. On garde le nom de la variante parce qu'une vingtaine
+  // d'appels l'utilisent : les repointer ici les corrige tous d'un coup,
+  // au lieu de vingt diffs identiques.
+  //
+  // `primary` reste SOMBRE : c'est le bouton des fonds clairs (le
+  // formulaire du hero est sur une carte blanche, un bouton crème y serait
+  // invisible). Les deux ne sont pas interchangeables.
   const variants = {
     primary: { background: charcoal, color: offWhite },
     light: { background: offWhite, color: charcoal },
-    gold: { background: gold, color: charcoal },
+    gold: { background: creme, color: marine },
+    creme: { background: creme, color: marine },
+    outlineCreme: { background: "transparent", color: creme, borderColor: "rgba(240,234,222,0.55)" },
     outlineLight: { background: "transparent", color: offWhite, borderColor: "rgba(250,250,250,0.5)" },
     outlineDark: { background: "transparent", color: charcoal, borderColor: charcoal },
   };

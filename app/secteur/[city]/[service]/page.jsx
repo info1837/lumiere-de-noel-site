@@ -1,11 +1,12 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
+import QuoteForm from "@/components/QuoteForm";
 import { BreadcrumbJsonLd, ServiceJsonLd, FaqJsonLd } from "@/components/jsonld";
 import { servicePhoto } from "@/components/photos";
 import {
   services, cities, findCity, findService, inCity,
-  navy, offWhite, ivory, gold, charcoal, goldText,
+  navy, offWhite, ivory, gold, charcoal, goldText, creme,
 } from "@/components/data";
 
 // Génère les combinaisons service × ville en statique.
@@ -150,36 +151,44 @@ export default function CityServicePage({ params }) {
               <p style={{ color: "rgba(243,233,210,0.78)", fontSize: 16, marginTop: 10 }}>{f.a}</p>
             </details>
           ))}
-          <div style={{ textAlign: "center", marginTop: 32 }}>
-            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
-          </div>
+          {/* ⚠️ Le bouton qui était ici est parti : troisième « Réserver
+              ma date » de la page, et le formulaire est maintenant deux
+              sections plus bas. */}
         </div>
       </section>
 
       {/* Autres services dans cette ville (maillage interne) */}
-      <section style={{ background: offWhite }}>
+      {/* Mêmes href, mêmes textes d'ancrage — la boîte en moins. */}
+      <section style={{ background: "#060E18" }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 36 }}>
-            <SectionTag>Aussi {inCity(c.name)}</SectionTag>
-            <SectionTitle style={{ margin: "0 auto" }}>Autres services disponibles</SectionTitle>
+          <div className="section-entete">
+            <SectionTag dark>Aussi {inCity(c.name)}</SectionTag>
+            <SectionTitle light style={{ margin: 0 }}>Autres services disponibles</SectionTitle>
           </div>
-          <div className="grid-3">
+          <ul className="liste-liens">
             {otherServicesInCity.map((o) => (
-              <Link key={o.slug} href={`/secteur/${c.slug}/${o.slug}`} className="glow-card-light" style={{
-                display: "block", textDecoration: "none",
-                background: "#fff", borderRadius: 14, padding: 22,
-                border: "1px solid #ece5d6",
-              }}>
-                <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
-                  {o.kicker}
-                </div>
-                <div style={{ color: charcoal, fontFamily: "'Bebas Neue', sans-serif", fontSize: 22, letterSpacing: "0.03em", marginBottom: 6 }}>
-                  {o.title} {inCity(c.name)}
-                </div>
-                <div style={{ color: "#555", fontSize: 14 }}>Voir les détails →</div>
-              </Link>
+              <li key={o.slug}>
+                <Link href={`/secteur/${c.slug}/${o.slug}`}>
+                  <span className="liste-liens__region">{o.kicker}</span>
+                  <span className="liste-liens__nom">{o.title} {inCity(c.name)}</span>
+                </Link>
+              </li>
             ))}
+          </ul>
+        </div>
+      </section>
+
+      {/* LE formulaire — même QuoteForm que /soumission, source par page. */}
+      <section id="soumission" style={{ background: creme }}>
+        <div className="container bloc-formulaire">
+          <div className="section-entete">
+            <SectionTag>Réservation</SectionTag>
+            <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
+            <p className="section-phrase section-phrase--clair">
+              Nous confirmons votre place et votre prix après une courte consultation.
+            </p>
           </div>
+          <QuoteForm source={`Page ${s.title} — ${c.name}`} redirectSrc="ville-service" />
         </div>
       </section>
     </>

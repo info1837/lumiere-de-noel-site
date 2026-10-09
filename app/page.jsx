@@ -1,25 +1,62 @@
 import Link from "next/link";
+import Image from "next/image";
 import Hero from "@/components/Hero";
-import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
-import ObjectionBar from "@/components/ObjectionBar";
 import HowItWorks from "@/components/HowItWorks";
-import ClientsFideles from "@/components/ClientsFideles";
-import Testimonials from "@/components/Testimonials";
-import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Gallery } from "@/components/ui";
+import QuoteForm from "@/components/QuoteForm";
+import RevelationLumiere from "@/components/RevelationLumiere";
+import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
+import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
 import { PHOTOS } from "@/components/photos";
-import {
-  serviceCards, whyUs, faqHome, serviceArea, company, homePortfolio,
-  navy, offWhite, ivory, gold, charcoal, goldText,
-} from "@/components/data";
+import { faqHome, company, homeVitrine, navy, creme } from "@/components/data";
+
+// =============================================================================
+// L'ACCUEIL — HUIT SECTIONS, PAS QUATORZE
+// =============================================================================
+// Ce qui a été RETIRÉ, et pourquoi. Le détail compte : chacun de ces blocs
+// a été ajouté pour une bonne raison, et c'est l'ACCUMULATION qui a fini
+// par coûter plus que chaque ajout ne rapportait.
+//
+//   · ObjectionBar (4 cartes sur le bas du hero) — leurs faits sont
+//     maintenant dans la ligne sobre du hero (le prix, les avis, le
+//     territoire) et dans la liste de la section « ce qui est inclus »
+//     (les rappels illimités, le retrait, l'entreposage). Rien n'est perdu ;
+//     c'est dit une fois au lieu de deux.
+//   · « Nos services » (3 cartes) — les trois pages existent toujours et
+//     vivent dans la nav et le pied de page. Sur l'accueil, elles
+//     demandaient au visiteur de choisir un rayon avant d'avoir vu une
+//     maison.
+//   · « Pourquoi nous choisir » (4 cartes) — fusionnée dans la section de
+//     l'offre. Elle répétait le forfait en le reformulant.
+//   · « Tarifs » (4 cartes + grand chiffre) — le prix est passé dans la
+//     section de l'offre, à côté de ce qu'il achète. Un prix seul dans sa
+//     section est un prix qu'on compare ; à côté de la liste, c'est un prix
+//     qui s'explique.
+//   · Bandeau ambre « les agendas se remplissent vite » — la ligne de
+//     saison en haut de page le dit déjà, avec un vrai chiffre.
+//   · « Zone de service » (pastilles de villes) — descend au pied de page,
+//     où les liens /secteur/* gardent toute leur valeur SEO.
+//   · ClientsFideles, Testimonials, trust-edge — le premier répétait le
+//     renouvellement (section 6), le deuxième ne rend rien tant que
+//     REVIEWS_PENDING est vrai, le troisième était une arête décorative.
+//
+// Et ce qui est ARRIVÉ : une seule section pour le simulateur, parce que
+// c'est la seule chose de cette page qu'aucun concurrent du coin n'a.
+// =============================================================================
 
 export default async function Home() {
-  // La page lit le CRM (serveur) et passe le message au hero, qui est
-  // « use client » a cause de son formulaire. Null quand le CRM se tait :
-  // la ligne de rarete disparait alors du hero.
+  // La page lit le CRM (serveur). Null quand le CRM se tait : aucune
+  // mention de place ni de date, plutôt qu'un chiffre inventé.
   const rarete = messageRarete(await lireDisponibilites());
+  const fermeture = dateEnFrancais(rarete?.fermetureLe);
+
+  // La maison du curseur : Sainte-Julienne est la seule photo du dossier
+  // prise à l'heure bleue. C'est celle où la différence entre « presque
+  // nuit » et « illuminée » se lit le mieux.
+  const vedette = PHOTOS["ste-julienne-01"];
+
   return (
     <>
-      {/* SEO : rich results FAQ */}
+      {/* SEO : rich results FAQ — inchangé. */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -34,246 +71,163 @@ export default async function Home() {
           }),
         }}
       />
-      <Hero rarete={rarete} />
 
-      {/* 1b — Les quatre objections, répondues avant qu'on demande quoi que ce
-          soit au visiteur. Elle doit rester COLLÉE au hero : plus bas, elle
-          n'intercepte plus personne. */}
-      <ObjectionBar />
+      {/* ── 1 ─────────────────────────────────────────────────────────── */}
+      <Hero />
 
-      {/* ⚠️ LA GALERIE MONTE, et elle grandit.
-          Elle vivait après « comment ça marche », c'est-à-dire après trois
-          sections de texte : le visiteur lisait ce qu'on PROMET avant de
-          voir ce qu'on FAIT. Sur un service haut de gamme, la preuve doit
-          arriver avant l'argument — et une photo de toit illuminé est la
-          seule chose de cette page qu'on ne peut pas inventer.
-          `gallery-grid--large` la passe à deux colonnes : trois vignettes
-          de 4/3 sur une largeur de 1180 px, ça fait des timbres-poste. */}
-      <section className="section-y-large" style={{ background: navy }}>
+      {/* ── 2 · Réalisations, en grand ─────────────────────────────────
+          Six vignettes de 4/3 sur 1180 px faisaient des timbres-poste.
+          Quatre photos en deux colonnes, chacune avec sa ville : la preuve
+          avant l'argument, et assez grande pour être une preuve. */}
+      <section style={{ background: navy }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 34 }}>
+          <div className="section-entete">
             <SectionTag dark>Réalisations</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>De vraies propriétés, de vraies installations</SectionTitle>
+            <SectionTitle light style={{ margin: 0 }}>
+              De vraies propriétés, de vraies installations
+            </SectionTitle>
           </div>
-          <div className="gallery-grid--large">
-            <Gallery items={homePortfolio} />
+          <div className="vitrine">
+            {homeVitrine.map((p) => (
+              <figure key={p.image} className="vitrine-item">
+                {/* `fill` : la figure porte déjà son ratio 3/2, donc
+                    l'image s'y coule. `sizes` dit la vérité au navigateur —
+                    pleine largeur sur téléphone, une demi-colonne au-delà —
+                    sinon il télécharge la variante la plus large. */}
+                <Image src={p.image} alt={p.alt} fill
+                  sizes="(max-width: 640px) 100vw, 50vw"
+                  style={{ objectFit: "cover" }} />
+                <figcaption>{p.caption}</figcaption>
+              </figure>
+            ))}
           </div>
-          <div style={{ textAlign: "center", marginTop: 30 }}>
-            <Link href="/realisations" style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              color: gold, textDecoration: "none",
-              fontWeight: 700, fontSize: 14, letterSpacing: "0.06em", textTransform: "uppercase",
-            }}>
-              Voir toutes les réalisations →
-            </Link>
-          </div>
+          <p className="section-lien">
+            <Link href="/realisations">Voir toutes les réalisations →</Link>
+          </p>
         </div>
       </section>
 
-      {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
-      <Testimonials limit={3} variant="light" />
-
-      {/* 2 — Proposition de valeur. NE PAS réintroduire de superlatif ici
-          (« leader », « numéro 1 », « le meilleur ») : première saison sous
-          ce nom, rien à substantier. Audit 2026-08-30. */}
-      {/* Arête dorée : couture entre le bloc sombre (hero + cartes) et
-          la suite de la page. */}
-      <div className="trust-edge" />
-
-      <section id="inclus" style={{ background: offWhite, scrollMarginTop: 84 }}>
-        <div className="container grid-2">
-          <div>
-            <SectionTag>Forfait tout inclus</SectionTag>
-            <SectionTitle>Votre propriété, illuminée — sans le tracas</SectionTitle>
-            {/* DRAFT COPY — reconstruite dans la voix de marque */}
-            <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>
-              Des résidences et des commerces de la Rive-Nord et du Grand Montréal nous
-              confient leur éclairage des Fêtes. On fournit le matériel
-              professionnel, on l'installe en sécurité, on l'entretient pendant la saison et on
-              le retire après les Fêtes.
-            </p>
-            <p style={{ color: "#444", fontSize: 18, marginBottom: 26 }}>
-              Vous, vous profitez du spectacle. Nous, on s'occupe de tout le reste.
-            </p>
-            <CTAButton href="/soumission">Réserver ma date</CTAButton>
-          </div>
-          <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-            {/* Léry : ligne de toit, colonnes et arbustes dans un seul cadre —
-                l'argument « tout inclus » fait visuellement, sans le dire. */}
-            <img src={PHOTOS["lery-01"].src} alt={PHOTOS["lery-01"].alt}
-              loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-          </div>
-        </div>
-      </section>
-
-      {/* 3 — Cartes de service */}
-      <section className="snowy" style={{ background: navy }}>
+      {/* ── 3 · Le simulateur, et rien d'autre dans la section ──────────
+          C'est la signature de la page. Lui donner un voisin, c'est lui
+          demander de partager l'attention qu'on vient de lui construire. */}
+      <section style={{ background: "#060E18" }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <SectionTag dark>Nos services</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto" }}>Pour chaque type de propriété</SectionTitle>
-          </div>
-          <div className="grid-3">
-            {serviceCards.map((s) => (
-              // Les cartes sont en colonne flex et la liste pousse le bouton vers
-              // le bas : un titre sur deux lignes (« Éclairage permanent ») ne
-              // décale plus le CTA par rapport aux deux autres cartes.
-              <article key={s.key} className="glow-card" style={{ background: "#10202f", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(233,220,192,0.12)", display: "flex", flexDirection: "column" }}>
-                {/* Boîte photo en ratio 4/3 GARANTI. `aspectRatio` seul ne suffit
-                    pas ici : dans une colonne flex, une photo portrait (comme
-                    celle de l'éclairage permanent) impose sa hauteur intrinsèque
-                    et la carte s'allonge. Le padding-top de 75 % fixe la hauteur
-                    à partir de la largeur, quoi qu'il arrive à l'image. */}
-                <div style={{ position: "relative", width: "100%", height: 0, paddingTop: "75%", background: "#0b1b2b", flex: "none", overflow: "hidden" }}>
-                  {s.image && <img src={s.image} alt={s.imageAlt} loading="lazy"
-                    style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />}
-                </div>
-                <div className="carte-corps" style={{ display: "flex", flexDirection: "column", flex: 1 }}>
-                  <h3 style={{ color: ivory, marginBottom: 14 }}>{s.title}</h3>
-                  <ul style={{ listStyle: "none", marginBottom: 20, flex: 1 }}>
-                    {s.bullets.map((b, i) => (
-                      <li key={i} style={{ color: "rgba(243,233,210,0.78)", fontSize: 15, marginBottom: 8, display: "flex", gap: 8 }}>
-                        <span className="bulb bulb--tw" aria-hidden="true" style={{ marginTop: 5 }} />{b}
-                      </li>
-                    ))}
-                  </ul>
-                  {/* ⚠️ Le bouton par carte a été RETIRÉ. Les trois portaient
-                      le même mot et menaient au même endroit — /soumission,
-                      sans même dire de quel service on venait. Trois fois la
-                      même porte au même étage : le visiteur ne choisit pas, il
-                      recompte. La section garde UNE porte, sous la grille. */}
-                </div>
-              </article>
-            ))}
-          </div>
-          <div style={{ textAlign: "center", marginTop: 40 }}>
-            <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
-          </div>
-        </div>
-      </section>
-
-      {/* Comment ça marche — 5 étapes datées (répond à "qu'est-ce qui se passe après ?") */}
-      <div id="processus" style={{ scrollMarginTop: 84 }} />
-      <HowItWorks variant="light" />
-
-      {/* La preuve la plus forte qu'on ait, et elle n'était nulle part :
-          des gens qui rachètent. Placée APRÈS le parcours — on vient
-          d'expliquer qu'on retire et qu'on entrepose, c'est le moment où
-          « et on revient l'an prochain » se comprend tout seul. */}
-      <ClientsFideles />
-
-      {/* 4 — Pourquoi nous choisir + FAQ */}
-      <section style={{ background: offWhite }}>
-        <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <SectionTag>Pourquoi nous choisir ?</SectionTag>
-            <SectionTitle style={{ margin: "0 auto" }}>Un service complet, sans surprise</SectionTitle>
-          </div>
-          <div className="grid-4" style={{ marginBottom: 64 }}>
-            {whyUs.map((w, i) => (
-              <div key={i} className="glow-card-light" style={{ background: "#fff", borderRadius: 14, padding: 26, border: "1px solid #ece5d6" }}>
-                <div aria-hidden="true" style={{
-                  width: 44, height: 44, borderRadius: "50%", marginBottom: 16,
-                  background: gold, display: "flex", alignItems: "center", justifyContent: "center",
-                  color: charcoal, fontFamily: "'Bebas Neue', sans-serif", fontSize: 20,
-                }}>
-                  {i + 1}
-                </div>
-                <h3 style={{ fontSize: 20, marginBottom: 8, color: charcoal }}>{w.title}</h3>
-                <p style={{ color: "#555", fontSize: 15 }}>{w.desc}</p>
-              </div>
-            ))}
-          </div>
-          <h3 style={{ textAlign: "center", marginBottom: 24, color: charcoal }}>Questions fréquentes</h3>
-          <FaqAccordion items={faqHome} />
-        </div>
-      </section>
-
-      {/* AMÉLIORATION — Zone de service (SEO local) */}
-      <section className="snowy section-y-moyen" style={{ background: navy }}>
-        <div className="container" style={{ textAlign: "center" }}>
-          <SectionTag dark>Zone de service</SectionTag>
-          <SectionTitle light style={{ margin: "0 auto 22px" }}>De la Rive-Sud à la Rive-Nord</SectionTitle>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "10px 14px", maxWidth: 760, margin: "0 auto" }}>
-            {serviceArea.map((c) => (
-              <span key={c} style={{
-                padding: "8px 16px", borderRadius: 300, fontSize: 14,
-                border: "1px solid rgba(233,220,192,0.25)", color: "rgba(243,233,210,0.85)",
-              }}>
-                {c}
-              </span>
-            ))}
-          </div>
-          <p style={{ color: "rgba(243,233,210,0.6)", fontSize: 14, margin: "20px auto 0" }}>
-            Votre ville n'est pas listée ? Demandez quand même — on dessert un large territoire.
-          </p>
-        </div>
-      </section>
-
-      {/* AMÉLIORATION — Bandeau urgence saisonnière */}
-      <section className="section-y-serre" style={{ background: gold }}>
-        <div className="container" style={{ display: "flex", flexWrap: "wrap", alignItems: "center", justifyContent: "space-between", gap: 20 }}>
-          <div>
-            <h3 style={{ color: charcoal, marginBottom: 4 }}>Les agendas se remplissent vite</h3>
-            <p style={{ color: "#3a3320", fontSize: 16, margin: 0 }}>
-              Réservez tôt pour garantir votre date avant les premières neiges.
+          <div className="section-entete">
+            <SectionTag dark>Le simulateur</SectionTag>
+            <SectionTitle light style={{ margin: 0 }}>
+              Voyez votre maison illuminée avant de réserver
+            </SectionTitle>
+            <p className="section-phrase">
+              Une photo de votre façade, un style, et vous voyez le résultat —
+              avant de nous confier quoi que ce soit.
             </p>
           </div>
-          <CTAButton href="/soumission">Réserver ma date</CTAButton>
+          <RevelationLumiere photo={vedette} legende={`${vedette.ville} — glissez pour illuminer`} />
+          <p className="section-lien">
+            <CTAButton href="/simulateur" variant="creme">Voir ma maison illuminée</CTAButton>
+          </p>
         </div>
       </section>
 
-      {/* Tarifs — prix d'entrée réel fourni par le client */}
-      <section className="snowy" style={{ background: navy }}>
-        <div className="container" style={{ textAlign: "center" }}>
-          <SectionTag dark>Tarifs</SectionTag>
-          <SectionTitle light style={{ margin: "0 auto 10px" }}>Combien ça coûte ?</SectionTitle>
-          <div style={{
-            fontFamily: "'Bebas Neue', sans-serif", color: gold,
-            fontSize: "clamp(2.6rem, 7vw, 4.5rem)", lineHeight: 1, margin: "10px 0 6px",
-          }}>
-            À partir de {company.priceFrom}
+      {/* ── 4 · L'offre, fusionnée ──────────────────────────────────────
+          Elle remplace « Forfait tout inclus », « Pourquoi nous choisir »,
+          « Tarifs » et les quatre cartes du hero. Le prix est à DROITE, au
+          bas de la liste de ce qu'il achète. */}
+      <section id="inclus" style={{ background: navy, scrollMarginTop: 84 }}>
+        <div className="container offre">
+          <div>
+            <SectionTag dark>Forfait tout inclus</SectionTag>
+            <SectionTitle light style={{ margin: "0 0 20px" }}>
+              Votre propriété, illuminée — sans le tracas
+            </SectionTitle>
+            <p className="offre-texte">
+              On fournit le matériel professionnel, on l&apos;installe en sécurité,
+              on l&apos;entretient pendant la saison et on le retire après les Fêtes.
+            </p>
+            <p className="offre-texte">
+              Vous, vous profitez du spectacle. Nous, on s&apos;occupe de tout le reste.
+            </p>
           </div>
-          <p style={{ color: "rgba(243,233,210,0.75)", fontSize: 16, margin: "0 auto 30px", maxWidth: 540 }}>
-            Le prix final dépend de la grandeur de la propriété et du design.
-            Commercial : sur soumission.
-          </p>
-          <div className="grid-4" style={{ maxWidth: 920, margin: "0 auto 32px" }}>
-            {["Conception personnalisée", "Installation par notre équipe",
-              "Entretien pendant la saison", "Retrait + entreposage inclus"].map((t) => (
-              <div key={t} className="glow-card" style={{
-                border: "1px solid rgba(233,220,192,0.22)", borderRadius: 12,
-                padding: "18px 14px", color: "rgba(243,233,210,0.9)", fontSize: 14, fontWeight: 600,
-                display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-              }}>
-                <span className="bulb bulb--tw" aria-hidden="true" />{t}
-              </div>
-            ))}
+          <div className="offre-colonne">
+            <ul className="offre-liste">
+              {[
+                "Conception sur mesure",
+                "Installation par notre équipe",
+                "Rappels illimités pendant la saison",
+                "Retrait + entreposage inclus",
+              ].map((t) => (
+                <li key={t}>
+                  <span className="bulb" aria-hidden="true" />
+                  {t}
+                </li>
+              ))}
+            </ul>
+            <p className="offre-prix">
+              À partir de <strong>{company.priceFrom}</strong>
+              <span>prix ferme, écrit</span>
+            </p>
+            <CTAButton href="/soumission" variant="creme">Réserver ma date</CTAButton>
           </div>
-          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
         </div>
       </section>
 
-      {/* 6 — Bande de conversion. UN SEUL formulaire sur l'accueil : le court,
-          dans le hero. Il y en avait un second, long, ici — dix sections de
-          défilement plus bas sur téléphone. Deux formulaires ne doublent pas
-          les leads, ils partagent l'attention : le visiteur qui hésite sur le
-          premier en croise un autre, différent, et doit deviner lequel compte.
-          Tout le reste pointe vers /soumission. Audit mobile 2026-08-30. */}
-      <section id="soumission" style={{ background: offWhite }}>
-        <div className="container" style={{ textAlign: "center", maxWidth: 720 }}>
-          <SectionTag>Réservation</SectionTag>
-          <SectionTitle>Réservez votre date</SectionTitle>
-          <p style={{ color: "#444", fontSize: 18, margin: "0 auto 26px" }}>
-            Nous confirmons votre place et votre prix après une courte consultation.
+      {/* ── 5 · Le parcours, sur une ligne ──────────────────────────── */}
+      <HowItWorks variant="ligne" />
+
+      {/* ── 6 · Renouvellement ──────────────────────────────────────── */}
+      <section style={{ background: "#060E18" }}>
+        <div className="container bloc-etroit">
+          <SectionTag dark>Déjà client</SectionTag>
+          <SectionTitle light style={{ margin: "0 auto 18px" }}>
+            Votre matériel est déjà chez nous
+          </SectionTitle>
+          <p className="section-phrase" style={{ margin: "0 auto 26px" }}>
+            On connaît votre propriété, votre design et vos mesures. Le
+            renouvellement se confirme en un message, et votre date de l&apos;an
+            dernier est réservée en priorité.
           </p>
-          {/* « Demander ma soumission » demandait un document ; « Réserver ma
-              date » réserve une place. C'est le même clic, et ce n'est pas la
-              même chose qu'on croit obtenir. */}
-          <CTAButton href="/soumission" variant="gold">Réserver ma date</CTAButton>
-          <p style={{ color: "#444", fontSize: 16, marginTop: 22 }}>
-            Vous préférez parler à quelqu'un ?{" "}
-            <a href={company.phoneHref} style={{ color: goldText, fontWeight: 700 }}>{company.phoneDisplay}</a>
+          <p className="section-lien" style={{ marginTop: 0 }}>
+            <Link href="/renouvellement">Renouveler mon installation →</Link>
+          </p>
+        </div>
+      </section>
+
+      {/* ── 7 · FAQ ─────────────────────────────────────────────────── */}
+      <section style={{ background: navy }}>
+        <div className="container">
+          <div className="section-entete">
+            <SectionTag dark>Questions fréquentes</SectionTag>
+            <SectionTitle light style={{ margin: 0 }}>
+              Ce qu&apos;on nous demande le plus
+            </SectionTitle>
+          </div>
+          <FaqAccordion items={faqHome} dark />
+        </div>
+      </section>
+
+      {/* ── 8 · Réservation — LE formulaire, une seule fois ───────────
+          Il était dans le hero. Un service haut de gamme ne demande pas un
+          numéro de téléphone avant d'avoir montré une maison illuminée :
+          maintenant le visiteur a vu quatre réalisations, le curseur, le
+          forfait et le prix avant d'arriver ici. */}
+      <section id="soumission" style={{ background: creme }}>
+        <div className="container bloc-formulaire">
+          <div className="section-entete">
+            <SectionTag>Réservation</SectionTag>
+            <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
+            <p className="section-phrase section-phrase--clair">
+              Nous confirmons votre place et votre prix après une courte consultation.
+            </p>
+          </div>
+          <QuoteForm source="Formulaire d'accueil (réservation)" redirectSrc="accueil" />
+          <p className="bloc-formulaire__pied">
+            Vous préférez parler à quelqu&apos;un ?{" "}
+            <a href={company.phoneHref}>{company.phoneDisplay}</a>
+            {/* La date de fermeture est ICI, à l'endroit exact où quelqu'un
+                hésite à remplir le formulaire — et sur téléphone c'est le
+                seul endroit où elle apparaît, la ligne de saison la laissant
+                tomber sous 480 px pour tenir sur une ligne. */}
+            {fermeture && <><br />Réservations fermées le {fermeture}.</>}
           </p>
         </div>
       </section>

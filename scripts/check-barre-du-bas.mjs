@@ -58,8 +58,17 @@ console.log('\n--- 3. 🚨 Les ancres existent VRAIMENT ---');
   t('🚨 le bouton du hero est une ancre', /data-barre-ancre/.test(hero));
   t('🚨 le repère de haut de page existe (pages sans hero)',
     /data-barre-ancre[\s\S]{0,220}height: "55vh"/.test(layout));
-  t('🚨 le formulaire du hero fait taire la barre',
-    /<form onSubmit=\{submit\} noValidate data-barre-masque>/.test(hero));
+  // ⚠️ LE HERO N'A PLUS DE FORMULAIRE À FAIRE TAIRE.
+  //
+  // Il n'y a donc plus de marqueur `data-barre-masque` dans le hero — mais
+  // le principe tient ailleurs : proposer « Réserver ma date » dans la
+  // barre du bas à quelqu'un qui remplit déjà le formulaire, c'est lui
+  // demander de recommencer. C'est QuoteForm qui porte le marqueur, et
+  // c'est lui que l'accueil rend en section 8.
+  t('🚨 le formulaire de l\'accueil fait taire la barre — via QuoteForm',
+    /data-barre-masque/.test(quote) && /<QuoteForm/.test(lire('app/page.jsx')));
+  t('🚨 le simulateur aussi, à chacun de ses écrans de saisie',
+    (lire('app/simulateur/Simulateur.jsx').match(/data-barre-masque/g) || []).length >= 2);
   t('🚨 le formulaire complet aussi (/soumission)',
     /<form onSubmit=\{submit\} noValidate data-barre-masque/.test(quote));
 }

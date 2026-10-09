@@ -3,10 +3,29 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   poweredByHeader: false,
-  // Sert AVIF/WebP automatiquement quand on migrera vers next/image (LCP + SEO).
+  // AVIF/WebP automatiques — la migration vers next/image est faite pour le
+  // hero, la vitrine et le curseur de l'accueil.
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 2678400, // 31 jours
+
+    // ⚠️ LA LISTE DES LARGEURS EST BORNÉE, ET CE N'EST PAS COSMÉTIQUE.
+    //
+    // Par défaut, Next propose jusqu'à 3840 px. Nos sources font 1 080 à
+    // 2 080 px de large : au-delà, l'optimiseur AGRANDIT une photo, encode
+    // un AVIF de la taille d'une affiche, et le sert à personne — aucune
+    // mise en page du site ne demande cette largeur.
+    //
+    // Mesuré ici : la génération locale d'une variante 3840 depuis un JPEG
+    // de 2 080 px prenait plus de douze secondes et saturait le CPU. Sur
+    // Vercel c'est le même travail, facturé à la transformation.
+    //
+    // Les valeurs retenues couvrent ce que les `sizes` du site demandent
+    // vraiment : pleine largeur sur téléphone (390/640), demi-colonne de
+    // vitrine (828), et le hero plein écran sur un portable ou un écran
+    // de bureau (1080/1440/1920).
+    deviceSizes: [390, 640, 828, 1080, 1440, 1920],
+    imageSizes: [256, 384],
   },
   // Redirige les anciens slugs Squarespace s'ils sont encore indexés.
   async redirects() {

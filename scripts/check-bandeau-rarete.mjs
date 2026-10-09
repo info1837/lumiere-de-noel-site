@@ -121,17 +121,28 @@ console.log('\n--- 2c. 🚨 ≤ 480 px : une seule ligne ---');
 
   const css = lire('app/globals.css');
   const composant = lire('components/BandeauRarete.jsx');
-  t('🚨 les deux écritures sont rendues', /bandeau-rarete__large/.test(composant) && /bandeau-rarete__compact/.test(composant));
-  t('🚨 le CSS choisit, pas le JavaScript',
-    /@media \(max-width: 480px\)[\s\S]{0,200}\.bandeau-rarete__large \{ display: none; \}/.test(css));
-  t('la compacte ne se replie pas', /\.bandeau-rarete__compact \{ display: flex; flex-wrap: nowrap;/.test(css));
+  // ⚠️ IL N'Y A PLUS DEUX ÉCRITURES.
+  //
+  // Le composant rendait en parallèle une version « large » et une version
+  // « compacte », le CSS cachant l'une ou l'autre. C'était deux
+  // formulations de la même donnée dans le même HTML — donc deux occasions
+  // de les faire diverger, et c'est exactement le défaut que ce fichier
+  // traque. Maintenant lib/season.js compose UNE phrase en segments, et le
+  // CSS ne fait que laisser tomber les derniers sur un petit écran.
+  t('🚨 une SEULE écriture, en segments', /bandeau-rarete__seg/.test(composant)
+    && !/bandeau-rarete__large/.test(composant) && !/bandeau-rarete__compact/.test(composant));
+  t('🚨 la phrase est composée à UN endroit', /ligneSaison/.test(composant)
+    && /export function ligneSaison/.test(lire('lib/season.js')));
+  t('🚨 le CSS choisit ce qui tombe, pas le JavaScript',
+    /@media \(max-width: 480px\)[\s\S]{0,700}\.bandeau-rarete__seg:nth-child\(n\+4\) \{ display: none; \}/.test(css));
 
-  // ⚠️ La mention de fermeture DESCEND, elle ne disparaît pas.
-  const hero = lire('components/Hero.jsx');
-  t('🚨 la fermeture passe sous le bouton du hero', /className="hero-fermeture"/.test(hero));
-  t('🚨 …et n\'y apparaît QUE sous 480 px',
-    /\.hero-fermeture \{ display: none; \}/.test(css)
-    && /@media \(max-width: 480px\)[\s\S]{0,120}\.hero-fermeture \{[\s\S]{0,40}display: block;/.test(css));
+  // ⚠️ La mention de fermeture DESCEND, elle ne disparaît pas. Elle est
+  // passée du hero à la section de réservation, en bas de l'accueil : à
+  // l'endroit exact où quelqu'un hésite devant le formulaire.
+  t('🚨 la fermeture est dans la section de réservation',
+    /Réservations fermées le \{fermeture\}/.test(lire('app/page.jsx')));
+  t('🚨 …et elle n\'est plus dans le hero',
+    !/hero-fermeture/.test(lire('components/Hero.jsx')));
 }
 
 console.log('\n--- 3. 🚨 DÉCEMBRE ne doit jamais apparaître ---');
@@ -170,10 +181,11 @@ console.log('\n--- 5. « Réservations fermées le 20 novembre » ---');
   t('🚨 la date se lit en français', dateEnFrancais('2026-11-20') === '20 novembre', String(dateEnFrancais('2026-11-20')));
   t('sans zéro devant le jour', dateEnFrancais('2026-10-05') === '5 octobre', String(dateEnFrancais('2026-10-05')));
   t('une date illisible ne rend rien', dateEnFrancais('bientôt') === null && dateEnFrancais(null) === null);
-  const composant = lire('components/BandeauRarete.jsx');
-  t('🚨 le composant l\'affiche', /Réservations fermées le \{fermeture\}/.test(composant));
-  t('…mais pas quand tout est complet (ce serait deux messages contraires)',
-    /!msg\.complet && \(/.test(composant));
+  const saison = lire('lib/season.js');
+  t('🚨 la phrase l\'inclut', /Réservations fermées le \$\{fermeture\}/.test(saison));
+  t('…mais pas quand les réservations sont déjà fermées (deux messages contraires)',
+    /rarete\.etat !== 'ferme'/.test(saison));
+  t('🚨 le label de saison vient d\'une seule constante', /label: 'Saison 2026'/.test(saison));
 }
 
 console.log('\n--- 6. 🚨 Lecture côté SERVEUR, rafraîchie chaque heure ---');
@@ -188,11 +200,28 @@ console.log('\n--- 6. 🚨 Lecture côté SERVEUR, rafraîchie chaque heure ---'
   // lectures donneraient deux réponses possibles : une barre sans décalage,
   // ou un décalage sans barre.
   t('🚨 le layout lit côté serveur', /export default async function RootLayout/.test(lire('app/layout.jsx')));
-  t('🚨 le bandeau reçoit la donnée, il ne la relit pas',
+  t('🚨 le bandeau reçoit la donnée du layout',
     /export default function BandeauRarete\(\{ rarete \}\)/.test(composant)
     && !/lireDisponibilites/.test(composant));
-  t('aucun "use client" — le CORS du CRM refuserait le navigateur',
-    !/use client/.test(composant) && !/use client/.test(lecteur));
+  // ⚠️ CE TEST INTERDISAIT « use client », AU MOTIF DU CORS DU CRM.
+  //
+  // Le motif était juste : le navigateur ne PEUT pas lire la route du CRM,
+  // elle n'autorise que le domaine d'Operatr. Mais il ne lit pas le CRM —
+  // il lit /api/disponibilites, sur NOTRE domaine, qui relaie côté serveur.
+  // Le CORS n'entre donc pas en jeu.
+  //
+  // Et cette resynchronisation répare le défaut que ce fichier n'avait pas
+  // vu : le cache de PAGE de Next est par route, donc l'accueil et
+  // /simulateur portaient deux instantanés différents du même chiffre
+  // (« 26 places » ici, « 30 places » là). Un rendu serveur seul ne peut
+  // pas corriger ça.
+  t('🚨 le lecteur, lui, reste côté serveur', !/use client/.test(lecteur));
+  t('🚨 le navigateur passe par NOTRE domaine, jamais par le CRM',
+    /fetch\("\/api\/disponibilites"/.test(composant) && !/palencia-crm/.test(composant));
+  t('🚨 le relais same-origin existe et ne devine rien',
+    /messageRarete\(await lireDisponibilites\(\)\)/.test(lire('app/api/disponibilites/route.js')));
+  t('🚨 pas de resynchronisation quand le serveur n\'avait RIEN — sinon la barre se poserait sans décalage',
+    /if \(!rarete\) return;/.test(composant));
   t('🚨 en cas de panne réseau, le lecteur rend null', /catch \{\s*return null;\s*\}/.test(lecteur));
   let leve = false;
   try { await lireDisponibilites(); } catch { leve = true; }
@@ -231,13 +260,23 @@ console.log('\n--- 7. 🚨 Le bandeau est AU-DESSUS de l\'entête, jamais recouv
 console.log('\n--- 8. 🚨 Lisible : ambre plein, marine, 15 px ---');
 {
   const css = lire('app/globals.css');
-  t('🚨 fond ambre #F0BA54', /background: #F0BA54;/.test(css));
-  t('🚨 texte marine #0A1524', /\.bandeau-rarete \{[\s\S]{0,400}color: #0A1524;/.test(css));
-  t('🚨 15 px', /\.bandeau-rarete \{[\s\S]{0,500}font-size: 15px;/.test(css));
-  // Contraste mesuré : 10,35:1. Le seuil AA est 4,5:1, le AAA 7:1.
+  // ⚠️ L'APLAT AMBRE EST PARTI, ET C'EST LE POINT.
+  //
+  // L'ambre est la couleur de la lumière sur ce site — la chose qu'on
+  // vend. Employée en fond pleine largeur, elle se mettait à signifier
+  // « avertissement » : une bande jaune en haut de chaque page ressemble à
+  // un message du navigateur, pas à une marque haut de gamme. Elle ne
+  // reste que sur la pastille, où elle brille.
+  t('🚨 la barre est marine, pas ambre',
+    /\.bandeau-rarete \{[\s\S]{0,400}background: #081220;/.test(css));
+  t('🚨 le texte est crème', /\.bandeau-rarete \{[\s\S]{0,460}color: #F0EADE;/.test(css));
+  t('🚨 l\'ambre ne reste QUE sur la pastille',
+    /\.bandeau-rarete__pastille \{[\s\S]{0,200}background: #F0BA54;/.test(css));
+  t('🚨 14 px — une ligne discrète', /\.bandeau-rarete \{[\s\S]{0,520}font-size: 14px;/.test(css));
+  // Contraste mesuré du nouveau couple.
   const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
   const lum = (h) => { const n = parseInt(h, 16); return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255); };
-  const a = lum('F0BA54'), b = lum('0A1524');
+  const a = lum('F0EADE'), b = lum('081220');
   const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
   t('🚨 le contraste dépasse le AAA (7:1)', ratio >= 7, `${ratio.toFixed(2)}:1`);
 
@@ -258,7 +297,12 @@ console.log('\n--- 9. 🚨 La liste d\'attente passe par le MÊME envoi ---');
   const page = lire('app/soumission/page.jsx');
   t('🚨 le paramètre est lu', /liste-attente/.test(page));
   t('🚨 seule la SOURCE change', /Liste d'attente — site Lumière/.test(page));
-  t('🚨 c\'est le même QuoteForm', /<QuoteForm source=\{sourceFormulaire\}/.test(page));
+  // `sourceFinale` remplace `sourceFormulaire` : /soumission distingue
+  // maintenant une arrivée depuis le simulateur (fiche préremplie) d'une
+  // arrivée directe. La liste d'attente, elle, passe toujours par la MÊME
+  // variable et le MÊME formulaire.
+  t('🚨 c\'est le même QuoteForm', /<QuoteForm source=\{sourceFinale\}/.test(page)
+    && /sourceFormulaire/.test(page));
   t('un seul formulaire dans la page', (page.match(/<QuoteForm/g) || []).length === 1);
   const form = lire('components/QuoteForm.jsx');
   t('🚨 le consentement dérive toujours de la source', /consentement: `accordé le .*via \$\{source\}`/.test(form));
