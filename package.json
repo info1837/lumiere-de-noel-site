@@ -18,7 +18,9 @@
     "check:sim": "node scripts/check-simulateur-ordre.mjs",
     "check:accueil": "node scripts/check-hero.mjs && node scripts/check-respiration.mjs && node scripts/check-credibilite.mjs && node scripts/check-moins-de-boutons.mjs",
     "check:saison": "node scripts/check-bandeau-rarete.mjs",
-    "check:lead": "node scripts/check-lead-simulateur.mjs"
+    "check:lead": "node scripts/check-lead-simulateur.mjs",
+    "images:avant-apres": "node scripts/preparer-avant-apres.mjs",
+    "check:avant-apres": "node scripts/check-avant-apres.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",
@@ -29,6 +31,7 @@
   },
   "devDependencies": {
     "playwright": "^1.58.2",
+    "sharp": "^0.35.5",
     "vercel": "^51.6.1"
   }
 }

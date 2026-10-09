@@ -1577,17 +1577,25 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   display: block;
 }
 
-/* Le crépuscule, obtenu de la photo elle-même. Pas un « avant » inventé :
-   la même image, moins de lumière. */
-.revel-img--crepuscule {
-  filter: brightness(0.32) saturate(0.5) contrast(1.06) hue-rotate(196deg);
-}
+/* ⚠️ `.revel-img--crepuscule` A ÉTÉ RETIRÉ.
+   Il assombrissait la photo réelle au filtre pour fabriquer un « avant »,
+   faute de mieux. Les deux comparateurs ont maintenant une vraie
+   simulation « sans lumières » (public/images/before-*.jpg), et le
+   composant refuse de s'afficher sans elle. Le filtre n'avait plus
+   d'appelant — et un filtre qui traîne finit par resservir. */
 
 /* ⚠️ `clip-path`, pas une largeur. Les deux calques restent à taille
    réelle, donc l'image ne s'écrase pas quand la couture se déplace. */
-.revel-apres {
+/* ⚠️ CE CALQUE PORTE L'« AVANT », et son nom le dit maintenant.
+   `inset(0 <droite> 0 0)` découpe depuis la DROITE : la partie visible
+   va du bord gauche jusqu'à la couture. Le calque découpé occupe donc la
+   GAUCHE — là où l'étiquette dit « Avant ». Il s'appelait
+   `.revel-apres` et contenait l'après : les deux moitiés étaient
+   inversées sous leurs étiquettes, et le nom de la classe empêchait de
+   s'en apercevoir en relisant. */
+.revel-avant {
   position: absolute; inset: 0;
-  clip-path: inset(0 calc(100% - var(--revel-pos, 38%)) 0 0);
+  clip-path: inset(0 calc(100% - var(--revel-pos, 50%)) 0 0);
 }
 
 .revel-couture {
@@ -1627,8 +1635,8 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   backdrop-filter: blur(3px);
   line-height: 1;
 }
-.revel-etiq--gauche { left: 14px; }
-.revel-etiq--droite { right: 14px; }
+.revel-etiq--gauche { left: 14px; max-width: 44%; }
+.revel-etiq--droite { right: 14px; max-width: 52%; text-align: right; }
 
 /* Le vrai contrôle : invisible mais pleine surface, au clavier comme au
    doigt. La poignée dessinée n'est que son costume. */
@@ -1669,7 +1677,23 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 @media (max-width: 560px) {
   .revel-cadre { border-radius: 14px; }
   .revel-poignee { width: 40px; height: 40px; }
-  .revel-etiq { font-size: 10px; padding: 5px 9px; }
+  .revel-etiq { font-size: 10px; padding: 5px 9px; line-height: 1.35; }
+
+  /* ⚠️ L'ÉTIQUETTE DE DROITE DESCEND EN BAS, et ce n'est pas esthétique.
+     À 375 px, « Après — installation réelle, Sainte-Julienne » se replie
+     sur deux lignes et sa boîte prenait toute la largeur : elle
+     RECOUVRAIT entièrement « Avant (simulation) ». Le visiteur mobile
+     voyait donc la moitié NON illuminée étiquetée « installation
+     réelle » — l'inverse de ce que le bloc affirme.
+     En bas à droite, les deux ne peuvent plus se croiser, et le texte
+     garde sa mention « installation réelle », qui est la partie qui
+     engage. */
+  .revel-etiq--gauche { max-width: 60%; }
+  .revel-etiq--droite {
+    top: auto;
+    bottom: 14px;
+    max-width: 74%;
+  }
 }
 
 
@@ -2223,3 +2247,9 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   .liste-liens--large .liste-liens__nom { font-size: 22px; }
   .liste-liens__note { font-size: 14px; }
 }
+
+/* L'exemple avant/après du premier écran du simulateur. Il respire des
+   deux côtés : collé au sous-titre il ressemblerait à une illustration
+   décorative, collé au champ il ressemblerait à sa légende. */
+.sim-exemple { margin: 22px 0 26px; }
+.sim-exemple .revel-legende { font-size: 12px; letter-spacing: 0.1em; }

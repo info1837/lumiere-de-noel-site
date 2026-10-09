@@ -69,9 +69,27 @@ console.log('\n--- 2. 🚨 L\'ordre : montrer, puis demander ---');
   // L'écran 1 ne contient QUE l'adresse. Le test regarde la position des
   // champs dans le fichier : le prénom et le téléphone doivent apparaître
   // APRÈS le choix du style et après la génération.
-  t('🚨 l\'écran 1 porte l\'adresse', /etape === 1 &&[\s\S]{0,400}AdresseAutocomplete/.test(simCode));
+  // ⚠️ ON DÉCOUPE LE BLOC DE L'ÉCRAN, ON NE COMPTE PLUS LES CARACTÈRES.
+  //
+  // Ces deux affirmations utilisaient des fenêtres de 400 et 700
+  // caractères après « etape === 1 && ». Ajouter le comparateur d'exemple
+  // au premier écran a poussé le champ d'adresse au-delà de la fenêtre, et
+  // la garde a crié sur du code correct. Une fenêtre en caractères mesure
+  // la longueur du code, pas ce qu'il contient : elle se trompera à chaque
+  // ajout. Le bloc de l'écran 1 va de son marqueur à celui de l'écran 2.
+  const bloc1 = simCode.slice(
+    simCode.indexOf('etape === 1 &&'),
+    simCode.indexOf('etape === 2 &&'),
+  );
+  t('le bloc de l\'écran 1 est bien découpé', bloc1.length > 100 && bloc1.length < 6000, `${bloc1.length} car.`);
+  t('🚨 l\'écran 1 porte l\'adresse', /AdresseAutocomplete/.test(bloc1));
   t('🚨 …et AUCUN champ de coordonnées',
-    !/etape === 1 &&[\s\S]{0,700}sim-nom/.test(simCode));
+    !/sim-nom|sim-tel|sim-courriel/.test(bloc1));
+  // Le comparateur d'exemple y est, et il annonce qu'il est une
+  // simulation — sinon il affirmerait avoir photographié un « avant ».
+  t('🚨 l\'exemple avant/après est sur le premier écran', /RevelationLumiere/.test(bloc1));
+  t('🚨 …et dit que le côté gauche est une simulation',
+    /etiquetteAvant="Avant \(simulation\)"/.test(bloc1));
   t('🚨 le prénom et le téléphone sont à l\'écran 4',
     /etape === 4 &&[\s\S]{0,2600}id="sim-nom"/.test(simCode)
     && /etape === 4 &&[\s\S]{0,2800}id="sim-tel"/.test(simCode));

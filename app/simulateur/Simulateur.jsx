@@ -6,6 +6,8 @@ import { CaseConsentement } from "@/components/ConsentementAttribution";
 import { newLeadEventId, metaPixelBlock, trackLead } from "@/lib/meta-lead-event";
 import { evenement } from "@/lib/evenements";
 import AdresseAutocomplete from "@/components/AdresseAutocomplete";
+import RevelationLumiere from "@/components/RevelationLumiere";
+import { paireAvantApres } from "@/components/photos";
 import EtapePhoto from "./EtapePhoto";
 import { villeDeAdresse } from "@/lib/adresse";
 
@@ -59,6 +61,11 @@ const STYLES = [
 ];
 
 const AMPOULES = 6;
+
+// La paire d'exemple du premier écran. Sainte-Julienne : c'est la photo
+// prise à l'heure bleue, celle où la différence entre « sans » et
+// « avec » se lit le mieux sur un petit écran.
+const exemple = paireAvantApres("avant-ste-julienne");
 export default function Simulateur() {
   // 1 adresse · 2 photo · 3 style · 3.5 génération · 4 teaser+coordonnées · 5 révélation
   const [etape, setEtape] = useState(1);
@@ -263,6 +270,29 @@ export default function Simulateur() {
             Votre adresse, une photo de la façade, et vous voyez le résultat.
             On ne vous demande rien d&apos;autre avant.
           </p>
+
+          {/* ⚠️ L'EXEMPLE AVANT DE DEMANDER QUOI QUE CE SOIT.
+              L'écran s'ouvrait sur un champ d'adresse et rien à regarder :
+              on demandait un geste avant d'avoir montré ce qu'il rapporte.
+              Ce comparateur est un VRAI chantier — le côté droit est la
+              photo, le gauche une simulation sans les lumières — et il dit
+              lequel est lequel. C'est la promesse de la page, faite avant
+              la question. */}
+          {exemple && (
+            <div className="sim-exemple">
+              <RevelationLumiere
+                photo={exemple.apres}
+                photoAvant={exemple.avant}
+                etiquetteAvant="Avant (simulation)"
+                etiquetteApres="Après — installation réelle, Sainte-Julienne"
+                altAvant="La même résidence, sans aucune lumière de Noël — simulation"
+                altApres="La même résidence avec l'installation réelle de lumières de Noël, à Sainte-Julienne"
+                legende="Un vrai chantier — glissez pour voir la différence"
+                hauteur="clamp(240px, 64vw, 380px)"
+              />
+            </div>
+          )}
+
           <label htmlFor="sim-adresse">Votre adresse</label>
           <AdresseAutocomplete
             id="sim-adresse"
