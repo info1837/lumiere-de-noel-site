@@ -8,7 +8,9 @@
 //   2. une image NON réelle qui nomme une ville dans son alt ou sa légende
 //      (une image générée n'est pas un chantier — voir components/photos.js) ;
 //   3. deux villes qui partagent la même photo (une maison, trois villes) ;
-//   4. une entrée du registre dont le fichier est absent.
+//   4. une entrée du registre dont le fichier est absent ;
+//   5. LA MÊME PHOTO DE CHANTIER DEUX FOIS SUR L'ACCUEIL (une maison en
+//      hero et la même dans la vitrine : on a l'air de n'en avoir qu'une).
 //
 // Une règle écrite dans un commentaire se perd. Une règle qui casse le build
 // se transmet.
@@ -140,6 +142,123 @@ for (const cle of CLES_GENERIQUES) {
     erreurs.push(
       `PHOTOS["${cle}"] est générique — elle peut apparaître sur n'importe quelle\n` +
       `    page de ville — mais son alt nomme ${t.join(", ")}.\n    → "${p.alt}"`);
+}
+
+// --- 7. 🚨 Jamais DEUX FOIS la même photo de chantier sur l'accueil ---------
+//
+// Léry a tenu le hero pleine page ET le côté « après » du comparateur,
+// deux sections plus bas. Personne ne l'a vu pendant une PR entière :
+// chaque bloc était juste pris isolément, et c'est l'accueil COMPLET qui
+// ne l'était pas. Une maison deux fois sur un écran laisse croire qu'on
+// n'en a qu'une — sur un site dont tout l'argument est « voilà ce qu'on
+// a fait », c'est cher payé.
+//
+// ⚠️ ON RÉSOUT LES TROIS SOURCES, ON NE DEVINE PAS.
+//
+// Les photos de l'accueil n'apparaissent pas dans app/page.jsx : le hero
+// a la sienne dans son composant, la vitrine vient de données, et le
+// comparateur passe par une paire. Chercher « PHOTOS[ » dans page.jsx ne
+// trouverait donc rien et la garde se déclarerait verte sur zéro
+// résultat — le pire mode de panne. Chaque source est donc résolue
+// explicitement, ET son extraction doit aboutir : si quelqu'un
+// restructure l'un des trois fichiers, c'est une ERREUR, pas un silence.
+{
+  const lireSrc = (f) => readFileSync(join(RACINE, f), "utf8");
+  const { paireAvantApres } = await import(join(RACINE, "components/photos.js"));
+
+  // ⚠️ On NE PEUT PAS importer components/data.js ici : il importe
+  // `@/lib/site-url.js`, et l'alias « @ » n'existe que sous le résolveur
+  // de Next. `check-photos` tourne en Node nu, avant `next build` — c'est
+  // tout l'intérêt, il casse le build AVANT qu'il commence. On lit donc
+  // la vitrine dans le SOURCE, et l'extraction doit aboutir (voir plus
+  // bas) plutôt que de rendre une liste vide.
+  const data = lireSrc("components/data.js");
+  const vitrineSrcs = (() => {
+    const mIdx = data.match(/HOME_VITRINE_INDICES = \[([^\]]*)\]/);
+    if (!mIdx) return null;
+    const indices = mIdx[1].split(",").map((x) => Number(x.trim())).filter((n) => Number.isInteger(n));
+    // La galerie de noelPage : celle dont les entrées portent une légende.
+    const iNoel = data.indexOf("export const noelPage");
+    if (iNoel < 0) return null;
+    const iGal = data.indexOf("gallery: [", iNoel);
+    if (iGal < 0) return null;
+    const bloc = data.slice(iGal, data.indexOf("\n  ],", iGal));
+    const cles = [...bloc.matchAll(/\{ image: PHOTOS\["([^"]+)"\]/g)].map((m) => m[1]);
+    if (!cles.length || !indices.length) return null;
+    return indices.map((i) => ({ cle: cles[i], photo: PHOTOS[cles[i]] }));
+  })();
+
+  /** `PHOTOS["cle"]` dans un fichier — la clé, ou null. */
+  const clePhotoDe = (src, apres) => {
+    const i = src.indexOf(apres);
+    const m = (i >= 0 ? src.slice(i) : src).match(/PHOTOS\["([^"]+)"\]/);
+    return m ? m[1] : null;
+  };
+
+  const usages = []; // { src, ou }
+
+  // a. Le hero.
+  const hero = lireSrc("components/Hero.jsx");
+  const cleHero = clePhotoDe(hero, "const photo =");
+  if (!cleHero || !PHOTOS[cleHero]) {
+    erreurs.push(
+      `Impossible de lire la photo du hero dans components/Hero.jsx.\n` +
+      `    La garde « deux fois la même photo sur l'accueil » ne peut pas faire son travail.\n` +
+      `    Si le hero a changé de forme, mettre à jour scripts/check-photos.mjs §7.`);
+  } else {
+    usages.push({ src: PHOTOS[cleHero].src, ou: "le hero" });
+  }
+
+  // b. La vitrine (4 photos, lues dans components/data.js).
+  if (!vitrineSrcs || vitrineSrcs.some((v) => !v.photo)) {
+    erreurs.push(
+      `Impossible de lire la vitrine de l'accueil dans components/data.js ` +
+      `(HOME_VITRINE_INDICES + noelPage.gallery).\n` +
+      `    §7 ne peut pas vérifier les doublons — mettre à jour scripts/check-photos.mjs.`);
+  } else {
+    vitrineSrcs.forEach((v) => usages.push({ src: v.photo.src, ou: `la vitrine (${v.cle})` }));
+  }
+
+  // c. Le comparateur — les DEUX moitiés.
+  const page = lireSrc("app/page.jsx");
+  const mPaire = page.match(/paireAvantApres\("([^"]+)"\)/);
+  if (!mPaire) {
+    erreurs.push(`Aucun paireAvantApres() trouvé dans app/page.jsx — §7 ne peut pas vérifier le comparateur.`);
+  } else {
+    const paire = paireAvantApres(mPaire[1]);
+    if (!paire) {
+      erreurs.push(`app/page.jsx demande la paire « ${mPaire[1] } », qui n'existe pas.`);
+    } else {
+      usages.push({ src: paire.apres.src, ou: "le comparateur (après)" });
+      usages.push({ src: paire.avant.src, ou: "le comparateur (avant)" });
+    }
+  }
+
+  // Seules les VRAIES photos comptent : une simulation est par
+  // construction la jumelle de son « après », et les deux doivent bien
+  // se retrouver côte à côte dans le comparateur.
+  const compte = new Map();
+  for (const u of usages) {
+    if (!u.src || !u.src.startsWith(REEL_PREFIX)) continue;
+    if (!compte.has(u.src)) compte.set(u.src, []);
+    compte.get(u.src).push(u.ou);
+  }
+  for (const [src, endroits] of compte) {
+    if (endroits.length > 1) {
+      erreurs.push(
+        `🚨 ${src} apparaît ${endroits.length} fois sur l'accueil : ${endroits.join(" et ")}.\n` +
+        `    Une même maison à deux endroits de la page laisse croire qu'on n'en a qu'une.\n` +
+        `    Choisir une autre photo pour l'un des deux (components/photos.js les liste).`);
+    }
+  }
+
+  // La garde doit avoir vu quelque chose : zéro usage = extraction
+  // cassée, pas accueil vide.
+  if (usages.length < 5) {
+    erreurs.push(
+      `§7 n'a résolu que ${usages.length} image(s) d'accueil — il en faut au moins 5 ` +
+      `(1 hero + 4 vitrine + 2 comparateur). L'extraction est cassée.`);
+  }
 }
 
 // --- Verdict -----------------------------------------------------------------

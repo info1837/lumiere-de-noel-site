@@ -32,7 +32,32 @@ const AVIS_PALENCIA_URL =
 // Conséquence technique agréable : plus d'état, plus de « use client ».
 // Le premier écran est redevenu du HTML.
 export default function Hero() {
-  const photo = PHOTOS["lery-01"];
+  // ⚠️ LÉRY A QUITTÉ LE HERO — elle ne sert plus qu'au comparateur.
+  //
+  // Elle tenait les deux : le hero pleine page ET le côté « après » du
+  // comparateur, deux sections plus bas. La même maison deux fois sur un
+  // écran laisse croire qu'on n'en a qu'une.
+  //
+  // Mirabel est choisie sur trois critères, mesurés sur captures
+  // (docs/hero/) et pas au jugé :
+  //
+  //   1. ELLE EST NATIVEMENT 16/9 (1920×1080). Le hero est une bande
+  //      paysage pleine largeur : les photos PORTRAIT du dossier —
+  //      st-donat-02, ste-anne, terrebonne… — y perdent les deux tiers
+  //      de leur cadre. st-donat-02 ne montrait plus qu'une rangée de
+  //      conifères et une grande étendue de neige vide, sans maison.
+  //   2. LA LIGNE DE TOIT ILLUMINÉE TRAVERSE LE HAUT DU CADRE, donc elle
+  //      reste visible à côté du titre, qui repose lui sur le voile
+  //      sombre. C'est la demande : le titre lisible ET les lumières
+  //      visibles derrière.
+  //   3. C'EST UNE MAISON, avec une pose professionnelle sur la
+  //      toiture — ce qu'on vend. Les conifères illuminés de
+  //      st-donat-02 sont jolis et ne montrent pas le métier.
+  //
+  // Mirabel est dans le territoire réel (Rive-Nord). Stratford, l'autre
+  // paysage disponible, est en Estrie — hors territoire, et le site a
+  // déjà eu à corriger ça.
+  const photo = PHOTOS["mirabel-01"];
   return (
     <section className="hero-section" style={{ position: "relative" }}>
       {/* La photo porte le premier écran. Elle est pleine page, pas
