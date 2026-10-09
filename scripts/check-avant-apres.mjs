@@ -137,19 +137,29 @@ console.log('\n--- 5. 🚨 Le repli « crépuscule » ne revient pas ---');
     c.indexOf('if (!photoAvant?.src') > dernierHook);
 }
 
-console.log('\n--- 6. 🚨 Le balayage : une fois, et il lâche la poignée ---');
+console.log('\n--- 6. 🚨 Le curseur est PILOTÉ par le défilement ---');
 {
   const c = lire('components/RevelationLumiere.jsx');
-  t('🚨 il part de 50 %', /depart = 50/.test(c));
-  t('🚨 un aller-retour (il revient à 50 %)', /Math\.sin\(Math\.PI \* p\)/.test(c));
-  t('🚨 une seule fois — l\'observateur se déconnecte', /io\.disconnect\(\);/.test(c));
-  t('🚨 il respecte prefers-reduced-motion',
-    /prefers-reduced-motion: reduce[\s\S]{0,60}return;/.test(c));
-  // Le défaut réparé : la boucle reprenait la main à chaque frame même
-  // après que la personne ait saisi la poignée.
-  t('🚨 la première interaction l\'arrête POUR DE BON',
+  // ⚠️ LE BALAYAGE UNIQUE A ÉTÉ REMPLACÉ (passe « vie », 2026-10-09).
+  //
+  // Il faisait un aller-retour à l'entrée dans l'écran, puis plus rien :
+  // qui arrivait après l'animation ne voyait jamais la maison s'allumer.
+  // Maintenant la position SUIT le défilement pendant que le comparateur
+  // traverse l'écran — la maison s'allume parce qu'on descend, et le
+  // geste a une cause.
+  t('🚨 le défilement pilote la position', /surDefilement\(/.test(c) && /progressionDansEcran\(el\)/.test(c));
+  t('🚨 de 15 % à 85 %', /DEBUT_PILOTE = 15/.test(c) && /FIN_PILOTE = 85/.test(c));
+  t('🚨 …pas jusqu\'aux extrémités (sinon il n\'y a plus rien à comparer)',
+    !/DEBUT_PILOTE = 0\b/.test(c) && !/FIN_PILOTE = 100\b/.test(c));
+  t('🚨 plus de balayage unique', !/Math\.sin\(Math\.PI \* p\)/.test(c));
+  t('🚨 en mouvement réduit il ne bouge pas du tout',
+    /if \(mouvementReduit\(\)\) return;/.test(c));
+  t('🚨 …et il reste à 50 %, manuel', /depart = 50/.test(c));
+  // Le défaut déjà réparé une fois : la boucle reprenait la main à
+  // chaque frame après que la personne ait saisi la poignée.
+  t('🚨 la première interaction rend la main POUR DE BON',
     /interrompu\.current = true/.test(c) && /if \(interrompu\.current\) return;/.test(c));
-  t('…et annule la frame en cours', /cancelAnimationFrame\(frame\.current\)/.test(c));
+  t('…et l\'abonnement au défilement se coupe au démontage', /return stop;/.test(c));
 }
 
 console.log('\n--- 7. 🚨 Les étiquettes correspondent aux IMAGES ---');

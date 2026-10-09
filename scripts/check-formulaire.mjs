@@ -81,7 +81,21 @@ console.log('\n--- 5. 🚨 L\'envoi vers /api/lead n\'a PAS changé ---');
   t('🚨 le fetch vers /api/lead', /fetch\("\/api\/lead", \{/.test(data));
   t('🚨 en POST, en JSON', /method: "POST"[\s\S]{0,120}application\/json/.test(data));
   const route = lire('app/api/lead/route.js');
-  t('🚨 la route relaie au CRM', /palencia-crm\.vercel\.app\/api\/leads/.test(route));
+  // ⚠️ L'URL N'EST PLUS ÉCRITE D'UN SEUL TENANT, et c'est voulu.
+  //
+  // La route la compose : `CRM_BASE_URL` (surchargeable, pour tester une
+  // préversion du CRM) + `/api/leads`. Le littéral
+  // « palencia-crm.vercel.app/api/leads » n'existe donc plus nulle part,
+  // et cette assertion échouait sur du code parfaitement intact depuis
+  // que la surcharge existe.
+  //
+  // On vérifie maintenant les DEUX moitiés plus le défaut : c'est ça,
+  // « la route relaie au CRM », et ça reste faux si quelqu'un change
+  // d'hôte ou de chemin.
+  t('🚨 la route relaie au CRM — hôte par défaut',
+    /CRM_BASE_URL \|\| 'https:\/\/palencia-crm\.vercel\.app'/.test(route));
+  t('🚨 …et le chemin /api/leads', /\$\{CRM_BASE\}\/api\/leads/.test(route));
+  t('…via une seule constante', /fetch\(CRM_INTAKE_URL/.test(route));
   t('🚨 la clé d\'intake reste côté serveur', /LUMIERE_INTAKE_KEY/.test(route));
   t('aucune clé dans le code du navigateur', !/INTAKE_KEY/.test(data + lire('components/QuoteForm.jsx')));
 }

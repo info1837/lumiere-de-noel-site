@@ -20,7 +20,10 @@
     "check:saison": "node scripts/check-bandeau-rarete.mjs",
     "check:lead": "node scripts/check-lead-simulateur.mjs",
     "images:avant-apres": "node scripts/preparer-avant-apres.mjs",
-    "check:avant-apres": "node scripts/check-avant-apres.mjs"
+    "check:avant-apres": "node scripts/check-avant-apres.mjs",
+    "check:vie": "node scripts/check-vie.mjs",
+    "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs",
+    "captures:vie": "node scripts/captures-vie.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

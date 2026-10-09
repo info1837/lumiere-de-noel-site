@@ -54,10 +54,34 @@ console.log('\n--- 2. 🚨 Plus AUCUNE animation infinie, sauf la neige du hero 
   //                               permanent sur /eclairage-architectural :
   //                               l'animation EST le produit montré, la
   //                               couper viderait la démo de son sens.
+  //   html.mvt .defile--anime .defile-piste
+  //                               la bande des réalisations. Exception
+  //                               DEMANDÉE, et tenue court : la classe
+  //                               `defile--anime` n'est posée que
+  //                               pendant que la section est à l'écran
+  //                               (IntersectionObserver), l'animation
+  //                               s'arrête au survol et pendant qu'on
+  //                               tire la bande, et elle n'existe pas en
+  //                               mouvement réduit. Une boucle qui ne
+  //                               tourne que sous les yeux de quelqu'un
+  //                               n'est pas celle que le bloc 4
+  //                               reprochait — celle-là clignotait sur
+  //                               toutes les pages, tout le temps.
   const AUTORISEES = ['.flake', '.bandeau-rarete__pastille',
-    '.led--twinkle', '.led--chase', '.led--breathe'];
+    '.led--twinkle', '.led--chase', '.led--breathe',
+    'html.mvt .defile--anime .defile-piste'];
   const intruses = infinies.filter((r) => !AUTORISEES.includes(r));
   t('🚨 aucune boucle décorative ne subsiste', intruses.length === 0, intruses.join(' | ') || 'aucune');
+
+  // L'exception de la bande n'est valable que BORNÉE. Si l'un des trois
+  // garde-fous saute, c'est redevenu une boucle permanente.
+  const defile = lire('components/VitrineDefilante.jsx');
+  t('🚨 la bande ne tourne QUE quand elle est à l\'écran',
+    /IntersectionObserver/.test(defile) && /setAnime\(!!e\[0\]\?\.isIntersecting\)/.test(defile));
+  t('🚨 …elle s\'arrête au survol et sous le doigt',
+    /\.defile--anime:hover \.defile-piste[\s\S]{0,120}animation-play-state: paused/.test(cssNu));
+  t('🚨 …et elle n\'existe pas en mouvement réduit',
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,1400}html\.mvt \.defile--anime \.defile-piste \{ animation: none; \}/.test(cssNu));
   t('🚨 les puces de liste ne scintillent plus (5 pages)',
     !/\.bulb--tw \{ animation/.test(cssNu));
   t('🚨 le feston non plus', !/festoonGlow \d/.test(cssNu.match(/\.festoon::before \{[^}]*\}/)?.[0] || ''));
