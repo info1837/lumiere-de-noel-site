@@ -17,8 +17,17 @@ import { mouvementReduit, CLASSE_RACINE, surDefilement, borner } from "@/lib/mou
 //      lents, dans le premier écran seulement.
 //
 //   2. TOUT CE QUI S'ALLUME AU DÉFILEMENT. Apparitions, guirlande du
-//      hero, progression de lecture, frise qui se trace, compteur
-//      d'avis.
+//      hero, frise qui se trace, compteur d'avis.
+//
+// ⚠️ « MOUVEMENT RÉDUIT » VEUT DIRE « RIEN NE BOUGE », PAS « RIEN ».
+// La première version sortait d'ici dès que `prefers-reduced-motion`
+// était actif : aucune classe, aucun effet. Sur un Mac où « Réduire les
+// animations » est coché — un réglage courant, pas un cas rare — le site
+// paraissait mort. Désormais la classe est posée dans les deux cas, et
+// c'est la feuille (`@media (prefers-reduced-motion: reduce)`) qui garde
+// les FONDUS (300 ms, opacité seule) en retirant tout déplacement — pas
+// de montée, pas de dézoom, pas de découpage. Ici : pas de séquence
+// d'ampoules, pas de neige, et le compteur affiche le chiffre final.
 //
 // ⚠️ L'ÉTAT MASQUÉ EST POSÉ PAR CE SCRIPT, JAMAIS PAR LA FEUILLE SEULE.
 // Toutes les règles d'apparition sont préfixées `html.mvt`, et c'est ici
@@ -29,11 +38,16 @@ import { mouvementReduit, CLASSE_RACINE, surDefilement, borner } from "@/lib/mou
 
 const FLOCONS = 17;
 
-// Combien d'ampoules sur le bord haut du hero, et sur la barre de
-// progression. Des nombres pairs et ronds : on les répartit en
-// `space-between`, donc ils tombent juste à toutes les largeurs.
+// Combien d'ampoules sous l'entête du hero. Un nombre pair et rond : on
+// les répartit en `space-between`, donc elles tombent juste à toutes les
+// largeurs.
+//
+// ⚠️ IL N'Y A PLUS DE GUIRLANDE DE PROGRESSION. Elle courait sous
+// l'entête sur toute la page : 40 ampoules qui changeaient à chaque
+// geste, collées au contenu qui défilait dessous. Les ampoules ne vivent
+// plus que dans deux moments — le hero qui s'allume, et les points de la
+// frise. Une lumière partout n'est plus une lumière.
 const AMPOULES_HERO = 28;
-const AMPOULES_PROGRESSION = 40;
 
 /** Le décalage entre deux apparitions d'un même groupe. */
 const PAS_MS = 60;
@@ -42,14 +56,13 @@ export default function FestiveLayer() {
   const [hero, setHero] = useState(null);
 
   useEffect(() => {
-    // ⚠️ On sort AVANT de poser quoi que ce soit. Pas de classe racine,
-    // donc aucune règle d'apparition ne s'applique, donc rien n'est
-    // masqué en attendant une animation qui ne viendra pas.
-    if (mouvementReduit()) return;
-
+    // Mouvement réduit : la classe racine est posée quand même — les
+    // fondus en dépendent — mais la feuille retire tout déplacement, et
+    // la neige n'est pas rendue.
+    const doux = mouvementReduit();
     const racine = document.documentElement;
     racine.classList.add(CLASSE_RACINE);
-    setHero(document.querySelector(".hero-section"));
+    if (!doux) setHero(document.querySelector(".hero-section"));
 
     const nettoyages = [];
 
@@ -115,43 +128,23 @@ export default function FestiveLayer() {
       for (let i = 0; i < AMPOULES_HERO; i++) {
         const b = document.createElement("span");
         // Gauche → droite : 34 ms par ampoule, ~0,95 s pour la rangée,
-        // donc elle finit en même temps que la photo s'éclaircit.
-        b.style.setProperty("--amp-d", `${i * 34}ms`);
+        // donc elle finit en même temps que la photo s'éclaircit. En
+        // mouvement réduit, pas de séquence : elles s'allument ensemble.
+        b.style.setProperty("--amp-d", doux ? "0ms" : `${i * 34}ms`);
         g.appendChild(b);
       }
       heroEl.appendChild(g);
       nettoyages.push(() => g.remove());
     }
 
-    // ── 3 · La progression de lecture ────────────────────────────────
-    const prog = document.createElement("div");
-    prog.className = "progression";
-    prog.setAttribute("aria-hidden", "true");
-    const ampoules = [];
-    for (let i = 0; i < AMPOULES_PROGRESSION; i++) {
-      const b = document.createElement("span");
-      prog.appendChild(b);
-      ampoules.push(b);
-    }
-    document.body.appendChild(prog);
-    nettoyages.push(() => prog.remove());
-
-    // ── 4 · La frise, et le reste du défilement ──────────────────────
+    // ── 3 · La frise se trace ────────────────────────────────────────
     const frise = document.querySelector(".frise");
     const etapes = frise ? Array.from(frise.querySelectorAll(".frise-etape")) : [];
 
     const auDefilement = () => {
-      // a. La guirlande de progression.
-      const h = document.documentElement;
-      const total = Math.max(1, h.scrollHeight - window.innerHeight);
-      const p = borner((window.scrollY || 0) / total, 0, 1);
-      const allumees = Math.round(p * ampoules.length);
-      for (let i = 0; i < ampoules.length; i++) {
-        ampoules[i].classList.toggle("on", i < allumees);
-      }
-
-      // b. La frise se trace, et chaque point s'allume quand elle
-      //    l'atteint.
+      // La frise se trace, et chaque point s'allume quand elle
+      // l'atteint. En mouvement réduit le filet est entier d'emblée (la
+      // feuille ignore --frise-p) : seuls les points changent d'état.
       if (frise && etapes.length) {
         const r = frise.getBoundingClientRect();
         const vh2 = window.innerHeight || 1;
@@ -167,12 +160,14 @@ export default function FestiveLayer() {
     };
     nettoyages.push(surDefilement(auDefilement));
 
-    // ── 5 · « 100+ avis » se compte ──────────────────────────────────
+    // ── 4 · « 100+ avis » se compte ──────────────────────────────────
     const avis = document.querySelector(".hero-ligne a, .hero-ligne strong");
     if (avis && /\d/.test(avis.textContent || "")) {
       const texte = avis.textContent;
       const cible = parseInt(texte.match(/\d+/)?.[0] || "0", 10);
-      if (cible > 0) {
+      // En mouvement réduit, le chiffre final est déjà dans le HTML :
+      // on n'y touche pas.
+      if (cible > 0 && !doux) {
         const debut = performance.now();
         const duree = 1100;
         let frame = 0;

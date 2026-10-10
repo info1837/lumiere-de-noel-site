@@ -94,7 +94,7 @@ console.log('\n--- 2. 🚨 On n\'anime que ce qui ne coûte rien ---');
   t('🚨 ni `top`/`left`', !/transition:[^;]*\b(top|left)\b/.test(bloc));
 }
 
-console.log('\n--- 3. 🚨 Les six effets sont là ---');
+console.log('\n--- 3. 🚨 Les effets sont là ---');
 {
   t('🚨 le hero s\'allume (0,45 → 1 en 1,2 s)',
     /@keyframes heroAllume/.test(cssNu) && /brightness\(0\.45\)/.test(cssNu)
@@ -103,10 +103,11 @@ console.log('\n--- 3. 🚨 Les six effets sont là ---');
     /animation: heroAllume 1200ms[^;]*both;/.test(cssNu));
   t('🚨 la guirlande du hero s\'allume de gauche à droite',
     /AMPOULES_HERO/.test(couche) && /--amp-d/.test(couche) && /@keyframes ampouleAllume/.test(cssNu));
-  t('🚨 la progression de lecture existe',
-    /className = "progression"/.test(couche) && /\.progression span\.on \{/.test(cssNu));
-  t('🚨 …et elle est `fixed`, donc elle ne pousse rien',
-    /\.progression \{[\s\S]{0,120}position: fixed;/.test(cssNu));
+  // ⚠️ LA GUIRLANDE DE PROGRESSION EST RETIRÉE, et elle ne doit pas
+  // revenir par la bande. Elle courait sous l'entête sur toute la page ;
+  // les ampoules ne vivent plus que dans le hero et sur la frise.
+  t('🚨 plus de guirlande de progression sous l\'entête',
+    !/progression/i.test(couche) && !/\.progression\b/.test(cssNu) && !/AMPOULES_PROGRESSION/.test(couche));
   t('🚨 la frise se trace au défilement',
     /--frise-p/.test(couche) && /transform: scaleX\(var\(--frise-p, 0\)\)/.test(cssNu));
   t('🚨 …et ses points s\'allument un à un',
@@ -130,8 +131,8 @@ console.log('\n--- 4. 🚨 L\'ambre ne sert qu\'à la lumière ---');
   // qu'en `box-shadow` (une lueur) ou en fond d'une AMPOULE.
   const bloc = blocMvt;
   const fondsAmbre = [...bloc.matchAll(/background:\s*#F0BA54/gi)].length;
-  // Les ampoules : guirlande du hero, progression, points de frise.
-  t('🚨 l\'ambre en fond ne sert qu\'aux ampoules', fondsAmbre <= 3, `${fondsAmbre} fond(s)`);
+  // Les ampoules : guirlande du hero, points de frise.
+  t('🚨 l\'ambre en fond ne sert qu\'aux ampoules', fondsAmbre <= 2, `${fondsAmbre} fond(s)`);
   t('🚨 aucun bouton ambre', !/\.cta[^{]*\{[^}]*background:\s*#F0BA54/i.test(bloc));
   t('les lueurs, elles, sont bien en ambre', /box-shadow:[^;]*240, 186, 84/.test(bloc));
 }
@@ -145,6 +146,50 @@ console.log('\n--- 5. 🚨 Le défilement ne se calcule qu\'une fois par image -
   t('🚨 l\'écoute est passive', /\{ passive: true \}/.test(mvt));
   t('🚨 …et elle se désabonne', /removeEventListener\('scroll'/.test(mvt));
   t('🚨 une première mesure sans attendre un geste', /ecouter\(\); \/\/ une première mesure/.test(mvt));
+}
+
+console.log('\n--- 6. 🚨 Mouvement réduit : rien ne se DÉPLACE, mais la page vit ---');
+{
+  // La première version sortait avant de poser html.mvt : sur un Mac
+  // réglé sur « Réduire les animations », aucun effet — on l'a pris pour
+  // une panne sur ordinateur. Le contrat est maintenant : fondus oui,
+  // déplacement non.
+  const debut = cssNu.lastIndexOf('@media (prefers-reduced-motion: reduce) {\n  html.mvt .rv-t');
+  const bloc = debut >= 0 ? cssNu.slice(debut, cssNu.indexOf('\n}', debut)) : '';
+  t('le bloc mouvement réduit est trouvé', bloc.length > 400, `${bloc.length} car.`);
+  t('🚨 la classe racine est posée MÊME en mouvement réduit',
+    !/if \(mouvementReduit\(\)\) return;/.test(couche) && /const doux = mouvementReduit\(\);/.test(couche));
+  t('🚨 le texte apparaît en fondu, 300 ms, sans montée',
+    /html\.mvt \.rv-t \{ opacity: 0; transform: none; \}/.test(bloc)
+    && /html\.mvt \.rv-t\.est-la \{ opacity: 1; transform: none; transition: opacity 300ms/.test(bloc));
+  t('🚨 les photos aussi : ni découpage, ni dézoom',
+    /clip-path: none; transform: none; opacity: 0;/.test(bloc)
+    && /clip-path: none; transform: none; opacity: 1;\s*transition: opacity 300ms/.test(bloc));
+  t('🚨 aucune transition de transform ou de clip-path dans le bloc',
+    !/transition:[^;]*\b(transform|clip-path)\b/.test(bloc));
+  t('🚨 le hero s\'éclaire, luminosité seule',
+    /html\.mvt \.hero-section > img \{ animation: heroEclaire/.test(bloc)
+    && /@keyframes heroEclaire \{\s*from \{ filter: brightness\(0\.45\); \}/.test(cssNu));
+  t('🚨 pas de séquence d\'ampoules', /doux \? "0ms"/.test(couche) && /animation-delay: 0ms;/.test(bloc));
+  t('🚨 pas de neige', /if \(!doux\) setHero/.test(couche));
+  t('🚨 le compteur affiche le chiffre final', /cible > 0 && !doux/.test(couche));
+  const defile = lire('components/VitrineDefilante.jsx');
+  t('🚨 la bande devient une rangée manuelle, sans clones',
+    /if \(mouvementReduit\(\)\) \{ setManuel\(true\); return; \}/.test(defile)
+    && /!manuel && items\.map/.test(defile) && /\.defile--manuel \{[\s\S]{0,80}overflow-x: auto;/.test(cssNu));
+}
+
+console.log('\n--- 7. 🚨 L\'entête est une seule surface pleine ---');
+{
+  t('🚨 un fond plein derrière la barre et la pilule',
+    /\.entete-fond \{[\s\S]{0,200}position: fixed;[\s\S]{0,200}background: #0A1524;/.test(cssNu)
+    && /<div className="entete-fond" aria-hidden="true" \/>/.test(lire('app/ClientLayout.jsx')));
+  t('🚨 …qui descend jusqu\'à un encart SOUS la pilule',
+    /\.entete-fond \{[\s\S]{0,120}height: calc\(var\(--entete-total\) \+ var\(--entete-encart\)\);/.test(cssNu)
+    && /body\.avec-bandeau \.entete-fond \{\s*height: calc\(var\(--bandeau-h\) \+ var\(--entete-total\) \+ var\(--entete-encart\)\);/.test(cssNu));
+  t('🚨 …et ne capte aucun clic', /\.entete-fond \{[\s\S]{0,300}pointer-events: none;/.test(cssNu));
+  t('🚨 la guirlande du hero pend sous le fond, pas dessous',
+    /\.hero-guirlande \{[\s\S]{0,80}top: calc\(var\(--entete-total\) \+ var\(--entete-encart\)\);/.test(cssNu));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

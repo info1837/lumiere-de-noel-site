@@ -267,8 +267,9 @@ console.log('\n--- 8. 🚨 Lisible : ambre plein, marine, 15 px ---');
   // « avertissement » : une bande jaune en haut de chaque page ressemble à
   // un message du navigateur, pas à une marque haut de gamme. Elle ne
   // reste que sur la pastille, où elle brille.
-  t('🚨 la barre est marine, pas ambre',
-    /\.bandeau-rarete \{[\s\S]{0,400}background: #081220;/.test(css));
+  t('🚨 la barre est marine, pas ambre — le même marine que le fond de l\'entête',
+    /\.bandeau-rarete \{[\s\S]{0,400}background: #0A1524;/.test(css)
+    && /\.entete-fond \{[\s\S]{0,200}background: #0A1524;/.test(css));
   t('🚨 le texte est crème', /\.bandeau-rarete \{[\s\S]{0,460}color: #F0EADE;/.test(css));
   t('🚨 l\'ambre ne reste QUE sur la pastille',
     /\.bandeau-rarete__pastille \{[\s\S]{0,200}background: #F0BA54;/.test(css));
@@ -276,7 +277,7 @@ console.log('\n--- 8. 🚨 Lisible : ambre plein, marine, 15 px ---');
   // Contraste mesuré du nouveau couple.
   const lin = (c) => { c /= 255; return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4; };
   const lum = (h) => { const n = parseInt(h, 16); return 0.2126 * lin((n >> 16) & 255) + 0.7152 * lin((n >> 8) & 255) + 0.0722 * lin(n & 255); };
-  const a = lum('F0EADE'), b = lum('081220');
+  const a = lum('F0EADE'), b = lum('0A1524');
   const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
   t('🚨 le contraste dépasse le AAA (7:1)', ratio >= 7, `${ratio.toFixed(2)}:1`);
 
