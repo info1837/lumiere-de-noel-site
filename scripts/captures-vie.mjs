@@ -27,6 +27,10 @@ const nav = await chromium.launch();
 const FORMATS = [
   { nom: 'mobile', viewport: { width: 375, height: 812 }, largeurGif: 260 },
   { nom: 'bureau', viewport: { width: 1440, height: 900 }, largeurGif: 560 },
+  // « Réduire les animations » coché (réglage macOS courant) : fondus
+  // seuls, rien ne se déplace. C'est ce cas qu'on avait pris pour une
+  // page sans effets sur ordinateur.
+  { nom: 'bureau-reduit', viewport: { width: 1440, height: 900 }, largeurGif: 560, reducedMotion: 'reduce' },
 ];
 
 for (const f of FORMATS) {
@@ -35,6 +39,7 @@ for (const f of FORMATS) {
   const ctx = await nav.newContext({
     viewport: f.viewport,
     deviceScaleFactor: 1,
+    reducedMotion: f.reducedMotion || 'no-preference',
     recordVideo: { dir: dossier, size: f.viewport },
   });
   const page = await ctx.newPage();
@@ -89,7 +94,6 @@ console.log('\n▸ Vérification dans le navigateur');
       texteRevele: q('.rv-t'),
       photosRevelees: q('.rv-p'),
       guirlandeHero: q('.hero-guirlande span'),
-      progression: q('.progression span'),
       bande: q('.defile-item'),
 
       frise: q('.frise-etape'),
@@ -117,11 +121,10 @@ console.log('\n▸ Vérification dans le navigateur');
   const apres = await page.evaluate(() => ({
     friseP: getComputedStyle(document.querySelector('.frise')).getPropertyValue('--frise-p').trim(),
     pointsAllumes: document.querySelectorAll('.frise-etape.atteinte').length,
-    ampoulesAllumees: document.querySelectorAll('.progression span.on').length,
     curseur: getComputedStyle(document.querySelector('.revel')).getPropertyValue('--revel-pos').trim(),
   }));
   console.log(`  ✅ après défilement : frise=${apres.friseP} points=${apres.pointsAllumes}` +
-              ` progression=${apres.ampoulesAllumees} curseur=${apres.curseur}`);
+              ` curseur=${apres.curseur}`);
   await ctx.close();
 }
 

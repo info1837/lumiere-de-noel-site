@@ -40,7 +40,7 @@ export const metadata = {
  */
 const PAGE_NUE = `
   body.avec-bandeau { padding-top: 0; }
-  .bandeau-rarete, .entete-pilule, .mobile-bottom-bar, .skip-link,
+  .bandeau-rarete, .entete-fond, .entete-pilule, .mobile-bottom-bar, .skip-link,
   .tiroir, body > footer { display: none !important; }
 `;
 

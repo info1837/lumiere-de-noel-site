@@ -20,7 +20,8 @@ import { mouvementReduit } from "@/lib/mouvement";
 //     qui défile pour personne, c'est du calcul pour personne ;
 //   · elle s'arrête au survol et pendant qu'on la tire ;
 //   · elle n'existe pas du tout en mouvement réduit — la bande devient
-//     une simple rangée qu'on fait défiler soi-même.
+//     une rangée qu'on fait glisser soi-même (défilement natif, aimanté
+//     photo par photo), sans clones et sans glissement maison.
 //
 // ⚠️ DEUX TRANSFORMATIONS, DEUX ÉLÉMENTS. L'animation vit sur la piste,
 // le décalage du doigt sur le calque au-dessus. Les mettre sur le même
@@ -35,13 +36,16 @@ import { mouvementReduit } from "@/lib/mouvement";
 // une deuxième apparition de la photo.
 export default function VitrineDefilante({ items = [], secondesParItem = 7 }) {
   const [anime, setAnime] = useState(false);
+  // Mouvement réduit : plus de boucle, donc plus besoin des clones ni du
+  // glissement maison — le défilement natif du navigateur fait le geste.
+  const [manuel, setManuel] = useState(false);
   const cadre = useRef(null);
   const glisse = useRef(null);
   const etat = useRef({ saisi: false, departX: 0, depart: 0, decalage: 0 });
 
   // L'animation ne tourne que pendant que la section est visible.
   useEffect(() => {
-    if (mouvementReduit()) return;
+    if (mouvementReduit()) { setManuel(true); return; }
     const el = cadre.current;
     if (!el) return;
     const io = new IntersectionObserver(
@@ -61,7 +65,7 @@ export default function VitrineDefilante({ items = [], secondesParItem = 7 }) {
   // se bloque sous le doigt.
   const onPointerDown = (e) => {
     const el = cadre.current;
-    if (!el) return;
+    if (!el || manuel) return;
     etat.current.saisi = true;
     etat.current.departX = e.clientX;
     etat.current.depart = etat.current.decalage;
@@ -98,7 +102,7 @@ export default function VitrineDefilante({ items = [], secondesParItem = 7 }) {
   return (
     <div
       ref={cadre}
-      className={`defile${anime ? " defile--anime" : ""}`}
+      className={`defile${anime ? " defile--anime" : ""}${manuel ? " defile--manuel" : ""}`}
       style={{ "--defile-duree": `${items.length * secondesParItem * 2}s` }}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
@@ -109,7 +113,7 @@ export default function VitrineDefilante({ items = [], secondesParItem = 7 }) {
       <div className="defile-glisse" ref={glisse}>
         <div className="defile-piste">
           {items.map((p, i) => carte(p, i, false))}
-          {items.map((p, i) => carte(p, i, true))}
+          {!manuel && items.map((p, i) => carte(p, i, true))}
         </div>
       </div>
     </div>

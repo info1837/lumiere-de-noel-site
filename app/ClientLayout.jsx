@@ -87,6 +87,10 @@ export function NavBar() {
 
   return (
     <>
+    {/* Le fond plein derrière la barre de saison et la pilule : sans lui,
+        le contenu défilait dans l'interstice entre les deux. Voir
+        .entete-fond dans globals.css. */}
+    <div className="entete-fond" aria-hidden="true" />
     <header
       className="entete-pilule"
       style={{

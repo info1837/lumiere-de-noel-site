@@ -358,6 +358,30 @@ header > .container { max-width: 1320px; }
 /* Le panneau descend du bas de la pilule, qui ne touche plus le bord. */
 .entete-pilule .nav-panel { top: calc(100% + 10px); }
 
+/* ─── Le fond plein derrière la barre de saison et la pilule ────────────
+   ⚠️ ENTRE LA BARRE ET LA PILULE, IL Y AVAIT UN TROU.
+   La pilule flotte à `--entete-encart` du haut : ces 8–16 px, et les
+   côtés, étaient transparents. Le contenu défilait DEDANS — mesuré à
+   375 px, `elementFromPoint` dans l'interstice rendait le <h2> de la
+   section, et on voyait les titres glisser entre la barre et l'entête.
+   Ce fond couvre tout le haut, du bord de l'écran jusqu'à un encart
+   SOUS la pilule : barre + pilule lisent comme une seule surface, et
+   la pilule garde sa forme (bordure, coins) posée dessus.
+   `pointer-events: none` : il ne capte rien, seule la pilule se clique.
+   Sous la pilule (100), au-dessus du contenu et de la neige (45). */
+.entete-fond {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: calc(var(--entete-total) + var(--entete-encart));
+  background: #0A1524;
+  border-bottom: 1px solid rgba(240, 234, 222, 0.08);
+  z-index: 99;
+  pointer-events: none;
+}
+body.avec-bandeau .entete-fond {
+  height: calc(var(--bandeau-h) + var(--entete-total) + var(--entete-encart));
+}
+
 .header-cta {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 10px 16px; border-radius: 300px;
@@ -1157,9 +1181,10 @@ textarea:focus-visible,
    chaque page s'en servait comme d'un fond, et lisait comme un
    avertissement de navigateur — c'est le contraire d'une marque haut de
    gamme. La barre passe en marine profond, le texte en crème (#F0EADE sur
-   #081220 : contraste 14,8:1), et l'ambre ne reste que sur la pastille.
-   La confusion avec l'entête que l'ancien commentaire redoutait est réglée
-   par le filet du bas, pas par la couleur. */
+   #0A1524), et l'ambre ne reste que sur la pastille.
+   ⚠️ PLUS DE FILET DU BAS : la barre et le fond de l'entête (.entete-fond)
+   sont le MÊME marine #0A1524 et forment une seule surface. La pilule,
+   avec sa bordure, suffit à distinguer l'entête de la barre. */
 :root { --bandeau-h: 40px; }
 
 .bandeau-rarete {
@@ -1171,9 +1196,8 @@ textarea:focus-visible,
   min-height: var(--bandeau-h);
   display: flex;
   align-items: center;
-  background: #081220;
+  background: #0A1524;
   color: #F0EADE;
-  border-bottom: 1px solid rgba(240, 234, 222, 0.14);
   font-size: 14px;
   line-height: 1.35;
 }
@@ -2318,9 +2342,15 @@ html.mvt .hero-section > img {
 /* La guirlande du bord haut : des ampoules ambre qui s'allument de
    gauche à droite. Le décalage par ampoule vient d'une variable inline,
    et l'animation est jouée UNE fois (pas de `infinite`). */
+/* ⚠️ ELLE PEND SOUS L'ENTÊTE, PAS AU BORD DU HERO.
+   Le haut du hero est désormais couvert par le fond plein de l'entête
+   (.entete-fond) : posée à top:0, la rangée serait cachée dessous. Elle
+   commence donc là où le fond s'arrête — entête + deux encarts — et
+   pend comme une guirlande accrochée sous le toit. */
 .hero-guirlande {
   position: absolute;
-  top: 0; left: 0; right: 0;
+  top: calc(var(--entete-total) + var(--entete-encart));
+  left: 0; right: 0;
   height: 10px;
   display: flex;
   justify-content: space-between;
@@ -2346,33 +2376,7 @@ html.mvt .hero-guirlande span {
 /* Sans JS, la guirlande est simplement allumée — pas d'écran vide. */
 html:not(.mvt) .hero-guirlande span { opacity: 0.9; box-shadow: 0 0 8px 1px rgba(240, 186, 84, 0.7); }
 
-/* ── 3 · La progression du défilement, en guirlande ─────────────────── */
-
-.progression {
-  position: fixed;
-  left: 0; right: 0;
-  z-index: 190;                 /* sous le bandeau (200), sur la pilule */
-  top: var(--bandeau-h, 0px);
-  height: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 8px;
-  pointer-events: none;
-}
-body:not(.avec-bandeau) .progression { top: 0; }
-.progression span {
-  width: 4px; height: 4px;
-  border-radius: 50%;
-  background: rgba(240, 234, 222, 0.16);
-  transition: background 260ms ease, box-shadow 260ms ease;
-}
-.progression span.on {
-  background: #F0BA54;
-  box-shadow: 0 0 6px rgba(240, 186, 84, 0.75);
-}
-
-/* ── 4 · La frise se trace ──────────────────────────────────────────── */
+/* ── 3 · La frise se trace ──────────────────────────────────────────── */
 
 /* Le filet part de la gauche et se déploie. `transform` seul : aucune
    relecture de mise en page. */
@@ -2400,7 +2404,7 @@ html.mvt .frise-etape:not(.atteinte) .frise-point {
   box-shadow: none;
 }
 
-/* ── 5 · La vitrine qui défile ──────────────────────────────────────── */
+/* ── 4 · La vitrine qui défile ──────────────────────────────────────── */
 
 .defile {
   position: relative;
@@ -2428,6 +2432,19 @@ html:not(.mvt) .defile { overflow-x: auto; }
 @media (prefers-reduced-motion: reduce) {
   .defile { overflow-x: auto; }
 }
+/* Mouvement réduit : une rangée qu'on fait glisser au doigt ou au
+   pavé, aimantée photo par photo. Pas de clones (le composant ne les rend
+   pas), pas de glissement maison : le défilement natif fait le geste. */
+.defile--manuel {
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  cursor: auto;
+}
+.defile--manuel .defile-piste { padding-inline: 5%; }
+.defile--manuel .defile-item { scroll-snap-align: center; }
+
 /* ⚠️ `infinite` ASSUMÉ, et borné. Voir check-rien-ne-boucle : la règle
    du dossier est « aucune boucle décorative ». Celle-ci est une
    exception demandée, et elle est tenue court — elle ne tourne QUE
@@ -2464,7 +2481,7 @@ html.mvt .defile--anime.saisi .defile-piste { animation-play-state: paused; }
   font-size: 18px; letter-spacing: 0.07em; line-height: 1;
 }
 
-/* ── 6 · Les petites touches ────────────────────────────────────────── */
+/* ── 5 · Les petites touches ────────────────────────────────────────── */
 
 /* Le bouton primaire prend une lueur chaude au survol. L'ambre est la
    LUMIÈRE : ici elle éclaire le bouton, elle ne le peint pas. */
@@ -2487,21 +2504,44 @@ html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta {
 .faq-panneau[data-ouvert="1"] { grid-template-rows: 1fr; }
 .faq-panneau > div { overflow: hidden; min-height: 0; }
 
-/* ── 7 · Rien ne bouge pour qui l'a demandé ─────────────────────────── */
+/* ── 6 · Rien ne se DÉPLACE pour qui l'a demandé ────────────────────
+   « Réduire les animations » proscrit le DÉPLACEMENT — glissement,
+   zoom, balayage, défilement automatique. Il ne demande pas une page
+   morte. La première version coupait TOUT (le script sortait avant de
+   poser html.mvt) : sur un Mac réglé ainsi, le site n'avait plus aucune
+   vie, et on l'a pris pour une panne sur ordinateur.
+
+   Ici, sous `html.mvt` :
+     · texte et photos apparaissent en FONDU, 300 ms, opacité seule —
+       ni montée, ni dézoom, ni découpage ;
+     · le hero s'éclaire (luminosité seule), les ampoules s'allument
+       ENSEMBLE, sans séquence ;
+     · la frise est tracée d'emblée, ses points changent d'état ;
+     · la bande des réalisations ne défile pas (VitrineDefilante la
+       rend en rangée manuelle), le comparateur reste à 50 %, manuel ;
+     · la FAQ s'ouvre sans glisser, les boutons ne bougent pas.       */
 @media (prefers-reduced-motion: reduce) {
-  html.mvt .rv-t,
-  html.mvt .rv-t.est-la { opacity: 1; transform: none; transition: none; }
+  html.mvt .rv-t { opacity: 0; transform: none; }
+  html.mvt .rv-t.est-la { opacity: 1; transform: none; transition: opacity 300ms ease var(--rv-d, 0ms); }
   html.mvt .rv-p > img,
-  html.mvt .rv-p > span > img,
+  html.mvt .rv-p > span > img {
+    clip-path: none; transform: none; opacity: 0;
+  }
   html.mvt .rv-p.est-la > img,
   html.mvt .rv-p.est-la > span > img {
-    clip-path: none; transform: none; transition: none;
+    clip-path: none; transform: none; opacity: 1;
+    transition: opacity 300ms ease var(--rv-d, 0ms);
   }
-  html.mvt .hero-section > img { animation: none; filter: none; }
-  html.mvt .hero-guirlande span { animation: none; opacity: 0.9; }
+  html.mvt .hero-section > img { animation: heroEclaire 600ms ease both; }
+  html.mvt .hero-guirlande span { animation: ampouleAllume 600ms ease both; animation-delay: 0ms; }
   html.mvt .defile--anime .defile-piste { animation: none; }
   html.mvt .frise::before { transform: none; transition: none; }
-  html.mvt .frise-point { transition: none; }
+  html.mvt .frise-point { transition: background 300ms ease, border-color 300ms ease, box-shadow 300ms ease; }
   .faq-panneau { transition: none; }
-  html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta { transition: none; }
+  html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta { transition: box-shadow 260ms ease; }
+}
+/* Luminosité seule : la photo ne bouge pas, elle s'éclaire. */
+@keyframes heroEclaire {
+  from { filter: brightness(0.45); }
+  to   { filter: brightness(1); }
 }

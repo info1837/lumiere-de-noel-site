@@ -100,10 +100,12 @@ console.log('\n--- 4. 🚨 Rien ne bouge pour qui l\'a demandé ---');
   const mvt = lire('lib/mouvement.js');
   t('🚨 le garde existe, en un seul endroit',
     /prefers-reduced-motion: reduce/.test(mvt) && /export function mouvementReduit/.test(mvt));
-  t('🚨 on sort avant de poser quoi que ce soit',
-    /if \(mouvementReduit\(\)\) return;/.test(codeNu));
-  t('🚨 …donc avant même la classe racine',
-    codeNu.indexOf('if (mouvementReduit()) return;') < codeNu.indexOf('classList.add(CLASSE_RACINE)'));
+  // ⚠️ « Mouvement réduit » ne veut plus dire « rien ». La couche pose
+  // la classe racine dans les deux cas — les FONDUS restent — et la
+  // feuille retire tout déplacement. Voir check-vie §6.
+  t('🚨 le garde est lu AVANT de poser la classe racine',
+    /const doux = mouvementReduit\(\);/.test(codeNu)
+    && codeNu.indexOf('const doux = mouvementReduit();') < codeNu.indexOf('classList.add(CLASSE_RACINE)'));
 
   // ⚠️ LA RÈGLE QUI COMPTE VRAIMENT : l'état masqué n'existe QUE si le
   // script a posé la classe sur <html>. Sans JS, aucune règle
@@ -113,10 +115,10 @@ console.log('\n--- 4. 🚨 Rien ne bouge pour qui l\'a demandé ---');
   t('🚨 …et la classe est posée par le script', /classList\.add\(CLASSE_RACINE\)/.test(codeNu));
   t('🚨 la neige est coupée aussi en CSS',
     /@media \(prefers-reduced-motion: reduce\) \{[\s\S]{0,60}\.snow \{ display: none; \}/.test(cssNu));
-  t('🚨 et toutes les apparitions sont neutralisées',
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,900}html\.mvt \.rv-t\.est-la \{ opacity: 1; transform: none; transition: none; \}/.test(cssNu));
-  t('🚨 le hero ne s\'allume pas non plus',
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,1200}html\.mvt \.hero-section > img \{ animation: none;/.test(cssNu));
+  t('🚨 les apparitions ne déplacent plus rien (fondu seul)',
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,900}html\.mvt \.rv-t\.est-la \{ opacity: 1; transform: none; transition: opacity 300ms/.test(cssNu));
+  t('🚨 le hero s\'éclaire sans bouger (luminosité seule)',
+    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,1200}html\.mvt \.hero-section > img \{ animation: heroEclaire/.test(cssNu));
 }
 
 console.log('\n--- 5. Ce à quoi on ne touche pas ---');
