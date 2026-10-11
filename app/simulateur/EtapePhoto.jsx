@@ -128,7 +128,11 @@ export default function EtapePhoto({ leadId, telephone, onPhoto, setErreur }) {
       if (relais.expire_a) {
         const reste = Date.parse(relais.expire_a) - Date.now();
         if (reste <= 0) { if (vivant) setEtatRelais("expire"); return; }
-        if (vivant) setMinutes(Math.ceil(reste / 60000));
+        // Borné à la durée du code : `expire_a` vient de l'horloge du CRM,
+        // `Date.now()` de celle du visiteur. Quelques secondes d'écart
+        // affichaient « expire dans 16 min » pour un code de quinze.
+        const plafond = relais.duree_ms ? Math.ceil(relais.duree_ms / 60000) : Infinity;
+        if (vivant) setMinutes(Math.min(Math.ceil(reste / 60000), plafond));
       }
       try {
         const r = await fetch(`/api/simulateur/relais?code=${encodeURIComponent(relais.code)}`, { cache: "no-store" });
