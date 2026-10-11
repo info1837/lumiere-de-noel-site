@@ -51,7 +51,7 @@ console.log('\n--- 2. 🚨 Plus AUCUNE animation infinie, sauf la neige du hero 
   //   .bandeau-rarete__pastille   le point clignotant devant « Octobre »,
   //                               demandé nommément ;
   //   .led--twinkle/chase/breathe la démo interactive de l'éclairage
-  //                               permanent sur /eclairage-architectural :
+  //                               permanent (/services/eclairage-architectural-permanent) :
   //                               l'animation EST le produit montré, la
   //                               couper viderait la démo de son sens.
   //   html.mvt .defile--anime .defile-piste

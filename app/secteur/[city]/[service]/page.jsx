@@ -5,7 +5,7 @@ import QuoteForm from "@/components/QuoteForm";
 import { BreadcrumbJsonLd, ServiceJsonLd, FaqJsonLd } from "@/components/jsonld";
 import { servicePhoto } from "@/components/photos";
 import {
-  services, cities, findCity, findService, inCity,
+  services, cities, findCity, findService, inCity, cleService, faqVilleService,
   navy, offWhite, ivory, gold, charcoal, goldText, creme,
 } from "@/components/data";
 
@@ -44,27 +44,15 @@ export function generateMetadata({ params }) {
   };
 }
 
-const buildFaq = (cityName, serviceTitle) => [
-  {
-    q: `Faites-vous l'installation de ${serviceTitle.toLowerCase()} ${inCity(cityName)}?`,
-    a: `Oui, ${cityName} est dans notre territoire. On planifie les installations par secteur pour limiter les déplacements — réserver tôt vous laisse le choix de la date.`,
-  },
-  {
-    q: `Combien de temps prend l'installation ${inCity(cityName)}?`,
-    a: `La plupart des résidences se font en une seule visite. Pour les projets commerciaux ou les grandes propriétés, on planifie selon vos besoins.`,
-  },
-  {
-    q: `Le matériel est-il inclus?`,
-    a: `Oui. Lumières DEL de qualité commerciale, attaches, minuteries — tout est fourni, installé, entretenu et retiré par notre équipe.`,
-  },
-];
-
 export default function CityServicePage({ params }) {
   const c = findCity(params.city);
   const s = findService(params.service);
   if (!c || !s) return notFound();
 
-  const faqs = buildFaq(c.name, s.title);
+  // ⚠️ Deux questions de la ville, une du service — plus « Faites-vous
+  // l'installation de lumières de noël — résidentiel à Blainville? ».
+  const faqs = faqVilleService(c, s);
+  const ligneLocale = c.parService[cleService(s.slug)];
   const otherServicesInCity = services.filter((x) => x.slug !== s.slug);
 
   return (
@@ -82,7 +70,7 @@ export default function CityServicePage({ params }) {
       <PageHero
         kicker={`${c.regionLabel} — ${c.name}`}
         title={`${s.title} ${inCity(c.name)}`}
-        subtitle={s.forCity ? s.forCity(c.name) : s.intro}
+        subtitle={ligneLocale}
         image={servicePhoto(s.slug, c.slug)?.src}
         imageAlt={servicePhoto(s.slug, c.slug)?.alt}
         ctaLabel="Réserver ma date"
@@ -101,13 +89,14 @@ export default function CityServicePage({ params }) {
             <div>
               <SectionTag>Service {inCity(c.name)}</SectionTag>
               <SectionTitle>{s.h1 || s.title} — {c.name}</SectionTitle>
-              {/* Contenu propre à CHAQUE combinaison ville × service (anti contenu mince).
-                  forCity() + le corps unique de la ville évitent les 24 pages quasi-identiques. */}
-              <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>
-                {s.forCity ? s.forCity(c.name) : s.intro}
-              </p>
-              <p style={{ color: "#444", fontSize: 17, marginBottom: 16 }}>{c.body}</p>
-              <p style={{ color: "#444", fontSize: 17, marginBottom: 22 }}>{s.body}</p>
+              {/* ⚠️ CE QUI DIFFÈRE D'UNE VILLE À L'AUTRE, ET RIEN D'AUTRE.
+                  Avant : forCity() (le même gabarit, seul le nom changeait)
+                  + le corps du SERVICE, identique sur les 6 villes. Les
+                  pages partageaient ~43 % de leur texte. Le corps du
+                  service vit sur sa page ; ici, la ligne locale du service
+                  et le corps de la ville. */}
+              <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>{ligneLocale}</p>
+              <p style={{ color: "#444", fontSize: 17, marginBottom: 22 }}>{c.body}</p>
               <ul style={{ listStyle: "none" }}>
                 {s.bullets.map((b, i) => (
                   <li key={i} style={{ display: "flex", gap: 10, marginBottom: 12, color: charcoal, fontSize: 16 }}>
@@ -129,7 +118,9 @@ export default function CityServicePage({ params }) {
                 <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>
                   À propos de {c.name}
                 </div>
-                <p style={{ color: "#444", fontSize: 15, margin: 0 }}>{c.intro}</p>
+                {c.local.map((l, i) => (
+                  <p key={i} style={{ color: "#444", fontSize: 15, margin: i ? "10px 0 0" : 0 }}>{l}</p>
+                ))}
               </div>
             </div>
           </div>

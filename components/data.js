@@ -275,8 +275,9 @@ export const services = [
       "Rappels sans frais et illimités, de la pose au retrait",
     ],
     body: "Notre équipe se déplace, mesure votre propriété et propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
-    forCity: (city) =>
-      `Lumières de Noël résidentielles à ${city} : conception, pose, entretien et retrait — tout inclus, par une équipe formée pour le travail en hauteur. On planifie selon la météo locale et les premières neiges.`,
+    // Une question de SERVICE pour les pages ville × service (la ville
+    // fournit les autres, voir `villesBrutes[].faq`).
+    faqService: { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par une équipe formée et assurée. Vous n'avez pas à sortir l'échelle." },
   },
   {
     slug: "lumieres-de-noel-commercial",
@@ -297,8 +298,7 @@ export const services = [
       "Maintenance pendant la saison incluse",
     ],
     body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
-    forCity: (city) =>
-      `Pour les commerces de ${city}, on planifie l'installation en dehors des heures d'ouverture quand c'est requis — vos clients voient le résultat, jamais les échelles.`,
+    faqService: { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },
   },
   {
     slug: "eclairage-architectural-permanent",
@@ -319,8 +319,36 @@ export const services = [
       "Rappels sans frais toute la saison, de la pose au retrait",
     ],
     body: "L'éclairage architectural permanent élimine la pose annuelle : un seul investissement et votre propriété change de visage à chaque fête. La technologie DEL utilisée est basse consommation et conçue pour résister aux hivers québécois. La plupart des résidences sont installées en une seule journée.",
-    forCity: (city) =>
-      `À ${city}, l'éclairage architectural permanent élimine définitivement la pose annuelle de lumières — un seul investissement, illuminé toute l'année.`,
+    faqService: { q: "Est-ce que les pastilles se voient le jour?", a: "Très peu. Elles épousent la couleur du soffite ; on remarque l'éclairage seulement une fois allumé." },
+    // ⚠️ FUSION DE /eclairage-architectural (partie 2, octobre 2026).
+    // Deux pages se disputaient le même sujet, avec le même titre. Ce que
+    // l'ancienne avait de mieux vit maintenant ici : la démo de
+    // l'application, le gros plan des pastilles, la FAQ. L'ancienne URL
+    // redirige en 308 (next.config.mjs).
+    photoDetail: PHOTOS["permanent-detail"],
+    appDemo: true,
+    whyChoose: [
+      { title: "Installé une fois", desc: "Aucune réinstallation annuelle — le système reste en place toute l'année." },
+      { title: "Toutes les occasions", desc: "Halloween, Noël, Saint-Valentin, fête nationale : un thème par soir." },
+      { title: "Écoénergétique", desc: "DEL basse consommation, durée de vie de plusieurs années." },
+      { title: "Discret de jour", desc: "Profil mince couleur soffite — on ne voit que la lumière, le soir." },
+    ],
+    faq: [
+      { q: "Est-ce que les lumières sont visibles le jour ?", a: "Très peu. Les pastilles épousent la couleur du soffite et restent discrètes ; on remarque l'éclairage seulement une fois allumé." },
+      { q: "Puis-je changer les couleurs moi-même ?", a: "Oui. Tout se contrôle depuis une application : couleurs, zones, animations, minuteries et scènes pour chaque fête." },
+      { q: "Combien de temps dure l'installation ?", a: "La plupart des résidences se font en une seule visite, selon la dimension et l'architecture du bâtiment." },
+      { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
+      { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
+      { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
+      { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la consultation design." },
+      { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
+    ],
+    // Vraies installations d'éclairage permanent. Pas de légende de ville :
+    // ces photos-là n'ont pas de ville confirmée au dossier.
+    gallery: [
+      { image: PHOTOS["permanent-01"].src, alt: PHOTOS["permanent-01"].alt },
+      { image: PHOTOS["permanent-02"].src, alt: PHOTOS["permanent-02"].alt },
+    ],
   },
 ];
 
@@ -339,6 +367,30 @@ const villesBrutes = [
     intro:
       "Blainville est au cœur de notre territoire. De Fontainebleau au Plateau, de Chambéry à Notre-Dame — on connaît les rues et les styles d'architecture du secteur.",
     body: "On planifie le secteur Blainville–Boisbriand–Sainte-Thérèse ensemble, pour limiter les déplacements — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
+    // ⚠️ DU VRAI LOCAL, PAS UN GABARIT (partie 2). Les pages de ville
+    // partageaient ~43 % de leur texte (5-grammes, Blainville vs Laval) et
+    // leurs FAQ étaient générées (« Faites-vous l'installation de lumières de
+    // noël — résidentiel à Blainville? »). Chaque ville porte maintenant :
+    //   local      — 1-2 lignes sur la ville elle-même (quartiers, bâti)
+    //   parService — une ligne locale par service (pages ville × service)
+    //   faq        — les questions qu'une personne poserait, à elle seule
+    // RIEN d'inventé sur des clients, des chiffres ou des avis : les prix et
+    // promesses sont ceux que le site affirme déjà partout.
+    local: [
+      "Le parc résidentiel de Blainville, c'est beaucoup de bungalows et de cottages, et des quartiers plus récents comme Fontainebleau, où l'on voit des toits plats et des façades contemporaines.",
+      "Une longue ligne de toit dégagée se prête à une guirlande continue ; un toit à plusieurs pignons demande plus de points d'attache, et un toit plat se souligne par sa bordure.",
+    ],
+    parService: {
+      residentiel: "Bungalow, cottage ou maison contemporaine de Fontainebleau : la guirlande suit votre ligne de toit, qu'elle soit simple, à pignons ou plate.",
+      commercial: "Commerces du boulevard du Curé-Labelle et des parcs d'affaires de Blainville : on installe en dehors de vos heures d'ouverture.",
+      permanent: "Sur une maison récente aux soffites continus, les pastilles courent d'un bout à l'autre de la façade et disparaissent le jour.",
+    },
+    faq: [
+      { q: "Installez-vous à Blainville?", a: "Oui, partout à Blainville — Fontainebleau, Chambéry, le Plateau, Notre-Dame. On planifie Blainville avec Boisbriand et Sainte-Thérèse, dans la même tournée." },
+      { q: "Combien coûte une maison à Blainville?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Un bungalow avec une ligne de toit simple reste près de ce tarif ; un cottage à deux étages ou un toit à plusieurs pignons demande plus de matériel et de temps. Le prix exact est confirmé après une courte consultation." },
+      { q: "Mon toit est plat. Est-ce que ça se fait?", a: "Oui. Sur un toit plat, on souligne la bordure de la toiture, et on illumine souvent les colonnes et les arbres de la façade pour donner du relief." },
+      { q: "Quand faut-il réserver à Blainville?", a: "Idéalement en octobre. Comme Blainville se planifie avec Boisbriand et Sainte-Thérèse, réserver tôt vous laisse choisir votre date dans la tournée du secteur." },
+    ],
   },
   {
     slug: "terrebonne",
@@ -349,6 +401,20 @@ const villesBrutes = [
     intro:
       "De Lachenaie à La Plaine en passant par le Vieux-Terrebonne, nous illuminons résidences et commerces dans tout le secteur. Architecture variée — bungalows, cottages, maisons de ville — on adapte le design à votre propriété.",
     body: "Le Vieux-Terrebonne demande des installations soignées, qui mettent en valeur les façades patrimoniales ; les nouveaux développements de Lachenaie et La Plaine demandent souvent des dégagements d'arbres et arbustes plus généreux. Devis personnalisé pour chaque adresse.",
+    local: [
+      "Terrebonne réunit le Vieux-Terrebonne, ses maisons anciennes et ses façades patrimoniales, et des quartiers plus récents à Lachenaie et La Plaine, où dominent les cottages et les maisons de ville.",
+    ],
+    parService: {
+      residentiel: "Maison de ville à façade étroite ou cottage sur un grand terrain : on dose la guirlande selon ce qui se voit de la rue.",
+      commercial: "Restaurants et boutiques du Vieux-Terrebonne, commerces de Lachenaie : installation hors des heures d'ouverture, pour ne rien déranger.",
+      permanent: "Les cottages et maisons de ville de Lachenaie et La Plaine ont souvent de longs soffites continus : les pastilles s'y fondent le jour.",
+    },
+    faq: [
+      { q: "Allez-vous jusqu'à La Plaine et Lachenaie?", a: "Oui. Tout Terrebonne : le Vieux-Terrebonne, Lachenaie, La Plaine et les secteurs entre les deux." },
+      { q: "Combien coûte une maison à Terrebonne?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison de ville à façade étroite reste près de ce tarif ; un cottage avec de grands arbres à enrubanner demande plus de matériel. Le prix exact suit une courte consultation." },
+      { q: "J'habite une maison ancienne dans le Vieux-Terrebonne. Vous installez quand même?", a: "Oui. Le design se décide avec vous à la consultation : sur une façade patrimoniale, on souligne ses lignes plutôt que de la couvrir." },
+      { q: "J'ai beaucoup d'arbres. Est-ce compris?", a: "Les arbres et les arbustes font partie du service, au même titre que la toiture. Chaque arbre enrubanné ajoute du matériel et du temps : on en tient compte dans le prix, devant vous." },
+    ],
   },
   {
     slug: "saint-jerome",
@@ -359,6 +425,20 @@ const villesBrutes = [
     intro:
       "Saint-Jérôme et ses anciens secteurs (Bellefeuille, Lafontaine, Saint-Antoine) sont dans notre territoire. Centre-ville historique, secteurs résidentiels et propriétés commerciales — on installe pour tout.",
     body: "L'hiver arrive vite en haut des Laurentides : on planifie les installations Saint-Jérôme avant les autres pour devancer les premières chutes de neige importantes. Réservez tôt pour garantir votre date.",
+    local: [
+      "Saint-Jérôme regroupe depuis 2002 les anciennes municipalités de Bellefeuille, Lafontaine et Saint-Antoine : des terrains souvent plus grands qu'en banlieue proche, et des arbres matures en façade.",
+    ],
+    parService: {
+      residentiel: "À Bellefeuille et Lafontaine, les grands arbres en façade s'enrubannent avec la ligne de toit : c'est souvent eux qu'on voit de la rue.",
+      commercial: "Centre-ville, rue Saint-Georges et commerces des grands axes de Saint-Jérôme : installation hors des heures d'ouverture.",
+      permanent: "Sur les grandes façades de Bellefeuille ou de Lafontaine, les pastilles suivent toute la ligne de toit et se commandent par zones.",
+    },
+    faq: [
+      { q: "Venez-vous à Bellefeuille et Saint-Antoine?", a: "Oui, dans tous les secteurs de Saint-Jérôme : le centre-ville, Bellefeuille, Lafontaine et Saint-Antoine." },
+      { q: "Combien coûte une maison à Saint-Jérôme?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Sur un grand terrain, ce sont surtout les arbres à enrubanner qui font varier le prix. Le montant exact est confirmé après une courte consultation." },
+      { q: "La neige arrive tôt ici. Est-ce trop tard en novembre?", a: "Pas forcément : on planifie Saint-Jérôme avant les secteurs plus au sud, justement à cause de la neige. Mais les dates partent vite, et octobre reste le plus sûr." },
+      { q: "Pouvez-vous enrubanner de grands arbres?", a: "Oui. Arbres et arbustes font partie du service, travaillés par une équipe formée pour le travail en hauteur." },
+    ],
   },
   {
     slug: "laval",
@@ -369,6 +449,20 @@ const villesBrutes = [
     intro:
       "Laval est sur notre territoire principal : Sainte-Dorothée, Sainte-Rose, Chomedey, Fabreville, Vimont, Saint-François. Quartiers résidentiels et commerces — on couvre toute l'île Jésus.",
     body: "Les grandes propriétés de Sainte-Dorothée et Sainte-Rose se prêtent bien aux designs haut de gamme. Côté commercial : restaurants, concessionnaires et bureaux le long du boulevard des Laurentides et de l'autoroute 15.",
+    local: [
+      "Laval, ce sont quatorze anciennes municipalités devenues des quartiers, chacun avec son caractère : Chomedey et Vimont plus denses, avec beaucoup de bungalows et de duplex, d'autres secteurs plus aérés vers la rivière des Mille Îles.",
+    ],
+    parService: {
+      residentiel: "Bungalow de Vimont, duplex de Chomedey ou grande maison au bord de la rivière : le design part de votre façade, pas d'un modèle.",
+      commercial: "Restaurants, concessionnaires et bureaux du boulevard des Laurentides et de l'autoroute 15 : installation planifiée hors des heures d'ouverture.",
+      permanent: "Sur un duplex, les pastilles peuvent couvrir toute la façade, et chaque zone se règle séparément dans l'application.",
+    },
+    faq: [
+      { q: "Installez-vous partout à Laval?", a: "Oui, sur toute l'île Jésus : Sainte-Dorothée, Sainte-Rose, Chomedey, Fabreville, Vimont, Saint-François et les autres quartiers." },
+      { q: "Combien coûte une maison à Laval?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Un bungalow reste près de ce tarif ; une grande propriété de Sainte-Dorothée avec plusieurs arbres demande plus. Le prix exact suit une courte consultation." },
+      { q: "J'ai un duplex. Vous l'illuminez au complet?", a: "Oui, toute la façade ou seulement votre partie. Si le bâtiment est partagé, on en parle avec les deux propriétaires à la consultation." },
+      { q: "Faites-vous les commerces du boulevard des Laurentides?", a: "Oui : restaurants, concessionnaires, bureaux. On installe en dehors de vos heures d'ouverture." },
+    ],
   },
   {
     slug: "montreal",
@@ -379,6 +473,20 @@ const villesBrutes = [
     intro:
       "Sur l'île, on installe partout : Outremont, Westmount, le Plateau, Ahuntsic, Rosemont, NDG, Côte-des-Neiges. Façades patrimoniales, duplex et triplex, copropriétés — on adapte le design à votre style architectural.",
     body: "Les ruelles montréalaises et les façades en rangée demandent une approche différente des grands terrains de banlieue : davantage d'attention aux corniches, balcons et alignements de fenêtres. Les contraintes urbaines — stationnement, accès, hauteur — font partie du travail.",
+    local: [
+      "À Montréal, une grande partie des maisons sont des plex — duplex, triplex — avec escaliers extérieurs, balcons et corniches en façade, souvent collés au voisin.",
+    ],
+    parService: {
+      residentiel: "Plex du Plateau et de Rosemont, cottages d'Ahuntsic, maisons d'Outremont : chaque façade a son design, pas un modèle répété.",
+      commercial: "Vitrines de rues commerçantes, restaurants, bureaux : installation hors des heures d'ouverture, stationnement et accès prévus d'avance.",
+      permanent: "Sur la corniche d'un plex, les pastilles suivent la ligne du toit plat et restent discrètes le jour.",
+    },
+    faq: [
+      { q: "Installez-vous sur un triplex?", a: "Oui. Sur un plex, on illumine la corniche, les balcons et les garde-corps de l'escalier : c'est ce qui se voit de la rue, puisque le toit est plat." },
+      { q: "Combien coûte un plex à Montréal?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une façade de plex est étroite mais haute : le prix dépend surtout de la hauteur et du nombre de balcons. Il est confirmé après une courte consultation." },
+      { q: "Et le stationnement, dans une rue étroite?", a: "On s'en occupe. Stationnement, accès et hauteur font partie du travail en ville, et on les prévoit avant de venir." },
+      { q: "J'habite un condo. Est-ce possible?", a: "Oui, avec l'accord du syndicat de copropriété : la façade est une partie commune. On en parle ensemble à la consultation." },
+    ],
   },
   {
     slug: "rive-sud",
@@ -389,6 +497,20 @@ const villesBrutes = [
     intro:
       "On dessert toute la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie, Candiac. Résidentiel et commercial, du DIX30 aux quartiers résidentiels patrimoniaux.",
     body: "On dessert la couronne sud rapprochée. Pour les commerces des grandes artères, on planifie les installations hors-heures. Pour les résidences : développements récents comme quartiers établis (vieux Longueuil, vieux Boucherville).",
+    local: [
+      "La Rive-Sud s'étend de Saint-Lambert, au bord du fleuve, jusqu'à Saint-Bruno, au pied du mont, en passant par les grands quartiers résidentiels de Brossard.",
+    ],
+    parService: {
+      residentiel: "Bungalow, cottage ou maison de ville : un design par maison, jamais le même d'une rue à l'autre.",
+      commercial: "Commerces des grandes artères de la Rive-Sud, comme le boulevard Taschereau : installation planifiée hors des heures d'ouverture.",
+      permanent: "Dans les développements récents de Brossard, Candiac ou La Prairie, les soffites continus se prêtent bien aux pastilles permanentes.",
+    },
+    faq: [
+      { q: "Allez-vous à Brossard, Longueuil et Boucherville?", a: "Oui, et aussi à Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie et Candiac." },
+      { q: "Combien coûte une maison sur la Rive-Sud?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Le prix varie avec la hauteur, la longueur de toiture et le nombre d'arbres, et il est confirmé après une courte consultation." },
+      { q: "Si une lumière brûle, vous traversez le pont?", a: "Oui. Les rappels sont sans frais et illimités de la pose au retrait, sur la Rive-Sud comme ailleurs." },
+      { q: "Mon commerce est sur le boulevard Taschereau. Vous installez la nuit?", a: "Oui, hors des heures d'ouverture, pour que vos clients ne voient que le résultat." },
+    ],
   },
 ];
 
@@ -399,6 +521,22 @@ export const cities = villesBrutes.map((v) => {
   const ph = cityPhoto(v.slug);
   return { ...v, image: ph?.src ?? null, imageAlt: ph?.alt ?? null };
 });
+
+// La clé courte d'un service, pour `villesBrutes[].parService`.
+export const cleService = (slug) =>
+  slug.includes("commercial") ? "commercial" : slug.includes("permanent") ? "permanent" : "residentiel";
+
+// La FAQ d'une page ville × service : deux questions de LA ville, une du
+// service. Pour le commercial, la question de ville qui parle de commerce
+// passe devant quand il y en a une.
+export function faqVilleService(ville, service) {
+  const [couverture, prix, ...autres] = ville.faq;
+  const cle = cleService(service.slug);
+  const locale = cle === "commercial"
+    ? (autres.find((f) => /commerce|boulevard/i.test(f.q)) || autres[0])
+    : autres[0];
+  return [couverture, ...(cle === "residentiel" ? [prix] : []), locale, service.faqService].filter(Boolean);
+}
 
 // Helper : retrouve un service ou une ville par slug (utilisé dans les routes)
 export const findService = (slug) => services.find((s) => s.slug === slug);
@@ -465,52 +603,6 @@ export const blogPosts = [
 
 export const findPost = (slug) => blogPosts.find((p) => p.slug === slug);
 
-// --- Page : Éclairage architectural ------------------------------------------
-export const eclairagePage = {
-  slug: "eclairage-architectural",
-  navLabel: "Éclairage architectural",
-  heroKicker: "Éclairage permanent",
-  heroTitle: "LUMIÈRE PERMANENTE",
-  // DRAFT COPY
-  heroSubtitle:
-    "Un système DEL architectural installé une seule fois — illuminez votre propriété toute l'année, des Fêtes à la Saint-Jean, par simple application.",
-  heroImage: PHOTOS["permanent-hero"].src,
-  heroImageAlt: "Maison avec éclairage architectural permanent allumé la nuit",
-  // DRAFT COPY
-  feature: {
-    title: "Qu'est-ce que l'éclairage architectural permanent ?",
-    body: "Les pastilles DEL sont fixées discrètement sous les soffites et les corniches. Invisibles le jour, programmables le soir : blanc chaud pour le quotidien, couleurs et animations pour chaque occasion. Fini les échelles, fini la pose annuelle.",
-    points: [
-      "DEL discrètes, invisibles le jour",
-      "Des millions de couleurs et d'animations via l'application",
-      "Contrôle par zones, minuteries et scènes prédéfinies",
-      "Rappels sans frais toute la saison, de la pose au retrait",
-    ],
-  },
-  whyChoose: [
-    { title: "Installé une fois", desc: "Aucune réinstallation annuelle — le système reste en place toute l'année." },
-    { title: "Toutes les occasions", desc: "Halloween, Noël, Saint-Valentin, fête nationale : un thème par soir." },
-    { title: "Écoénergétique", desc: "DEL basse consommation, durée de vie de plusieurs années." },
-    { title: "Discret de jour", desc: "Profil mince couleur soffite — on ne voit que la lumière, le soir." },
-  ],
-  // DRAFT COPY — 8 questions reconstruites
-  faq: [
-    { q: "Est-ce que les lumières sont visibles le jour ?", a: "Très peu. Les pastilles épousent la couleur du soffite et restent discrètes ; on remarque l'éclairage seulement une fois allumé." },
-    { q: "Puis-je changer les couleurs moi-même ?", a: "Oui. Tout se contrôle depuis une application : couleurs, zones, animations, minuteries et scènes pour chaque fête." },
-    { q: "Combien de temps dure l'installation ?", a: "La plupart des résidences se font en une seule visite, selon la dimension et l'architecture du bâtiment." },
-    { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
-    { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
-    { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
-    { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la consultation design." },
-    { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
-  ],
-  // Vraies installations d'éclairage permanent. Pas de légende de ville :
-  // ces photos-là n'ont pas de ville confirmée au dossier.
-  gallery: [
-    { image: PHOTOS["permanent-01"].src, alt: PHOTOS["permanent-01"].alt },
-    { image: PHOTOS["permanent-02"].src, alt: PHOTOS["permanent-02"].alt },
-  ],
-};
 
 // Sélection de 6 photos de projets — représentative du territoire réel
 // (Rive-Nord + Grand Montréal + Rive-Sud). Utilisée pour l'aperçu accueil.
