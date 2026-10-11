@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
+import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb, FaqAccordion, Gallery } from "@/components/ui";
+import AppDemo from "@/components/AppDemo";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
 import QuoteForm from "@/components/QuoteForm";
 import {
@@ -91,15 +92,88 @@ export default function ServicePage({ params }) {
             {/* Le volet municipal n'a AUCUNE photo (heroImage: null). Sans ce
                 garde, React rend <img> sans src : une image cassée. On ne
                 réserve alors même pas le cadre — pas de trou décoratif. */}
-            {s.heroImage && (
+            {/* Le gros plan, quand le service en a un (les pastilles du
+                permanent) : remettre ici la photo du hero, c'est montrer
+                deux fois la même maison sur un écran. */}
+            {(s.photoDetail || s.heroImage) && (
               <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-                <img src={s.heroImage} alt={s.heroImageAlt} loading="lazy"
+                <img src={s.photoDetail?.src || s.heroImage} alt={s.photoDetail?.alt || s.heroImageAlt} loading="lazy"
                   style={{ width: "100%", height: "100%", objectFit: "cover" }} />
               </div>
             )}
           </div>
         </div>
       </section>
+
+      {/* Ce que l'ancienne page /eclairage-architectural avait de mieux,
+          fusionnée ici (partie 2) : la démo de l'application, pourquoi le
+          permanent, les vraies installations, la FAQ. Rendu seulement pour
+          le service qui porte ces données. */}
+      {s.appDemo && <AppDemo />}
+
+      {s.whyChoose && (
+        <section className="snowy" style={{ background: navy }}>
+          <div className="container">
+            <div style={{ textAlign: "center", marginBottom: 44 }}>
+              <SectionTag dark>Pourquoi choisir l'éclairage permanent</SectionTag>
+              <SectionTitle light style={{ margin: "0 auto" }}>Un investissement, illuminé toute l'année</SectionTitle>
+            </div>
+            <div className="grid-4">
+              {s.whyChoose.map((w, i) => (
+                <div key={i} className="glow-card" style={{ background: "#10202f", borderRadius: 14, padding: 26, border: "1px solid rgba(233,220,192,0.12)" }}>
+                  <div aria-hidden="true" style={{
+                    width: 44, height: 44, borderRadius: "50%", marginBottom: 16,
+                    background: gold, display: "flex", alignItems: "center", justifyContent: "center",
+                    color: charcoal, fontFamily: "'Bebas Neue', sans-serif", fontSize: 20,
+                  }}>
+                    {i + 1}
+                  </div>
+                  <h3 style={{ color: ivory, fontSize: 20, marginBottom: 8 }}>{w.title}</h3>
+                  <p style={{ color: "rgba(243,233,210,0.72)", fontSize: 15 }}>{w.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {s.gallery && (
+        <section style={{ background: offWhite }}>
+          <div className="container">
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+              <SectionTag>Réalisations</SectionTag>
+              <SectionTitle style={{ margin: "0 auto" }}>Projets d'éclairage architectural</SectionTitle>
+            </div>
+            <Gallery items={s.gallery} prechargees={0} />
+          </div>
+        </section>
+      )}
+
+      {s.faq && (
+        <section className="snowy" style={{ background: navy }}>
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: s.faq.map((f) => ({
+                  "@type": "Question",
+                  name: f.q,
+                  acceptedAnswer: { "@type": "Answer", text: f.a },
+                })),
+              }),
+            }}
+          />
+          <div className="container">
+            <div style={{ textAlign: "center", marginBottom: 36 }}>
+              <SectionTag dark>FAQ</SectionTag>
+              <SectionTitle light style={{ margin: "0 auto" }}>Vos questions sur l'éclairage permanent</SectionTitle>
+            </div>
+            <FaqAccordion items={s.faq} dark />
+          </div>
+        </section>
+      )}
 
       {/* ⚠️ L'ASSURANCE, SUR LA PAGE COMMERCIALE SEULEMENT.
           Pour un propriétaire, c'est une ligne rassurante parmi d'autres.

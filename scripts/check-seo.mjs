@@ -68,12 +68,7 @@ for (const c of chemins) {
 }
 
 console.log("\n--- 2. Aucun titre partagé ---");
-// ⚠️ UNE SEULE EXCEPTION, ET ELLE A UNE DATE DE FIN : les deux pages de
-// l'éclairage permanent se disputent le même sujet. Elles fusionnent dans
-// la partie 2 (redirection 308), et cette ligne part avec elles.
-const EXCEPTION_PARTIE_2 = ["/eclairage-architectural", "/services/eclairage-architectural-permanent"];
-const doublons = [...titres].filter(([, cs]) => cs.length > 1)
-  .filter(([, cs]) => !(cs.length === 2 && cs.every((c) => EXCEPTION_PARTIE_2.includes(c))));
+const doublons = [...titres].filter(([, cs]) => cs.length > 1);
 t("🚨 chaque page du sitemap a son propre titre", doublons.length === 0,
   doublons.map(([ti, cs]) => `« ${ti} » : ${cs.join(", ")}`).join(" | "));
 
@@ -94,6 +89,21 @@ console.log("\n--- 5. /realisations n'emprunte plus l'accueil ---");
   t("🚨 son titre n'est pas celui de l'accueil", r.titre !== a.titre, r.titre);
   t("son titre dit ce qu'elle montre", /^Réalisations — vraies installations/.test(r.titre || ""), r.titre);
   t("🚨 son H1 non plus", r.h1s[0] !== a.h1s[0] && !/au Québec$/i.test(r.h1s[0] || ""), r.h1s[0]);
+}
+
+console.log("\n--- 6. L'éclairage permanent : une seule page ---");
+{
+  // Deux pages se disputaient le sujet avec le même titre. Fusionnées dans
+  // la partie 2 ; l'ancienne URL redirige, et ne revient pas au sitemap.
+  const r = await fetch(BASE + "/eclairage-architectural", { redirect: "manual" });
+  t("🚨 /eclairage-architectural redirige en 308", r.status === 308, `${r.status}`);
+  t("🚨 …vers la page de service", /\/services\/eclairage-architectural-permanent$/.test(r.headers.get("location") || ""),
+    r.headers.get("location") || "");
+  t("🚨 l'ancienne URL n'est plus au sitemap", !chemins.includes("/eclairage-architectural"));
+  const page = await (await fetch(BASE + "/services/eclairage-architectural-permanent")).text();
+  t("la démo de l'application y est", /aria-label="Démo de l(&#x27;|')application/.test(page));
+  t("le gros plan des pastilles y est", page.includes("perm-led-02"));
+  t("la FAQ y est, balisée FAQPage", page.includes('"@type":"FAQPage"'));
 }
 
 console.log(`\n${ok}/${ok + ko} vérifications passées.`);

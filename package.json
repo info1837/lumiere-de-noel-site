@@ -26,6 +26,7 @@
     "check:blog": "node scripts/check-blog-mobile.mjs",
     "check:seo": "node scripts/check-seo.mjs",
     "check:debordement": "node scripts/check-debordement.mjs",
+    "check:local": "node --import ./scripts/next-alias-register.mjs scripts/check-pages-locales.mjs",
     "check:vie": "node scripts/check-vie.mjs",
     "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs",
     "captures:vie": "node scripts/captures-vie.mjs"

@@ -48,6 +48,11 @@ const nextConfig = {
       // reconnaît dans un journal d'accès.
       { source: "/services/lumieres-de-noel-municipal", destination: "/services/lumieres-de-noel-commercial", statusCode: 301 },
       { source: "/index", destination: "/", permanent: true },
+      // Deux pages se disputaient l'éclairage permanent, avec le même
+      // titre. Fusionnées dans la page de service (partie 2, octobre
+      // 2026) : la démo de l'application, le gros plan des pastilles et la
+      // FAQ y vivent maintenant. 308 (`permanent: true`) : rien ne se perd.
+      { source: "/eclairage-architectural", destination: "/services/eclairage-architectural-permanent", permanent: true },
 
       // .ca -> .com. Le .ca est l'ancien domaine : les pubs Meta de la
       // saison passée pointent dessus, et il rend actuellement un 404

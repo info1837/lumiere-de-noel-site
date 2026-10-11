@@ -8,7 +8,6 @@ export default function sitemap() {
   const staticRoutes = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "weekly", priority: 1.0 },
     { url: `${BASE}/realisations`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
-    { url: `${BASE}/eclairage-architectural`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/calculatrice`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/renouvellement`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/soumission`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },

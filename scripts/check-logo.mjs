@@ -29,7 +29,7 @@ import { chromium } from "playwright";
 const BASE = process.env.BASE_URL || "http://127.0.0.1:3000";
 const ROUTES = ["/", "/services", "/services/lumieres-de-noel-residentiel",
   "/services/lumieres-de-noel-commercial", "/services/eclairage-architectural-permanent",
-  "/eclairage-architectural", "/realisations", "/blog", "/calculatrice",
+  "/realisations", "/blog", "/calculatrice",
   "/renouvellement", "/secteur", "/soumission", "/merci"];
 // 1159 et 1160 encadrent le palier de la nav desktop : le défaut vivait juste
 // en dessous. Retirer ces deux largeurs, c'est rouvrir le trou.

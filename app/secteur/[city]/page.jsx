@@ -5,7 +5,7 @@ import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/jsonld";
 import QuoteForm from "@/components/QuoteForm";
 import { cityHeroPhoto } from "@/components/photos";
 import {
-  services, cities, findCity, inCity,
+  services, cities, findCity, inCity, cleService,
   navy, offWhite, ivory, gold, charcoal, goldText, creme,
 } from "@/components/data";
 
@@ -29,29 +29,12 @@ export function generateMetadata({ params }) {
   };
 }
 
-const cityFaq = (cityName) => [
-  {
-    q: `Desservez-vous tout le territoire de ${cityName}?`,
-    a: `Oui — ${cityName} et les municipalités voisines. Si vous êtes en limite de secteur, demandez : on vous le dira franchement.`,
-  },
-  {
-    q: `Combien coûte une installation à ${cityName}?`,
-    a: `Le tarif débute à 1 000 $ pour une résidence et varie selon la grandeur de la propriété et le design. Le prix exact est confirmé après une courte consultation.`,
-  },
-  {
-    q: `Quand devrais-je réserver pour ${cityName}?`,
-    a: `Le plus tôt possible — idéalement en octobre. Les dates de novembre partent vite : réserver tôt garantit la vôtre avant les premières neiges.`,
-  },
-  {
-    q: `Est-ce que le retrait est inclus?`,
-    a: `Oui. On revient en janvier désinstaller toutes les lumières et on entrepose le matériel jusqu'à la prochaine saison. Aucun frais additionnel.`,
-  },
-];
-
 export default function CityPage({ params }) {
   const c = findCity(params.city);
   if (!c) return notFound();
-  const faqs = cityFaq(c.name);
+  // Les questions qu'on pose VRAIMENT pour cette ville (data.js) — plus un
+  // gabarit où seul le nom changeait.
+  const faqs = c.faq;
   const otherCities = cities.filter((x) => x.slug !== c.slug);
 
   return (
@@ -87,6 +70,10 @@ export default function CityPage({ params }) {
             <SectionTag>{c.regionLabel}</SectionTag>
             <SectionTitle>Notre service {inCity(c.name)}</SectionTitle>
             <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>{c.body}</p>
+            <h3 style={{ color: charcoal, fontSize: 20, margin: "26px 0 10px" }}>À propos de {c.name}</h3>
+            {c.local.map((l, i) => (
+              <p key={i} style={{ color: "#444", fontSize: 17, marginBottom: 14 }}>{l}</p>
+            ))}
             <CTAButton href="/soumission">Réserver ma date</CTAButton>
           </div>
         </div>
@@ -112,7 +99,7 @@ export default function CityPage({ params }) {
                   <span className="liste-liens__region">{s.kicker}</span>
                   <span className="liste-liens__nom">{s.title} {inCity(c.name)}</span>
                   <span className="liste-liens__note">
-                    {s.forCity ? s.forCity(c.name) : s.intro}
+                    {c.parService[cleService(s.slug)]}
                   </span>
                 </Link>
               </li>

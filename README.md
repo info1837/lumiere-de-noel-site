@@ -18,7 +18,7 @@ npm run build && npm start   # build de production
 | Page | Route |
 |---|---|
 | Accueil (6 sections + améliorations) | `/` |
-| Éclairage architectural | `/eclairage-architectural` |
+| Éclairage architectural | `/services/eclairage-architectural-permanent` (`/eclairage-architectural` → 308) |
 | Lumière de Noël (portfolio) | `/lumiere-de-noel` |
 | Soumission | `/soumission` |
 

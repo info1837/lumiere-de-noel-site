@@ -18,7 +18,7 @@ import { chromium } from 'playwright';
 
 const BASE = process.env.BASE_URL || 'http://localhost:3230';
 const ROUTES = ['/', '/services', '/services/lumieres-de-noel-residentiel',
-  '/services/lumieres-de-noel-commercial', '/eclairage-architectural',
+  '/services/lumieres-de-noel-commercial', '/services/eclairage-architectural-permanent',
   '/soumission', '/calculatrice', '/secteur/blainville', '/realisations'];
 const ECART_MIN = 12;   // sous 12 px, ça se lit comme « collé »
 
