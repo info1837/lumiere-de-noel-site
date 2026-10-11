@@ -61,6 +61,7 @@ export function ServerFooter() {
             <h2 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Ressources</h2>
             <div><Link href="/blog" style={linkStyle}>Blog</Link></div>
             <div><Link href="/realisations" style={linkStyle}>Réalisations</Link></div>
+            <div><Link href="/concours" style={linkStyle}>Règlement du concours</Link></div>
             <div style={{ marginTop: 6 }}>
               <Link href="/soumission" style={{ ...linkStyle, color: gold, fontWeight: 700 }}>
                 Réserver ma date →
@@ -80,6 +81,8 @@ export function ServerFooter() {
             <Link href="/secteur" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Zones</Link>
             <Link href="/blog" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Blog</Link>
             <Link href="/soumission" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Soumission</Link>
+            <Link href="/concours" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Règlement du concours</Link>
+            <Link href="/confidentialite" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Confidentialité</Link>
           </div>
         </div>
       </div>
