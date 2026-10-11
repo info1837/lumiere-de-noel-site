@@ -48,7 +48,9 @@ console.log('\n--- 2. 🚨 Les champs n\'ont PAS changé ---');
   const form = lire('components/QuoteForm.jsx');
   // Les noms des champs voyagent jusqu'au CRM : en renommer un casserait
   // l'intake sans aucune erreur visible côté visiteur.
-  for (const champ of ['nom', 'telephone', 'courriel', 'adresse']) {
+  // Partie 3 : « ville » est un champ du formulaire court (obligatoire) ;
+  // « adresse » reste dans le paiement quand elle arrive du simulateur.
+  for (const champ of ['nom', 'telephone', 'courriel', 'ville', 'adresse']) {
     t(`le champ « ${champ} » existe toujours`, new RegExp(`\\b${champ}\\b`).test(form), champ);
   }
   t('le honeypot est intact', /HONEYPOT_FIELD|_website/.test(form + lire('components/data.js')));

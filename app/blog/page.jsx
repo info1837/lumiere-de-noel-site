@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { flouDe } from "@/components/photos-flou";
 import Link from "next/link";
 import { SectionTag, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
@@ -40,33 +42,33 @@ export default function BlogIndex() {
         </div>
       </section>
 
-      <section style={{ background: offWhite }}>
+      <section style={{ background: "#060E18" }}>
         <div className="container">
           <div className="grid-3" style={{ gap: 24 }}>
             {blogPosts.map((p) => (
-              <Link key={p.slug} href={`/blog/${p.slug}`} className="glow-card-light" style={{
+              <Link key={p.slug} href={`/blog/${p.slug}`} className="glow-card" style={{
                 display: "flex", flexDirection: "column", textDecoration: "none",
-                background: "#fff", borderRadius: 16, overflow: "hidden",
-                border: "1px solid #ece5d6",
+                background: "#0F1E33", borderRadius: 16, overflow: "hidden",
+                border: "1px solid rgba(240,234,222,0.12)",
               }}>
-                <div style={{ aspectRatio: "16 / 10", background: "#11202f" }}>
-                  <img src={p.image} alt={p.imageAlt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                <div style={{ position: "relative", aspectRatio: "16 / 10", background: "#11202f" }}>
+                  <Image src={p.image} alt={p.imageAlt} fill sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 380px"
+                    placeholder="blur" blurDataURL={flouDe(p.image)} style={{ objectFit: "cover" }} />
                 </div>
                 <div style={{ padding: 22, display: "flex", flexDirection: "column", flex: 1 }}>
-                  <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>
+                  <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>
                     {p.tags?.[0]} · {p.readingTime}
                   </div>
-                  <h2 style={{ color: charcoal, fontSize: 22, marginBottom: 8, lineHeight: 1.15 }}>{p.title}</h2>
-                  <p style={{ color: "#555", fontSize: 15, marginBottom: 14, flex: 1 }}>{p.excerpt}</p>
-                  <div style={{ color: "#888", fontSize: 13 }}>{fmtDate(p.date)}</div>
+                  <h2 style={{ color: ivory, fontSize: 22, marginBottom: 8, lineHeight: 1.15 }}>{p.title}</h2>
+                  <p style={{ color: "rgba(240,234,222,0.76)", fontSize: 15, marginBottom: 14, flex: 1 }}>{p.excerpt}</p>
+                  <div style={{ color: "rgba(240,234,222,0.62)", fontSize: 13 }}>{fmtDate(p.date)}</div>
                 </div>
               </Link>
             ))}
           </div>
 
           <div style={{ textAlign: "center", marginTop: 56 }}>
-            <CTAButton href="/soumission">Réserver ma date</CTAButton>
+            <CTAButton href="/soumission" variant="creme">Réserver ma date</CTAButton>
           </div>
         </div>
       </section>

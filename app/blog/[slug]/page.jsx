@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SectionTag, CTAButton, Breadcrumb } from "@/components/ui";
+import { CTAButton } from "@/components/ui";
+import { HeroPage } from "@/components/sections";
 import { ArticleJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
-import { blogPosts, findPost, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
+import { blogPosts, findPost } from "@/components/data";
 import { postBodies, BlogContent } from "../posts";
 
 export function generateStaticParams() {
@@ -50,29 +51,21 @@ export default function BlogPost({ params }) {
       />
       <ArticleJsonLd post={p} urlPath={`/blog/${p.slug}`} />
 
-      {/* Hero compact (image + titre) */}
-      <section style={{ position: "relative", padding: 0, background: navy, paddingTop: 100 }}>
-        <div style={{ position: "relative", height: 380, overflow: "hidden" }}>
-          <img src={p.image} alt={p.imageAlt}
-            style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover" }} />
-          <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(5,10,20,0.92), rgba(5,10,20,0.45))" }} />
-          <div className="container" style={{ position: "relative", height: "100%", display: "flex", flexDirection: "column", justifyContent: "flex-end", padding: "0 24px 32px" }}>
-            <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 8 }}>
-              {p.tags?.[0]} · {p.readingTime} · {fmtDate(p.date)}
-            </div>
-            <h1 style={{ color: ivory, fontSize: "clamp(2rem, 4.5vw, 3.2rem)", maxWidth: 900 }}>{p.title}</h1>
-          </div>
-        </div>
-      </section>
+      {/* Partie 3 : le hero de toutes les pages intérieures, avec la photo
+          de l'article. Puis une seule colonne lisible — crème sur marine,
+          18 px, ~68 caractères — l'encadré de réservation APRÈS l'article,
+          et « À lire ensuite » dessous, à toutes les largeurs. */}
+      <HeroPage
+        photo={{ src: p.image, alt: p.imageAlt }}
+        kicker={`${p.tags?.[0] ? `${p.tags[0]} · ` : ""}${p.readingTime} · ${fmtDate(p.date)}`}
+        titre={p.title}
+        reserver="/soumission"
+        preuve={false}
+        filAriane={[{ name: "Accueil", href: "/" }, { name: "Blog", href: "/blog" }, { name: p.title }]}
+      />
 
-      {/* Corps de l'article */}
-      <section style={{ background: offWhite }}>
+      <section className="section-article" style={{ background: "#0A1524" }}>
         <div className="container">
-          <Breadcrumb items={[
-            { name: "Accueil", href: "/" },
-            { name: "Blog", href: "/blog" },
-            { name: p.title },
-          ]} />
           {/* ⚠️ LA GRILLE VIT DANS globals.css, JAMAIS EN STYLE EN LIGNE.
               Un `gridTemplateColumns` en ligne gagne contre toute media query :
               à 375 px la grille restait à deux colonnes, résolue en
@@ -81,33 +74,23 @@ export default function BlogPost({ params }) {
           <div className="blog-grid">
             <article className="blog-article">
               <BlogContent blocks={body} />
-              <div style={{ marginTop: 32, padding: 20, background: "#fff", border: "1px solid #ece5d6", borderRadius: 14 }}>
-                <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
-                  Prêt à démarrer ?
-                </div>
-                <h3 style={{ color: charcoal, fontSize: 22, marginBottom: 10 }}>Réservez votre date</h3>
-                <p style={{ color: "#555", marginBottom: 16 }}>
-                  Une estimation claire pour votre propriété, après une courte consultation.
-                </p>
-                <CTAButton href="/soumission">Réserver ma date</CTAButton>
-              </div>
             </article>
 
-            <aside className="blog-aside">
-              <div style={{ background: "#fff", border: "1px solid #ece5d6", borderRadius: 14, padding: 18 }}>
-                <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>
-                  À lire ensuite
-                </div>
-                {others.map((o) => (
-                  <Link key={o.slug} href={`/blog/${o.slug}`} style={{
-                    display: "block", textDecoration: "none", color: charcoal,
-                    padding: "10px 0", borderBottom: "1px solid #f0ebde",
-                  }}>
-                    <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3, marginBottom: 4 }}>{o.title}</div>
-                    <div style={{ fontSize: 12, color: "#888" }}>{o.readingTime} · {fmtDate(o.date)}</div>
-                  </Link>
-                ))}
-              </div>
+            <div className="blog-reserver">
+              <div className="blog-reserver__tag">Prêt à démarrer ?</div>
+              <h2 className="blog-reserver__titre">Réservez votre date</h2>
+              <p>Une estimation claire pour votre propriété, après une courte consultation.</p>
+              <CTAButton href="/soumission" variant="creme">Réserver ma date</CTAButton>
+            </div>
+
+            <aside className="blog-aside" aria-labelledby="a-lire-ensuite">
+              <div id="a-lire-ensuite" className="blog-reserver__tag">À lire ensuite</div>
+              {others.map((o) => (
+                <Link key={o.slug} href={`/blog/${o.slug}`} className="blog-suivant">
+                  <span className="blog-suivant__titre">{o.title}</span>
+                  <span className="blog-suivant__meta">{o.readingTime} · {fmtDate(o.date)}</span>
+                </Link>
+              ))}
             </aside>
           </div>
         </div>

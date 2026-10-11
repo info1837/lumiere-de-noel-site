@@ -277,6 +277,24 @@ export const services = [
     body: "Notre équipe se déplace, mesure votre propriété et propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
     // Une question de SERVICE pour les pages ville × service (la ville
     // fournit les autres, voir `villesBrutes[].faq`).
+    // Gabarit de service (partie 3) : la bande de 3 photos réelles, ce qui
+    // est compris, la paire avant/après quand une VRAIE existe pour ce
+    // service, et une FAQ de 5 questions au plus.
+    bande: ["blainville-01", "montreal-01", "mercier-01"],
+    paire: "avant-ste-julienne",
+    compris: {
+      texte: "On fournit le matériel professionnel, on l'installe en sécurité, on l'entretient pendant la saison et on le retire après les Fêtes.",
+      items: ["Conception sur mesure", "Installation par notre équipe", "Rappels illimités pendant la saison", "Retrait + entreposage inclus"],
+      prix: "À partir de 1 000 $",
+      prixNote: "prix ferme, écrit",
+    },
+    faq: [
+      { q: "Fournissez-vous les lumières?", a: "Oui, tout le matériel : lumières DEL de qualité commerciale, attaches et minuteries. Rien à acheter de votre côté." },
+      { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par une équipe formée et assurée. Vous n'avez pas à sortir l'échelle." },
+      { q: "Combien ça coûte?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Le prix dépend de la hauteur, de la longueur de toiture et du nombre d'arbres ; il est confirmé par écrit après une courte consultation." },
+      { q: "Et si une lumière brûle en décembre?", a: "Un appel et on repasse sans frais, autant de fois qu'il le faut, de la pose au retrait." },
+      { q: "Qui enlève les lumières après les Fêtes?", a: "Nous. Le retrait est inclus en janvier, et on entrepose le matériel jusqu'à la prochaine saison." },
+    ],
     faqService: { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par une équipe formée et assurée. Vous n'avez pas à sortir l'échelle." },
   },
   {
@@ -298,6 +316,21 @@ export const services = [
       "Maintenance pendant la saison incluse",
     ],
     body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
+    bande: ["commercial-02", "arbres-01", "arbres-02"],
+    paire: null,
+    compris: {
+      texte: "Façades, vitrines, entrées et arbres : on conçoit, on installe hors de vos heures d'ouverture, on entretient et on retire en janvier.",
+      items: ["Conception pour votre façade et vos entrées", "Installation hors des heures d'ouverture", "Entretien inclus pendant la saison", "Retrait en janvier"],
+      prix: "Sur soumission",
+      prixNote: "attestation d'assurance sur demande",
+    },
+    faq: [
+      { q: "Installez-vous en dehors de nos heures d'ouverture?", a: "Oui. La pose se planifie hors des heures d'ouverture, pour que vos clients ne voient que le résultat." },
+      { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },
+      { q: "Combien coûte un projet commercial?", a: "C'est sur soumission : le prix dépend de la hauteur du bâtiment, de l'accès à l'électricité et de l'envergure du design. Il est confirmé par écrit après la visite." },
+      { q: "L'entretien est-il compris?", a: "Oui. Une section tombe ou une lumière brûle : un appel et on repasse sans frais pendant toute la saison." },
+      { q: "Qui retire l'installation?", a: "Nous, en janvier. Le retrait fait partie du service." },
+    ],
     faqService: { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },
   },
   {
@@ -319,35 +352,27 @@ export const services = [
       "Rappels sans frais toute la saison, de la pose au retrait",
     ],
     body: "L'éclairage architectural permanent élimine la pose annuelle : un seul investissement et votre propriété change de visage à chaque fête. La technologie DEL utilisée est basse consommation et conçue pour résister aux hivers québécois. La plupart des résidences sont installées en une seule journée.",
+    bande: ["permanent-detail", "permanent-01", "permanent-02"],
+    paire: null,
+    compris: {
+      texte: "Des pastilles DEL fixées une seule fois sous les soffites, et une application pour tout le reste de l'année.",
+      items: ["Pastilles DEL discrètes, invisibles le jour", "Couleurs et animations par application", "Contrôle par zones, minuteries et scènes", "Installé une seule fois"],
+      prix: "Sur soumission",
+      prixNote: "prix ferme, écrit",
+    },
     faqService: { q: "Est-ce que les pastilles se voient le jour?", a: "Très peu. Elles épousent la couleur du soffite ; on remarque l'éclairage seulement une fois allumé." },
     // ⚠️ FUSION DE /eclairage-architectural (partie 2, octobre 2026).
     // Deux pages se disputaient le même sujet, avec le même titre. Ce que
     // l'ancienne avait de mieux vit maintenant ici : la démo de
-    // l'application, le gros plan des pastilles, la FAQ. L'ancienne URL
+    // l'application, le gros plan des pastilles (en tête de `bande`), la FAQ. L'ancienne URL
     // redirige en 308 (next.config.mjs).
-    photoDetail: PHOTOS["permanent-detail"],
     appDemo: true,
-    whyChoose: [
-      { title: "Installé une fois", desc: "Aucune réinstallation annuelle — le système reste en place toute l'année." },
-      { title: "Toutes les occasions", desc: "Halloween, Noël, Saint-Valentin, fête nationale : un thème par soir." },
-      { title: "Écoénergétique", desc: "DEL basse consommation, durée de vie de plusieurs années." },
-      { title: "Discret de jour", desc: "Profil mince couleur soffite — on ne voit que la lumière, le soir." },
-    ],
     faq: [
       { q: "Est-ce que les lumières sont visibles le jour ?", a: "Très peu. Les pastilles épousent la couleur du soffite et restent discrètes ; on remarque l'éclairage seulement une fois allumé." },
       { q: "Puis-je changer les couleurs moi-même ?", a: "Oui. Tout se contrôle depuis une application : couleurs, zones, animations, minuteries et scènes pour chaque fête." },
       { q: "Combien de temps dure l'installation ?", a: "La plupart des résidences se font en une seule visite, selon la dimension et l'architecture du bâtiment." },
-      { q: "Quelle est la durée de vie des DEL ?", a: "Plusieurs années en usage normal. Pendant la saison, tout rappel est sans frais." },
-      { q: "Est-ce que ça consomme beaucoup d'électricité ?", a: "Non. La technologie DEL utilisée est basse consommation, même utilisée régulièrement." },
       { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
-      { q: "Pouvez-vous l'installer sur tout type de bâtiment ?", a: "Résidentiel et commercial. On évalue la faisabilité lors de la consultation design." },
       { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
-    ],
-    // Vraies installations d'éclairage permanent. Pas de légende de ville :
-    // ces photos-là n'ont pas de ville confirmée au dossier.
-    gallery: [
-      { image: PHOTOS["permanent-01"].src, alt: PHOTOS["permanent-01"].alt },
-      { image: PHOTOS["permanent-02"].src, alt: PHOTOS["permanent-02"].alt },
     ],
   },
 ];
@@ -454,7 +479,7 @@ const villesBrutes = [
     ],
     parService: {
       residentiel: "Bungalow de Vimont, duplex de Chomedey ou grande maison au bord de la rivière : le design part de votre façade, pas d'un modèle.",
-      commercial: "Restaurants, concessionnaires et bureaux du boulevard des Laurentides et de l'autoroute 15 : installation planifiée hors des heures d'ouverture.",
+      commercial: "Restaurants, concessionnaires et bureaux du boulevard des Laurentides et le long de l'autoroute 15 : on pose quand vos portes sont fermées.",
       permanent: "Sur un duplex, les pastilles peuvent couvrir toute la façade, et chaque zone se règle séparément dans l'application.",
     },
     faq: [
@@ -502,7 +527,7 @@ const villesBrutes = [
     ],
     parService: {
       residentiel: "Bungalow, cottage ou maison de ville : un design par maison, jamais le même d'une rue à l'autre.",
-      commercial: "Commerces des grandes artères de la Rive-Sud, comme le boulevard Taschereau : installation planifiée hors des heures d'ouverture.",
+      commercial: "Vitrines du boulevard Taschereau, commerces de Brossard ou de Longueuil : la pose se fait le soir ou tôt le matin, jamais pendant vos heures.",
       permanent: "Dans les développements récents de Brossard, Candiac ou La Prairie, les soffites continus se prêtent bien aux pastilles permanentes.",
     },
     faq: [
@@ -643,6 +668,23 @@ export const noelPage = {
     { image: PHOTOS["arbres-02"].src,       alt: PHOTOS["arbres-02"].alt,       caption: "Arbres et arbustes" },
   ],
 };
+
+// --- /realisations : la galerie complète, par catégorie (partie 3) ----------
+// Toutes les vraies photos du registre, rangées pour les pastilles de
+// filtre. `ville` n'existe QUE pour une photo située : les génériques
+// affichent leur catégorie, jamais un lieu qu'on ne peut pas affirmer.
+export const CATEGORIES_GALERIE = ["Résidentiel", "Commercial", "Arbres", "Permanent"];
+const CLES_GALERIE = {
+  "Résidentiel": ["blainville-01", "terrebonne-01", "st-jerome-01", "mirabel-01", "ste-julienne-01",
+    "ste-anne-01", "st-donat-01", "st-donat-02", "stratford-01", "lery-01", "mercier-01", "montreal-01", "residentiel-01"],
+  "Commercial": ["commercial-01", "commercial-02"],
+  "Arbres": ["arbre-enrubanne", "arbres-01", "arbres-02"],
+  "Permanent": ["permanent-hero", "permanent-01", "permanent-02", "permanent-03", "permanent-detail"],
+};
+export const galerieRealisations = Object.entries(CLES_GALERIE).flatMap(([categorie, cles]) =>
+  cles.filter((k) => PHOTOS[k]).map((k) => ({
+    cle: k, categorie, src: PHOTOS[k].src, alt: PHOTOS[k].alt, ville: PHOTOS[k].ville || null,
+  })));
 
 // 6 vignettes pour l'aperçu portfolio — gardé pour /services et les pages
 // de ville, qui montrent encore une grille.

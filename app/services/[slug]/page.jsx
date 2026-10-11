@@ -1,13 +1,12 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb, FaqAccordion, Gallery } from "@/components/ui";
-import AppDemo from "@/components/AppDemo";
+import { SectionTag, SectionTitle, CTAButton } from "@/components/ui";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
-import QuoteForm from "@/components/QuoteForm";
+import AppDemo from "@/components/AppDemo";
 import {
-  services, cities, findService, serviceArea, inCity, serviceOptions,
-  navy, offWhite, ivory, gold, charcoal, goldText, creme,
-} from "@/components/data";
+  HeroPage, BandePhotos, CeQuiEstCompris, AvantApres, Parcours, FaqCourte,
+  Reservation, PucesVilles, MARINE, MARINE_PROFOND,
+} from "@/components/sections";
+import { services, findService, serviceArea, serviceOptions } from "@/components/data";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -29,16 +28,28 @@ export function generateMetadata({ params }) {
   };
 }
 
+// =============================================================================
+// LE GABARIT DE SERVICE — résidentiel, commercial, permanent (partie 3)
+// =============================================================================
+// L'ordre, et rien d'autre :
+//   1. hero — vraie photo, H1, une phrase, deux boutons
+//   2. la bande de trois vraies photos du service
+//   3. ce qui est compris (le bloc de l'offre de l'accueil)
+//   4. le comparateur sur un vrai chantier — quand une VRAIE paire existe
+//      pour ce service (le résidentiel). Le permanent montre à cette place
+//      la démo de l'application ; le commercial, son assurance.
+//   5. le parcours en cinq points
+//   6. la FAQ, cinq questions au plus
+//   7. une rangée de villes, puis le formulaire court
+// La longue liste « Zones desservies » est partie : une rangée de pastilles
+// porte les MÊMES liens ville × service.
+// =============================================================================
 export default function ServicePage({ params }) {
   const s = findService(params.slug);
   if (!s) return notFound();
 
-  const otherServices = services.filter((x) => x.slug !== s.slug);
-
-  // Le formulaire du bas arrive avec LE service de cette page déjà choisi :
-  // quelqu'un qui lit la page du commercial vient de le dire en y arrivant.
-  // La valeur sort de `serviceOptions`, jamais d'une chaîne écrite ici — si
-  // une option est renommée, elle bouge d'un seul endroit.
+  // Le formulaire arrive avec LE service de cette page déjà choisi. La
+  // valeur sort de `serviceOptions`, jamais d'une chaîne écrite ici.
   const motCle = s.slug.includes("commercial") ? /commercial/i
     : s.slug.includes("permanent") ? /permanent|architectural/i
     : /résidentiel|residentiel/i;
@@ -55,125 +66,21 @@ export default function ServicePage({ params }) {
       />
       <ServiceJsonLd service={s} areaServed={serviceArea} urlPath={`/services/${s.slug}`} />
 
-      <PageHero
+      <HeroPage
+        photo={{ src: s.heroImage, alt: s.heroImageAlt }}
         kicker={s.kicker}
-        title={s.h1 || s.title}
-        subtitle={s.intro}
-        image={s.heroImage}
-        imageAlt={s.heroImageAlt}
-        ctaLabel="Réserver ma date"
+        titre={s.h1 || s.title}
+        phrase={s.intro}
+        filAriane={[{ name: "Accueil", href: "/" }, { name: "Services", href: "/services" }, { name: s.title }]}
       />
 
-      {/* Intro + bullets */}
-      <section style={{ background: offWhite }}>
-        <div className="container">
-          <Breadcrumb
-            items={[
-              { name: "Accueil", href: "/" },
-              { name: s.title },
-            ]}
-          />
-          <div className="grid-2" style={{ alignItems: "start" }}>
-            <div>
-              <SectionTag>Ce qui est inclus</SectionTag>
-              <SectionTitle>Service complet, sans surprise</SectionTitle>
-              <p style={{ color: "#444", fontSize: 18, marginBottom: 22 }}>{s.body}</p>
-              <ul style={{ listStyle: "none" }}>
-                {s.bullets.map((b, i) => (
-                  <li key={i} style={{ display: "flex", gap: 10, marginBottom: 12, color: charcoal, fontSize: 16 }}>
-                    <span className="bulb bulb--tw" aria-hidden="true" style={{ marginTop: 5 }} />{b}
-                  </li>
-                ))}
-              </ul>
-              <div style={{ marginTop: 26 }}>
-                <CTAButton href="/soumission">Réserver ma date</CTAButton>
-              </div>
-            </div>
-            {/* Le volet municipal n'a AUCUNE photo (heroImage: null). Sans ce
-                garde, React rend <img> sans src : une image cassée. On ne
-                réserve alors même pas le cadre — pas de trou décoratif. */}
-            {/* Le gros plan, quand le service en a un (les pastilles du
-                permanent) : remettre ici la photo du hero, c'est montrer
-                deux fois la même maison sur un écran. */}
-            {(s.photoDetail || s.heroImage) && (
-              <div style={{ borderRadius: 18, overflow: "hidden", aspectRatio: "4 / 3", background: "#11202f" }}>
-                <img src={s.photoDetail?.src || s.heroImage} alt={s.photoDetail?.alt || s.heroImageAlt} loading="lazy"
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-              </div>
-            )}
-          </div>
-        </div>
-      </section>
+      <BandePhotos cles={s.bande || []} />
 
-      {/* Ce que l'ancienne page /eclairage-architectural avait de mieux,
-          fusionnée ici (partie 2) : la démo de l'application, pourquoi le
-          permanent, les vraies installations, la FAQ. Rendu seulement pour
-          le service qui porte ces données. */}
+      <CeQuiEstCompris compris={s.compris} />
+
+      <AvantApres cle={s.paire} />
+
       {s.appDemo && <AppDemo />}
-
-      {s.whyChoose && (
-        <section className="snowy" style={{ background: navy }}>
-          <div className="container">
-            <div style={{ textAlign: "center", marginBottom: 44 }}>
-              <SectionTag dark>Pourquoi choisir l'éclairage permanent</SectionTag>
-              <SectionTitle light style={{ margin: "0 auto" }}>Un investissement, illuminé toute l'année</SectionTitle>
-            </div>
-            <div className="grid-4">
-              {s.whyChoose.map((w, i) => (
-                <div key={i} className="glow-card" style={{ background: "#10202f", borderRadius: 14, padding: 26, border: "1px solid rgba(233,220,192,0.12)" }}>
-                  <div aria-hidden="true" style={{
-                    width: 44, height: 44, borderRadius: "50%", marginBottom: 16,
-                    background: gold, display: "flex", alignItems: "center", justifyContent: "center",
-                    color: charcoal, fontFamily: "'Bebas Neue', sans-serif", fontSize: 20,
-                  }}>
-                    {i + 1}
-                  </div>
-                  <h3 style={{ color: ivory, fontSize: 20, marginBottom: 8 }}>{w.title}</h3>
-                  <p style={{ color: "rgba(243,233,210,0.72)", fontSize: 15 }}>{w.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {s.gallery && (
-        <section style={{ background: offWhite }}>
-          <div className="container">
-            <div style={{ textAlign: "center", marginBottom: 36 }}>
-              <SectionTag>Réalisations</SectionTag>
-              <SectionTitle style={{ margin: "0 auto" }}>Projets d'éclairage architectural</SectionTitle>
-            </div>
-            <Gallery items={s.gallery} prechargees={0} />
-          </div>
-        </section>
-      )}
-
-      {s.faq && (
-        <section className="snowy" style={{ background: navy }}>
-          <script
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{
-              __html: JSON.stringify({
-                "@context": "https://schema.org",
-                "@type": "FAQPage",
-                mainEntity: s.faq.map((f) => ({
-                  "@type": "Question",
-                  name: f.q,
-                  acceptedAnswer: { "@type": "Answer", text: f.a },
-                })),
-              }),
-            }}
-          />
-          <div className="container">
-            <div style={{ textAlign: "center", marginBottom: 36 }}>
-              <SectionTag dark>FAQ</SectionTag>
-              <SectionTitle light style={{ margin: "0 auto" }}>Vos questions sur l'éclairage permanent</SectionTitle>
-            </div>
-            <FaqAccordion items={s.faq} dark />
-          </div>
-        </section>
-      )}
 
       {/* ⚠️ L'ASSURANCE, SUR LA PAGE COMMERCIALE SEULEMENT.
           Pour un propriétaire, c'est une ligne rassurante parmi d'autres.
@@ -184,94 +91,31 @@ export default function ServicePage({ params }) {
           Pas de cinquième carte dans la grille résidentielle : décision de
           Yahir (2026-09-30). Un bloc dédié, ici, où la question se pose. */}
       {s.slug === "lumieres-de-noel-commercial" && (
-        <section style={{ background: offWhite }}>
-          <div className="container" style={{ maxWidth: 820 }}>
-            <div style={{
-              background: "#fff", border: "1px solid rgba(11,27,43,0.12)", borderRadius: 16,
-              padding: "30px 30px 26px", textAlign: "left",
-            }}>
-              <SectionTag>Assurance</SectionTag>
-              <h2 style={{ color: charcoal, fontSize: 28, margin: "10px 0 12px" }}>
-                Assurance responsabilité en vigueur, preuve fournie sur demande
-              </h2>
-              <p style={{ color: "#5a5a58", fontSize: 17, lineHeight: 1.65, margin: "0 0 22px" }}>
-                Nos équipes travaillent en hauteur sur vos façades, vos marquises et vos
-                vitrines. La police est active pour toute la saison, et nous transmettons
-                l’attestation directement à votre gestionnaire ou à votre service des achats.
-              </p>
-              <CTAButton href="/soumission?service=commercial" variant="gold">
-                Demander notre preuve d’assurance
-              </CTAButton>
-            </div>
+        <section style={{ background: MARINE }}>
+          <div className="container bloc-etroit">
+            <SectionTag dark>Assurance</SectionTag>
+            <SectionTitle light style={{ margin: "0 auto 16px" }}>
+              Assurance responsabilité en vigueur, preuve fournie sur demande
+            </SectionTitle>
+            <p className="section-phrase" style={{ margin: "0 auto 28px" }}>
+              Nos équipes travaillent en hauteur sur vos façades, vos marquises et vos
+              vitrines. La police est active pour toute la saison, et nous transmettons
+              l’attestation directement à votre gestionnaire ou à votre service des achats.
+            </p>
+            <CTAButton href="/soumission?service=commercial" variant="creme">
+              Demander notre preuve d’assurance
+            </CTAButton>
           </div>
         </section>
       )}
 
-      {/* Villes desservies pour ce service (maillage interne — service × ville) */}
-      {/* ⚠️ MÊME MAILLAGE, SANS LES CARTES.
-          Les six liens étaient six cartes bordées de 22 px de padding, soit
-          presque un écran entier pour une liste de villes. Les liens sont
-          identiques — même href, même texte d'ancrage — donc le maillage
-          interne et sa valeur SEO ne bougent pas d'un pouce. C'est la boîte
-          autour qui disparaît. */}
-      <section style={{ background: navy }}>
-        <div className="container">
-          <div className="section-entete">
-            <SectionTag dark>Zones desservies</SectionTag>
-            <SectionTitle light style={{ margin: 0 }}>{s.title} — partout dans le Grand Montréal</SectionTitle>
-          </div>
-          <ul className="liste-liens">
-            {cities.map((c) => (
-              <li key={c.slug}>
-                <Link href={`/secteur/${c.slug}/${s.slug}`}>
-                  <span className="liste-liens__region">{c.regionLabel}</span>
-                  <span className="liste-liens__nom">{s.title} {inCity(c.name)}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <Parcours />
 
-      {/* Autres services — une ligne par service, plus de cartes. */}
-      <section style={{ background: "#060E18" }}>
-        <div className="container">
-          <div className="section-entete">
-            <SectionTag dark>Nos autres services</SectionTag>
-            <SectionTitle light style={{ margin: 0 }}>Un seul fournisseur pour tout</SectionTitle>
-          </div>
-          <ul className="liste-liens liste-liens--large">
-            {otherServices.map((o) => (
-              <li key={o.slug}>
-                <Link href={`/services/${o.slug}`}>
-                  <span className="liste-liens__region">{o.kicker}</span>
-                  <span className="liste-liens__nom">{o.title}</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <FaqCourte items={s.faq} titre={`Vos questions — ${s.seoTitle || s.title}`} />
 
-      {/* ⚠️ UN FORMULAIRE, EN BAS, PLUTÔT QU'UN TROISIÈME BOUTON.
-          La page finissait sur « Réserver ma date » — le même mot, vers le
-          même endroit, pour la troisième fois. Quelqu'un qui a lu la page
-          entière est décidé : lui demander un clic de plus pour ARRIVER sur
-          un formulaire est un clic qu'on peut perdre. C'est le MÊME
-          QuoteForm que /soumission, avec sa source à lui pour que Yahir
-          sache de quelle page vient la fiche. */}
-      <section id="soumission" style={{ background: creme }}>
-        <div className="container bloc-formulaire">
-          <div className="section-entete">
-            <SectionTag>Réservation</SectionTag>
-            <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
-            <p className="section-phrase section-phrase--clair">
-              Nous confirmons votre place et votre prix après une courte consultation.
-            </p>
-          </div>
-          <QuoteForm source={`Page service — ${s.title}`} redirectSrc="service" serviceInitial={serviceInitial} />
-        </div>
-      </section>
+      <PucesVilles service={s} titre="Dans votre ville" fond={MARINE_PROFOND} />
+
+      <Reservation source={`Page service — ${s.title}`} redirectSrc="service" serviceInitial={serviceInitial} />
     </>
   );
 }

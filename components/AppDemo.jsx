@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { SectionTag, SectionTitle } from "@/components/ui";
-import { offWhite, charcoal, gold } from "@/components/data";
+import { gold } from "@/components/data";
 
 // --- Démo interactive : "l'application" qui contrôle l'éclairage permanent ---
 // 100% SVG/CSS. DEL placées comme du VRAI éclairage permanent : lignes de toit
@@ -70,22 +70,23 @@ export default function AppDemo() {
   );
 
   return (
-    <section style={{ background: offWhite }}>
+    // Marine, comme toutes les sections des pages intérieures (partie 3).
+    <section style={{ background: "#0A1524" }}>
       <div className="container grid-2" style={{ alignItems: "center" }}>
         <div>
-          <SectionTag>L'application</SectionTag>
-          <SectionTitle>Changez d'ambiance en un geste</SectionTitle>
-          <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>
+          <SectionTag dark>L'application</SectionTag>
+          <SectionTitle light>Changez d'ambiance en un geste</SectionTitle>
+          <p style={{ color: "rgba(240,234,222,0.82)", fontSize: 18, marginBottom: 18 }}>
             Une fois l'éclairage permanent installé, tout se contrôle depuis votre téléphone :
             couleur, intensité, effets et scènes pour chaque occasion — sans jamais ressortir l'échelle.
           </p>
-          <p style={{ color: "#444", fontSize: 16, marginBottom: 24 }}>
+          <p style={{ color: "rgba(240,234,222,0.72)", fontSize: 16, marginBottom: 24 }}>
             👉 Essayez la démo : touchez une ambiance et un effet, la maison réagit en direct.
           </p>
           <ul style={{ listStyle: "none" }}>
             {["Des millions de couleurs", "Effets animés (scintillement, poursuite, fondu)",
               "Scènes prêtes : Noël, Halloween, Saint-Valentin, Fête nationale", "Minuteries et zones"].map((t, i) => (
-              <li key={i} style={{ display: "flex", gap: 10, marginBottom: 10, color: charcoal, fontSize: 16 }}>
+              <li key={i} style={{ display: "flex", gap: 10, marginBottom: 10, color: "#F0EADE", fontSize: 16 }}>
                 <span className="bulb bulb--tw" aria-hidden="true" />{t}
               </li>
             ))}

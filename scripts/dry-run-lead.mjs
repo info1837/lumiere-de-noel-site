@@ -42,7 +42,10 @@ globalThis.fetch = async (url, init) => {
 
 const { POST } = await import(path.join(ROOT, 'app/api/lead/route.js'));
 
-// Exactement ce que QuoteForm envoie (components/data.js → sendLead).
+// Un corps COMPLET, tous champs que la route sait relayer (y compris
+// budget et adresse, que d'autres chemins envoient encore). Ce que le
+// formulaire court envoie VRAIMENT, page par page, est prouvé dans un
+// navigateur par scripts/dry-run-formulaires.mjs.
 const CORPS = {
   subject: 'Nouveau lead — Réservation',
   source: "Formulaire d'accueil (réservation)",

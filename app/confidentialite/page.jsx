@@ -88,7 +88,7 @@ const SECTIONS = [
 
 export default function Confidentialite() {
   return (
-    <main>
+    <>
       <section style={{ background: navy, color: ivory, padding: "clamp(110px,14vw,150px) 24px 60px" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           <div style={{ fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: gold, marginBottom: 12 }}>
@@ -103,27 +103,27 @@ export default function Confidentialite() {
         </div>
       </section>
 
-      <section style={{ background: offWhite, padding: "clamp(48px,7vw,72px) 24px" }}>
+      <section style={{ background: "#060E18", padding: "clamp(48px,7vw,72px) 24px" }}>
         <div style={{ maxWidth: 820, margin: "0 auto" }}>
           {SECTIONS.map((s) => (
             <div key={s.t} style={{ marginBottom: 34 }}>
-              <h2 style={{ fontSize: "clamp(1.25rem,2.4vw,1.6rem)", color: charcoal, marginBottom: 12 }}>{s.t}</h2>
+              <h2 style={{ fontSize: "clamp(1.25rem,2.4vw,1.6rem)", color: ivory, marginBottom: 12 }}>{s.t}</h2>
               {s.p.map((par, i) => (
-                <p key={i} style={{ color: textMuted, fontSize: 16, lineHeight: 1.8, marginBottom: 12 }}>{par}</p>
+                <p key={i} style={{ color: "rgba(240,234,222,0.8)", fontSize: 16, lineHeight: 1.8, marginBottom: 12 }}>{par}</p>
               ))}
             </div>
           ))}
 
-          <div style={{ background: "#fff", borderRadius: 16, padding: 24, border: "1px solid #e6e0d0" }}>
-            <div style={{ fontWeight: 700, marginBottom: 10, color: charcoal }}>Solution Lumière de Noël inc.</div>
-            <div style={{ color: textMuted, fontSize: 16, lineHeight: 1.9 }}>
+          <div style={{ background: "#0F1E33", borderRadius: 16, padding: 24, border: "1px solid rgba(240,234,222,0.12)" }}>
+            <div style={{ fontWeight: 700, marginBottom: 10, color: ivory }}>Solution Lumière de Noël inc.</div>
+            <div style={{ color: "rgba(240,234,222,0.8)", fontSize: 16, lineHeight: 1.9 }}>
               Blainville, Québec<br />
-              <a href={company.phoneHref} style={{ color: charcoal, fontWeight: 600 }}>{company.phoneDisplay}</a><br />
-              <a href={company.emailHref} style={{ color: charcoal, fontWeight: 600 }}>{company.email}</a>
+              <a href={company.phoneHref} style={{ color: "#F0BA54", fontWeight: 600 }}>{company.phoneDisplay}</a><br />
+              <a href={company.emailHref} style={{ color: "#F0BA54", fontWeight: 600 }}>{company.email}</a>
             </div>
           </div>
         </div>
       </section>
-    </main>
+    </>
   );
 }

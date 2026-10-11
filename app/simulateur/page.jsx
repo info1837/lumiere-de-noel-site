@@ -17,12 +17,12 @@ export const metadata = {
 
 export default function PageSimulateur() {
   return (
-    <main id="contenu">
+    <>
       <section className="section-y-moyen" style={{ background: "#0A1524" }}>
         <div className="container" style={{ maxWidth: 560 }}>
           <Simulateur />
         </div>
       </section>
-    </main>
+    </>
   );
 }

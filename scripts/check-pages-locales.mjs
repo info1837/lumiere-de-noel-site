@@ -23,9 +23,10 @@ import path from "node:path";
 
 const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), "..");
 const BASE = (process.env.BASE_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
-// Mesuré après la réécriture : 7 % (villes) et 17-18 % (ville × service).
-// Les seuils laissent de la marge à la refonte de la partie 3, pas au retour
-// des gabarits.
+// Mesuré après la réécriture (partie 2) : 7 % (villes) et 17-18 % (ville ×
+// service). La partie 3 a raccourci les pages (le corps de service est
+// parti) et ajouté des blocs d'interface communs ; ceux-ci sont marqués
+// `data-gabarit` et exclus — voir sansGabarit(). Les seuils ne bougent pas.
 const SEUIL_VILLE = 0.2;
 const SEUIL_SERVICE = 0.28;
 
@@ -66,11 +67,32 @@ console.log("\n--- 2. 🚨 Des questions de personne, pas de gabarit ---");
 }
 
 console.log("\n--- 3. 🚨 Ce que le serveur rend : chevauchement en 5-grammes ---");
+// Retire chaque élément marqué `data-gabarit` (balise et tout son contenu,
+// imbrication comprise) : l'interface répétée à dessein — boutons du hero,
+// ligne de preuve, frise du parcours, en-tête de réservation. Les blocs
+// RÉDIGÉS restent dans la mesure.
+const sansGabarit = (html) => {
+  let h = html, m;
+  const ouv = /<([a-z]+)\b[^>]*\bdata-gabarit\b[^>]*>/;
+  while ((m = ouv.exec(h))) {
+    const tag = m[1];
+    const re = new RegExp(`<${tag}\\b[^>]*>|</${tag}>`, "g");
+    re.lastIndex = m.index + m[0].length;
+    let prof = 1, fin = -1, x;
+    while ((x = re.exec(h))) {
+      prof += x[0][1] === "/" ? -1 : 1;
+      if (prof === 0) { fin = x.index + x[0].length; break; }
+    }
+    if (fin < 0) break;
+    h = h.slice(0, m.index) + " " + h.slice(fin);
+  }
+  return h;
+};
 const mots = async (p) => {
   const r = await fetch(BASE + p);
   const h = await r.text();
   const m = h.match(/<main[^>]*>([\s\S]*?)<\/main>/);
-  return (m ? m[1] : h)
+  return sansGabarit(m ? m[1] : h)
     .replace(/<form[\s\S]*?<\/form>/g, " ")
     .replace(/<script[\s\S]*?<\/script>/g, " ").replace(/<style[\s\S]*?<\/style>/g, " ")
     .replace(/<[^>]+>/g, " ").replace(/&[a-z#0-9]+;/gi, " ")

@@ -114,15 +114,15 @@ export default function MerciPage() {
         </div>
       </section>
 
-      <section style={{ background: offWhite }}>
+      <section style={{ background: "#060E18" }}>
         <div className="container" style={{ maxWidth: 900 }}>
           <div style={{
             fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
-            textTransform: "uppercase", color: goldText, marginBottom: 10, textAlign: "center",
+            textTransform: "uppercase", color: gold, marginBottom: 10, textAlign: "center",
           }}>
             Ce qui se passe ensuite
           </div>
-          <h2 style={{ color: charcoal, textAlign: "center", marginBottom: 40 }}>
+          <h2 style={{ color: ivory, textAlign: "center", marginBottom: 40 }}>
             4 étapes, une seule décision de votre part
           </h2>
           <ol style={{
@@ -132,9 +132,8 @@ export default function MerciPage() {
             {steps.map((s) => (
               <li key={s.n} style={{
                 display: "grid", gridTemplateColumns: "auto 1fr", gap: 20,
-                background: "#fff", borderRadius: 14, padding: "22px 24px",
-                border: "1px solid #ece5d4",
-                boxShadow: "0 6px 18px rgba(11,27,43,0.06)",
+                background: "#0F1E33", borderRadius: 14, padding: "22px 24px",
+                border: "1px solid rgba(240,234,222,0.12)",
               }}>
                 <div style={{
                   width: 48, height: 48, borderRadius: "50%",
@@ -144,8 +143,8 @@ export default function MerciPage() {
                   letterSpacing: "0.04em",
                 }}>{s.n}</div>
                 <div>
-                  <h3 style={{ color: charcoal, fontSize: 22, marginBottom: 6 }}>{s.title}</h3>
-                  <p style={{ color: "#3a3a3a", margin: 0 }}>{s.body}</p>
+                  <h3 style={{ color: ivory, fontSize: 22, marginBottom: 6 }}>{s.title}</h3>
+                  <p style={{ color: "rgba(240,234,222,0.78)", margin: 0 }}>{s.body}</p>
                 </div>
               </li>
             ))}
@@ -153,7 +152,7 @@ export default function MerciPage() {
 
           <div style={{ textAlign: "center", marginTop: 40 }}>
             <Link href="/" style={{
-              color: charcoal, textDecoration: "underline", fontWeight: 600, fontSize: 15,
+              color: ivory, textDecoration: "underline", fontWeight: 600, fontSize: 15,
             }}>
               Retour à l'accueil
             </Link>

@@ -28,7 +28,8 @@ console.log('\n--- 1. 🚨 Le bloc existe, et seulement sur la page commerciale 
     /s\.slug === "lumieres-de-noel-commercial" && \(/.test(code));
   t('🚨 le résidentiel ne le voit pas',
     (code.match(/Assurance responsabilité en vigueur/g) || []).length === 1);
-  t('l\'étiquette dit « Assurance »', /<SectionTag>Assurance<\/SectionTag>/.test(code));
+  // `dark` depuis la partie 3 : la section est marine comme toute la page.
+  t('l\'étiquette dit « Assurance »', /<SectionTag( dark)?>Assurance<\/SectionTag>/.test(code));
 }
 
 console.log('\n--- 2. 🚨 PAS de cinquième carte dans la grille résidentielle ---');

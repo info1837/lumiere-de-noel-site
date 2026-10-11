@@ -1,5 +1,7 @@
+import Image from "next/image";
+import { flouDe } from "@/components/photos-flou";
 import Link from "next/link";
-import HowItWorks from "@/components/HowItWorks";
+import { Parcours } from "@/components/sections";
 import { SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { services, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
@@ -49,10 +51,10 @@ export default function ServicesIndex() {
                 background: "#10202f", borderRadius: 16, overflow: "hidden",
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
-                <div style={{ aspectRatio: "16 / 9", background: "#0b1b2b" }}>
+                <div style={{ position: "relative", aspectRatio: "16 / 9", background: "#0b1b2b" }}>
                   {(() => { const ph = servicePhoto(s.slug); return ph && (
-                    <img src={ph.src} alt={ph.alt} loading="lazy"
-                      style={{ width: "100%", height: "100%", objectFit: "cover" }} />); })()}
+                    <Image src={ph.src} alt={ph.alt} fill sizes="(max-width: 900px) 100vw, 580px"
+                      placeholder="blur" blurDataURL={flouDe(ph.src)} style={{ objectFit: "cover" }} />); })()}
                 </div>
                 <div style={{ padding: 26 }}>
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
@@ -74,7 +76,9 @@ export default function ServicesIndex() {
         </div>
       </section>
 
-      <HowItWorks variant="light" />
+      {/* Le parcours en cinq points, comme partout (partie 3) — la version
+          claire en cartes blanches faisait la seule section blanche de la page. */}
+      <Parcours />
     </>
   );
 }

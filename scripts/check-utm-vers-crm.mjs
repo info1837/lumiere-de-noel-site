@@ -67,8 +67,10 @@ await page.waitForTimeout(900);
 
 console.log('\n── 3. Il remplit le VRAI formulaire et l’envoie ──');
 {
-  await page.getByLabel(/Nom complet/i).first().fill('Test QR Voisin');
+  // Partie 3 : le formulaire court — « Nom », et la Ville devient obligatoire.
+  await page.locator('#qf-nom').fill('Test QR Voisin');
   await page.getByLabel(/Téléphone/i).first().fill('5145550123');
+  await page.locator('#qf-ville').fill('Blainville');
   await page.getByLabel(/Courriel|Email/i).first().fill('test.qr@exemple.ca');
   // La case de consentement est obligatoire depuis le 2026-09-27.
   const cases = page.locator('input[type=checkbox]');
@@ -95,16 +97,21 @@ console.log('\n── 4. Une visite SANS UTM n’envoie rien de vide ──');
     r.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' }));
   await p2.goto(`${BASE}/soumission`, { waitUntil: 'domcontentloaded' });
   await p2.waitForTimeout(700);
-  await p2.getByLabel(/Nom complet/i).first().fill('Sans UTM');
+  await p2.locator('#qf-nom').fill('Sans UTM');
   await p2.getByLabel(/Téléphone/i).first().fill('5145550124');
+  await p2.locator('#qf-ville').fill('Laval');
   await p2.getByLabel(/Courriel|Email/i).first().fill('sans@exemple.ca');
   const c2 = p2.locator('input[type=checkbox]');
   if (await c2.count()) await c2.first().check({ force: true });
   await p2.getByRole('button', { name: /Réserver ma date/i }).first().click();
   await p2.waitForTimeout(1600);
   t('le lead part quand meme', !!versCrm);
-  t("aucun UTM inventé", !versCrm?.utm || Object.keys(versCrm.utm).length === 0,
-    JSON.stringify(versCrm?.utm));
+  // Partie 3 : sans UTM, la PROVENANCE voyage quand même (page d'arrivée,
+  // site référent) — elle remplace la question « Comment avez-vous entendu
+  // parler de nous ? ». Ce qui reste interdit : inventer une campagne.
+  const cles = Object.keys(versCrm?.utm || {});
+  t("aucun UTM inventé", !cles.some((k) => k.startsWith('utm_')), JSON.stringify(versCrm?.utm));
+  t("seule la provenance accompagne le lead", cles.every((k) => ['landing', 'referrer'].includes(k)), cles.join(','));
   await p2.close();
 }
 

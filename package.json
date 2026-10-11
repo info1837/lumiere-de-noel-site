@@ -27,8 +27,10 @@
     "check:seo": "node scripts/check-seo.mjs",
     "check:debordement": "node scripts/check-debordement.mjs",
     "check:local": "node --import ./scripts/next-alias-register.mjs scripts/check-pages-locales.mjs",
+    "check:theme": "node scripts/check-theme-sombre.mjs",
+    "check:galerie": "node scripts/check-galerie.mjs",
     "check:vie": "node scripts/check-vie.mjs",
-    "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs",
+    "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs && node --no-warnings --import ./scripts/next-alias-register.mjs scripts/dry-run-formulaires.mjs",
     "captures:vie": "node scripts/captures-vie.mjs"
   },
   "dependencies": {

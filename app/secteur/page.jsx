@@ -1,3 +1,5 @@
+import Image from "next/image";
+import { flouDe } from "@/components/photos-flou";
 import Link from "next/link";
 import { SectionTag, CTAButton, Breadcrumb } from "@/components/ui";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
@@ -46,9 +48,9 @@ export default function SecteurIndex() {
                 background: "#10202f", borderRadius: 16, overflow: "hidden",
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
-                <div style={{ aspectRatio: "4 / 3", background: "#0b1b2b" }}>
-                  {c.image && <img src={c.image} alt={c.imageAlt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />}
+                <div style={{ position: "relative", aspectRatio: "4 / 3", background: "#0b1b2b" }}>
+                  {c.image && <Image src={c.image} alt={c.imageAlt} fill sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 380px"
+                    placeholder="blur" blurDataURL={flouDe(c.image)} style={{ objectFit: "cover" }} />}
                 </div>
                 <div style={{ padding: 22 }}>
                   <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
