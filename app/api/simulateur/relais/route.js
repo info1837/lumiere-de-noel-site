@@ -46,6 +46,18 @@ function origineDe(request) {
   return `${proto}://${host}`;
 }
 
+/**
+ * L'IP du visiteur, relayée au CRM dans `x-visiteur-ip`.
+ *
+ * Le CRM est appelé de serveur à serveur : il ne voit que l'IP de cette
+ * fonction, la même pour tout le monde. Or depuis la PR #48 le code est
+ * demandé AVANT toute fiche, et c'est par visiteur qu'il est plafonné.
+ */
+function ipVisiteur(request) {
+  const xff = (request.headers.get('x-forwarded-for') || '').split(',')[0].trim();
+  return (xff || request.headers.get('x-real-ip') || '').slice(0, 45);
+}
+
 /** « K7M2P-R4TXQ » — dicté au téléphone sans faire répéter. */
 const lisible = (c) => (c && c.length === 10 ? `${c.slice(0, 5)}-${c.slice(5)}` : c || '');
 
@@ -59,12 +71,15 @@ export async function POST(request) {
   let corps;
   try { corps = await request.json(); } catch { return json({ ok: false, raison: 'corps_illisible' }, 400); }
 
+  const ip = ipVisiteur(request);
   let j;
   try {
     const r = await fetch(CRM_URL, {
       method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-intake-key': cle },
-      // Liste blanche : on ne relaie QUE ce que la route attend.
+      headers: { 'content-type': 'application/json', 'x-intake-key': cle, ...(ip ? { 'x-visiteur-ip': ip } : {}) },
+      // Liste blanche : on ne relaie QUE ce que la route attend. `leadId` est
+      // VIDE dans le parcours normal : à l'écran de la photo, aucune fiche
+      // n'existe encore (PR #48). Le CRM range alors un code sans fiche.
       body: JSON.stringify({
         leadId: String(corps?.leadId ?? '').slice(0, 64),
         telephone: String(corps?.telephone ?? '').slice(0, 40),

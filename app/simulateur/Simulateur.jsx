@@ -91,6 +91,24 @@ export default function Simulateur() {
     evenement("sim_start");
   }, []);
 
+  // ── Chaque écran commence en haut ──────────────────────────────────
+  // Depuis #48, l'écran 1 est long (le comparateur, puis l'adresse) : après
+  // « Commencer », la page restait défilée et l'écran 2 s'ouvrait avec ses
+  // points et son titre SOUS l'entête fixe — mesuré à 1440 px, points à
+  // y = 98 sous un fond d'entête qui descend à 144. Si le haut du
+  // simulateur est caché, on le ramène juste sous l'entête. Sans animation :
+  // c'est un nouvel écran, pas un trajet, et « mouvement réduit » tient.
+  const racine = useRef(null);
+  const premierEcran = useRef(true);
+  useEffect(() => {
+    if (premierEcran.current) { premierEcran.current = false; return; }
+    const points = racine.current?.querySelector(".sim-points");
+    if (!points) return;
+    const bas = document.querySelector(".entete-fond")?.getBoundingClientRect().bottom || 0;
+    const haut = points.getBoundingClientRect().top;
+    if (haut < bas) window.scrollBy({ top: haut - bas - 16, behavior: "instant" });
+  }, [etape]);
+
   // ── Les ampoules du chargement ─────────────────────────────────────
   // Une guirlande de six qui s'allument une par une. Ce n'est pas une
   // barre de progression déguisée : elle ne prétend pas savoir où on en
@@ -246,7 +264,7 @@ export default function Simulateur() {
   const pointActif = etape >= 5 ? 4 : etape >= 4 ? 4 : etape >= 3 ? 3 : Math.floor(etape);
 
   return (
-    <div className="sim">
+    <div className="sim" ref={racine}>
       {/* ⚠️ QUATRE POINTS, SANS NOMS D'ÉTAPE.
           Les libellés « Vous · Photo · Style · Résultat » annonçaient le
           formulaire dès le premier écran — et « Vous » en tête disait au

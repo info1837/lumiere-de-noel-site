@@ -110,11 +110,15 @@ export default async function RootLayout({ children }) {
             JavaScript.
 
             `display=swap` était déjà là : le texte s'affiche en police de
-            secours puis bascule, au lieu de rester invisible. */}
+            secours puis bascule, au lieu de rester invisible. 
+
+            `suppressHydrationWarning` : le script ci-dessous bascule `media`
+            AVANT l'hydratation, à dessein. Sans lui, React signale en
+            développement un écart « print » / « all » qui n'en est pas un. */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preload" as="style" href={POLICES} />
-        <link rel="stylesheet" href={POLICES} media="print" data-polices="" />
+        <link rel="stylesheet" href={POLICES} media="print" data-polices="" suppressHydrationWarning />
         <noscript><link rel="stylesheet" href={POLICES} /></noscript>
         <script
           dangerouslySetInnerHTML={{

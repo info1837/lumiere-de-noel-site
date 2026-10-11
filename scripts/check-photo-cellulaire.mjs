@@ -19,7 +19,14 @@
 // SQLite. Ici on prouve le SITE, et le contrat entre les deux.
 //
 // Aucun octet ne sort de la machine : le CRM est local, et le relais de
-// création de fiche est intercepté.
+// création de fiche est intercepté — aucun lead n'est envoyé, nulle part.
+//
+// ⚠️ L'ORDRE EST CELUI DE LA PR #48 : adresse → photo → style → coordonnées.
+// À l'écran de la photo, AUCUNE fiche n'existe. Le CRM de contrat refuse donc,
+// comme le vrai, un code demandé avec un leadId faux, et accepte un code SANS
+// fiche. C'est ce cas-là que la production refusait (`fiche_introuvable`) :
+// le QR n'apparaissait jamais. Le parcours va ensuite jusqu'à la simulation
+// rendue, par le repli « coordonnées d'abord » que le vrai CRM impose.
 
 import http from 'http';
 import fs from 'fs';
@@ -40,8 +47,14 @@ const dossier = fs.mkdtempSync(path.join(os.tmpdir(), 'photo-cell-'));
 
 // ═══ Le CRM de contrat ══════════════════════════════════════════════════════
 const ALPHABET = '23456789ABCDEFGHJKMNPQRSTVWXYZ';
-const codes = new Map();   // code → { leadId, expire, recu, lu, photo, type }
+const codes = new Map();   // code → { leadId, expire, recu, lu, photo, type, ip }
 let fichesCreees = 0;
+const generations = [];    // ce que la route de génération a reçu
+const IP_VISITEUR = '203.0.113.9';
+// Une adresse PAR exécution : la route de génération du site garde une heure
+// en mémoire (IP + adresse + style + photo). Rejoué sur le même serveur, le
+// test recevrait sinon la simulation de l'exécution précédente — sans repli.
+const ADRESSE = `${Date.now() % 100000} rue Test, Mirabel, QC`;
 
 const nouveauCode = () => Array.from({ length: 10 }, () => ALPHABET[Math.floor(Math.random() * 30)]).join('');
 const dix = (v) => String(v ?? '').replace(/\D/g, '').slice(-10);
@@ -63,6 +76,16 @@ const MESSAGES = {
 const crm = http.createServer(async (req, res) => {
   const u = new URL(req.url, 'http://x');
   const envoie = (o, s = 200) => { res.writeHead(s, { 'content-type': 'application/json' }); res.end(JSON.stringify(o)); };
+
+  // L'image d'une simulation : le site la relaie SANS clé d'intake, c'est le
+  // jeton qui ouvre. On rend la photo reçue par la génération.
+  if (u.pathname === '/api/public/lumiere/simulateur/image') {
+    const g = generations.find((x) => x.ok);
+    if (!g || u.searchParams.get('jeton') !== 'jeton-de-test') return envoie({ ok: false }, 404);
+    res.writeHead(200, { 'content-type': 'image/jpeg' });
+    return res.end(Buffer.from(g.photo.split(',')[1], 'base64'));
+  }
+
   if ((req.headers['x-intake-key'] || '') !== CLE) return envoie({ ok: false, raison: 'cle_absente' }, 401);
 
   let corps = {};
@@ -73,11 +96,15 @@ const crm = http.createServer(async (req, res) => {
 
   if (u.pathname === '/api/public/lumiere/simulateur/relais') {
     if (req.method === 'POST') {
-      if (String(corps.leadId) !== LEAD || dix(corps.telephone) !== dix(TEL)) return envoie({ ok: false, raison: 'fiche_introuvable' }, 404);
+      // Sans fiche : le cas normal depuis #48. Avec fiche : lead + téléphone.
+      const leadId = String(corps.leadId ?? '').trim();
+      if (leadId && (leadId !== LEAD || dix(corps.telephone) !== dix(TEL))) return envoie({ ok: false, raison: 'fiche_introuvable' }, 404);
       const code = nouveauCode();
       const expire = Date.now() + 15 * 60 * 1000;
-      codes.set(code, { leadId: LEAD, expire, recu: null, lu: null, photo: null, type: null });
-      return envoie({ ok: true, code, expire_a: new Date(expire).toISOString(), duree_ms: 15 * 60 * 1000 });
+      codes.set(code, { leadId, expire, recu: null, lu: null, photo: null, type: null, ip: req.headers['x-visiteur-ip'] || null });
+      // ⚠️ L'horloge du CRM AVANCE de 20 s sur celle du navigateur : c'est ce
+      // qu'on voit en production, et ce qui affichait « 16 min ».
+      return envoie({ ok: true, code, expire_a: new Date(expire + 20000).toISOString(), duree_ms: 15 * 60 * 1000 });
     }
     const l = codes.get(u.searchParams.get('code') || '');
     const e = etatDe(l);
@@ -99,6 +126,14 @@ const crm = http.createServer(async (req, res) => {
     if (!l.lu) l.lu = Date.now();
     res.writeHead(200, { 'content-type': l.type || 'image/jpeg' });
     return res.end(l.photo);
+  }
+
+  // La génération : comme le vrai CRM, elle exige une fiche ET son téléphone.
+  if (u.pathname === '/api/public/lumiere/simulateur' && req.method === 'POST') {
+    const ok = String(corps.leadId ?? '') === LEAD && dix(corps.telephone) === dix(TEL);
+    generations.push({ ok, leadId: corps.leadId, photo: String(corps.photo || ''), style: corps.style });
+    if (!ok) return envoie({ ok: false, raison: 'fiche_introuvable', message: 'Quelque chose a bloqué de notre côté.' }, 404);
+    return envoie({ ok: true, photoCle: 'photo-1', resultatCle: 'resultat-1', jeton: 'jeton-de-test', style: corps.style });
   }
 
   envoie({ ok: false, raison: 'chemin_inconnu' }, 404);
@@ -163,7 +198,9 @@ async function fabriquerJpeg(page, l, h, nom, exif = false) {
 
 // ═══ Le test ════════════════════════════════════════════════════════════════
 const nav = await chromium.launch();
-const ctxOrdi = await nav.newContext({ viewport: { width: 1440, height: 900 } });
+// L'IP du visiteur, posée comme le ferait le proxy de Vercel : le CRM doit la
+// recevoir pour plafonner les codes sans fiche par visiteur.
+const ctxOrdi = await nav.newContext({ viewport: { width: 1440, height: 900 }, extraHTTPHeaders: { 'x-forwarded-for': IP_VISITEUR } });
 const ctxTel = await nav.newContext({
   viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true,
   userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1',
@@ -190,11 +227,11 @@ surveiller(ordi, 'ordinateur'); surveiller(tel, 'téléphone');
 for (const p of [ordi, tel]) await p.route('**/facebook.com/**', (r) => r.abort());
 
 /**
- * Mène une page de l'écran 1 à l'écran 2.
+ * Mène une page de l'écran 1 (l'adresse, et rien d'autre) à l'écran 2.
  *
  * ⚠️ L'attente après `goto` n'est pas de la superstition. Remplir un champ
  * contrôlé par React AVANT l'hydratation pose la valeur dans le DOM sans que
- * l'état du composant bouge : à la soumission, le prénom est vide et l'écran
+ * l'état du composant bouge : à la soumission, l'adresse est vide et l'écran
  * refuse d'avancer. C'est exactement ce qui a fait échouer la première
  * version de ce test.
  */
@@ -205,19 +242,24 @@ async function allerEcranPhoto(page) {
   });
   await page.route('**/api.web3forms.com/**', (r) => r.fulfill({ status: 200, contentType: 'application/json', body: '{"success":true}' }));
   await page.goto(`${BASE}/simulateur`, { waitUntil: 'domcontentloaded' });
-  await page.waitForSelector('#sim-consent');
   await page.waitForFunction(() => {
-    // Hydraté = React a repris la main sur le champ. On le prouve en écrivant
-    // dedans et en vérifiant que la valeur SURVIT à un rendu.
-    const i = document.querySelector('#sim-nom');
+    const i = document.querySelector('#sim-adresse');
     return !!(i && Object.keys(i).some((k) => k.startsWith('__react')));
   }, null, { timeout: 15000 });
-  await page.fill('#sim-nom', 'Laurie');
-  await page.fill('#sim-tel', TEL);
-  await page.check('#sim-consent');
-  await page.click('button.sim-cta');
+  await page.fill('#sim-adresse', ADRESSE);
+  await page.keyboard.press('Escape');
+  // Le geste du visiteur : il DÉFILE jusqu'au bouton, puis clique. Sans ce
+  // défilement instantané, Playwright amène le bouton à l'écran avec le
+  // `scroll-behavior: smooth` de la page, et ce défilement encore en vol
+  // après le clic décide seul où s'ouvre l'écran 2 — mesuré : la page
+  // finissait tantôt à 14 px, tantôt tout en bas, au gré du minutage.
+  await page.locator('form button.sim-cta').evaluate((e) => e.scrollIntoView({ block: 'center', behavior: 'instant' }));
+  await page.click('form button.sim-cta');
   await page.waitForSelector('.sim-conseils', { timeout: 20000 });
 }
+
+/** Le numéro de l'étape courante, lu sur les quatre points (« Étape 2 sur 4 »). */
+const etape = async (p) => Number(((await p.locator('.sim-points').getAttribute('aria-label')) || '').match(/\d/)?.[0]);
 
 let dernierCode = null;
 ordi.on('response', async (r) => {
@@ -240,6 +282,9 @@ await ordi.waitForTimeout(600);
   t('le code QR est dessiné', await ordi.locator('.sim-qr-image svg').count() === 1);
   t('« En attente de la photo… » est affiché', /en attente de la photo/i.test(await ordi.locator('.sim-qr-attente').innerText()));
   t('…avec le temps qui reste', /expire dans \d+ min/.test(await ordi.locator('.sim-qr-attente').innerText()));
+  t('🚨 …jamais plus que les 15 min du code, même si les horloges divergent',
+    /expire dans 15 min/.test(await ordi.locator('.sim-qr-attente').innerText()),
+    (await ordi.locator('.sim-qr-reste').innerText()).trim());
   const lienTexte = await ordi.locator('.sim-qr-lien').innerText();
   t('le lien est aussi donné en texte', /\/p\/[2-9A-Z]{5}-[2-9A-Z]{5}/.test(lienTexte), lienTexte.replace(/\n/g, ' '));
   // 🚨 Le code ne doit JAMAIS être coupé par un retour à la ligne : on
@@ -257,18 +302,18 @@ await ordi.waitForTimeout(600);
   t('🚨 les deux voies sont côte à côte sur 1440 px', b.x > a.x + a.width - 5, `dépôt x=${Math.round(a.x)}+${Math.round(a.width)} · QR x=${Math.round(b.x)}`);
   t('aucun défilement horizontal', await ordi.evaluate(() => document.documentElement.scrollWidth - innerWidth) <= 0);
 
-  // 🚨 Le fil d'étapes doit être VU, pas seulement présent. Le test du doigt :
-  // on demande au navigateur ce qu'il y a au centre du fil. Avant, il
-  // répondait « l'entête » — les quatre étapes étaient sous la pilule fixe.
+  // 🚨 Les points d'étape doivent être VUS, pas seulement présents. Le test du
+  // doigt : on demande au navigateur ce qu'il y a au centre. Avant, il
+  // répondait « l'entête » — les étapes étaient sous la pilule fixe.
   const fil = await ordi.evaluate(() => {
-    const f = document.querySelector('.sim-fil');
+    const f = document.querySelector('.sim-points');
     const r = f.getBoundingClientRect();
     const au = document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2);
     return { vu: f.contains(au) || au === f, quoi: (au?.className || '').toString().slice(0, 30), y: Math.round(r.y) };
   });
-  t('🚨 le fil d\'étapes n\'est plus caché sous l\'entête', fil.vu, `y=${fil.y} · au centre : ${fil.quoi}`);
-  t('…et l\'étape COURANTE est surlignée', await ordi.locator('.sim-fil li.ici').count() === 1,
-    `${await ordi.locator('.sim-fil li.ici').count()} étape(s) marquée(s) « ici »`);
+  t('🚨 les points d\'étape ne sont pas cachés sous l\'entête', fil.vu, `y=${fil.y} · au centre : ${fil.quoi}`);
+  t('…et l\'étape COURANTE est surlignée', await ordi.locator('.sim-points li.ici').count() === 1,
+    `${await ordi.locator('.sim-points li.ici').count()} étape(s) marquée(s) « ici »`);
 }
 await ordi.screenshot({ path: path.join(dossier, '1-ordi-1440.png') });
 
@@ -362,10 +407,7 @@ console.log('\n── 4. 🚨 Les deux boutons ouvrent la BONNE entrée ──�
 
 console.log('\n── 5. La photo traverse, et l\'ordinateur avance SEUL ──────');
 {
-    // `innerText` rend le texte TRANSFORMÉ par le CSS : `.sim-fil li` est en
-  // `text-transform: uppercase`, donc on lit « PHOTO ». On compare sans casse.
-  const etape = async (p) => (await p.locator('.sim-fil li.ici').innerText()).trim().toLowerCase();
-  t('l\'ordinateur est bien à l\'étape « Photo »', await etape(ordi) === 'photo', await etape(ordi));
+  t('l\'ordinateur est bien à l\'étape 2, la photo', await etape(ordi) === 2, `étape ${await etape(ordi)}`);
 
   const photo = await fabriquerJpeg(tel, 1600, 900, 'facade.jpg');
   const [ch] = await Promise.all([tel.waitForEvent('filechooser'), tel.click('button.sim-cta:not(.sim-cta--doux)')]);
@@ -380,24 +422,53 @@ console.log('\n── 5. La photo traverse, et l\'ordinateur avance SEUL ──�
   // 🚨 LE point du bloc : l'ordinateur avance sans qu'on y touche.
   await ordi.waitForSelector('.sim-styles', { timeout: 20000 });
   t('🚨 l\'ordinateur est passé à l\'écran suivant SANS UN SEUL CLIC',
-    await etape(ordi) === 'style', await etape(ordi));
+    await etape(ordi) === 3, `étape ${await etape(ordi)}`);
   t('…et le QR a disparu', await ordi.locator('.sim-qr').count() === 0);
-  t('…et les trois styles sont proposés', await ordi.locator('.sim-style').count() === 3);
+  t('…et les quatre styles sont proposés', await ordi.locator('.sim-style').count() === 4);
   await ordi.screenshot({ path: path.join(dossier, '4-ordi-1440-style.png') });
 
   const ligne = codes.get(dernierCode);
-  t('🚨 la photo est attachée à la fiche de l\'étape 1', ligne.leadId === LEAD, ligne.leadId);
-  t('🚨 aucune deuxième fiche créée', fichesCreees === 1, `${fichesCreees} création(s) de fiche`);
+  t('🚨 le code a été demandé SANS fiche — il n\'en existe aucune à cet écran', ligne.leadId === '', JSON.stringify(ligne.leadId));
+  t('🚨 …et aucune fiche n\'a été créée pour l\'obtenir', fichesCreees === 0, `${fichesCreees} création(s) de fiche`);
+  t('🚨 le CRM a reçu l\'IP du VISITEUR, pour le plafond par visiteur', ligne.ip === IP_VISITEUR, String(ligne.ip));
   const dim = dimensionsJpeg(ligne.photo);
   t('la photo est redimensionnée à 1280 px avant d\'être envoyée', dim.largeur === 1280, `${dim.largeur}×${dim.hauteur}`);
   t('…en gardant les proportions', Math.abs(dim.hauteur - 720) <= 2, `${dim.largeur}×${dim.hauteur}`);
+}
+
+console.log('\n── 5 bis. 🚨 La simulation tourne, avec la photo du téléphone ─');
+{
+  // Le vrai CRM exige une fiche pour générer : sans coordonnées, il refuse,
+  // et l'écran passe aux coordonnées (« repli »). Le lead est INTERCEPTÉ.
+  await ordi.click('button.sim-cta');
+  await ordi.waitForSelector('#sim-consent', { timeout: 20000 });
+  t('la génération sans fiche bascule sur les coordonnées', /coordonnées/i.test(await ordi.locator('.sim-titre').innerText()),
+    (await ordi.locator('.sim-titre').innerText()).trim());
+  await ordi.fill('#sim-nom', 'Laurie');
+  await ordi.fill('#sim-tel', TEL);
+  await ordi.check('#sim-consent');
+  await ordi.click('form button.sim-cta');
+  await ordi.waitForSelector('.sim-compare--revele', { timeout: 20000 });
+  await ordi.waitForFunction(() => [...document.querySelectorAll('.sim-compare--revele img')].every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 15000 });
+  t('🚨 la simulation est révélée, ses deux images chargées', await ordi.locator('.sim-compare--revele img').count() === 2);
+  t('🚨 UN seul lead, intercepté — rien n\'est parti', fichesCreees === 1, `${fichesCreees}`);
+  const ok = generations.filter((g) => g.ok);
+  t('la génération a tourné une fois, avec la fiche', ok.length === 1 && ok[0].leadId === LEAD, `${generations.length} appel(s), ${ok.length} réussi(s)`);
+  const envoyee = Buffer.from((ok[0]?.photo || ',').split(',')[1], 'base64');
+  t('🚨 …sur la photo prise au TÉLÉPHONE, octet pour octet', envoyee.equals(codes.get(dernierCode).photo),
+    `${envoyee.length} octets générés · ${codes.get(dernierCode).photo.length} reçus du téléphone`);
+  // Le dévoilement est un flou de 900 ms qui se lève : on juge l'état FINAL.
+  await ordi.waitForFunction(() => document.querySelector('.sim-compare--revele').getAnimations().every((x) => x.playState === 'finished'), null, { timeout: 5000 });
+  const filtre = await ordi.locator('.sim-compare--revele').evaluate((e) => getComputedStyle(e).filter);
+  t('…et l\'image finit NETTE, le flou du dévoilement levé', /^(none|blur\(0px\))$/.test(filtre), filtre);
+  await ordi.screenshot({ path: path.join(dossier, '4b-ordi-1440-simulation.png') });
 }
 
 /** Un code neuf, demandé comme le ferait l'écran de l'ordinateur. */
 async function codeNeuf() {
   const r = await fetch(`${BASE}/api/simulateur/relais`, {
     method: 'POST', headers: { 'content-type': 'application/json' },
-    body: JSON.stringify({ leadId: LEAD, telephone: TEL }),
+    body: JSON.stringify({ leadId: '', telephone: '' }),
   });
   const j = await r.json();
   return j.code;
@@ -494,14 +565,14 @@ console.log('\n── 9. « Générer un nouveau code » ───────�
 
   // On fait expirer le code sous ses pieds, comme le temps le ferait.
   codes.get(premier).expire = Date.now() - 1000;
-  await ordi2.waitForSelector('button.sim-lien', { timeout: 15000 });
+  await ordi2.waitForSelector('.sim-qr button.sim-lien', { timeout: 15000 });
   t('🚨 l\'écran dit que le code a expiré', /ce code a expiré/i.test(await ordi2.locator('.sim-qr').innerText()));
   t('🚨 …et offre d\'en générer un nouveau',
-    /générer un nouveau code/i.test(await ordi2.locator('button.sim-lien').innerText()));
+    /générer un nouveau code/i.test(await ordi2.locator('.sim-qr button.sim-lien').innerText()));
   t('…le QR périmé n\'est plus affiché', await ordi2.locator('.sim-qr-image').count() === 0);
   await ordi2.screenshot({ path: path.join(dossier, '7-ordi-1440-expire.png') });
 
-  await ordi2.click('button.sim-lien');
+  await ordi2.click('.sim-qr button.sim-lien');
   await ordi2.waitForSelector('.sim-qr-image', { timeout: 15000 });
   await ordi2.waitForTimeout(400);
   t('🚨 un nouveau QR apparaît', await ordi2.locator('.sim-qr-image svg').count() === 1);
@@ -522,8 +593,7 @@ console.log('\n── 10. Le téléversement d\'ordinateur marche toujours ─�
   await ch.setFiles(fichier);
   await ordi3.waitForSelector('.sim-styles', { timeout: 20000 });
   t('🚨 le téléversement classique mène encore à l\'écran du style',
-    await ordi3.locator('.sim-fil li.ici').innerText().then((s) => s.trim().toLowerCase() === 'style'),
-    (await ordi3.locator('.sim-fil li.ici').innerText()).trim());
+    await etape(ordi3) === 3, `étape ${await etape(ordi3)}`);
 
   // Un fichier qui n'est pas une image est refusé, avec un message en français.
   const ordi4 = await ctxOrdi.newPage();
