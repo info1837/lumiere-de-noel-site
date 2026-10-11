@@ -41,6 +41,9 @@ import { mouvementReduit, surDefilement, progressionDansEcran } from "@/lib/mouv
 // comparer.
 const DEBUT_PILOTE = 15;
 const FIN_PILOTE = 85;
+// Au doigt, la couture ne suit qu'au-delà de ce déplacement HORIZONTAL :
+// en dessous, c'est peut-être le début d'un défilement vertical.
+const SEUIL_DOIGT = 6;
 
 export default function RevelationLumiere({
   photo,                    // { src, alt } — la photo illuminée, RÉELLE
@@ -97,10 +100,75 @@ export default function RevelationLumiere({
   // La première interaction arrête le balayage DÉFINITIVEMENT : le ref
   // est lu dans la boucle d'animation, qui tourne hors du cycle de
   // rendu et ne verrait pas un état React posé à la même frame.
-  const bouger = (v) => {
+  const prendreLaMain = () => {
     interrompu.current = true;
     setABouge(true);
+  };
+  const bouger = (v) => {
+    prendreLaMain();
     setPosition(v);
+  };
+
+  // ⚠️ LE GLISSEMENT SE FAIT AU POINTEUR, SUR TOUT LE CADRE.
+  //
+  // Avant : un <input type="range"> invisible tendu sur l'image. Sur un
+  // téléphone, un range natif ne bouge que si on saisit SON POUCE — et le
+  // pouce était invisible. Le défilement réécrivait la valeur à chaque
+  // frame par-dessus. Résultat mesuré à 375 px : impossible de glisser, la
+  // maison ne bougeait qu'en défilant.
+  //
+  // Maintenant le cadre écoute les événements pointeur (souris, doigt,
+  // stylet, un seul chemin). La poignée suit le X du doigt n'importe où
+  // sur l'image ; un simple toucher l'y fait sauter. `touch-action: pan-y`
+  // (globals.css) laisse le défilement VERTICAL à la page : un doigt qui
+  // descend fait défiler, un doigt qui glisse de côté déplace la couture.
+  // Quand le navigateur prend le geste pour un défilement, il émet
+  // `pointercancel` et le glissement s'arrête là.
+  //
+  // ⚠️ AU DOIGT, ON NE SAUTE PAS AU CONTACT. Un pouce qui défile la page
+  // en passant sur l'image pose aussi un `pointerdown` : sauter là, c'est
+  // arracher la couture à chaque défilement. Le doigt ne déplace donc la
+  // couture qu'en glissant de côté (au-delà de SEUIL_DOIGT px) ou en
+  // touchant sans bouger (un vrai toucher, qui se termine par
+  // `pointerup`). La souris, elle, saute au clic, comme on s'y attend.
+  const glisse = useRef(null);   // { id, x0, suit } — le pointeur qui tient la couture
+  const versPosition = (e) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    if (!r.width) return null;
+    return Math.min(100, Math.max(0, ((e.clientX - r.left) / r.width) * 100));
+  };
+  const placer = (e) => {
+    const v = versPosition(e);
+    if (v !== null) setPosition(v);
+  };
+  const auPointeurBas = (e) => {
+    if (e.button !== undefined && e.button !== 0) return;
+    // La règle d'avant, qui se déclenche ENFIN au doigt : le premier
+    // contact rend la main pour de bon.
+    prendreLaMain();
+    const souris = e.pointerType === "mouse";
+    glisse.current = { id: e.pointerId, x0: e.clientX, suit: souris };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+    if (souris) {
+      e.preventDefault();   // pas de glisser-déposer natif, pas de sélection
+      placer(e);
+    }
+  };
+  const auPointeurBouge = (e) => {
+    const g = glisse.current;
+    if (!g || g.id !== e.pointerId) return;
+    if (!g.suit && Math.abs(e.clientX - g.x0) > SEUIL_DOIGT) g.suit = true;
+    if (g.suit) placer(e);
+  };
+  const auPointeurHaut = (e) => {
+    const g = glisse.current;
+    if (!g || g.id !== e.pointerId) return;
+    // Un `pointerup` sans glissement, c'est un toucher : on y saute.
+    // Un `pointercancel`, c'est le navigateur qui a pris le geste pour un
+    // défilement : la couture ne bouge pas.
+    if (e.type === "pointerup") placer(e);
+    glisse.current = null;
+    try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
   };
 
   // ⚠️ PAS DE COMPARATEUR SANS VRAIE PAIRE — ET LE GARDE EST ICI,
@@ -126,7 +194,11 @@ export default function RevelationLumiere({
 
   return (
     <figure className="revel" ref={cadre} style={{ "--revel-h": hauteur, "--revel-pos": `${position}%` }}>
-      <div className="revel-cadre">
+      <div className="revel-cadre"
+        onPointerDown={auPointeurBas}
+        onPointerMove={auPointeurBouge}
+        onPointerUp={auPointeurHaut}
+        onPointerCancel={auPointeurHaut}>
         {/* ⚠️ LE CALQUE DU DESSOUS EST L'« APRÈS ».
             Le découpage ci-dessous révèle depuis le BORD GAUCHE. Le
             calque découpé occupe donc la gauche, et le calque de fond ce
@@ -176,9 +248,11 @@ export default function RevelationLumiere({
           {etiquetteApres || "Après"}
         </span>
 
-        {/* ⚠️ Le vrai contrôle est un <input type="range"> : il est au
-            clavier, il est annoncé, et il marche sans JavaScript de
-            glissement. La poignée dessinée n'est que son costume. */}
+        {/* ⚠️ Le <input type="range"> reste, pour le CLAVIER et les
+            lecteurs d'écran : il est annoncé, et les flèches le
+            déplacent. Mais il est visuellement masqué et ne couvre PLUS
+            l'image — c'est le cadre qui reçoit le doigt. Quand il a le
+            focus, c'est la poignée dessinée qui le montre. */}
         <input
           className="revel-curseur"
           type="range" min="0" max="100" step="0.5"

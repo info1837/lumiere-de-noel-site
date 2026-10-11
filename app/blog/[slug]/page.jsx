@@ -73,10 +73,15 @@ export default function BlogPost({ params }) {
             { name: "Blog", href: "/blog" },
             { name: p.title },
           ]} />
-          <div style={{ display: "grid", gridTemplateColumns: "minmax(0, 1fr) 280px", gap: 56, alignItems: "start" }} className="blog-grid">
-            <article>
+          {/* ⚠️ LA GRILLE VIT DANS globals.css, JAMAIS EN STYLE EN LIGNE.
+              Un `gridTemplateColumns` en ligne gagne contre toute media query :
+              à 375 px la grille restait à deux colonnes, résolue en
+              « 0px 280px », et l'article s'affichait un mot par ligne à côté
+              de « À lire ensuite ». Gardé par scripts/check-blog-mobile.mjs. */}
+          <div className="blog-grid">
+            <article className="blog-article">
               <BlogContent blocks={body} />
-              <div style={{ marginTop: 32, padding: 24, background: "#fff", border: "1px solid #ece5d6", borderRadius: 14 }}>
+              <div style={{ marginTop: 32, padding: 20, background: "#fff", border: "1px solid #ece5d6", borderRadius: 14 }}>
                 <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
                   Prêt à démarrer ?
                 </div>
@@ -88,7 +93,7 @@ export default function BlogPost({ params }) {
               </div>
             </article>
 
-            <aside style={{ position: "sticky", top: 100 }}>
+            <aside className="blog-aside">
               <div style={{ background: "#fff", border: "1px solid #ece5d6", borderRadius: 14, padding: 18 }}>
                 <div style={{ color: goldText, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 10 }}>
                   À lire ensuite

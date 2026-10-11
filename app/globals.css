@@ -650,16 +650,20 @@ input:not([type="checkbox"]):not([type="radio"]):focus, textarea:focus, select:f
 }
 
 /* --- Blog : grille article + sidebar -------------------------------------- */
-.blog-grid { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 56px; align-items: start; }
-@media (max-width: 900px) {
-  .blog-grid { grid-template-columns: 1fr; gap: 40px; }
-  .blog-grid aside { position: static !important; }
+/* Une colonne sous 900 px : l'article prend toute la largeur et « À lire
+   ensuite » passe DESSOUS (il suit l'article dans le DOM). Au-dessus,
+   l'article garde une mesure lisible de ~68 caractères. */
+.blog-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: start; }
+.blog-article { min-width: 0; max-width: 68ch; }
+@media (min-width: 900px) {
+  .blog-grid { grid-template-columns: minmax(0, 68ch) 280px; gap: 56px; justify-content: space-between; }
+  .blog-aside { position: sticky; top: 100px; }
 }
 
 /* --- Blog content (rendu des articles) ------------------------------------ */
-.blog-content { max-width: 720px; }
+.blog-content { max-width: 68ch; }
 .blog-content .blog-p,
-.blog-content .blog-cta { color: #2a2a2a; font-size: 18px; line-height: 1.75; margin: 0 0 22px; max-width: 68ch; }
+.blog-content .blog-cta { color: #2a2a2a; font-size: 18px; line-height: 1.7; margin: 0 0 22px; }
 .blog-content .blog-h2 {
   font-family: 'Bebas Neue', 'Nunito Sans', sans-serif;
   font-size: clamp(1.7rem, 3vw, 2.2rem);
@@ -673,7 +677,7 @@ input:not([type="checkbox"]):not([type="radio"]):focus, textarea:focus, select:f
   color: var(--charcoal); margin: 26px 0 10px;
 }
 .blog-content .blog-ul { padding-left: 26px; margin: 0 0 24px; }
-.blog-content .blog-ul li { font-size: 17px; line-height: 1.7; margin-bottom: 8px; color: #2a2a2a; }
+.blog-content .blog-ul li { font-size: 18px; line-height: 1.7; margin-bottom: 8px; color: #2a2a2a; }
 .blog-content .blog-quote {
   border-left: 4px solid var(--gold);
   padding: 4px 0 4px 18px; margin: 26px 0; font-style: italic; color: #444;
@@ -1589,10 +1593,16 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   overflow: hidden;
   background: #060E18;
   line-height: 0;
-  /* La poignée se saisit horizontalement : on laisse le défilement
-     vertical à la page, sinon la section devient un piège sur téléphone. */
+  /* Le doigt glisse de côté sur TOUT le cadre (événements pointeur, voir
+     le composant) ; le défilement vertical reste à la page, sinon la
+     section devient un piège sur téléphone. */
   touch-action: pan-y;
+  cursor: ew-resize;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
 }
+.revel-cadre img { -webkit-user-drag: none; user-drag: none; pointer-events: none; }
 
 .revel-img {
   position: absolute; inset: 0;
@@ -1638,7 +1648,7 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   position: absolute;
   top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  width: 46px; height: 46px;
+  width: 48px; height: 48px;
   border-radius: 50%;
   background: #F0EADE;
   color: #0A1524;
@@ -1662,30 +1672,27 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 .revel-etiq--gauche { left: 14px; max-width: 44%; }
 .revel-etiq--droite { right: 14px; max-width: 52%; text-align: right; }
 
-/* Le vrai contrôle : invisible mais pleine surface, au clavier comme au
-   doigt. La poignée dessinée n'est que son costume. */
-.revel-curseur {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  margin: 0;
-  opacity: 0;
-  cursor: ew-resize;
-  -webkit-appearance: none;
-  appearance: none;
-  background: transparent;
+/* Le range reste pour le clavier et les lecteurs d'écran, VISUELLEMENT
+   MASQUÉ. Il ne couvre plus l'image : tendu dessus en opacité 0, il
+   avalait le doigt sur téléphone, où un range ne bouge que par son pouce
+   — invisible. Le glissement passe par le cadre (événements pointeur). */
+/* ⚠️ Sélecteur à 0,3,1 À DESSEIN : la règle globale
+   `input:not([type="checkbox"]):not([type="radio"])` (0,2,1) pose
+   `width: 100%` et un padding, et gagnait contre `.revel-curseur` seul —
+   le range « masqué » faisait encore 327 × 30 px. */
+.revel-cadre input.revel-curseur[type="range"] {
+  position: absolute;
+  top: 0; left: 0;
+  width: 1px; height: 1px; min-height: 0;
+  margin: -1px; padding: 0; border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
-.revel-curseur::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 56px; height: 100%;
-}
-.revel-curseur::-moz-range-thumb {
-  width: 56px; height: 100%;
-  border: 0; background: transparent;
-}
-/* Le focus clavier doit se VOIR : l'input est transparent, donc c'est le
-   cadre qui le montre. */
+/* Le focus clavier doit se VOIR : l'input est masqué, donc c'est la
+   poignée qui le montre. */
 .revel-curseur:focus-visible { outline: none; }
-.revel-curseur:focus-visible ~ .revel-couture,
 .revel-cadre:has(.revel-curseur:focus-visible) .revel-poignee {
   box-shadow: 0 0 0 3px #F0BA54, 0 6px 20px rgba(0, 0, 0, 0.45);
 }
@@ -1700,7 +1707,8 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
 
 @media (max-width: 560px) {
   .revel-cadre { border-radius: 14px; }
-  .revel-poignee { width: 40px; height: 40px; }
+  /* ≥ 44 px : la cible tactile minimale. Elle descendait à 40. */
+  .revel-poignee { width: 44px; height: 44px; }
   .revel-etiq { font-size: 10px; padding: 5px 9px; line-height: 1.35; }
 
   /* ⚠️ L'ÉTIQUETTE DE DROITE DESCEND EN BAS, et ce n'est pas esthétique.

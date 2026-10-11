@@ -1,6 +1,11 @@
 // Les comparateurs montrent un VRAI avant/après, et le disent.
 //
 //   node scripts/check-avant-apres.mjs
+//   BASE_URL=http://127.0.0.1:4191 node scripts/check-avant-apres.mjs
+//
+// Les sections 1 à 8 lisent le source. La section 9 GLISSE AU DOIGT dans
+// un vrai Chromium à 375 px : il faut un serveur (BASE_URL, :3000 par
+// défaut). Sans serveur, elle échoue — elle ne se saute pas en silence.
 //
 // 🚨 CE QUI EST EN JEU.
 //
@@ -26,6 +31,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
+import { chromium } from 'playwright';
 
 const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), '..');
 let pass = 0, fail = 0;
@@ -189,6 +195,152 @@ console.log('\n--- 7. 🚨 Les étiquettes correspondent aux IMAGES ---');
     /revel-etiq--droite[\s\S]{0,120}etiquetteApres/.test(c));
   t('🚨 plus de classe `revel-apres` (le nom cachait l\'inversion)',
     !/className="revel-apres"/.test(c) && !/^\.revel-apres \{/m.test(css));
+}
+
+console.log('\n--- 8. 🚨 Le doigt tient la couture, le range ne couvre plus l\'image ---');
+{
+  // 🚨 LE DÉFAUT MESURÉ (audit 375 px, octobre 2026).
+  //
+  // `.revel-curseur` était un <input type="range"> en opacité 0 tendu sur
+  // toute l'image. Un range natif ne bouge au doigt que si on saisit SON
+  // POUCE — invisible ici — et le défilement réécrivait la valeur à chaque
+  // frame. On ne pouvait pas glisser : la maison ne bougeait qu'en défilant.
+  const c = sansCommentaires(lire('components/RevelationLumiere.jsx'));
+  const css = lire('app/globals.css');
+  t('🚨 le cadre écoute les événements pointeur',
+    /onPointerDown=\{auPointeurBas\}/.test(c) && /onPointerMove=\{auPointeurBouge\}/.test(c)
+    && /onPointerUp=\{auPointeurHaut\}/.test(c) && /onPointerCancel=\{auPointeurHaut\}/.test(c));
+  t('🚨 …et capture le pointeur', /setPointerCapture\(e\.pointerId\)/.test(c));
+  t('🚨 le premier contact coupe le pilotage au défilement',
+    /auPointeurBas = \(e\) => \{[\s\S]{0,160}prendreLaMain\(\)/.test(c));
+  t('🚨 le défilement vertical reste à la page (touch-action: pan-y)',
+    /\.revel-cadre \{[\s\S]{0,500}touch-action: pan-y/.test(css));
+  const regleCurseur = (css.match(/^\.revel-cadre input\.revel-curseur\[type="range"\] \{[\s\S]*?\}/m) || [''])[0];
+  t('🚨 le range est visuellement masqué', /clip-path: inset\(50%\)/.test(regleCurseur) && /width: 1px/.test(regleCurseur));
+  t('🚨 …et ne couvre PLUS l\'image', !/inset: 0/.test(regleCurseur) && !/width: 100%/.test(regleCurseur));
+  t('le range existe toujours, pour le clavier', /type="range"/.test(c) && /aria-label=/.test(c));
+  t('le focus clavier se voit sur la poignée',
+    /\.revel-cadre:has\(\.revel-curseur:focus-visible\) \.revel-poignee/.test(css));
+}
+
+console.log('\n--- 9. 🚨 Au doigt, dans un vrai navigateur, à 375 px ---');
+{
+  // Les événements tactiles passent par CDP (Input.dispatchTouchEvent) :
+  // c'est le chemin du VRAI doigt dans Chromium, qui applique
+  // `touch-action` et décide lui-même entre défilement et glissement.
+  // Un `element.dispatchEvent(new PointerEvent(...))` contournerait
+  // exactement ce qu'on veut prouver.
+  const BASE = (process.env.BASE_URL || 'http://127.0.0.1:3000').replace(/\/$/, '');
+  let serveur = false;
+  try { serveur = (await fetch(BASE + '/')).ok; } catch {}
+  t(`un serveur répond sur ${BASE}`, serveur, serveur ? '' : 'démarrez-le ou passez BASE_URL');
+
+  if (serveur) {
+    const nav = await chromium.launch(
+      process.env.PLAYWRIGHT_CHROMIUM_PATH ? { executablePath: process.env.PLAYWRIGHT_CHROMIUM_PATH } : {}
+    );
+    const ctx = await nav.newContext({
+      viewport: { width: 375, height: 812 }, deviceScaleFactor: 2, isMobile: true, hasTouch: true,
+    });
+    const attendre = (ms) => new Promise((r) => setTimeout(r, ms));
+
+    for (const chemin of ['/', '/simulateur']) {
+      const page = await ctx.newPage();
+      const cdp = await ctx.newCDPSession(page);
+      const doigt = async (points, pas = 16) => {
+        const [x0, y0] = points[0];
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: x0, y: y0 }] });
+        for (let i = 1; i < points.length; i++) {
+          const [xa, ya] = points[i - 1], [xb, yb] = points[i];
+          for (let k = 1; k <= pas; k++) {
+            await cdp.send('Input.dispatchTouchEvent', {
+              type: 'touchMove', touchPoints: [{ x: xa + (xb - xa) * k / pas, y: ya + (yb - ya) * k / pas }],
+            });
+            await attendre(8);
+          }
+        }
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+        await attendre(150);
+      };
+      const pos = () => page.evaluate(() =>
+        parseFloat(document.querySelector('.revel').style.getPropertyValue('--revel-pos')));
+      const boite = () => page.evaluate(() => {
+        const r = document.querySelector('.revel-cadre').getBoundingClientRect();
+        return { x: r.left, y: r.top, w: r.width, h: r.height };
+      });
+
+      // `load`, pas `networkidle` : /simulateur garde des requêtes ouvertes.
+      await page.goto(BASE + chemin, { waitUntil: 'load' });
+      await page.waitForSelector('.revel-cadre');
+      // ⚠️ `behavior: 'instant'` : le site défile en douceur
+      // (scroll-behavior: smooth). Sans lui, le cadre bougeait encore
+      // PENDANT le geste, et la boîte mesurée avant était fausse.
+      await page.evaluate(() => {
+        const el = document.querySelector('.revel-cadre');
+        window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - (innerHeight - el.offsetHeight) / 2, behavior: 'instant' });
+      });
+      await attendre(300);
+      console.log(`  ${chemin}`);
+
+      // La couture couvre le geste : le centre du cadre est sur la poignée.
+      // On part donc LOIN d'elle, pour prouver « n'importe où sur l'image ».
+      let b = await boite();
+      await doigt([[b.x + b.w * 0.9, b.y + b.h * 0.2], [b.x + b.w * 0.15, b.y + b.h * 0.2]]);
+      let p = await pos();
+      t('  🚨 glisser vers la GAUCHE, depuis le haut de l\'image', Math.abs(p - 15) < 4, `${p.toFixed(1)} %`);
+
+      b = await boite();
+      await doigt([[b.x + b.w * 0.1, b.y + b.h * 0.8], [b.x + b.w * 0.8, b.y + b.h * 0.8]]);
+      p = await pos();
+      t('  🚨 glisser vers la DROITE, depuis le bas de l\'image', Math.abs(p - 80) < 4, `${p.toFixed(1)} %`);
+
+      b = await boite();
+      await doigt([[b.x + b.w * 0.4, b.y + b.h * 0.8]]);
+      p = await pos();
+      t('  🚨 un toucher fait SAUTER la couture là', Math.abs(p - 40) < 4, `${p.toFixed(1)} %`);
+
+      // Le pilotage au défilement est mort : défiler ne la bouge plus.
+      const avant = await pos();
+      await page.evaluate(() => window.scrollBy({ top: 120, behavior: 'instant' }));
+      await attendre(300);
+      await page.evaluate(() => window.scrollBy({ top: -120, behavior: 'instant' }));
+      await attendre(300);
+      t('  🚨 après le premier contact, le défilement ne la reprend plus', Math.abs((await pos()) - avant) < 0.01,
+        `${avant.toFixed(1)} → ${(await pos()).toFixed(1)} %`);
+
+      // Un doigt qui DESCEND sur l'image fait défiler la page.
+      b = await boite();
+      const y0 = await page.evaluate(() => window.scrollY);
+      const xV = b.x + b.w * 0.7;
+      await doigt([[xV, b.y + b.h * 0.85], [xV, b.y + b.h * 0.1]], 24);
+      await attendre(400);
+      const y1 = await page.evaluate(() => window.scrollY);
+      t('  🚨 un geste vertical sur l\'image FAIT DÉFILER la page', y1 - y0 > 60, `${Math.round(y1 - y0)} px`);
+      t('  …et ne déplace pas la couture', Math.abs((await pos()) - avant) < 2, `${(await pos()).toFixed(1)} %`);
+
+      const poignee = await page.evaluate(() => {
+        const r = document.querySelector('.revel-poignee').getBoundingClientRect();
+        return Math.min(r.width, r.height);
+      });
+      t('  🚨 la poignée est une cible tactile ≥ 44 px', poignee >= 44, `${poignee} px`);
+
+      const range = await page.evaluate(() => {
+        const r = document.querySelector('.revel-curseur').getBoundingClientRect();
+        return r.width * r.height;
+      });
+      t('  🚨 le range ne couvre pas l\'image', range <= 1, `${range} px²`);
+
+      // Le clavier, toujours : flèche droite sur le range.
+      const pk = await pos();
+      await page.focus('.revel-curseur');
+      await page.keyboard.press('ArrowRight');
+      await attendre(100);
+      t('  le clavier déplace toujours la couture', (await pos()) > pk, `${pk.toFixed(1)} → ${(await pos()).toFixed(1)} %`);
+
+      await page.close();
+    }
+    await nav.close();
+  }
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

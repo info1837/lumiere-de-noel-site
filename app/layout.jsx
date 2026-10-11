@@ -18,6 +18,11 @@ const PIXEL_ENABLED = Boolean(META_PIXEL_ID);
 
 const BASE = company.baseUrl;
 
+// ≤ 155 caractères : Google coupe au-delà, et la version d'avant (185)
+// perdait justement la fin — « un nombre limité de propriétés ».
+const DESCRIPTION =
+  "Lumières de Noël posées, entretenues et retirées, à partir de 1 000 $. Rive-Nord, Montréal et Rive-Sud. Un nombre limité de propriétés chaque saison.";
+
 // Une seule écriture de l'URL des polices : elle apparaît trois fois dans
 // le <head> (preload, feuille différée, repli sans JavaScript), et trois
 // copies finiraient par diverger d'une graisse.
@@ -33,24 +38,26 @@ export const metadata = {
     default: "Installation de lumières de Noël | Solution Lumière de Noël",
     template: `%s | ${company.titleSuffix}`,
   },
-  description:
-    "Pose, entretien et retrait inclus — projets à partir de 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Un nombre limité de propriétés chaque saison.",
+  description: DESCRIPTION,
   authors: [{ name: company.name }],
-  alternates: { canonical: "/", languages: { "fr-CA": "/" } },
+  // ⚠️ PAS DE CANONICAL ICI. Le layout racine est hérité par TOUTES les
+  // pages, y compris le 404 et /simulateur/photo : un `canonical: "/"`
+  // posé ici leur faisait déclarer l'accueil comme version officielle.
+  // Chaque page indexable déclare le sien ; celui de l'accueil vit dans
+  // app/page.jsx.
   openGraph: {
     type: "website",
     url: "/",
     siteName: company.name,
     title: "Installation de lumières de Noël | Solution Lumière de Noël",
-    description:
-      "Pose, entretien et retrait inclus — projets à partir de 1 000 $. Résidentiel et commercial sur la Rive-Nord, à Montréal et sur la Rive-Sud. Un nombre limité de propriétés chaque saison.",
+    description: DESCRIPTION,
     images: [PHOTOS["blainville-01"].src],
     locale: "fr_CA",
   },
   twitter: {
     card: "summary_large_image",
     title: "Installation de lumières de Noël | Solution Lumière de Noël",
-    description: "Pose, entretien et retrait inclus — projets à partir de 1 000 $. Rive-Nord, Montréal et Rive-Sud. Un nombre limité de propriétés chaque saison.",
+    description: DESCRIPTION,
     images: [PHOTOS["blainville-01"].src],
   },
   // L'ancien /favicon.svg reste volontairement retiré : un favicon SVG a

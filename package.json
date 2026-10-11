@@ -21,7 +21,11 @@
     "check:saison": "node scripts/check-bandeau-rarete.mjs",
     "check:lead": "node scripts/check-lead-simulateur.mjs",
     "images:avant-apres": "node scripts/preparer-avant-apres.mjs",
+    "images:flous": "node scripts/generer-flous.mjs",
     "check:avant-apres": "node scripts/check-avant-apres.mjs",
+    "check:blog": "node scripts/check-blog-mobile.mjs",
+    "check:seo": "node scripts/check-seo.mjs",
+    "check:debordement": "node scripts/check-debordement.mjs",
     "check:vie": "node scripts/check-vie.mjs",
     "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs",
     "captures:vie": "node scripts/captures-vie.mjs"

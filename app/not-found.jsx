@@ -2,8 +2,12 @@ import Link from "next/link";
 import { CTAButton } from "@/components/ui";
 import { company, navy, ivory, gold } from "@/components/data";
 
+// Un 404 ne déclare PAS de canonical : il n'a pas de version officielle.
+// Il en héritait un — « / » — du layout racine ; il a été retiré de là.
+// Gardé par la vérification SEO du 404 (aucun <link rel="canonical">).
 export const metadata = {
   title: "Page introuvable",
+  description: "Cette page n'existe pas. Réservez votre installation de lumières de Noël ou revenez à l'accueil.",
   robots: { index: false },
 };
 

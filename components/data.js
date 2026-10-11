@@ -265,7 +265,7 @@ export const services = [
     heroImage: servicePhoto("lumieres-de-noel-residentiel").src,
     heroImageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     metaDescription:
-      "Conception, pose, entretien et retrait de vos lumières de Noël, matériel DEL commercial fourni. Projets à partir de 1 000 $, prix ferme avant l'installation.",
+      "Conception, pose, entretien et retrait de vos lumières de Noël, matériel DEL commercial fourni. À partir de 1 000 $, prix ferme avant l'installation.",
     intro:
       "On illumine votre maison comme si c'était la nôtre. Toiture, arbres, arbustes, façade et entrée — un design pensé pour votre propriété, installé par notre équipe, retiré après les Fêtes.",
     bullets: [
@@ -335,7 +335,7 @@ const villesBrutes = [
     name: "Blainville",
     regionLabel: "Couronne nord — Laurentides",
     metaDescription:
-      "Lumières de Noël et éclairage architectural à Blainville. Conception, pose, entretien et retrait inclus. Projets à partir de 1 000 $, un nombre limité de propriétés chaque saison.",
+      "Lumières de Noël à Blainville : conception, pose, entretien et retrait inclus. À partir de 1 000 $, un nombre limité de propriétés chaque saison.",
     intro:
       "Blainville est au cœur de notre territoire. De Fontainebleau au Plateau, de Chambéry à Notre-Dame — on connaît les rues et les styles d'architecture du secteur.",
     body: "On planifie le secteur Blainville–Boisbriand–Sainte-Thérèse ensemble, pour limiter les déplacements — réserver tôt garantit votre date avant les premières neiges. Le retrait en janvier est inclus, et le matériel reste de qualité commerciale.",
@@ -375,7 +375,7 @@ const villesBrutes = [
     name: "Montréal",
     regionLabel: "Île de Montréal",
     metaDescription:
-      "Installation de lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont, NDG. Résidentiel et commercial, un nombre limité de propriétés chaque saison.",
+      "Lumières de Noël à Montréal — Plateau, Outremont, Westmount, Ahuntsic, Rosemont. Résidentiel et commercial, places limitées chaque saison.",
     intro:
       "Sur l'île, on installe partout : Outremont, Westmount, le Plateau, Ahuntsic, Rosemont, NDG, Côte-des-Neiges. Façades patrimoniales, duplex et triplex, copropriétés — on adapte le design à votre style architectural.",
     body: "Les ruelles montréalaises et les façades en rangée demandent une approche différente des grands terrains de banlieue : davantage d'attention aux corniches, balcons et alignements de fenêtres. Les contraintes urbaines — stationnement, accès, hauteur — font partie du travail.",
@@ -385,7 +385,7 @@ const villesBrutes = [
     name: "Rive-Sud",
     regionLabel: "Rive-Sud de Montréal",
     metaDescription:
-      "Lumières de Noël sur la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert. Pose et retrait inclus, projets à partir de 1 000 $.",
+      "Lumières de Noël sur la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert. Pose et retrait inclus, à partir de 1 000 $.",
     intro:
       "On dessert toute la Rive-Sud : Brossard, Longueuil, Boucherville, Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie, Candiac. Résidentiel et commercial, du DIX30 aux quartiers résidentiels patrimoniaux.",
     body: "On dessert la couronne sud rapprochée. Pour les commerces des grandes artères, on planifie les installations hors-heures. Pour les résidences : développements récents comme quartiers établis (vieux Longueuil, vieux Boucherville).",
@@ -527,18 +527,10 @@ const HOME_PORTFOLIO_INDICES = [0, 2, 3, 9, 10, 11];
 export const noelPage = {
   slug: "realisations",
   navLabel: "Lumière de Noël",
-  heroKicker: "Service saisonnier clé en main",
-  heroTitle: "INSTALLATION DE LUMIÈRES DE NOËL AU QUÉBEC",
-  // DRAFT COPY
-  heroSubtitle:
-    "Conception, installation, entretien et retrait. On s'occupe de tout — vous profitez des Fêtes.",
-  // En-tête du portfolio : une photo qui n'est PAS dans la galerie plus bas,
-  // sinon la même maison ouvre la page et y réapparaît en vignette.
-  heroImage: PHOTOS["st-donat-02"].src,
-  heroImageAlt: PHOTOS["st-donat-02"].alt,
-  // DRAFT COPY
+  // « cette saison » était faux dès la saison suivante : les photos sont
+  // de 2025. Une phrase qui reste vraie.
   intro:
-    "Voici des installations réalisées cette saison, à travers notre territoire.",
+    "Des installations réalisées par notre équipe, photographiées sur place. Chaque photo indique sa ville.",
   // Vraies réalisations, saison 2025. Ces photos-là PEUVENT nommer leur
   // ville : ce sont de vrais chantiers. Une image générée ne le pourrait
   // jamais — scripts/check-photos.mjs casse le build si ça arrive.

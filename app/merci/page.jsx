@@ -9,7 +9,7 @@ import { company, navy, ivory, gold, charcoal, offWhite, goldText } from "@/comp
 export const metadata = {
   title: "Merci — nous vous répondons sous 24 h",
   description:
-    "Votre demande est bien reçue. Un membre de l'équipe Solution Lumière de Noël inc. vous répond en moins de 24 h avec votre un nombre limité de propriétés chaque saison.",
+    "Votre demande est bien reçue. Un membre de l'équipe Solution Lumière de Noël vous répond en moins de 24 h.",
   robots: { index: false, follow: true },
   alternates: { canonical: "/merci" },
 };
