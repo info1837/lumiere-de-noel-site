@@ -1,13 +1,11 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { PageHero, SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui";
-import { BreadcrumbJsonLd, FaqJsonLd } from "@/components/jsonld";
-import QuoteForm from "@/components/QuoteForm";
-import { cityHeroPhoto } from "@/components/photos";
+import { BreadcrumbJsonLd } from "@/components/jsonld";
 import {
-  services, cities, findCity, inCity, cleService,
-  navy, offWhite, ivory, gold, charcoal, goldText, creme,
-} from "@/components/data";
+  HeroPage, AProposVille, CartesServices, CeQuiEstCompris, Parcours, FaqCourte,
+  Reservation, PucesVilles,
+} from "@/components/sections";
+import { PHOTOS, cityHeroPhoto } from "@/components/photos";
+import { cities, findCity, inCity, findService } from "@/components/data";
 
 export function generateStaticParams() {
   return cities.map((c) => ({ city: c.slug }));
@@ -29,13 +27,22 @@ export function generateMetadata({ params }) {
   };
 }
 
+// =============================================================================
+// LE GABARIT DE VILLE (partie 3)
+// =============================================================================
+// Le gabarit de service, plus « À propos de {ville} » (les lignes locales
+// et la VRAIE photo de la ville) et les trois services en cartes compactes.
+//
+// ⚠️ LE HERO PORTE UNE PHOTO GÉNÉRIQUE, ET C'EST VOULU. La photo de la
+// ville vit dans « À propos » : la mettre aussi en haut montrerait la même
+// maison deux fois sur une page. Et la bande de photos du service n'est pas
+// reprise ici : elle nomme d'autres villes, et une page de ville ne montre
+// jamais la maison d'ailleurs (check-photos, check-pages-locales).
+// =============================================================================
 export default function CityPage({ params }) {
   const c = findCity(params.city);
   if (!c) return notFound();
-  // Les questions qu'on pose VRAIMENT pour cette ville (data.js) — plus un
-  // gabarit où seul le nom changeait.
-  const faqs = c.faq;
-  const otherCities = cities.filter((x) => x.slug !== c.slug);
+  const residentiel = findService("lumieres-de-noel-residentiel");
 
   return (
     <>
@@ -46,126 +53,30 @@ export default function CityPage({ params }) {
           { name: c.name, url: `/secteur/${c.slug}` },
         ]}
       />
-      <FaqJsonLd items={faqs} />
 
-      <PageHero
+      <HeroPage
+        photo={PHOTOS["arbre-enrubanne"]}
         kicker={c.regionLabel}
-        title={`Lumières de Noël ${inCity(c.name)}`}
-        subtitle={c.intro}
-        image={cityHeroPhoto(c.slug).src}
-        imageAlt={cityHeroPhoto(c.slug).alt}
-        ctaLabel="Réserver ma date"
+        titre={`Lumières de Noël ${inCity(c.name)}`}
+        phrase={c.intro}
+        filAriane={[{ name: "Accueil", href: "/" }, { name: "Secteurs", href: "/secteur" }, { name: c.name }]}
       />
 
-      {/* Intro */}
-      <section style={{ background: offWhite }}>
-        <div className="container">
-          <Breadcrumb
-            items={[
-              { name: "Accueil", href: "/" },
-              { name: c.name },
-            ]}
-          />
-          <div style={{ maxWidth: 760 }}>
-            <SectionTag>{c.regionLabel}</SectionTag>
-            <SectionTitle>Notre service {inCity(c.name)}</SectionTitle>
-            <p style={{ color: "#444", fontSize: 18, marginBottom: 18 }}>{c.body}</p>
-            <h3 style={{ color: charcoal, fontSize: 20, margin: "26px 0 10px" }}>À propos de {c.name}</h3>
-            {c.local.map((l, i) => (
-              <p key={i} style={{ color: "#444", fontSize: 17, marginBottom: 14 }}>{l}</p>
-            ))}
-            <CTAButton href="/soumission">Réserver ma date</CTAButton>
-          </div>
-        </div>
-      </section>
+      <AProposVille ville={c} />
 
-      {/* Services pour cette ville (maillage interne — service × ville) */}
-      {/* ⚠️ MÊMES LIENS, SANS LES CARTES À PHOTO.
-          Trois cartes de 16/9 plus 24 px de padding : la page montrait ici
-          les mêmes photos que l'accueil et /realisations, en plus petit.
-          Les href et les textes d'ancrage sont identiques — le maillage
-          service × ville, qui est la raison d'être de cette page côté SEO,
-          ne perd rien. */}
-      <section style={{ background: navy }}>
-        <div className="container">
-          <div className="section-entete">
-            <SectionTag dark>Nos services {inCity(c.name)}</SectionTag>
-            <SectionTitle light style={{ margin: 0 }}>Pour chaque type de propriété</SectionTitle>
-          </div>
-          <ul className="liste-liens liste-liens--large">
-            {services.map((s) => (
-              <li key={s.slug}>
-                <Link href={`/secteur/${c.slug}/${s.slug}`}>
-                  <span className="liste-liens__region">{s.kicker}</span>
-                  <span className="liste-liens__nom">{s.title} {inCity(c.name)}</span>
-                  <span className="liste-liens__note">
-                    {c.parService[cleService(s.slug)]}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
+      <CartesServices ville={c} />
 
-      {/* FAQ ciblée ville */}
-      <section style={{ background: offWhite }}>
-        <div className="container" style={{ maxWidth: 820 }}>
-          <div style={{ textAlign: "center", marginBottom: 26 }}>
-            <SectionTag>FAQ — {c.name}</SectionTag>
-            <SectionTitle style={{ margin: "0 auto" }}>Vos questions sur {c.name}</SectionTitle>
-            {/* "Vos questions sur X" reste grammatical pour toutes les zones. */}
-          </div>
-          {faqs.map((f, i) => (
-            <details key={i} style={{ borderBottom: "1px solid #e5dfd0", padding: "20px 4px" }}>
-              <summary style={{ cursor: "pointer", fontWeight: 700, fontSize: 17, color: charcoal, listStyle: "none" }}>
-                {f.q}
-              </summary>
-              <p style={{ color: "#444", fontSize: 16, marginTop: 10 }}>{f.a}</p>
-            </details>
-          ))}
-          {/* ⚠️ Le bouton qui était ici est parti : c'était le deuxième
-              « Réserver ma date » de la page, et le formulaire est
-              maintenant juste en dessous. Proposer un clic vers un
-              formulaire qu'on va croiser trois centimètres plus bas, c'est
-              ajouter une étape pour en retirer une. */}
-        </div>
-      </section>
+      <CeQuiEstCompris compris={residentiel.compris} />
 
-      {/* LE formulaire de la page — le même QuoteForm que /soumission. */}
-      <section id="soumission" style={{ background: creme }}>
-        <div className="container bloc-formulaire">
-          <div className="section-entete">
-            <SectionTag>Réservation</SectionTag>
-            <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
-            <p className="section-phrase section-phrase--clair">
-              Nous confirmons votre place et votre prix après une courte consultation.
-            </p>
-          </div>
-          {/* La ville de la page voyage dans la source : Yahir voit d'où
-              vient la fiche sans avoir à deviner. */}
-          <QuoteForm source={`Page ville — ${c.name}`} redirectSrc="ville" />
-        </div>
-      </section>
+      <Parcours />
 
-      {/* Autres zones desservies (maillage interne) */}
-      <section className="snowy" style={{ background: navy, paddingTop: 60, paddingBottom: 60 }}>
-        <div className="container" style={{ textAlign: "center" }}>
-          <SectionTag dark>Aussi disponible dans</SectionTag>
-          <SectionTitle light style={{ margin: "0 auto 22px" }}>Autres zones desservies</SectionTitle>
-          <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 10 }}>
-            {otherCities.map((o) => (
-              <Link key={o.slug} href={`/secteur/${o.slug}`} style={{
-                padding: "10px 18px", borderRadius: 300, fontSize: 14,
-                border: "1px solid rgba(233,220,192,0.3)",
-                color: "rgba(243,233,210,0.9)", textDecoration: "none",
-              }}>
-                {o.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
+      <FaqCourte items={c.faq} titre={`Vos questions sur ${c.name}`} tag={`FAQ — ${c.name}`} />
+
+      <PucesVilles exclure={c.slug} titre="Autres zones desservies" />
+
+      {/* La ville de la page voyage dans la source : Yahir voit d'où vient
+          la fiche sans avoir à deviner. */}
+      <Reservation source={`Page ville — ${c.name}`} redirectSrc="ville" />
     </>
   );
 }

@@ -97,7 +97,11 @@ console.log('\n--- 6. 🚨 « gratuit » survit UNE fois, près du formulaire --
   // Yahir : « Ils peuvent rester une fois en petit texte près du formulaire. »
   const form = lire(path.join(ROOT, 'components/QuoteForm.jsx'));
   t('🚨 le petit texte le dit encore', /gratuite et sans obligation/.test(form));
-  const petit = /fontSize: 12[\s\S]{0,260}gratuite et sans obligation/.test(form);
+  // Partie 3 : la taille vit dans la feuille (.formulaire__petit), plus en
+  // style en ligne — la variante sombre en change la couleur, pas la taille.
+  const css = lire(path.join(ROOT, 'app/globals.css'));
+  const petit = /className="formulaire__petit">\s*\* Champs obligatoires\. La consultation est gratuite et sans obligation/.test(form)
+    && /\.formulaire__petit \{[^}]*font-size: 12px/.test(css);
   t('🚨 …et c\'est bien du PETIT texte (12 px)', petit);
   const ailleurs = TOUS.filter((p) => rel(p) !== 'components/QuoteForm.jsx' && /sans obligation/i.test(sansCode(lire(p))));
   t('🚨 nulle part ailleurs', ailleurs.length === 0, ailleurs.map(rel).join(' '));

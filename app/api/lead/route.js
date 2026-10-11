@@ -47,7 +47,10 @@ export async function POST(request) {
   // visiteur : elle atterrit dans la base et s'affiche dans Operatr. Un
   // `utm_campaign` de 4 000 caractères n'est pas une campagne.
   const utm = {};
-  for (const c of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing']) {
+  // `referrer` (partie 3) : l'HÔTE d'où vient le visiteur, posé par
+  // lib/utm.js à la première page. Il remplace la question « Comment
+  // avez-vous entendu parler de nous ? », retirée du formulaire.
+  for (const c of ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'landing', 'referrer']) {
     const v = clean(body?.utm?.[c], 120);
     if (v) utm[c] = v;
   }

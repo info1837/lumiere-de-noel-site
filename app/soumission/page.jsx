@@ -2,7 +2,7 @@ import Link from "next/link";
 import QuoteForm from "@/components/QuoteForm";
 import Testimonials from "@/components/Testimonials";
 import { SectionTag } from "@/components/ui";
-import { company, homePortfolio, navy, ivory, gold, offWhite, charcoal, serviceOptions } from "@/components/data";
+import { company, navy, ivory, serviceOptions } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
@@ -73,123 +73,64 @@ export default function Soumission({ searchParams }) {
   const sourceFinale = prerempli ? "Simulateur — réservation" : sourceFormulaire;
 
   // 2 photos représentatives (Rive-Nord + Rive-Sud) pour la colonne de gauche.
-  const leftPhotos = [homePortfolio[0], homePortfolio[2]];
-
+  // ⚠️ LE FORMULAIRE D'ABORD (partie 3). Il était à 1,5 écran de haut sur
+  // téléphone, derrière un bloc d'étapes et deux photos : quelqu'un qui
+  // arrive sur « Réserver ma date » a déjà décidé. Le H1, une phrase, le
+  // formulaire — puis ce qui rassure, pour qui hésite encore.
   return (
     <>
-      <section className="snowy" style={{ background: navy, paddingTop: 140 }}>
-        <div className="container grid-2" style={{ alignItems: "start" }}>
-          <div>
-            <SectionTag dark>Soumission</SectionTag>
-            {/* Le client de l'an dernier n'a pas besoin d'une soumission : il a
-                besoin d'une date. Chemin le plus court vers la vente la plus
-                rentable de la saison. */}
-            <div style={{ marginBottom: 16 }}>
-              <Link href="/renouvellement" style={{
-                display: "inline-flex", alignItems: "center", gap: 8,
-                padding: "8px 14px", borderRadius: 300,
-                background: "rgba(233,220,192,0.14)",
-                border: "1px solid rgba(233,220,192,0.4)",
-                color: gold, textDecoration: "none",
-                fontSize: 13, fontWeight: 700, letterSpacing: "0.04em",
-              }}>
-                Vous étiez client l'an dernier ? Réservez votre date →
-              </Link>
-            </div>
-            <h1 style={{ color: ivory, marginBottom: 18 }}>
-              {listeAttente ? "Liste d’attente" : "Réservez votre date"}
-            </h1>
-            <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 19, marginBottom: 20 }}>
-              {listeAttente
-                ? "La saison est complète. Laissez-nous vos coordonnées : on vous appelle dès qu’une date se libère, et en priorité l’an prochain."
-                : "Nous confirmons votre place et votre prix après une courte consultation."}
-            </p>
-
-            {/* Rappel garantie — argument de réassurance sur la page de conversion */}
-            <div style={{
-              display: "inline-flex", alignItems: "center", gap: 10,
-              padding: "10px 16px", borderRadius: 10,
-              background: "rgba(233,220,192,0.10)",
-              border: "1px solid rgba(233,220,192,0.28)",
-              color: gold, fontSize: 14, fontWeight: 700, marginBottom: 26,
-            }}>
-              <span aria-hidden="true">✓</span>
-              Ampoule brûlée ou section tombée ? On repasse sans frais, autant de fois qu'il le faut — de la pose au retrait.
-            </div>
-
-            <div style={{ display: "grid", gap: 14, color: "rgba(243,233,210,0.85)", fontSize: 16, marginBottom: 34 }}>
-              <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700, fontSize: 22, fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.04em" }}>
-                {company.phoneDisplay}
-              </a>
-              <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.85)", textDecoration: "none" }}>
-                {company.email}
-              </a>
-              <div style={{ color: "rgba(243,233,210,0.6)" }}>{company.region}</div>
-            </div>
-
-            {/* 2 photos de réalisations — preuve visuelle tout de suite à côté du formulaire */}
-            <div style={{
-              display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 30,
-            }}>
-              {leftPhotos.map((it, i) => (
-                <figure key={i} style={{
-                  position: "relative", borderRadius: 12, overflow: "hidden",
-                  aspectRatio: "4 / 3", margin: 0,
-                  border: "1px solid rgba(233,220,192,0.16)",
-                }}>
-                  <img src={it.image} alt={it.alt} loading="lazy"
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }} />
-                  {it.caption && (
-                    <figcaption style={{
-                      position: "absolute", left: 0, right: 0, bottom: 0,
-                      padding: "20px 12px 8px",
-                      background: "linear-gradient(to top, rgba(6,18,31,0.85), transparent)",
-                      color: ivory, fontFamily: "'Bebas Neue', sans-serif",
-                      fontSize: 16, letterSpacing: "0.04em",
-                    }}>{it.caption}</figcaption>
-                  )}
-                </figure>
-              ))}
-            </div>
-
-            {/* Ce qui se passe ensuite — mini-parcours de 3 étapes */}
-            <div>
-              <div style={{
-                fontSize: 12, fontWeight: 700, letterSpacing: "0.2em",
-                textTransform: "uppercase", color: gold, marginBottom: 14,
-              }}>
-                Ce qui se passe ensuite
-              </div>
-              <ol style={{ listStyle: "none", padding: 0, margin: 0, display: "grid", gap: 12 }}>
-                {nextSteps.map((s) => (
-                  <li key={s.n} style={{
-                    display: "grid", gridTemplateColumns: "auto 1fr", gap: 14,
-                    padding: "14px 16px", borderRadius: 10,
-                    background: "rgba(233,220,192,0.06)",
-                    border: "1px solid rgba(233,220,192,0.14)",
-                  }}>
-                    <div aria-hidden="true" style={{
-                      width: 36, height: 36, borderRadius: "50%", background: gold, color: charcoal,
-                      display: "inline-flex", alignItems: "center", justifyContent: "center",
-                      fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, fontWeight: 700, letterSpacing: "0.04em",
-                    }}>{s.n}</div>
-                    <div>
-                      <div style={{ color: ivory, fontSize: 15, fontWeight: 700, marginBottom: 2 }}>{s.title}</div>
-                      <div style={{ color: "rgba(243,233,210,0.7)", fontSize: 14 }}>{s.body}</div>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            </div>
+      <section style={{ background: navy, paddingTop: "calc(var(--entete-total) + 40px)" }}>
+        <div className="container bloc-formulaire">
+          <div style={{ marginBottom: 14 }}>
+            <Link href="/renouvellement" className="lien-pastille">
+              Vous étiez client l&apos;an dernier ? Réservez votre date →
+            </Link>
           </div>
-          <div style={{ paddingBottom: 24 }}>
-            <QuoteForm source={sourceFinale} serviceInitial={serviceInitial} prerempli={prerempli} />
+          <SectionTag dark>Réservation</SectionTag>
+          <h1 style={{ color: ivory, marginBottom: 14 }}>
+            {listeAttente ? "Liste d’attente" : "Réservez votre date"}
+          </h1>
+          <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 18, marginBottom: 26 }}>
+            {listeAttente
+              ? "La saison est complète. Laissez-nous vos coordonnées : on vous appelle dès qu’une date se libère, et en priorité l’an prochain."
+              : "Nous confirmons votre place et votre prix après une courte consultation."}
+          </p>
+          <QuoteForm source={sourceFinale} serviceInitial={serviceInitial} prerempli={prerempli} variante="sombre" />
+        </div>
+      </section>
+
+      <section style={{ background: "#060E18" }}>
+        <div className="container rassurance">
+          <div>
+            <SectionTag dark>Ce qui se passe ensuite</SectionTag>
+            <ol className="rassurance-etapes">
+              {nextSteps.map((st) => (
+                <li key={st.n}>
+                  <span className="rassurance-num" aria-hidden="true">{st.n}</span>
+                  <span>
+                    <strong>{st.title}</strong>
+                    {st.body}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          <div>
+            <p className="rassurance-rappels">
+              <span aria-hidden="true">✓</span>
+              Ampoule brûlée ou section tombée ? On repasse sans frais, autant de fois qu&apos;il le faut — de la pose au retrait.
+            </p>
+            <p className="rassurance-contact">
+              <a href={company.phoneHref} className="rassurance-tel">{company.phoneDisplay}</a>
+              <a href={company.emailHref}>{company.email}</a>
+              <span>{company.region}</span>
+            </p>
           </div>
         </div>
       </section>
 
       {/* Témoignages — invisible tant que REVIEWS_PENDING = true dans reviews.js */}
-      <Testimonials limit={6} variant="light" />
+      <Testimonials limit={6} variant="dark" />
     </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
+import { usePathname } from "next/navigation";
 import { mouvementReduit, CLASSE_RACINE, surDefilement, borner } from "@/lib/mouvement";
 
 // La couche qui fait vivre la page.
@@ -54,6 +55,11 @@ const PAS_MS = 60;
 
 export default function FestiveLayer() {
   const [hero, setHero] = useState(null);
+  // ⚠️ LE MOUVEMENT SUIT LA NAVIGATION (partie 3). Le calque est monté une
+  // fois, dans le layout : sans le chemin en dépendance, une page atteinte
+  // par un lien interne n'avait AUCUNE apparition, aucun hero qui s'allume
+  // — seule la première page de la visite bougeait.
+  const chemin = usePathname();
 
   useEffect(() => {
     // Mouvement réduit : la classe racine est posée quand même — les
@@ -191,7 +197,7 @@ export default function FestiveLayer() {
       nettoyages.forEach((f) => { try { f(); } catch { /* démontage */ } });
       racine.classList.remove(CLASSE_RACINE);
     };
-  }, []);
+  }, [chemin]);
 
   if (!hero) return null;
 

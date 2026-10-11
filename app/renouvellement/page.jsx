@@ -1,7 +1,7 @@
 import Link from "next/link";
 import RenewalForm from "@/components/RenewalForm";
 import { SectionTag } from "@/components/ui";
-import { company, navy, ivory, gold, goldText } from "@/components/data";
+import { company, navy, ivory, gold } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
@@ -81,25 +81,25 @@ export default function RenouvellementPage() {
         </div>
       </section>
 
-      <section style={{ background: "#fff" }}>
+      <section style={{ background: "#060E18" }}>
         <div className="container" style={{ maxWidth: 1000 }}>
           <div style={{
             fontSize: 13, fontWeight: 700, letterSpacing: "0.2em",
-            textTransform: "uppercase", color: goldText, marginBottom: 10, textAlign: "center",
+            textTransform: "uppercase", color: gold, marginBottom: 10, textAlign: "center",
           }}>
             Pourquoi reconduire
           </div>
-          <h2 style={{ textAlign: "center", marginBottom: 40 }}>
+          <h2 style={{ textAlign: "center", marginBottom: 40, color: ivory }}>
             Ce qui change quand vous revenez
           </h2>
           <div className="grid-2" style={{ alignItems: "stretch" }}>
             {advantages.map((a) => (
-              <div key={a.title} className="glow-card-light" style={{
-                background: "#fff", border: "1px solid #ece5d4", borderRadius: 14,
+              <div key={a.title} className="glow-card" style={{
+                background: "#0F1E33", border: "1px solid rgba(240,234,222,0.12)", borderRadius: 14,
                 padding: 26,
               }}>
-                <h3 style={{ fontSize: 22, marginBottom: 8 }}>{a.title}</h3>
-                <p style={{ margin: 0, color: "#3a3a3a" }}>{a.body}</p>
+                <h3 style={{ fontSize: 22, marginBottom: 8, color: ivory }}>{a.title}</h3>
+                <p style={{ margin: 0, color: "rgba(240,234,222,0.78)" }}>{a.body}</p>
               </div>
             ))}
           </div>
