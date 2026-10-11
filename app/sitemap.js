@@ -16,6 +16,8 @@ export default function sitemap() {
     { url: `${BASE}/services`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/secteur`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    // Règlement du concours Meta « Gagnez votre installation 2026 ».
+    { url: `${BASE}/concours`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
   ];
 
   const serviceRoutes = services.map((s) => ({
