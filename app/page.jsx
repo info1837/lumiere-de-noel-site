@@ -9,6 +9,12 @@ import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/
 import { paireAvantApres } from "@/components/photos";
 import { faqHome, company, homeVitrine, navy, creme } from "@/components/data";
 
+// Le canonical de l'accueil vit ICI, pas dans le layout racine (voir le
+// commentaire de app/layout.jsx) : sinon le 404 l'héritait.
+export const metadata = {
+  alternates: { canonical: "/", languages: { "fr-CA": "/" } },
+};
+
 // =============================================================================
 // L'ACCUEIL — HUIT SECTIONS, PAS QUATORZE
 // =============================================================================

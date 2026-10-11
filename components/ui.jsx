@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import Image from "next/image";
+import { flouDe } from "@/components/photos-flou";
 import { useState } from "react";
 import { charcoal, offWhite, gold, goldText, navy, ivory, line, creme, marine } from "@/components/data";
 
@@ -188,7 +190,15 @@ export function Stars({ size = 18, color = "#E5B567" }) {
   );
 }
 
-export function Gallery({ items }) {
+// ⚠️ next/image, AVEC aperçu flou, et les deux premières cartes préchargées.
+// Avant : un <img loading="lazy"> nu. Les cartes défilaient en rectangles
+// marine VIDES le temps que le fichier arrive, et le téléphone recevait le
+// JPEG d'origine (noel-blainville-01 : 647 Ko) pour une vignette de 340 px.
+// `sizes` suit .gallery-grid : 1 colonne ≤ 600 px, 2 jusqu'à 960, 3 au-delà
+// (≈ 380 px dans le conteneur de 1 180).
+export const TAILLES_GALERIE = "(max-width: 600px) calc(100vw - 48px), (max-width: 960px) 50vw, 390px";
+
+export function Gallery({ items, prechargees = 2 }) {
   return (
     <div className="gallery-grid">
       {items.map((it, i) => (
@@ -197,11 +207,15 @@ export function Gallery({ items }) {
           aspectRatio: "4 / 3", background: "#11202f",
           border: "1px solid rgba(233,220,192,0.12)",
         }}>
-          <img
+          <Image
             src={it.image}
             alt={it.alt}
-            loading="lazy"
-            style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            fill
+            sizes={TAILLES_GALERIE}
+            priority={i < prechargees}
+            placeholder={flouDe(it.image) ? "blur" : "empty"}
+            blurDataURL={flouDe(it.image)}
+            style={{ objectFit: "cover" }}
           />
           {it.caption && (
             <figcaption style={{

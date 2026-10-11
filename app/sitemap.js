@@ -12,6 +12,8 @@ export default function sitemap() {
     { url: `${BASE}/calculatrice`, lastModified: now, changeFrequency: "monthly", priority: 0.9 },
     { url: `${BASE}/renouvellement`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/soumission`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // La porte d'entrée des campagnes : indexable, donc annoncée.
+    { url: `${BASE}/simulateur`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/secteur`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },

@@ -261,6 +261,20 @@ for (const cle of CLES_GENERIQUES) {
   }
 }
 
+// --- 8. Chaque photo a son aperçu flou ---------------------------------------
+// Sans lui, next/image n'a rien à montrer tant que le fichier n'est pas
+// arrivé : les vignettes de /realisations défilaient en rectangles marine
+// vides. Ajouter une photo = `npm run images:flous`.
+{
+  const { FLOU } = await import(join(RACINE, "components/photos-flou.js"));
+  for (const [cle, p] of Object.entries(PHOTOS)) {
+    if (!existsSync(join(PUBLIC, p.src))) continue;   // déjà signalé au §4
+    if (!FLOU[p.src]) {
+      erreurs.push(`PHOTOS["${cle}"] (${p.src}) n'a pas d'aperçu flou — lancez \`npm run images:flous\`.`);
+    }
+  }
+}
+
 // --- Verdict -----------------------------------------------------------------
 if (erreurs.length) {
   console.error(`\n✖ check-photos : ${erreurs.length} problème(s)\n`);

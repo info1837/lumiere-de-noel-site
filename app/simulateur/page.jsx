@@ -4,14 +4,14 @@ export const metadata = {
   title: "Voyez votre maison illuminée",
   description:
     "Envoyez une photo de votre façade et voyez votre maison illuminée en moins d'une minute. Rive-Nord, Montréal, Rive-Sud.",
-  alternates: { canonical: "https://lumieredenoelinc.com/simulateur" },
+  alternates: { canonical: "/simulateur" },
   // Les simulations sont privées. La PAGE s'indexe (c'est une porte
   // d'entrée de campagne) ; les images, elles, sont servies par une route
   // qui pose X-Robots-Tag: noindex.
   openGraph: {
     title: "Voyez votre maison illuminée",
     description: "Une photo, et vous voyez le résultat avant de décider.",
-    url: "https://lumieredenoelinc.com/simulateur",
+    url: "/simulateur",
   },
 };
 

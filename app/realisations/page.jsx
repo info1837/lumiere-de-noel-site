@@ -1,40 +1,39 @@
-import { PageHero, SectionTag, SectionTitle, Gallery, CTAButton } from "@/components/ui";
-import { noelPage as p, offWhite, navy } from "@/components/data";
+import { SectionTag, SectionTitle, Gallery, CTAButton } from "@/components/ui";
+import { noelPage as p, navy, ivory } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
+// ⚠️ CETTE PAGE A SON PROPRE TITRE ET SON PROPRE H1.
+// Elle portait ceux de l'accueil (« Installation de lumières de Noël | … »
+// et « Installation de lumières de Noël au Québec ») : deux pages en
+// concurrence sur la même requête, et un H1 qui ne disait pas ce que la
+// page montre. Ici : des photos de vrais chantiers, et rien d'autre avant.
+const TITRE = "Réalisations — vraies installations | Solution Lumière de Noël";
+
 export const metadata = {
-  title: "Installation de lumières de Noël",
+  title: { absolute: TITRE },
   description:
     "Nos installations de lumières de Noël en photos : Blainville, Saint-Jérôme, Mirabel, Mercier, Léry, Montréal. Résidentiel et commercial.",
   alternates: { canonical: "/realisations" },
   openGraph: {
-    title: "Installation de lumières de Noël | Solution Lumière de Noël inc.",
-    description: "On conçoit, installe, entretient et retire vos lumières de Noël. Vous profitez des Fêtes.",
+    title: TITRE,
+    description: "De vraies propriétés, de vraies installations — en photos.",
     url: "/realisations",
     images: [PHOTOS["blainville-01"].src],
   },
 };
 
-export default function LumiereDeNoel() {
+export default function Realisations() {
   return (
     <>
-      <PageHero
-        kicker={p.heroKicker}
-        title={p.heroTitle}
-        subtitle={p.heroSubtitle}
-        image={p.heroImage}
-        imageAlt={p.heroImageAlt}
-        ctaLabel="Réserver ma date"
-      />
-
-      <section id="realisations" style={{ background: offWhite, scrollMarginTop: 100 }}>
+      <section style={{ background: navy, paddingTop: "clamp(124px, 18vh, 160px)" }}>
         <div className="container">
-          <div style={{ textAlign: "center", marginBottom: 36, maxWidth: 720, marginLeft: "auto", marginRight: "auto" }}>
-            <SectionTag>Portfolio</SectionTag>
-            <SectionTitle style={{ margin: "0 auto 14px" }}>Nos réalisations à travers le Québec</SectionTitle>
-            {/* DRAFT COPY */}
-            <p style={{ color: "#444", fontSize: 18, margin: "0 auto" }}>{p.intro}</p>
-          </div>
+          <header style={{ maxWidth: 720, marginBottom: 32 }}>
+            <SectionTag dark>Réalisations</SectionTag>
+            <h1 style={{ color: ivory }}>De vraies propriétés, de vraies installations</h1>
+            <p style={{ color: "rgba(240,234,222,0.82)", fontSize: 18, margin: "14px 0 0" }}>
+              {p.intro}
+            </p>
+          </header>
           <Gallery items={p.gallery} />
         </div>
       </section>
