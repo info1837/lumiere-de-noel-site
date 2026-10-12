@@ -62,7 +62,7 @@ export const textMuted = "#5A5A5A";
 // L'origine du site (baseUrl) est résolue via lib/site-url.js pour supporter
 // les previews Vercel et un override par variable d'environnement.
 import { getSiteUrl } from "@/lib/site-url";
-import { PHOTOS, cityPhoto, servicePhoto } from "@/components/photos";
+import { PHOTOS, cityVisuel, legendeVisuel, servicePhoto } from "@/components/photos";
 import { lireUtm } from "@/lib/utm";
 
 const DOMAIN = "lumieredenoelinc.com";
@@ -316,7 +316,10 @@ export const services = [
       "Maintenance pendant la saison incluse",
     ],
     body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
-    bande: ["commercial-02", "arbres-01", "arbres-02"],
+    // Le restaurant-bar du hero, sous un autre angle. Les conifères qui
+    // complétaient la bande sont des chantiers RÉSIDENTIELS (l'un est à
+    // Saint-Donat) : ils n'ont rien à faire sur la page commerciale.
+    bande: ["commercial-02"],
     paire: null,
     compris: {
       texte: "Façades, vitrines, entrées et arbres : on conçoit, on installe hors de vos heures d'ouverture, on entretient et on retire en janvier.",
@@ -352,7 +355,10 @@ export const services = [
       "Rappels sans frais toute la saison, de la pose au retrait",
     ],
     body: "L'éclairage architectural permanent élimine la pose annuelle : un seul investissement et votre propriété change de visage à chaque fête. La technologie DEL utilisée est basse consommation et conçue pour résister aux hivers québécois. La plupart des résidences sont installées en une seule journée.",
-    bande: ["permanent-detail", "permanent-01", "permanent-02"],
+    // La maison aux trois ambiances a sa carte animée juste au-dessus
+    // (SectionAmbiances) : la bande garde ce qui n'y est pas.
+    bande: ["permanent-detail", "permanent-03"],
+    ambiances: true,
     paire: null,
     compris: {
       texte: "Des pastilles DEL fixées une seule fois sous les soffites, et une application pour tout le reste de l'année.",
@@ -542,9 +548,14 @@ const villesBrutes = [
 // La photo d'une ville vient UNIQUEMENT du registre (components/photos.js).
 // `image`/`imageAlt` valent null quand aucune vraie photo n'existe pour cette
 // ville — les pages n'affichent alors aucune image, jamais celle d'ailleurs.
+// ⚠️ Chaque zone a une image (check-photos casse le build sinon) : sa
+// propre photo, ou son VISUEL (components/photos.js → CITY_VISUEL) — une
+// photo d'une ville de la zone, ou une générique qui ne nomme aucun lieu.
+// `legende` n'existe que si la photo est vraiment située : sous une
+// générique, on n'écrit RIEN (jamais « Laval » sous des conifères d'ailleurs).
 export const cities = villesBrutes.map((v) => {
-  const ph = cityPhoto(v.slug);
-  return { ...v, image: ph?.src ?? null, imageAlt: ph?.alt ?? null };
+  const ph = cityVisuel(v.slug);
+  return { ...v, image: ph?.src ?? null, imageAlt: ph?.alt ?? null, legende: legendeVisuel(v.slug, v.name) };
 });
 
 // La clé courte d'un service, pour `villesBrutes[].parService`.
@@ -669,22 +680,9 @@ export const noelPage = {
   ],
 };
 
-// --- /realisations : la galerie complète, par catégorie (partie 3) ----------
-// Toutes les vraies photos du registre, rangées pour les pastilles de
-// filtre. `ville` n'existe QUE pour une photo située : les génériques
-// affichent leur catégorie, jamais un lieu qu'on ne peut pas affirmer.
-export const CATEGORIES_GALERIE = ["Résidentiel", "Commercial", "Arbres", "Permanent"];
-const CLES_GALERIE = {
-  "Résidentiel": ["blainville-01", "terrebonne-01", "st-jerome-01", "mirabel-01", "ste-julienne-01",
-    "ste-anne-01", "st-donat-01", "st-donat-02", "stratford-01", "lery-01", "mercier-01", "montreal-01", "residentiel-01"],
-  "Commercial": ["commercial-01", "commercial-02"],
-  "Arbres": ["arbre-enrubanne", "arbres-01", "arbres-02"],
-  "Permanent": ["permanent-hero", "permanent-01", "permanent-02", "permanent-03", "permanent-detail"],
-};
-export const galerieRealisations = Object.entries(CLES_GALERIE).flatMap(([categorie, cles]) =>
-  cles.filter((k) => PHOTOS[k]).map((k) => ({
-    cle: k, categorie, src: PHOTOS[k].src, alt: PHOTOS[k].alt, ville: PHOTOS[k].ville || null,
-  })));
+// --- /realisations : UNE CARTE PAR CHANTIER -----------------------------------
+// Voir components/realisations.js (lu aussi par check-photos au build).
+export { CHANTIERS, CATEGORIES_CHANTIERS, AMBIANCES_PERMANENT } from "@/components/realisations";
 
 // 6 vignettes pour l'aperçu portfolio — gardé pour /services et les pages
 // de ville, qui montrent encore une grille.
