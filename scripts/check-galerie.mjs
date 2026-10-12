@@ -74,14 +74,14 @@ await page.locator(".filtre", { hasText: "Tout" }).click();
 await attendre(150);
 const srcs = await page.evaluate(() => [...document.querySelectorAll(".chantier img")].map((i) => new URL(i.currentSrc || i.src).searchParams.get("url") || i.src));
 t("🚨 aucune photo dans deux cartes", new Set(srcs).size === srcs.length, `${srcs.length} images, ${new Set(srcs).size} distinctes`);
-for (const [id, n] of [["restaurant-bar", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3]]) {
+for (const [id, n] of [["chocolaterie", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3]]) {
   const k = await page.locator(`[data-chantier="${id}"] img`).count();
   t(`« ${id} » réunit ${n} photos`, k === n, `${k}`);
 }
 
 console.log("\n--- 2. Feuilleter dans la carte, au doigt ---");
 {
-  const sel = '[data-chantier="restaurant-bar"]';
+  const sel = '[data-chantier="chocolaterie"]';
   await centrer(sel);
   await attendre(200);
   const b = await page.locator(`${sel} .chantier__photo`).boundingBox();

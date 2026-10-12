@@ -48,9 +48,9 @@ const BRUTS = [
   { id: "coniferes", categorie: "Arbres", etiquette: "Conifères en blanc chaud", photos: ["arbres-01"] },
 
   // ── Commercial ───────────────────────────────────────────────────────────
-  // Les deux photos montrent le même restaurant-bar (même enseigne sur
+  // Les deux photos montrent la même chocolaterie (même enseigne sur
   // pylône, même façade, même camion) sous deux angles.
-  { id: "restaurant-bar", categorie: "Commercial", etiquette: "Commercial — restaurant-bar", photos: ["commercial-01", "commercial-02"] },
+  { id: "chocolaterie", categorie: "Commercial", etiquette: "Commercial — chocolaterie", photos: ["commercial-01", "commercial-02"] },
 
   // ── Permanent ────────────────────────────────────────────────────────────
   // UNE maison, trois ambiances : la carte passe de l'une à l'autre.

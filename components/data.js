@@ -316,7 +316,7 @@ export const services = [
       "Maintenance pendant la saison incluse",
     ],
     body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
-    // Le restaurant-bar du hero, sous un autre angle. Les conifères qui
+    // La chocolaterie du hero, sous un autre angle. Les conifères qui
     // complétaient la bande sont des chantiers RÉSIDENTIELS (l'un est à
     // Saint-Donat) : ils n'ont rien à faire sur la page commerciale.
     bande: ["commercial-02"],

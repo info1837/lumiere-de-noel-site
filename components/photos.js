@@ -116,11 +116,11 @@ const GENERIQUES = {
   },
   "commercial-01": {
     src: `${REEL_PREFIX}noel-commercial.jpg`,
-    alt: "Commerce illuminé pour les Fêtes — ligne de toit éclairée et enseigne sur pylône",
+    alt: "Chocolaterie illuminée pour les Fêtes — ligne de toit éclairée et enseigne sur pylône",
   },
   "commercial-02": {
     src: `${REEL_PREFIX}noel-commercial-02.jpg`,
-    alt: "Façade commerciale illuminée pour les Fêtes, autre angle",
+    alt: "La même chocolaterie illuminée pour les Fêtes, autre angle",
   },
   "arbres-01": {
     src: `${REEL_PREFIX}noel-trees-01.jpg`,
