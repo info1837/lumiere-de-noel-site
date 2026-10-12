@@ -2614,6 +2614,8 @@ html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta {
   gap: 18px;
 }
 .bande-photos--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.bande-photos--1 { grid-template-columns: minmax(0, 1fr); }
+.bande-photos--1 .bande-photo { aspect-ratio: 21 / 9; }
 .bande-photo {
   position: relative;
   margin: 0;
@@ -2637,6 +2639,8 @@ html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta {
   .bande-photos { grid-template-columns: 1fr 1fr; gap: 12px; }
   .bande-photos > :first-child { grid-column: 1 / -1; }
   .bande-photos--2 > :first-child { grid-column: auto; }
+  .bande-photos--1 { grid-template-columns: 1fr; }
+  .bande-photos--1 .bande-photo { aspect-ratio: 4 / 3; }
   .bande-photo { border-radius: 14px; }
 }
 
@@ -2858,28 +2862,83 @@ html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta {
   list-style: none; padding: 0; margin: 0;
   display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;
 }
-.galerie__bouton {
-  position: relative; display: block; width: 100%;
-  aspect-ratio: 3 / 2; padding: 0; border: 0; cursor: zoom-in;
-  border-radius: 18px; overflow: hidden; background: #060E18;
+/* Une carte = un chantier. La photo (ou la pile de photos) porte le geste ;
+   l'étiquette et les points vivent par-dessus, en bas. */
+.chantier { position: relative; border-radius: 18px; overflow: hidden; background: #060E18; aspect-ratio: 3 / 2; }
+.chantier__photo {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%;
+  padding: 0; border: 0; background: transparent; cursor: zoom-in;
+  touch-action: pan-y; -webkit-user-select: none; user-select: none;
 }
-.galerie__bouton img { transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1); }
-.galerie__bouton:hover img { transform: scale(1.03); }
-.galerie__ville {
-  position: absolute; left: 0; right: 0; bottom: 0;
-  padding: 34px 16px 13px; text-align: left;
-  background: linear-gradient(to top, rgba(6, 14, 24, 0.9), transparent);
+.chantier__img, .ambiances__img { opacity: 0; transition: opacity 300ms ease; }
+.chantier__img.est-active { opacity: 1; }
+.chantier__photo .est-active { transform: none; transition: opacity 300ms ease, transform 600ms cubic-bezier(0.22, 1, 0.36, 1); }
+.chantier__photo:hover .est-active { transform: scale(1.03); }
+.chantier__etiquette {
+  position: absolute; left: 0; right: 0; bottom: 0; pointer-events: none;
+  padding: 40px 16px 13px; text-align: left;
+  background: linear-gradient(to top, rgba(6, 14, 24, 0.92), transparent);
   color: #F0EADE; font-family: 'Bebas Neue', sans-serif;
-  font-size: 19px; letter-spacing: 0.07em; line-height: 1;
+  font-size: 19px; letter-spacing: 0.07em; line-height: 1.05;
 }
+.chantier__etiquette em {
+  display: block; margin-top: 4px; font-style: normal;
+  font-family: 'Nunito Sans', sans-serif; font-size: 12px; font-weight: 700;
+  letter-spacing: 0.12em; text-transform: uppercase; color: #F0BA54;
+}
+.chantier__points, .ambiances__points { display: inline-flex; gap: 2px; }
+.chantier__points { position: absolute; right: 8px; bottom: 6px; z-index: 2; }
+/* La pastille fait 10 px, mais la cible tactile en fait 32 (le bouton). */
+.chantier__point, .ambiances__point {
+  width: 32px; height: 32px; padding: 0; border: 0; background: transparent; cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.chantier__point::before, .ambiances__point::before {
+  content: ""; width: 10px; height: 10px; border-radius: 50%;
+  background: rgba(240, 234, 222, 0.38); border: 1px solid rgba(240, 234, 222, 0.7);
+  transition: background 0.2s, transform 0.2s;
+}
+.chantier__point[aria-pressed="true"]::before, .ambiances__point[aria-pressed="true"]::before {
+  /* Crème, avec la LUEUR ambre : l'ambre en fond est réservé aux ampoules
+     (check-vie). */
+  background: #F0EADE; border-color: #F0EADE; transform: scale(1.15);
+  box-shadow: 0 0 9px 2px rgba(240, 186, 84, 0.75);
+}
+
+/* ── La maison du permanent : trois ambiances empilées, un fondu ─────── */
+.ambiances { position: absolute; inset: 0; }
+.ambiances__img { transition: opacity var(--fondu, 800ms) ease-in-out; }
+.ambiances__img.est-active { opacity: 1; }
+.ambiances__ouvrir { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: transparent; cursor: zoom-in; }
+.ambiances__barre {
+  /* 14 px du bord : un texte dans une carte en garde au moins 12 (check-cartes-padding). */
+  position: absolute; top: 14px; left: 14px; right: 14px; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px; pointer-events: none;
+}
+.ambiances__barre > * { pointer-events: auto; }
+.ambiances__etiquette {
+  padding: 6px 12px; border-radius: 300px;
+  background: rgba(8, 18, 32, 0.72); color: #F0EADE;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.ambiances__points { background: rgba(8, 18, 32, 0.6); border-radius: 300px; padding: 0 4px; }
+.chantier--ambiances .chantier__etiquette { z-index: 1; }
+.ambiances--plein .ambiances__barre { top: auto; bottom: 12px; justify-content: center; }
+
+/* Hors de la galerie (page du permanent) : une carte autonome. */
+.carte-ambiances { position: relative; aspect-ratio: 3 / 2; border-radius: 18px; overflow: hidden; background: #060E18; }
+
 @media (max-width: 640px) {
-  /* Une grande, puis deux petites : assez grand pour voir une ligne de
-     toit, sans transformer la page en douze écrans de défilement. */
   .galerie { gap: 10px; }
   .galerie__item:nth-child(3n + 1) { grid-column: 1 / -1; }
-  .galerie__item:not(:nth-child(3n + 1)) .galerie__bouton { aspect-ratio: 1 / 1; }
-  .galerie__bouton { border-radius: 12px; }
-  .galerie__ville { font-size: 16px; padding: 26px 10px 9px; }
+  .galerie__item:not(:nth-child(3n + 1)) .chantier { aspect-ratio: 1 / 1; }
+  .chantier { border-radius: 12px; }
+  .chantier__etiquette { font-size: 16px; padding: 30px 10px 9px; }
+  .chantier__points { right: 2px; bottom: 2px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chantier__photo .est-active { transition: opacity 300ms ease; }
+  .chantier__photo:hover .est-active { transform: none; }
 }
 .visionneuse {
   position: fixed; inset: 0; z-index: 1200;
@@ -2887,6 +2946,7 @@ html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta {
   display: flex; flex-direction: column;
 }
 .visionneuse__scene { position: relative; flex: 1; margin: 64px 0 0; touch-action: pan-y; user-select: none; }
+.visionneuse__scene .ambiances { position: absolute; inset: 0; }
 .visionneuse__barre {
   display: flex; justify-content: space-between; align-items: baseline;
   padding: 16px 20px calc(16px + env(safe-area-inset-bottom));
@@ -2909,8 +2969,4 @@ html.mvt a[class*="cta"], html.mvt button[class*="cta"], html.mvt .sim-cta {
   /* Sur téléphone, on glisse : les flèches descendent dans la barre du bas
      pour ne pas couvrir la photo. */
   .visionneuse__nav { top: auto; bottom: calc(60px + env(safe-area-inset-bottom)); transform: none; }
-}
-@media (prefers-reduced-motion: reduce) {
-  .galerie__bouton img { transition: none; }
-  .galerie__bouton:hover img { transform: none; }
 }

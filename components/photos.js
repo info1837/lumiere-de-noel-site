@@ -82,7 +82,10 @@ const SITUEES = {
   "mercier-01": {
     src: `${REEL_PREFIX}noel-mercier-01.jpg`,
     ville: "Mercier",
-    alt: "Résidence illuminée pour les Fêtes à Mercier",
+    // Mercier est SUR la Rive-Sud : la photo peut porter la page de la zone
+    // (CITY_VISUEL), et son alt peut le dire.
+    zone: "rive-sud",
+    alt: "Installation de lumières de Noël à Mercier, Rive-Sud — résidence illuminée pour les Fêtes",
   },
   "montreal-01": {
     src: `${REEL_PREFIX}noel-montreal-01.jpg`,
@@ -121,15 +124,21 @@ const GENERIQUES = {
   },
   "arbres-01": {
     src: `${REEL_PREFIX}noel-trees-01.jpg`,
-    alt: "Conifères enrubannés de lumières dans la neige",
+    // Sert de visuel à /secteur/laval, qui n'a aucun chantier photographié :
+    // l'alt ne nomme donc AUCUNE ville (check-photos §6).
+    alt: "Conifères illuminés en blanc chaud — installation résidentielle",
   },
   "arbres-02": {
     src: `${REEL_PREFIX}noel-trees-02.jpg`,
     alt: "Arbres décorés de lumières des Fêtes en soirée",
   },
+  // ⚠️ permanent-hero, -01 et -02 sont LA MÊME MAISON, en trois ambiances
+  // (vues sur les photos). /realisations en fait UNE carte qui passe de
+  // l'une à l'autre (components/AmbiancesPermanent.jsx). L'alt dit la
+  // couleur, puisque c'est la seule chose qui change.
   "permanent-hero": {
     src: `${REEL_PREFIX}perm-led1.jpg`,
-    alt: "Maison complète en éclairage architectural permanent, couleurs changeantes",
+    alt: "Maison en éclairage architectural permanent, ambiance bleu, blanc, rouge",
   },
   "permanent-detail": {
     src: `${REEL_PREFIX}perm-led-02.jpg`,
@@ -137,15 +146,15 @@ const GENERIQUES = {
   },
   "permanent-01": {
     src: `${REEL_PREFIX}perm-led.jpg`,
-    alt: "Façade en éclairage architectural permanent la nuit",
+    alt: "La même maison en éclairage permanent, ambiance rose et rouge",
   },
   "permanent-02": {
     src: `${REEL_PREFIX}perm-led2.jpg`,
-    alt: "Installation d'éclairage permanent en cours, échelle appuyée sur la façade",
+    alt: "La même maison en éclairage permanent, ambiance multicolore",
   },
   "permanent-03": {
     src: `${REEL_PREFIX}perm-led3.jpg`,
-    alt: "Détail d'éclairage architectural permanent sur une façade",
+    alt: "Autre maison en éclairage permanent blanc chaud, pose en cours, échelle appuyée sur la façade",
   },
 };
 
@@ -252,6 +261,32 @@ export const photo = (cle) => (cle && PHOTOS[cle]) || null;
 export const cityPhoto = (slug) => photo(CITY_PHOTO[slug]);
 
 // -----------------------------------------------------------------------------
+// Le VISUEL d'une zone sans photo à elle : carte de /secteur, « À propos ».
+// -----------------------------------------------------------------------------
+// Deux cas seulement, et check-photos les tient tous les deux :
+//   · une vraie photo d'une ville QUI EST dans la zone (Mercier est sur la
+//     Rive-Sud — `zone: "rive-sud"` sur la photo) : elle peut le dire ;
+//   · sinon une GÉNÉRIQUE, dont l'alt ne nomme aucune ville. Laval n'a aucun
+//     chantier photographié : sa carte montre des conifères, sans « Laval ».
+export const CITY_VISUEL = {
+  laval: "arbres-01",
+  "rive-sud": "mercier-01",
+};
+
+/** Ce que montre une zone : sa photo, sinon son visuel. Jamais null. */
+export const cityVisuel = (slug) => cityPhoto(slug) || photo(CITY_VISUEL[slug]);
+
+/**
+ * La légende qu'on peut ÉCRIRE sous ce visuel : la ville de la photo si
+ * elle est dans la zone, rien si c'est une générique.
+ */
+export const legendeVisuel = (slug, nomZone) => {
+  const p = cityVisuel(slug);
+  if (!p?.ville) return null;
+  return p.ville === nomZone ? p.ville : `${p.ville} — ${nomZone}`;
+};
+
+// -----------------------------------------------------------------------------
 // LES DEUX RÉSOLVEURS. Tout le site passe par eux — c'est ce qui empêche
 // une page de ville d'afficher la maison d'ailleurs.
 // -----------------------------------------------------------------------------
@@ -261,7 +296,7 @@ export const cityPhoto = (slug) => photo(CITY_PHOTO[slug]);
  * sinon une générique. Jamais celle d'une autre ville.
  */
 export const cityHeroPhoto = (slug) =>
-  cityPhoto(slug) || photo("arbre-enrubanne");
+  cityVisuel(slug) || photo("arbre-enrubanne");
 
 /**
  * Image d'une carte de service. `citySlug` = la ville de la page courante

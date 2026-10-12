@@ -24,9 +24,10 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC = join(RACINE, "public");
 const erreurs = [];
 
-const { PHOTOS, CITY_PHOTO, REEL_PREFIX, PHOTOS_MANQUANTES, CLES_GENERIQUES,
-        PREFIXES_OPTIONNELS, cityPhoto, cityHeroPhoto, servicePhoto } =
+const { PHOTOS, CITY_PHOTO, CITY_VISUEL, REEL_PREFIX, PHOTOS_MANQUANTES, CLES_GENERIQUES,
+        PREFIXES_OPTIONNELS, cityPhoto, cityVisuel, cityHeroPhoto, servicePhoto } =
   await import(join(RACINE, "components/photos.js"));
+const { CHANTIERS } = await import(join(RACINE, "components/realisations.js"));
 
 // Les services dont une carte porte une image. Le municipal n'en a pas.
 const SERVICES = [
@@ -122,6 +123,7 @@ for (const slug of Object.keys(CITY_PHOTO)) {
   const verifier = (p, ou) => {
     if (!p || !p.ville) return;                 // générique : autorisé partout
     if (sienne && p.src === sienne.src) return; // sa propre photo : autorisé
+    if (p.zone === slug) return;                // une ville DE la zone (Mercier → Rive-Sud)
     erreurs.push(
       `${ou} pour « ${slug} » utilise une photo SITUÉE à ${p.ville}.\n` +
       `    ${p.src}\n` +
@@ -258,6 +260,78 @@ for (const cle of CLES_GENERIQUES) {
     erreurs.push(
       `§7 n'a résolu que ${usages.length} image(s) d'accueil — il en faut au moins 5 ` +
       `(1 hero + 4 vitrine + 2 comparateur). L'extraction est cassée.`);
+  }
+}
+
+// --- 9. /realisations : une photo n'appartient qu'à UN chantier -------------
+// La galerie montrait la même propriété plusieurs fois et avait l'air de
+// compter MOINS de chantiers. Une carte = un chantier ; une photo dans deux
+// cartes, c'est le même chantier compté deux fois.
+{
+  const vue = new Map();
+  for (const c of CHANTIERS) {
+    if (!c.photos.length) erreurs.push(`Chantier « ${c.id} » sans photo.`);
+    for (const ph of c.photos) {
+      if (!PHOTOS[ph.cle]) { erreurs.push(`Chantier « ${c.id} » → photo inconnue "${ph.cle}".`); continue; }
+      if (!ph.src.startsWith(REEL_PREFIX)) erreurs.push(`Chantier « ${c.id} » : ${ph.cle} n'est pas une vraie photo (${ph.src}).`);
+      if (vue.has(ph.cle))
+        erreurs.push(`La photo "${ph.cle}" est dans DEUX chantiers : « ${vue.get(ph.cle)} » et « ${c.id} ».\n` +
+                     `    Une photo = un chantier. Si c'est la même propriété, fusionnez les cartes.`);
+      else vue.set(ph.cle, c.id);
+    }
+    // L'étiquette d'un chantier ne nomme une ville que si une de SES photos
+    // y est située.
+    const villesDesPhotos = c.photos.map((ph) => ph.ville).filter(Boolean);
+    for (const v of nommeUneVille(c.etiquette)) {
+      if (!villesDesPhotos.some((vp) => vp.includes(v) || v.includes(vp)))
+        erreurs.push(`Le chantier « ${c.id} » s'étiquette « ${c.etiquette} » mais aucune de ses photos n'est située à ${v}.`);
+    }
+    if (c.ambiances) {
+      if (c.photos.some((ph) => !ph.couleur)) erreurs.push(`Chantier « ${c.id} » : chaque ambiance doit porter le nom de sa couleur.`);
+      if (c.photos.length < 2) erreurs.push(`Chantier « ${c.id} » : une carte d'ambiances demande au moins deux photos.`);
+    }
+  }
+}
+
+// --- 10. 🚨 Chaque zone de /secteur a une image, et elle dit vrai ------------
+// Laval et la Rive-Sud n'avaient AUCUNE image sur leur carte. Désormais :
+//   · chaque zone a un visuel — sa photo, sinon CITY_VISUEL ;
+//   · un visuel d'une AUTRE ville doit être une ville DE la zone (`zone`), et
+//     son alt le dit (« Mercier, Rive-Sud ») ;
+//   · un visuel générique ne nomme AUCUN lieu (« Laval » sous des conifères
+//     d'ailleurs serait faux) — c'est aussi le §6 ;
+//   · une même photo n'illustre pas deux zones.
+{
+  const data = readFileSync(join(RACINE, "components/data.js"), "utf8");
+  const zones = [...data.matchAll(/slug: "([a-z-]+)",\s*\n\s*name: "([^"]+)",\s*\n\s*regionLabel:/g)]
+    .map((m) => ({ slug: m[1], nom: m[2] }));
+  if (zones.length < 6) erreurs.push(`check-photos ne trouve que ${zones.length} zone(s) dans data.js — le motif a changé ?`);
+  const illustre = new Map();
+  for (const { slug, nom } of zones) {
+    if (!(slug in CITY_PHOTO)) erreurs.push(`La zone « ${slug} » n'est pas déclarée dans CITY_PHOTO.`);
+    const v = cityVisuel(slug);
+    if (!v) {
+      erreurs.push(`🚨 La carte /secteur de « ${nom} » n'a AUCUNE image.\n` +
+                   `    → une photo dans CITY_PHOTO, ou un visuel dans CITY_VISUEL (components/photos.js).`);
+      continue;
+    }
+    if (illustre.has(v.src)) erreurs.push(`« ${v.src} » illustre à la fois ${illustre.get(v.src)} et ${nom}.`);
+    else illustre.set(v.src, nom);
+    if (!v.ville) {
+      const t = nommeUneVille(v.alt);
+      if (t.length) erreurs.push(`Le visuel de ${nom} est générique mais son alt nomme ${t.join(", ")} : « ${v.alt} ».`);
+    } else if (v.ville !== nom) {
+      if (v.zone !== slug)
+        erreurs.push(`Le visuel de ${nom} est situé à ${v.ville}, qui n'est pas déclarée dans la zone (zone: "${slug}").`);
+      if (!v.alt.includes(v.ville) || !v.alt.includes(nom))
+        erreurs.push(`Le visuel de ${nom} vient de ${v.ville} : son alt doit nommer les deux — « ${v.alt} ».`);
+      const autres = nommeUneVille(v.alt).filter((x) => !v.ville.includes(x) && !nom.includes(x));
+      if (autres.length) erreurs.push(`Le visuel de ${nom} nomme aussi ${autres.join(", ")} : « ${v.alt} ».`);
+    }
+  }
+  for (const [slug, cle] of Object.entries(CITY_VISUEL || {})) {
+    if (!PHOTOS[cle]) erreurs.push(`CITY_VISUEL["${slug}"] → clé inconnue "${cle}".`);
+    if (CITY_PHOTO[slug]) erreurs.push(`CITY_VISUEL["${slug}"] est inutile : la zone a déjà sa photo.`);
   }
 }
 

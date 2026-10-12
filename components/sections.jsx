@@ -25,11 +25,12 @@ import Image from "next/image";
 import Link from "next/link";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Breadcrumb } from "@/components/ui";
 import QuoteForm from "@/components/QuoteForm";
+import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 import HowItWorks from "@/components/HowItWorks";
 import RevelationLumiere from "@/components/RevelationLumiere";
 import { PHOTOS, paireAvantApres } from "@/components/photos";
 import { flouDe } from "@/components/photos-flou";
-import { company, cities, services, inCity, cleService } from "@/components/data";
+import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } from "@/components/data";
 
 export const MARINE = "#0A1524";
 export const MARINE_PROFOND = "#060E18";
@@ -270,8 +271,8 @@ export function PucesVilles({ service = null, exclure = null, titre = "Aussi dan
 }
 
 // ── 9 · À propos de la ville ─────────────────────────────────────────────
-// Les lignes locales (data.js) et la VRAIE photo de la ville quand on l'a.
-// Sans photo de cette ville : le texte seul, jamais la maison d'à côté.
+// Les lignes locales (data.js) et le visuel de la zone : sa vraie photo, ou
+// une photo d'une ville DE la zone, ou une générique sans légende.
 export function AProposVille({ ville, fond = MARINE }) {
   const ph = ville.image ? { src: ville.image, alt: ville.imageAlt } : null;
   return (
@@ -288,7 +289,9 @@ export function AProposVille({ ville, fond = MARINE }) {
             <Image src={ph.src} alt={ph.alt} fill sizes="(max-width: 900px) 100vw, 520px"
               placeholder={flouDe(ph.src) ? "blur" : "empty"} blurDataURL={flouDe(ph.src)}
               style={{ objectFit: "cover" }} />
-            <figcaption>{ville.name}</figcaption>
+            {/* La légende ne nomme que le lieu VRAI de la photo — « Mercier —
+                Rive-Sud » ; rien du tout sous une générique (Laval). */}
+            {ville.legende && <figcaption>{ville.legende}</figcaption>}
           </figure>
         )}
       </div>
@@ -334,6 +337,26 @@ export function CartesServices({ ville, fond = MARINE_PROFOND }) {
             );
           })}
         </ul>
+      </div>
+    </section>
+  );
+}
+
+// ── 11 · Une maison, toutes les ambiances (éclairage permanent) ──────────
+// La carte animée de /realisations, en tête de la page du permanent : la
+// même façade passe d'une couleur à l'autre. Les trois images sont
+// prioritaires ici — c'est le premier écran sous le hero.
+export function SectionAmbiances({ fond = MARINE }) {
+  return (
+    <section className="section-bande" style={{ background: fond }}>
+      <div className="container">
+        <div className="carte-ambiances">
+          <AmbiancesPermanent photos={AMBIANCES_PERMANENT} prioritaire
+            sizes="(max-width: 1180px) 100vw, 1132px" />
+        </div>
+        <p className="section-phrase" style={{ textAlign: "center" }}>
+          Une maison, toutes les ambiances : la même façade, trois réglages de l&apos;application.
+        </p>
       </div>
     </section>
   );

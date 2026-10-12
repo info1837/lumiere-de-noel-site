@@ -4,7 +4,7 @@ import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
 import AppDemo from "@/components/AppDemo";
 import {
   HeroPage, BandePhotos, CeQuiEstCompris, AvantApres, Parcours, FaqCourte,
-  Reservation, PucesVilles, MARINE, MARINE_PROFOND,
+  Reservation, PucesVilles, SectionAmbiances, MARINE, MARINE_PROFOND,
 } from "@/components/sections";
 import { services, findService, serviceArea, serviceOptions } from "@/components/data";
 
@@ -73,6 +73,8 @@ export default function ServicePage({ params }) {
         phrase={s.intro}
         filAriane={[{ name: "Accueil", href: "/" }, { name: "Services", href: "/services" }, { name: s.title }]}
       />
+
+      {s.ambiances && <SectionAmbiances />}
 
       <BandePhotos cles={s.bande || []} />
 

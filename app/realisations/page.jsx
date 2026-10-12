@@ -1,6 +1,6 @@
 import { SectionTag, SectionTitle, CTAButton } from "@/components/ui";
 import GalerieRealisations from "@/components/GalerieRealisations";
-import { noelPage as p, navy, ivory, galerieRealisations, CATEGORIES_GALERIE } from "@/components/data";
+import { noelPage as p, navy, ivory, CHANTIERS, CATEGORIES_CHANTIERS } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
 // ⚠️ CETTE PAGE A SON PROPRE TITRE ET SON PROPRE H1.
@@ -35,7 +35,7 @@ export default function Realisations() {
               {p.intro}
             </p>
           </header>
-          <GalerieRealisations items={galerieRealisations} categories={CATEGORIES_GALERIE} />
+          <GalerieRealisations chantiers={CHANTIERS} categories={CATEGORIES_CHANTIERS} />
         </div>
       </section>
 
