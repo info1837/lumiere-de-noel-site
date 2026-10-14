@@ -22,7 +22,10 @@ export function ServerFooter() {
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14 }}>
               <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
-                {company.phoneDisplay}
+                {company.phoneDisplay} <span style={{ fontWeight: 400, opacity: 0.8 }}>({company.phoneDigits})</span>
+              </a>
+              <a href={company.smsHref} style={{ color: "rgba(243,233,210,0.7)", textDecoration: "none" }}>
+                Texto : {company.smsDisplay}
               </a>
               <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.7)", textDecoration: "none" }}>
                 {company.email}

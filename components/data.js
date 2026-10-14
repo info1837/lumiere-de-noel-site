@@ -77,12 +77,19 @@ export const company = {
   // sur les 60 que Google affiche. « inc. » ne sert à rien dans la SERP,
   // il reste dans le JSON-LD et le pied de page (SEO P0 §5.1).
   titleSuffix: "Solution Lumière de Noël",
-  // Numéro Twilio de Solution Lumière de Noël Inc. (2026-08-25).
-  // Sert à la fois de numéro public sur le site ET de numéro à Sophie B.
-  // Ce n'est PAS celui de Palencia — les deux entreprises ont chacune le
-  // leur, et ils ne doivent jamais se croiser.
-  phoneDisplay: "(438) 812-6635",
-  phoneHref: "tel:+14388126635",
+  // ⚠️ DEUX NUMÉROS, DEUX RÔLES (2026-10-14).
+  //   Appels  : 450 400-NOEL (450 400-6635) — le numéro imprimé sur le
+  //             lookbook et les pancartes, et celui que Sophie donne
+  //             (CRM : business-config → identity.phone). Twilio → CRM
+  //             /api/voice/inbound → sonne chez Yahir ; appel manqué = fiche.
+  //   Textos  : (438) 812-6635 — la ligne de Sophie B. Affichée seulement
+  //             avec l'étiquette « Texto ».
+  // Ce ne sont PAS ceux de Palencia, et ils ne doivent jamais se croiser.
+  phoneDisplay: "450 400-NOEL",
+  phoneDigits: "450 400-6635",
+  phoneHref: "tel:+14504006635",
+  smsDisplay: "(438) 812-6635",
+  smsHref: "sms:+14388126635",
   // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
   // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
   // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se

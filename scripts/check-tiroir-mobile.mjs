@@ -201,11 +201,11 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
         telHref: e.querySelector('.tiroir__tel').getAttribute('href') };
     });
     ok(pied.bas === 0, `${t} pied : ${pied.bas}px du bas (attendu 0, épinglé)`);
-    ok(pied.enfants.length === 2 && pied.enfants[0] === 'A:Estimer mon projet' && /^A:Appeler \(438\) 812-6635$/.test(pied.enfants[1]), `${t} pied : ${JSON.stringify(pied.enfants)}`);
+    ok(pied.enfants.length === 2 && pied.enfants[0] === 'A:Estimer mon projet' && /^A:Appeler 450 400-NOEL$/.test(pied.enfants[1]), `${t} pied : ${JSON.stringify(pied.enfants)}`);
     ok(pied.ctaW === pied.largeurUtile, `${t} pied : CTA ${pied.ctaW} / ${pied.largeurUtile} (attendu pleine largeur)`);
     ok(pied.ctaFond === CREME, `${t} pied : le CTA doit être CRÈME, pas ambre (${pied.ctaFond})`);
     ok(pied.ctaHref === '/calculatrice', `${t} pied : CTA → ${pied.ctaHref}`);
-    ok(pied.telHref === 'tel:+14388126635', `${t} pied : tel ${pied.telHref}`);
+    ok(pied.telHref === 'tel:+14504006635', `${t} pied : tel ${pied.telHref}`);
     if (SHOTS) await p.screenshot({ path: `${SHOTS}/tiroir-${nomM}-${vp.nom}-2-ouvert.png` });
     if (nomM === 'chromium') ok(await axe(p, t, 'ouvert') <= axeFerme, `${t} axe : le tiroir ouvert ajoute des violations hors tiroir`);
 
