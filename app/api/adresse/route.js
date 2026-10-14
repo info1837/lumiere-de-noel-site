@@ -32,7 +32,11 @@ const DETAILS = 'https://places.googleapis.com/v1/places/';
 // ordonne — le filtre dur, c'est `includedRegionCodes` plus le tri sur
 // « QC » ci-dessous.
 const CENTRE = { latitude: 45.6722, longitude: -73.8736 };
-const RAYON_M = 90000; // ~90 km : Rive-Nord, Montréal, Rive-Sud
+// ⚠️ 50 km, PAS 90. Google refuse tout rayon de plus de 50 000 m (« Invalid
+// circle.radius ») : avec 90 000, CHAQUE appel rendait une erreur 400 et la
+// liste restait vide — constaté en production le 2026-10-14. C'est un biais,
+// pas un filtre : une adresse à 70 km sort quand même, juste plus bas.
+const RAYON_M = 50000;
 
 const json = (d, s = 200) => Response.json(d, {
   status: s,

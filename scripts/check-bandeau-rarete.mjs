@@ -97,6 +97,8 @@ console.log('\n--- 2a. 🚨 Les places de la SAISON (le chiffre des pubs) ---');
   t('🚨 0 place de saison → complet, même si le calendrier a de la place',
     messageRarete({ ...saison, places_restantes: 0 }).etat === 'complet');
   t('sans le compteur, rien ne change (capacité d\'octobre)', messageRarete(OUVERT).restantes === 18);
+  t('🚨 aucun chiffre par mois ne contredit la saison', m.segments.length === 1 && m.segments[0] === '17 places restantes, −15 % en octobre'
+    && !m.compacts.some((c) => /18|Novembre/.test(c)), `${m.segments.join(' · ')} / ${m.compacts.join(' · ')}`);
   const octPlein = { ...saison, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1]] };
   t('🚨 octobre plein → pas de « Novembre : −15 % »', messageRarete(octPlein).rabaisOctobre === 0, String(messageRarete(octPlein).rabaisOctobre));
 }
