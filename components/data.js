@@ -231,6 +231,17 @@ export const faqHome = [
   },
 ];
 
+// La question du rabais d'octobre. PAS dans faqHome : l'accueil ne l'ajoute
+// que lorsque le CRM dit que le rabais est en cours (`rabais_reservation`),
+// pour qu'elle disparaisse d'elle-même le 1er novembre. Même règle, mot pour
+// mot, que Sophie (palencia-crm : phraseRabaisOctobre) et que les pubs.
+export function faqRabaisOctobre(pct) {
+  return {
+    q: "Y a-t-il un rabais en octobre ?",
+    a: `Oui, sur les lumières de Noël saisonnières : ${pct} % de rabais si vous réservez (avec dépôt) en octobre — l'installation peut se faire n'importe quand avant le 20 novembre. Un rabais à la fois, non cumulable.`,
+  };
+}
+
 // --- « Comment ça marche » — 6 étapes datées (accueil + /services) -----------
 // Datées pour répondre à "qu'est-ce qui se passe après que j'envoie le formulaire"
 // dans les 3 premières secondes.

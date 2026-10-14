@@ -103,6 +103,7 @@ export default function Hero() {
               réalisations juste en dessous. Une preuve propre à Lumière
               (avis Google de Lumière) reviendra par components/reviews.js. */}
           <p className="hero-ligne">
+            <span>3e saison · résidentiel et commercial</span>
             <span>À partir de {company.priceFrom}</span>
             <span>Rive-Nord · Montréal · Rive-Sud</span>
           </p>

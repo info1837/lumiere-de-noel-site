@@ -105,7 +105,10 @@ export async function POST(request) {
           // même colonne `city` que les trois autres formulaires.
           city: villeDeAdresse(adrM),
           service: 'Lumières de Noël',
-          source: 'calculatrice',
+          // « Calculatrice… », avec la majuscule : c'est le préfixe que
+          // l'inscription automatique de Sophie reconnaît (business-config
+          // → autoEnrollPrefixes), comme l'autre chemin de la calculatrice.
+          source: 'Calculatrice toiture — maquette (site Lumière)',
           notes: notesM, language: 'fr',
           linear_ft: Number.isFinite(piedsM) && piedsM > 0 ? Math.round(piedsM) : undefined,
           estimated_price: undefined,

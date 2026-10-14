@@ -8,7 +8,7 @@ import { PucesVilles } from "@/components/sections";
 import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
 import { paireAvantApres } from "@/components/photos";
-import { faqHome, company, homeVitrine, navy, creme } from "@/components/data";
+import { faqHome, faqRabaisOctobre, company, homeVitrine, navy, creme } from "@/components/data";
 
 // Le canonical de l'accueil vit ICI, pas dans le layout racine (voir le
 // commentaire de app/layout.jsx) : sinon le 404 l'héritait.
@@ -55,6 +55,10 @@ export default async function Home() {
   // mention de place ni de date, plutôt qu'un chiffre inventé.
   const rarete = messageRarete(await lireDisponibilites());
   const fermeture = dateEnFrancais(rarete?.fermetureLe);
+  // La question du rabais n'existe que pendant qu'il existe (le CRM le dit).
+  const faq = rarete?.rabaisOctobre > 0
+    ? [faqHome[0], faqRabaisOctobre(rarete.rabaisOctobre), ...faqHome.slice(1)]
+    : faqHome;
 
   // ⚠️ LE COMPARATEUR MONTRE MAINTENANT UN VRAI AVANT/APRÈS.
   //
@@ -79,7 +83,7 @@ export default async function Home() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "FAQPage",
-            mainEntity: faqHome.map((f) => ({
+            mainEntity: faq.map((f) => ({
               "@type": "Question",
               name: f.q,
               acceptedAnswer: { "@type": "Answer", text: f.a },
@@ -228,7 +232,7 @@ export default async function Home() {
               Ce qu&apos;on nous demande le plus
             </SectionTitle>
           </div>
-          <FaqAccordion items={faqHome} dark />
+          <FaqAccordion items={faq} dark />
         </div>
       </section>
 

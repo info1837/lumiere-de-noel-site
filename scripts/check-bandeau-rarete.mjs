@@ -97,9 +97,16 @@ console.log('\n--- 2a. 🚨 Les places de la SAISON (le chiffre des pubs) ---');
   t('🚨 0 place de saison → complet, même si le calendrier a de la place',
     messageRarete({ ...saison, places_restantes: 0 }).etat === 'complet');
   t('sans le compteur, rien ne change (capacité d\'octobre)', messageRarete(OUVERT).restantes === 18);
-  t('🚨 aucun chiffre par mois ne contredit la saison', m.segments.length === 1 && m.segments[0] === '17 places restantes, −15 % en octobre'
+  t('🚨 aucun chiffre par mois ne contredit la saison', m.segments.length === 1 && m.segments[0] === '17 places restantes, −15 % si réservé en octobre'
     && !m.compacts.some((c) => /18|Novembre/.test(c)), `${m.segments.join(' · ')} / ${m.compacts.join(' · ')}`);
   const octPlein = { ...saison, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1]] };
+  // 2026-10-14 : le rabais suit la RÉSERVATION (CRM : rabais_reservation).
+  const resa = { ...saison, rabais_reservation: 15, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, { ...OUVERT.mois[1], rabais: 15 }] };
+  t('🚨 octobre plein, réservation en octobre → le rabais RESTE', messageRarete(resa).rabaisOctobre === 15);
+  t('🚨 la ligne dit « −15 % si réservé en octobre », jamais « Novembre : −15 % »',
+    ligneSaison(messageRarete(resa)).includes('−15 % si réservé en octobre') && !/Novembre : −/.test(ligneSaison(messageRarete(resa)).join(' ')),
+    ligneSaison(messageRarete(resa)).join(' · '));
+  t('🚨 le 1er novembre (rabais_reservation 0) → plus de rabais', messageRarete({ ...resa, rabais_reservation: 0 }).rabaisOctobre === 0);
   t('🚨 octobre plein → pas de « Novembre : −15 % »', messageRarete(octPlein).rabaisOctobre === 0, String(messageRarete(octPlein).rabaisOctobre));
 }
 

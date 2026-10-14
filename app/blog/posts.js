@@ -64,7 +64,7 @@ export const postBodies = {
 
     { type: "ul", items: [
       "Septembre : meilleure sélection de dates, équipes disponibles, conditions parfaites.",
-      "Octobre : encore d'excellentes disponibilités, météo douce — et 15 % de rabais sur les installations faites en octobre.",
+      "Octobre : encore d'excellentes disponibilités, météo douce — et 15 % de rabais si vous réservez (avec dépôt) en octobre, pour une installation n'importe quand avant le 20 novembre.",
       "Mi-novembre : possible mais les meilleurs créneaux sont partis.",
       "Après le 20 novembre : réservations fermées pour la saison — inscrivez-vous sur la liste d'attente.",
     ]},
