@@ -87,6 +87,20 @@ console.log('\n--- 2. 🚨 Un segment par mois, le rabais collé au sien ---');
   t('…et ne casse pas un nom sans année', moisSansAnnee('Octobre') === 'Octobre');
 }
 
+console.log('\n--- 2a. 🚨 Les places de la SAISON (le chiffre des pubs) ---');
+{
+  const { ligneSaison } = await import(path.join(ROOT, 'lib/season.js'));
+  const saison = { ...OUVERT, places_saison: 20, places_prises: 3, places_restantes: 17 };
+  const m = messageRarete(saison);
+  t('🚨 le bandeau prend les places de la SAISON, pas celles du mois', m.restantes === 17, String(m.restantes));
+  t('🚨 la ligne dit « 17 places restantes »', ligneSaison(m).includes('17 places restantes'), ligneSaison(m).join(' · '));
+  t('🚨 0 place de saison → complet, même si le calendrier a de la place',
+    messageRarete({ ...saison, places_restantes: 0 }).etat === 'complet');
+  t('sans le compteur, rien ne change (capacité d\'octobre)', messageRarete(OUVERT).restantes === 18);
+  const octPlein = { ...saison, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1]] };
+  t('🚨 octobre plein → pas de « Novembre : −15 % »', messageRarete(octPlein).rabaisOctobre === 0, String(messageRarete(octPlein).rabaisOctobre));
+}
+
 console.log('\n--- 2b. 🚨 « PLACES », jamais « dates » ---');
 {
   // Une date, c'est un jour du calendrier. Ce qu'on vend, c'est une place

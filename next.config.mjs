@@ -53,6 +53,10 @@ const nextConfig = {
       // 2026) : la démo de l'application, le gros plan des pastilles et la
       // FAQ y vivent maintenant. 308 (`permanent: true`) : rien ne se perd.
       { source: "/eclairage-architectural", destination: "/services/eclairage-architectural-permanent", permanent: true },
+      // /permanent : l'adresse COURTE de l'éclairage permanent (accueil,
+      // formulaire, lookbook, pubs). Une redirection et pas une deuxième
+      // page — c'est exactement le doublon que la ligne précédente a réglé.
+      { source: "/permanent", destination: "/services/eclairage-architectural-permanent", permanent: true },
 
       // .ca -> .com. Le .ca est l'ancien domaine : les pubs Meta de la
       // saison passée pointent dessus, et il rend actuellement un 404

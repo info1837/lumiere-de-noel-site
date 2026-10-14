@@ -2,7 +2,7 @@ import Link from "next/link";
 import QuoteForm from "@/components/QuoteForm";
 import Testimonials from "@/components/Testimonials";
 import { SectionTag } from "@/components/ui";
-import { company, navy, ivory, serviceOptions } from "@/components/data";
+import { company, navy, ivory, serviceOptions, processSteps } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
 export const metadata = {
@@ -19,11 +19,9 @@ export const metadata = {
 };
 
 // Colonne de gauche — mini-étapes après l'envoi (réduit le doute).
-const nextSteps = [
-  { n: "01", title: "Réponse sous 24 h", body: "On confirme la réception et on prend rendez-vous pour la visite." },
-  { n: "02", title: "Visite d'évaluation", body: "On mesure la propriété, on comprend votre vision, on chiffre." },
-  { n: "03", title: "Soumission ferme", body: "Prix écrit, sans surprise. Vous décidez si vous allez de l'avant." },
-];
+// Le MÊME parcours que Sophie et que la frise de l'accueil (data.js →
+// processSteps) : texto, appel, prix ferme. Aucune visite.
+const nextSteps = processSteps.slice(0, 3).map((e) => ({ n: e.num, title: e.title, body: e.desc }));
 
 export default function Soumission({ searchParams }) {
   // ⚠️ La liste d'attente passe par le MÊME formulaire et le MÊME envoi.
@@ -93,7 +91,7 @@ export default function Soumission({ searchParams }) {
           <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 18, marginBottom: 26 }}>
             {listeAttente
               ? "La saison est complète. Laissez-nous vos coordonnées : on vous appelle dès qu’une date se libère, et en priorité l’an prochain."
-              : "Nous confirmons votre place et votre prix après une courte consultation."}
+              : "Nous confirmons votre place et votre prix après un court appel."}
           </p>
           <QuoteForm source={sourceFinale} serviceInitial={serviceInitial} prerempli={prerempli} variante="sombre" />
         </div>

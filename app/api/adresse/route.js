@@ -1,3 +1,5 @@
+import { getSiteUrl } from '@/lib/site-url';
+
 // Suggestions d'adresses — Places Autocomplete, côté SERVEUR.
 //
 // ⚠️ POURQUOI UN RELAIS PLUTÔT QUE LE WIDGET GOOGLE.
@@ -24,6 +26,7 @@
 // pas voir sa rue proposée par une entreprise qui dessert la Rive-Nord.
 
 const PLACES = 'https://places.googleapis.com/v1/places:autocomplete';
+const DETAILS = 'https://places.googleapis.com/v1/places/';
 
 // Biais géographique : le Grand Montréal. `locationBias` ne FILTRE pas, il
 // ordonne — le filtre dur, c'est `includedRegionCodes` plus le tri sur
@@ -36,14 +39,77 @@ const json = (d, s = 200) => Response.json(d, {
   headers: { 'Cache-Control': 'no-store', 'X-Robots-Tag': 'noindex, nofollow' },
 });
 
+// ⚠️ LA CLÉ : CELLE DU SERVEUR, SINON CELLE DE LA CALCULATRICE.
+//
+// Constaté le 2026-10-14 : `GOOGLE_MAPS_KEY` n'a JAMAIS été posée sur
+// Vercel. Cette route rendait donc une liste vide en production, et
+// l'autocomplétion du simulateur n'a jamais rien proposé. La clé publique
+// de la calculatrice (`NEXT_PUBLIC_GOOGLE_MAPS_KEY`) est restreinte par
+// RÉFÉRENT : on l'utilise en repli en annonçant notre propre domaine. Elle
+// est déjà dans le bundle public — l'utiliser ici n'expose rien de plus.
+// Poser une vraie clé serveur (restreinte à l'API Places) reste préférable :
+// elle passe devant dès qu'elle existe.
+function cleGoogle() {
+  const serveur = process.env.GOOGLE_MAPS_KEY || process.env.GOOGLE_PLACES_KEY;
+  if (serveur) return { cle: serveur, entetes: {} };
+  const publique = process.env.NEXT_PUBLIC_GOOGLE_MAPS_KEY;
+  if (publique) return { cle: publique, entetes: { Referer: `${getSiteUrl()}/` } };
+  return null;
+}
+
+/**
+ * Le détail d'une adresse choisie : rue, ville, code postal.
+ *
+ * Les suggestions ne portent pas le code postal (« 34 Rue de Vaudreuil,
+ * Blainville, QC, Canada »). Le détail, si : c'est lui qui part au CRM, pour
+ * que la fiche ait l'adresse COMPLÈTE et que Sophie la confirme au lieu de
+ * la demander.
+ */
+async function detail(placeId, google) {
+  if (!/^[A-Za-z0-9_-]{10,300}$/.test(placeId)) return json({ ok: false, error: 'place_id' }, 400);
+  try {
+    const r = await fetch(`${DETAILS}${encodeURIComponent(placeId)}?languageCode=fr-CA`, {
+      headers: {
+        'X-Goog-Api-Key': google.cle,
+        ...google.entetes,
+        'X-Goog-FieldMask': 'formattedAddress,addressComponents',
+      },
+      signal: AbortSignal.timeout(4000),
+    });
+    if (!r.ok) {
+      console.error('[adresse] Place Details a répondu', r.status, (await r.text()).slice(0, 300));
+      return json({ ok: false, error: 'amont' });
+    }
+    const d = await r.json();
+    const comp = (type) => (d.addressComponents || []).find((c) => (c.types || []).includes(type));
+    const rue = [comp('street_number')?.longText, comp('route')?.longText].filter(Boolean).join(' ');
+    const ville = comp('locality')?.longText || comp('sublocality')?.longText || comp('administrative_area_level_3')?.longText || '';
+    const codePostal = comp('postal_code')?.longText || '';
+    const province = comp('administrative_area_level_1')?.shortText || '';
+    // « 34 Rue de Vaudreuil, Blainville, QC J7C 4A2 » — sans « , Canada ».
+    const adresse = String(d.formattedAddress || '').replace(/,\s*Canada$/i, '');
+    return json({ ok: true, adresse, rue, ville, codePostal, province });
+  } catch (e) {
+    console.error('[adresse] Place Details injoignable :', e?.message);
+    return json({ ok: false, error: 'reseau' });
+  }
+}
+
 export async function GET(request) {
-  const q = (new URL(request.url).searchParams.get('q') || '').trim();
+  const params = new URL(request.url).searchParams;
+  const q = (params.get('q') || '').trim();
+  const placeId = (params.get('placeId') || '').trim();
+
+  const google = cleGoogle();
+  if (placeId) {
+    if (!google) return json({ ok: false, error: 'sans_cle' });
+    return detail(placeId, google);
+  }
 
   // Moins de 4 caractères, ça ne vaut pas un appel facturé.
   if (q.length < 4) return json({ ok: true, suggestions: [] });
 
-  const cle = process.env.GOOGLE_MAPS_KEY || process.env.GOOGLE_PLACES_KEY;
-  if (!cle) {
+  if (!google) {
     // ⚠️ ÉCHEC DOUX, ET C'EST ESSENTIEL.
     //
     // Sans clé, le champ d'adresse doit rester un champ de texte ordinaire
@@ -59,7 +125,8 @@ export async function GET(request) {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'X-Goog-Api-Key': cle,
+        'X-Goog-Api-Key': google.cle,
+        ...google.entetes,
         // On ne demande QUE ce qu'on affiche : Google facture par champ.
         'X-Goog-FieldMask': 'suggestions.placePrediction.text,suggestions.placePrediction.placeId',
       },

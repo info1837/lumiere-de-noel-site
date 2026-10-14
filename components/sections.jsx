@@ -35,14 +35,11 @@ import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } fr
 export const MARINE = "#0A1524";
 export const MARINE_PROFOND = "#060E18";
 
-const AVIS_PALENCIA_URL =
-  "https://www.google.com/maps/place/?q=place_id:ChIJmbIPyln3rKoR21twSo9uBis";
-
 // ── 1 · Le hero ──────────────────────────────────────────────────────────
 // Le hero de l'accueil, en plus court : photo réelle pleine largeur, un H1,
 // une phrase, deux boutons. `.hero-section` fait qu'il s'allume comme
-// l'accueil (FestiveLayer). La ligne de preuve est la même — avec son lien
-// vérifiable vers les avis de Palencia, et le compteur qui monte.
+// l'accueil (FestiveLayer). La ligne de preuve est la même : le prix et le
+// territoire (plus d'avis d'une autre entreprise).
 export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true }) {
   return (
     <section className="hero-section hero-section--page">
@@ -71,9 +68,6 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
           </div>
           {preuve && (
             <p className="hero-ligne" data-gabarit>
-              <a href={AVIS_PALENCIA_URL} target="_blank" rel="noopener noreferrer">
-                100+ avis 5★ chez Palencia
-              </a>
               <span>À partir de {company.priceFrom}</span>
               <span>Rive-Nord · Montréal · Rive-Sud</span>
             </p>
@@ -230,7 +224,7 @@ export function Reservation({ source, redirectSrc, serviceInitial = null, titre 
           <SectionTag dark>Réservation</SectionTag>
           <SectionTitle light style={{ margin: "0 auto 14px" }}>{titre}</SectionTitle>
           <p className="section-phrase">
-            Nous confirmons votre place et votre prix après une courte consultation.
+            Nous confirmons votre place et votre prix après un court appel.
           </p>
         </div>
         <QuoteForm source={source} redirectSrc={redirectSrc} serviceInitial={serviceInitial} variante="sombre" />

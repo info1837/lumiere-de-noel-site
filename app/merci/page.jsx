@@ -1,35 +1,23 @@
 import Link from "next/link";
 import Script from "next/script";
-import { company, navy, ivory, gold, charcoal, offWhite, goldText } from "@/components/data";
+import { company, navy, ivory, gold, charcoal, offWhite, goldText, processSteps } from "@/components/data";
 
 // Page de remerciement — atterrissage post-envoi de formulaire.
 // - Sert d'événement de conversion mesurable (GA4/Meta Pixel : /merci PageView).
-// - Donne au visiteur une promesse claire ("Réponse en moins de 24 h") + les
-//   prochaines étapes, ce qui réduit le doute juste après l'envoi.
+// - Donne au visiteur une promesse claire et VRAIE + les prochaines étapes.
+//   ⚠️ Plus de « réponse sous 24 h » ni de « visite d'évaluation » : Sophie B
+//   écrit en moins d'une minute (8 h–20 h 30) et fixe un APPEL avec Yahir.
+//   Les étapes viennent de data.js (processSteps), comme partout ailleurs.
 export const metadata = {
-  title: "Merci — nous vous répondons sous 24 h",
+  title: "Merci — on vous écrit par texto",
   description:
-    "Votre demande est bien reçue. Un membre de l'équipe Solution Lumière de Noël vous répond en moins de 24 h.",
+    "Votre demande est bien reçue. On vous écrit par texto en moins d'une minute pour fixer un court appel.",
   robots: { index: false, follow: true },
   alternates: { canonical: "/merci" },
 };
 
 const steps = [
-  {
-    n: "01",
-    title: "Réponse en moins de 24 h",
-    body: "On confirme la réception et on prend rendez-vous pour la visite d'évaluation — par téléphone ou courriel, selon votre préférence.",
-  },
-  {
-    n: "02",
-    title: "Consultation design sur place",
-    body: "On vient chez vous mesurer la propriété, comprendre votre vision et proposer un design personnalisé.",
-  },
-  {
-    n: "03",
-    title: "Soumission ferme",
-    body: "Vous recevez un prix ferme, écrit — pas d'estimation vague. Vous décidez si vous allez de l'avant.",
-  },
+  ...processSteps.slice(0, 3).map((e) => ({ n: e.num, title: e.title, body: e.desc })),
   {
     n: "04",
     title: "On réserve votre date",
@@ -91,12 +79,12 @@ export default function MerciPage() {
             Demande reçue
           </div>
           <h1 style={{ color: ivory, marginBottom: 20 }}>
-            Merci — on vous répond<br />en moins de 24 h
+            Merci — on vous écrit<br />par texto
           </h1>
           <p style={{ color: "rgba(243,233,210,0.88)", fontSize: 19, margin: "0 auto 34px", maxWidth: 620 }}>
             Votre demande est bien arrivée. Un membre de l'équipe Solution Lumière de Noël inc.
-            vous rappelle rapidement pour planifier votre visite d'évaluation
-            sur place, à votre porte.
+            On vous écrit par texto en moins d&apos;une minute (de 8 h à 20 h 30 ; le soir,
+            dès le lendemain matin) pour confirmer votre adresse et fixer un court appel avec Yahir.
           </p>
           <div style={{ display: "flex", flexWrap: "wrap", gap: 14, justifyContent: "center" }}>
             <a href={company.phoneHref} style={{

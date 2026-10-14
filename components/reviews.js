@@ -11,6 +11,8 @@
 // Chaque review : { name, city, rating (1-5), text, date (YYYY-MM-DD) }.
 // =============================================================================
 
+import { company } from "@/components/data";
+
 export const REVIEWS_PENDING = true;
 
 // Vrais avis clients (nom + ville + citation courte). Vide tant que non collectés.
@@ -22,7 +24,7 @@ export const aggregateRating = null;
 
 // Comptes publics (Google Business Profile, Facebook, Instagram) — vont dans
 // sameAs de LocalBusiness. Chaque URL doit être publique et accessible.
-export const sameAs = [];
+export const sameAs = Object.values(company.social || {}).map((r) => r.href);
 
 // Lien vers la fiche Google Business (pour afficher "voir tous nos avis").
 export const googleReviewUrl = "";

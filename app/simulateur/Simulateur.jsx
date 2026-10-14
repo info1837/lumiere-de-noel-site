@@ -442,7 +442,7 @@ export default function Simulateur() {
               onChange={(e) => setCurseur(Number(e.target.value))} />
           </div>
           <p className="sim-prix">Projets à partir de <strong>{company.priceFrom}</strong></p>
-          <p className="sim-note">Yahir confirme votre prix exact après une courte consultation.</p>
+          <p className="sim-note">Yahir confirme votre prix exact après un court appel.</p>
           <Link href={lienReservation()} className="sim-cta"
             onClick={() => evenement("sim_reserve_click", { style: styleActif.cle })}>
             Réserver ma date

@@ -65,7 +65,7 @@ export default function HowItWorks({ variant = "dark", showTitle = true }) {
               ? <SectionTag dark>Le parcours</SectionTag>
               : <SectionTag>Le parcours</SectionTag>}
             <SectionTitle light={dark} style={{ margin: "0 auto" }}>
-              Consultation design → Installation → Entretien → Retrait
+              Texto → Appel → Prix ferme → Installation → Retrait
             </SectionTitle>
           </div>
         )}

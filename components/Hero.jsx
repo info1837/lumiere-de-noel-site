@@ -3,15 +3,6 @@ import { CTAButton } from "@/components/ui";
 import { ivory, company } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
 
-// La fiche Google de PALENCIA SERVICES EXTÉRIEUR — pas de Lumière de Noël.
-// Reprise telle quelle de components/ObjectionBar.jsx, qui portait les
-// quatre cartes retirées du bas du hero. Elle n'a volontairement pas sa
-// place dans components/reviews.js : ce fichier-là décrit les avis de
-// Solution Lumière de Noël (encore vides), et y poser la fiche de Palencia
-// ferait passer ses avis pour ceux de Lumière dans le JSON-LD.
-const AVIS_PALENCIA_URL =
-  "https://www.google.com/maps/place/?q=place_id:ChIJmbIPyln3rKoR21twSo9uBis";
-
 // Hero d'accueil : une photo, une phrase, deux portes.
 //
 // ⚠️ LE FORMULAIRE EST PARTI D'ICI, ET CE N'EST PAS UN OUBLI.
@@ -105,22 +96,13 @@ export default function Hero() {
             <CTAButton href="/simulateur" variant="outlineCreme">Voir ma maison illuminée</CTAButton>
           </div>
 
-          {/* ⚠️ LES 100+ AVIS SONT CEUX DE PALENCIA, ET ÇA DOIT RESTER ÉCRIT.
-              Solution Lumière de Noël n'a pas encore d'avis publiés
-              (components/reviews.js : REVIEWS_PENDING = true, aucun
-              aggregateRating émis). Écrire « 100+ avis 5★ » tout court sur
-              cette page les attribuerait à Lumière — c'est faux, et c'est
-              exactement ce que la barre des objections prend soin de dire
-              en toutes lettres depuis le début. Trois mots de plus, et la
-              preuve sociale reste vraie. */}
+          {/* ⚠️ PLUS DE « 100+ AVIS 5★ CHEZ PALENCIA » (2026-10-14).
+              Le site de Lumière n'affiche pas une autre entreprise, même
+              attribuée : le compteur partait de 0 (« 0+ avis ») et la ligne
+              vendait Palencia en tête de page. La preuve, ce sont les vraies
+              réalisations juste en dessous. Une preuve propre à Lumière
+              (avis Google de Lumière) reviendra par components/reviews.js. */}
           <p className="hero-ligne">
-            {/* La preuve reste VÉRIFIABLE : le lien mène à la fiche Google de
-                Palencia. Sans lui, le visiteur devrait croire le chiffre sur
-                parole — et la carte qui le portait, avec son lien, vient
-                d'être retirée du bas du hero. */}
-            <a href={AVIS_PALENCIA_URL} target="_blank" rel="noopener noreferrer">
-              100+ avis 5★ chez Palencia
-            </a>
             <span>À partir de {company.priceFrom}</span>
             <span>Rive-Nord · Montréal · Rive-Sud</span>
           </p>

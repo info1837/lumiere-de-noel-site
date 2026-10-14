@@ -25,6 +25,8 @@ export default function AdresseAutocomplete({
   id = "sim-adresse",
   placeholder = "123 rue Principale, Blainville",
   autoFocus = false,
+  requis = false,
+  invalide = false,
 }) {
   const [suggestions, setSuggestions] = useState([]);
   const [ouvert, setOuvert] = useState(false);
@@ -57,13 +59,29 @@ export default function AdresseAutocomplete({
     return () => { clearTimeout(minuteur); stop.abort(); };
   }, [valeur]);
 
-  const prendre = (s) => {
+  // ⚠️ LA SUGGESTION, PUIS L'ADRESSE COMPLÈTE.
+  //
+  // Une suggestion Places ne porte pas le code postal (« 34 Rue de
+  // Vaudreuil, Blainville, QC, Canada »). On l'affiche tout de suite, puis
+  // on la remplace par le détail (« …, Blainville, QC J7C 4A2 ») : c'est
+  // cette version qui part au CRM. Si le détail échoue, la suggestion reste
+  // — elle contient déjà la rue et la ville.
+  const prendre = async (s) => {
     choisi.current = true;
     onChange(s.texte);
     setOuvert(false);
     setSuggestions([]);
     setVisee(-1);
-    onChoisir?.(s);
+    let detail = null;
+    if (s.placeId) {
+      try {
+        const r = await fetch(`/api/adresse?placeId=${encodeURIComponent(s.placeId)}`);
+        const d = r.ok ? await r.json() : null;
+        if (d?.ok && d.adresse) detail = d;
+      } catch { /* la suggestion suffit */ }
+    }
+    if (detail && detail.adresse !== s.texte) { choisi.current = true; onChange(detail.adresse); }
+    onChoisir?.({ ...s, ...(detail || {}) });
   };
 
   const auClavier = (e) => {
@@ -99,6 +117,9 @@ export default function AdresseAutocomplete({
         autoComplete="street-address"
         inputMode="text"
         autoFocus={autoFocus}
+        required={requis || undefined}
+        aria-required={requis || undefined}
+        aria-invalid={invalide || undefined}
         role="combobox"
         aria-expanded={ouvert}
         aria-controls={listeId}

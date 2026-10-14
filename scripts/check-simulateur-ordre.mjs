@@ -159,8 +159,14 @@ console.log('\n--- 6. 🚨 Les six événements de mesure ---');
 
 console.log('\n--- 7. 🚨 La clé Google reste au serveur ---');
 {
-  t('🚨 la route lit une clé SANS NEXT_PUBLIC_',
-    /process\.env\.GOOGLE_MAPS_KEY/.test(adresseCode) && !/NEXT_PUBLIC_/.test(adresseCode));
+  // La clé SERVEUR passe d'abord ; la clé publique de la calculatrice n'est
+  // qu'un repli (GOOGLE_MAPS_KEY n'a jamais été posée sur Vercel), annoncée
+  // avec NOTRE domaine en référent. Aucune des deux ne sort dans la réponse.
+  t('🚨 la route lit d\'abord une clé SANS NEXT_PUBLIC_',
+    /const serveur = process\.env\.GOOGLE_MAPS_KEY/.test(adresseCode) && /if \(serveur\) return/.test(adresseCode));
+  t('🚨 …la clé publique n\'est qu\'un repli, avec notre référent',
+    /Referer: `\$\{getSiteUrl\(\)\}\/`/.test(adresseCode));
+  t('🚨 aucune clé dans les réponses', !/json\(\{[^}]*(\bcle\b|google)/.test(adresseCode));
   t('🚨 le composant ne connaît aucune clé',
     !/process\.env/.test(sansCommentaires(lire('components/AdresseAutocomplete.jsx'))));
   t('🚨 le Québec seulement', /includedRegionCodes: \['ca'\]/.test(adresseCode)

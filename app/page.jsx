@@ -4,6 +4,7 @@ import HowItWorks from "@/components/HowItWorks";
 import QuoteForm from "@/components/QuoteForm";
 import RevelationLumiere from "@/components/RevelationLumiere";
 import VitrineDefilante from "@/components/VitrineDefilante";
+import { PucesVilles } from "@/components/sections";
 import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
 import { paireAvantApres } from "@/components/photos";
@@ -156,7 +157,7 @@ export default async function Home() {
       <section id="inclus" style={{ background: navy, scrollMarginTop: 84 }}>
         <div className="container offre">
           <div>
-            <SectionTag dark>Forfait tout inclus</SectionTag>
+            <SectionTag dark>Lumières de Noël — forfait tout inclus</SectionTag>
             <SectionTitle light style={{ margin: "0 0 20px" }}>
               Votre propriété, illuminée — sans le tracas
             </SectionTitle>
@@ -187,6 +188,12 @@ export default async function Home() {
               <span>prix ferme, écrit</span>
             </p>
             <CTAButton href="/soumission" variant="creme">Réserver ma date</CTAButton>
+            {/* Le forfait ci-dessus est SAISONNIER (retrait, entreposage). Le
+                permanent est l'inverse — installé une fois, jamais retiré —
+                et il a sa propre porte. */}
+            <p className="section-lien" style={{ marginTop: 18 }}>
+              <Link href="/services/eclairage-architectural-permanent">Éclairage permanent, allumé toute l&apos;année →</Link>
+            </p>
           </div>
         </div>
       </section>
@@ -225,6 +232,10 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* La FAQ dit « la liste des villes desservies est juste sous ces
+          questions » : la voici, chaque ville menant à sa page. */}
+      <PucesVilles titre="Villes desservies" fond={navy} />
+
       {/* ── 8 · Réservation — LE formulaire, une seule fois ───────────
           Il était dans le hero. Un service haut de gamme ne demande pas un
           numéro de téléphone avant d'avoir montré une maison illuminée :
@@ -236,7 +247,7 @@ export default async function Home() {
             <SectionTag>Réservation</SectionTag>
             <SectionTitle style={{ margin: "0 auto 14px" }}>Réservez votre date</SectionTitle>
             <p className="section-phrase section-phrase--clair">
-              Nous confirmons votre place et votre prix après une courte consultation.
+              Nous confirmons votre place et votre prix après un court appel.
             </p>
           </div>
           <QuoteForm source="Formulaire d'accueil (réservation)" redirectSrc="accueil" />

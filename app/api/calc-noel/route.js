@@ -35,6 +35,7 @@
 
 import { piLineaires, lignesMesurables } from '@/lib/geo';
 import { alerter } from '@/lib/alerte';
+import { villeDeAdresse } from '@/lib/adresse';
 
 const CRM = 'https://palencia-crm.vercel.app';
 const URL_DEVIS = `${CRM}/api/quote/lumiere`;
@@ -100,6 +101,9 @@ export async function POST(request) {
         headers: { 'Content-Type': 'application/json', 'x-intake-key': cle },
         body: JSON.stringify({
           name: nomM, phone: telM, address: adrM,
+          // La ville, tirée de l'adresse Places (« …, Blainville, QC ») : la
+          // même colonne `city` que les trois autres formulaires.
+          city: villeDeAdresse(adrM),
           service: 'Lumières de Noël',
           source: 'calculatrice',
           notes: notesM, language: 'fr',
@@ -236,6 +240,7 @@ export async function POST(request) {
         body: JSON.stringify({
           name: nom, phone: telephone, email: courriel,
           address: adresse,
+          city: villeDeAdresse(adresse),
           service: 'Lumières de Noël',
           source: 'Calculatrice toiture — site Lumière',
           notes, language: 'fr',

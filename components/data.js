@@ -94,7 +94,14 @@ export const company = {
   // L'Estrie qui était ici était une erreur — elle attirait des leads hors zone.
   region: "Rive-Sud, Montréal et Rive-Nord, Québec",
   baseUrl: getSiteUrl(), // apex canonique — override via NEXT_PUBLIC_SITE_URL
-  social: null, // aucun réseau social pour l'instant (pas de faux liens)
+  // Comptes publics RÉELS, vérifiés le 2026-10-14 (page Facebook « Lumière
+  // de Noël inc. | Blainville QC », Instagram @lumieredenoelinc). Lus par
+  // le pied de page ET par le `sameAs` du JSON-LD (components/reviews.js) :
+  // un seul endroit à changer.
+  social: {
+    instagram: { label: "Instagram", handle: "@lumieredenoelinc", href: "https://www.instagram.com/lumieredenoelinc/" },
+    facebook: { label: "Facebook", handle: "Lumière de Noël inc.", href: "https://www.facebook.com/profile.php?id=61594775012079" },
+  },
   // Tarif d'entrée réel fourni par le client.
   priceFrom: "1 000 $",
 };
@@ -208,31 +215,42 @@ export const faqHome = [
   },
   {
     q: "Est-ce que vous retirez les lumières après les Fêtes ?",
-    a: "Oui. Le retrait est inclus. Nous planifions la désinstallation en janvier et entreposons le matériel jusqu'à la prochaine saison.",
+    a: "Pour les lumières saisonnières, oui : le retrait est inclus. Nous planifions la désinstallation en janvier et entreposons le matériel jusqu'à la prochaine saison. L'éclairage architectural permanent, lui, reste en place toute l'année : rien à retirer.",
   },
   {
     q: "Que se passe-t-il si une lumière brûle pendant la saison ?",
-    a: "Le service après-vente est inclus : un appel et on repasse sans frais, autant de fois qu'il le faut, de la pose au retrait.",
+    a: "Pour les lumières saisonnières, le service après-vente est inclus : un appel et on repasse sans frais, autant de fois qu'il le faut, de la pose au retrait. L'éclairage permanent est garanti 10 ans.",
+  },
+  {
+    q: "Faites-vous aussi de l'éclairage permanent ?",
+    a: "Oui. Des pastilles DEL discrètes, installées une seule fois sous les soffites, allumées toute l'année et réglées par application (couleurs, scènes, minuteries). Garantie 10 ans, prix sur soumission.",
   },
   {
     q: "Quelles régions desservez-vous ?",
-    a: "La Rive-Sud, Montréal et la Rive-Nord — voir la liste des villes desservies plus bas.",
+    a: "La Rive-Nord, Montréal et la Rive-Sud — la liste des villes desservies est juste sous ces questions.",
   },
 ];
 
-// --- « Comment ça marche » — 5 étapes datées (accueil + /services) -----------
+// --- « Comment ça marche » — 6 étapes datées (accueil + /services) -----------
 // Datées pour répondre à "qu'est-ce qui se passe après que j'envoie le formulaire"
 // dans les 3 premières secondes.
 // `court` : l'étiquette d'UN MOT pour la frise de l'accueil. Les cinq
 // cartes sont devenues cinq points sur une ligne, et « Retrait et
 // entreposage » sous un point de 10 px se replie sur trois lignes.
 // Le titre long reste : /services l'affiche encore en cartes.
+// ⚠️ LE VRAI PARCOURS (2026-10-14). Le site promettait une « visite
+// d'évaluation sous 3–5 jours » et une « réponse sous 24 h ». Ce qui se
+// passe vraiment : Sophie B écrit par texto en moins d'une minute (de 8 h à
+// 20 h 30 — heures calmes du CRM), fixe un APPEL avec Yahir (avant-midi ou
+// après-midi), la toiture se mesure sur Google Maps, et le prix ferme suit
+// par écrit. Aucune visite. Le site dit maintenant la même chose que Sophie.
 export const processSteps = [
-  { num: "01", title: "Consultation design", court: "Consultation", when: "Aujourd'hui", desc: "Vous réservez votre date. On confirme votre place et on prépare votre design." },
-  { num: "02", title: "Visite et design", court: "Visite", when: "Sous 3–5 jours", desc: "On vient mesurer la propriété, comprendre votre vision et confirmer un prix ferme, écrit." },
-  { num: "03", title: "Installation", court: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
-  { num: "04", title: "Entretien pendant la saison", court: "Entretien", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
-  { num: "05", title: "Retrait et entreposage", court: "Retrait", when: "Janvier", desc: "On désinstalle après les Fêtes et on garde le matériel chez nous jusqu'à la prochaine saison. Rien à ranger." },
+  { num: "01", title: "Réponse par texto", court: "Texto", when: "En moins d'une minute", desc: "Dès l'envoi du formulaire, on vous écrit par texto pour confirmer votre adresse et fixer un court appel (de 8 h à 20 h 30)." },
+  { num: "02", title: "Appel avec Yahir", court: "Appel", when: "À votre choix", desc: "Quelques minutes au téléphone, en avant-midi ou en après-midi : ce que vous voulez illuminer, vos goûts. On mesure votre toiture sur Google Maps — pas besoin de visite." },
+  { num: "03", title: "Prix ferme, écrit", court: "Prix ferme", when: "Après l'appel", desc: "Vous recevez un prix ferme, par écrit. Vous décidez, puis on réserve votre date." },
+  { num: "04", title: "Installation", court: "Installation", when: "Octobre–novembre", desc: "Notre équipe installe tout en sécurité avant la date convenue — matériel professionnel fourni." },
+  { num: "05", title: "Entretien pendant la saison", court: "Entretien", when: "Décembre", desc: "Une lumière qui brûle ? Un appel et on repasse sans frais. Service après-vente inclus." },
+  { num: "06", title: "Retrait et entreposage", court: "Retrait", when: "Janvier", desc: "Lumières saisonnières : on désinstalle après les Fêtes et on garde le matériel chez nous jusqu'à la prochaine saison. Rien à ranger." },
 ];
 
 // (Pas de section témoignages : aucune avis client réel pour l'instant —
@@ -274,7 +292,7 @@ export const services = [
       "Pose, entretien et retrait inclus — travail en hauteur par une équipe assurée",  // ASSURANCE
       "Rappels sans frais et illimités, de la pose au retrait",
     ],
-    body: "Notre équipe se déplace, mesure votre propriété et propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
+    body: "On mesure votre toiture sur Google Maps, on en parle avec vous au téléphone et on propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
     // Une question de SERVICE pour les pages ville × service (la ville
     // fournit les autres, voir `villesBrutes[].faq`).
     // Gabarit de service (partie 3) : la bande de 3 photos réelles, ce qui
@@ -291,7 +309,7 @@ export const services = [
     faq: [
       { q: "Fournissez-vous les lumières?", a: "Oui, tout le matériel : lumières DEL de qualité commerciale, attaches et minuteries. Rien à acheter de votre côté." },
       { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par une équipe formée et assurée. Vous n'avez pas à sortir l'échelle." },
-      { q: "Combien ça coûte?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Le prix dépend de la hauteur, de la longueur de toiture et du nombre d'arbres ; il est confirmé par écrit après une courte consultation." },
+      { q: "Combien ça coûte?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Le prix dépend de la hauteur, de la longueur de toiture et du nombre d'arbres ; il est confirmé par écrit après un court appel." },
       { q: "Et si une lumière brûle en décembre?", a: "Un appel et on repasse sans frais, autant de fois qu'il le faut, de la pose au retrait." },
       { q: "Qui enlève les lumières après les Fêtes?", a: "Nous. Le retrait est inclus en janvier, et on entrepose le matériel jusqu'à la prochaine saison." },
     ],
@@ -330,7 +348,7 @@ export const services = [
     faq: [
       { q: "Installez-vous en dehors de nos heures d'ouverture?", a: "Oui. La pose se planifie hors des heures d'ouverture, pour que vos clients ne voient que le résultat." },
       { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },
-      { q: "Combien coûte un projet commercial?", a: "C'est sur soumission : le prix dépend de la hauteur du bâtiment, de l'accès à l'électricité et de l'envergure du design. Il est confirmé par écrit après la visite." },
+      { q: "Combien coûte un projet commercial?", a: "C'est sur soumission : le prix dépend de la hauteur du bâtiment, de l'accès à l'électricité et de l'envergure du design. Il est confirmé par écrit après un court appel." },
       { q: "L'entretien est-il compris?", a: "Oui. Une section tombe ou une lumière brûle : un appel et on repasse sans frais pendant toute la saison." },
       { q: "Qui retire l'installation?", a: "Nous, en janvier. Le retrait fait partie du service." },
     ],
@@ -352,7 +370,7 @@ export const services = [
       "DEL discrètes, invisibles le jour",
       "Des millions de couleurs et animations via l'application",
       "Contrôle par zones, minuteries et scènes prédéfinies",
-      "Rappels sans frais toute la saison, de la pose au retrait",
+      "Garantie 10 ans",
     ],
     body: "L'éclairage architectural permanent élimine la pose annuelle : un seul investissement et votre propriété change de visage à chaque fête. La technologie DEL utilisée est basse consommation et conçue pour résister aux hivers québécois. La plupart des résidences sont installées en une seule journée.",
     // La maison aux trois ambiances a sa carte animée juste au-dessus
@@ -362,7 +380,7 @@ export const services = [
     paire: null,
     compris: {
       texte: "Des pastilles DEL fixées une seule fois sous les soffites, et une application pour tout le reste de l'année.",
-      items: ["Pastilles DEL discrètes, invisibles le jour", "Couleurs et animations par application", "Contrôle par zones, minuteries et scènes", "Installé une seule fois"],
+      items: ["Pastilles DEL discrètes, invisibles le jour", "Couleurs et animations par application", "Contrôle par zones, minuteries et scènes", "Installé une seule fois, allumé toute l'année", "Garantie 10 ans"],
       prix: "Sur soumission",
       prixNote: "prix ferme, écrit",
     },
@@ -378,7 +396,7 @@ export const services = [
       { q: "Puis-je changer les couleurs moi-même ?", a: "Oui. Tout se contrôle depuis une application : couleurs, zones, animations, minuteries et scènes pour chaque fête." },
       { q: "Combien de temps dure l'installation ?", a: "La plupart des résidences se font en une seule visite, selon la dimension et l'architecture du bâtiment." },
       { q: "Est-ce que le système résiste à l'hiver québécois ?", a: "Oui. Les composantes sont conçues pour l'extérieur et les écarts de température du Québec." },
-      { q: "Qu'arrive-t-il en cas de bris ?", a: "Un appel et on repasse — sans frais, autant de fois qu'il le faut, de la pose au retrait." },
+      { q: "Qu'arrive-t-il en cas de bris ?", a: "Le système est garanti 10 ans : un appel et on repasse. Rien n'est retiré en janvier — l'installation reste en place toute l'année." },
     ],
   },
 ];
@@ -418,7 +436,7 @@ const villesBrutes = [
     },
     faq: [
       { q: "Installez-vous à Blainville?", a: "Oui, partout à Blainville — Fontainebleau, Chambéry, le Plateau, Notre-Dame. On planifie Blainville avec Boisbriand et Sainte-Thérèse, dans la même tournée." },
-      { q: "Combien coûte une maison à Blainville?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Un bungalow avec une ligne de toit simple reste près de ce tarif ; un cottage à deux étages ou un toit à plusieurs pignons demande plus de matériel et de temps. Le prix exact est confirmé après une courte consultation." },
+      { q: "Combien coûte une maison à Blainville?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Un bungalow avec une ligne de toit simple reste près de ce tarif ; un cottage à deux étages ou un toit à plusieurs pignons demande plus de matériel et de temps. Le prix exact est confirmé après un court appel." },
       { q: "Mon toit est plat. Est-ce que ça se fait?", a: "Oui. Sur un toit plat, on souligne la bordure de la toiture, et on illumine souvent les colonnes et les arbres de la façade pour donner du relief." },
       { q: "Quand faut-il réserver à Blainville?", a: "Idéalement en octobre. Comme Blainville se planifie avec Boisbriand et Sainte-Thérèse, réserver tôt vous laisse choisir votre date dans la tournée du secteur." },
     ],
@@ -442,7 +460,7 @@ const villesBrutes = [
     },
     faq: [
       { q: "Allez-vous jusqu'à La Plaine et Lachenaie?", a: "Oui. Tout Terrebonne : le Vieux-Terrebonne, Lachenaie, La Plaine et les secteurs entre les deux." },
-      { q: "Combien coûte une maison à Terrebonne?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison de ville à façade étroite reste près de ce tarif ; un cottage avec de grands arbres à enrubanner demande plus de matériel. Le prix exact suit une courte consultation." },
+      { q: "Combien coûte une maison à Terrebonne?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison de ville à façade étroite reste près de ce tarif ; un cottage avec de grands arbres à enrubanner demande plus de matériel. Le prix exact suit un court appel." },
       { q: "J'habite une maison ancienne dans le Vieux-Terrebonne. Vous installez quand même?", a: "Oui. Le design se décide avec vous à la consultation : sur une façade patrimoniale, on souligne ses lignes plutôt que de la couvrir." },
       { q: "J'ai beaucoup d'arbres. Est-ce compris?", a: "Les arbres et les arbustes font partie du service, au même titre que la toiture. Chaque arbre enrubanné ajoute du matériel et du temps : on en tient compte dans le prix, devant vous." },
     ],
@@ -466,7 +484,7 @@ const villesBrutes = [
     },
     faq: [
       { q: "Venez-vous à Bellefeuille et Saint-Antoine?", a: "Oui, dans tous les secteurs de Saint-Jérôme : le centre-ville, Bellefeuille, Lafontaine et Saint-Antoine." },
-      { q: "Combien coûte une maison à Saint-Jérôme?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Sur un grand terrain, ce sont surtout les arbres à enrubanner qui font varier le prix. Le montant exact est confirmé après une courte consultation." },
+      { q: "Combien coûte une maison à Saint-Jérôme?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Sur un grand terrain, ce sont surtout les arbres à enrubanner qui font varier le prix. Le montant exact est confirmé après un court appel." },
       { q: "La neige arrive tôt ici. Est-ce trop tard en novembre?", a: "Pas forcément : on planifie Saint-Jérôme avant les secteurs plus au sud, justement à cause de la neige. Mais les dates partent vite, et octobre reste le plus sûr." },
       { q: "Pouvez-vous enrubanner de grands arbres?", a: "Oui. Arbres et arbustes font partie du service, travaillés par une équipe formée pour le travail en hauteur." },
     ],
@@ -490,7 +508,7 @@ const villesBrutes = [
     },
     faq: [
       { q: "Installez-vous partout à Laval?", a: "Oui, sur toute l'île Jésus : Sainte-Dorothée, Sainte-Rose, Chomedey, Fabreville, Vimont, Saint-François et les autres quartiers." },
-      { q: "Combien coûte une maison à Laval?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Un bungalow reste près de ce tarif ; une grande propriété de Sainte-Dorothée avec plusieurs arbres demande plus. Le prix exact suit une courte consultation." },
+      { q: "Combien coûte une maison à Laval?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Un bungalow reste près de ce tarif ; une grande propriété de Sainte-Dorothée avec plusieurs arbres demande plus. Le prix exact suit un court appel." },
       { q: "J'ai un duplex. Vous l'illuminez au complet?", a: "Oui, toute la façade ou seulement votre partie. Si le bâtiment est partagé, on en parle avec les deux propriétaires à la consultation." },
       { q: "Faites-vous les commerces du boulevard des Laurentides?", a: "Oui : restaurants, concessionnaires, bureaux. On installe en dehors de vos heures d'ouverture." },
     ],
@@ -514,7 +532,7 @@ const villesBrutes = [
     },
     faq: [
       { q: "Installez-vous sur un triplex?", a: "Oui. Sur un plex, on illumine la corniche, les balcons et les garde-corps de l'escalier : c'est ce qui se voit de la rue, puisque le toit est plat." },
-      { q: "Combien coûte un plex à Montréal?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une façade de plex est étroite mais haute : le prix dépend surtout de la hauteur et du nombre de balcons. Il est confirmé après une courte consultation." },
+      { q: "Combien coûte un plex à Montréal?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une façade de plex est étroite mais haute : le prix dépend surtout de la hauteur et du nombre de balcons. Il est confirmé après un court appel." },
       { q: "Et le stationnement, dans une rue étroite?", a: "On s'en occupe. Stationnement, accès et hauteur font partie du travail en ville, et on les prévoit avant de venir." },
       { q: "J'habite un condo. Est-ce possible?", a: "Oui, avec l'accord du syndicat de copropriété : la façade est une partie commune. On en parle ensemble à la consultation." },
     ],
@@ -538,7 +556,7 @@ const villesBrutes = [
     },
     faq: [
       { q: "Allez-vous à Brossard, Longueuil et Boucherville?", a: "Oui, et aussi à Saint-Bruno, Saint-Lambert, Saint-Hubert, La Prairie et Candiac." },
-      { q: "Combien coûte une maison sur la Rive-Sud?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Le prix varie avec la hauteur, la longueur de toiture et le nombre d'arbres, et il est confirmé après une courte consultation." },
+      { q: "Combien coûte une maison sur la Rive-Sud?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Le prix varie avec la hauteur, la longueur de toiture et le nombre d'arbres, et il est confirmé après un court appel." },
       { q: "Si une lumière brûle, vous traversez le pont?", a: "Oui. Les rappels sont sans frais et illimités de la pose au retrait, sur la Rive-Sud comme ailleurs." },
       { q: "Mon commerce est sur le boulevard Taschereau. Vous installez la nuit?", a: "Oui, hors des heures d'ouverture, pour que vos clients ne voient que le résultat." },
     ],

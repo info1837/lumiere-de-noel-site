@@ -121,11 +121,11 @@ for (const c of avecForm) {
   await hydrate(page, "#qf-nom");
   const champs = await page.evaluate(() => [...document.querySelectorAll("form[data-barre-masque] [id^='qf-']")]
     .filter((e) => !e.closest("[aria-hidden='true']")).map((e) => e.id).sort());
-  const attendus = ["qf-consent", "qf-mail", "qf-msg", "qf-nom", "qf-service", "qf-tel", "qf-ville"];
+  const attendus = ["qf-adresse", "qf-consent", "qf-mail", "qf-msg", "qf-nom", "qf-service", "qf-tel"];
   const requis = await page.evaluate(() => [...document.querySelectorAll("form[data-barre-masque] [required]")].map((e) => e.id).sort());
   const fautes = [];
   if (JSON.stringify(champs) !== JSON.stringify(attendus)) fautes.push(`champs ${champs.join(",")}`);
-  if (JSON.stringify(requis) !== JSON.stringify(["qf-nom", "qf-tel", "qf-ville"])) fautes.push(`obligatoires ${requis.join(",")}`);
+  if (JSON.stringify(requis) !== JSON.stringify(["qf-adresse", "qf-nom", "qf-tel"])) fautes.push(`obligatoires ${requis.join(",")}`);
   if (await page.locator("#qf-consent").isChecked()) fautes.push("case cochée d'avance");
   if (await page.getByText("Comment avez-vous entendu parler", { exact: false }).count()) fautes.push("« comment avez-vous entendu » visible");
 
@@ -134,8 +134,13 @@ for (const c of avecForm) {
   await page.fill("#qf-tel", "450 555-0188");
   await page.locator("#qf-nom").evaluate((e) => e.closest("form").requestSubmit());
   await page.waitForTimeout(300);
-  if (captures.length) fautes.push("parti SANS ville");
-  await page.fill("#qf-ville", "Blainville");
+  if (captures.length) fautes.push("parti SANS adresse");
+  // Une ville seule n'est pas une adresse : refusé aussi.
+  await page.fill("#qf-adresse", "Blainville");
+  await page.locator("#qf-nom").evaluate((e) => e.closest("form").requestSubmit());
+  await page.waitForTimeout(300);
+  if (captures.length) fautes.push("parti avec une VILLE pour adresse");
+  await page.fill("#qf-adresse", "34 Rue de Vaudreuil, Blainville, QC J7C 4A2");
   await page.locator("#qf-nom").evaluate((e) => e.closest("form").requestSubmit());
   await page.waitForTimeout(300);
   if (captures.length) fautes.push("parti SANS consentement");
@@ -163,6 +168,7 @@ for (const c of avecForm) {
   if (crm.sorties[0]?.entetes?.["x-intake-key"] !== "cle-de-test") fautes.push("clé d'intake absente");
   if (envoye.meta_pixel?.event_id !== eid) fautes.push("event_id perdu avant le CRM");
   if (envoye.city !== "Blainville") fautes.push(`city=${envoye.city}`);
+  if (envoye.address !== "34 Rue de Vaudreuil, Blainville, QC J7C 4A2") fautes.push(`address=${envoye.address}`);
   if (envoye.name !== "Marie Tremblay" || !envoye.phone || envoye.email !== "marie@exemple.ca") fautes.push("contact incomplet");
   if (!/Consentement: accordé le \d{4}-\d{2}-\d{2}/.test(envoye.notes || "")) fautes.push("consentement absent des notes");
   if (envoye.formAnswers?.referrer !== "www.facebook.com") fautes.push(`provenance ${JSON.stringify(envoye.formAnswers)}`);
@@ -178,21 +184,51 @@ for (const c of avecForm) {
   await ctx.close();
 }
 
-// Le simulateur renvoie vers /soumission avec l'adresse : elle n'est pas
-// affichée (le champ est « Ville »), mais elle ne doit pas se perdre.
+// Le simulateur renvoie vers /soumission avec l'adresse : elle arrive DANS
+// le champ « Adresse de la propriété », et part au CRM avec sa ville.
 {
   const { ctx, page, captures } = await nouvellePage();
   await page.goto(`${BASE}/soumission?nom=Jean&tel=4505550101&adresse=${encodeURIComponent("118 rue des Érables, Blainville, QC J7C 3M2")}&style=classique`, { waitUntil: "domcontentloaded" });
   await hydrate(page, "#qf-nom");
-  const ville = await page.inputValue("#qf-ville");
+  const champ = await page.inputValue("#qf-adresse");
   await page.locator("#qf-consent").check();
   await Promise.all([
     page.waitForURL(/\/merci\?/, { timeout: 15000 }).catch(() => {}),
     page.locator("#qf-nom").evaluate((e) => e.closest("form").requestSubmit()),
   ]);
   const envoye = captures[0]?.__crm?.sorties[0]?.corps || {};
-  t("🚨 retour du simulateur : la ville est tirée de l'adresse", ville === "Blainville", ville);
-  t("🚨 …et l'adresse complète arrive quand même au CRM", /118 rue des Érables/.test(envoye.address || ""), envoye.address);
+  t("🚨 retour du simulateur : l'adresse est dans le champ", /118 rue des Érables/.test(champ), champ);
+  t("🚨 …et part au CRM avec sa ville", /118 rue des Érables/.test(envoye.address || "") && envoye.city === "Blainville", `${envoye.address} / ${envoye.city}`);
+  await ctx.close();
+}
+
+// 🚨 L'AUTOCOMPLÉTION : une suggestion choisie devient l'adresse COMPLÈTE
+// (avec code postal) du détail Places. /api/adresse est simulé ici — aucun
+// appel à Google pendant le test.
+{
+  const { ctx, page, captures } = await nouvellePage();
+  await page.route("**/api/adresse?q=*", (r) => r.fulfill({ contentType: "application/json",
+    body: JSON.stringify({ ok: true, suggestions: [{ texte: "34 Rue de Vaudreuil, Blainville, QC, Canada", placeId: "ChIJ_test_vaudreuil" }] }) }));
+  await page.route("**/api/adresse?placeId=*", (r) => r.fulfill({ contentType: "application/json",
+    body: JSON.stringify({ ok: true, adresse: "34 Rue de Vaudreuil, Blainville, QC J7C 4A2", rue: "34 Rue de Vaudreuil", ville: "Blainville", codePostal: "J7C 4A2", province: "QC" }) }));
+  await page.goto(`${BASE}/soumission`, { waitUntil: "domcontentloaded" });
+  await hydrate(page, "#qf-nom");
+  await page.fill("#qf-nom", "Test Adresse");
+  await page.fill("#qf-tel", "450 555-0177");
+  await page.locator("#qf-adresse").pressSequentially("34 rue de Vaud", { delay: 20 });
+  await page.locator(".adresse-liste li").first().waitFor({ timeout: 5000 }).catch(() => {});
+  await page.locator(".adresse-liste li").first().dispatchEvent("mousedown").catch(() => {});
+  await page.waitForFunction(() => /J7C 4A2/.test(document.querySelector("#qf-adresse")?.value || ""), null, { timeout: 5000 }).catch(() => {});
+  const champ = await page.inputValue("#qf-adresse");
+  await page.locator("#qf-consent").check();
+  await Promise.all([
+    page.waitForURL(/\/merci\?/, { timeout: 15000 }).catch(() => {}),
+    page.locator("#qf-nom").evaluate((e) => e.closest("form").requestSubmit()),
+  ]);
+  const envoye = captures[0]?.__crm?.sorties[0]?.corps || {};
+  t("🚨 suggestion choisie → adresse complète avec code postal", champ === "34 Rue de Vaudreuil, Blainville, QC J7C 4A2", champ);
+  t("🚨 …au CRM : address ET city, les champs du formulaire Meta",
+    envoye.address === "34 Rue de Vaudreuil, Blainville, QC J7C 4A2" && envoye.city === "Blainville", `${envoye.address} / ${envoye.city}`);
   await ctx.close();
 }
 
@@ -205,8 +241,13 @@ console.log("\n--- 2. 🚨 /renouvellement : ses champs à lui, et maintenant la
   await page.fill("#rf-nom", "Luc Gagnon");
   await page.fill("#rf-tel", "514 555-0199");
   await page.fill("#rf-mail", "luc@exemple.ca");
-  await page.fill("#rf-adr", "22 rue du Lac, Laval");
   await page.fill("#rf-msg", "Ajouter le cèdre");
+  await page.locator("#rf-consent").check();
+  await page.locator("#rf-nom").evaluate((e) => e.closest("form").requestSubmit());
+  await page.waitForTimeout(300);
+  t("🚨 sans l'adresse de l'an passé, rien ne part", captures.length === 0);
+  await page.locator("#rf-consent").uncheck();
+  await page.fill("#rf-adr", "22 rue du Lac, Laval, QC H7N 1A1");
   t("🚨 la case est décochée au départ", !(await page.locator("#rf-consent").isChecked()));
   await page.locator("#rf-nom").evaluate((e) => e.closest("form").requestSubmit());
   await page.waitForTimeout(300);
@@ -226,7 +267,7 @@ console.log("\n--- 2. 🚨 /renouvellement : ses champs à lui, et maintenant la
   t("🚨 le même event_id : corps, pixel, /merci, CRM",
     !!eid && lead?.[3]?.eventID === eid && page.url().includes(`eid=${eid}`) && envoye.meta_pixel?.event_id === eid, eid);
   t("l'adresse de l'an passé et les changements arrivent",
-    envoye.address === "22 rue du Lac, Laval" && /Ajouter le cèdre/.test(envoye.notes || ""));
+    envoye.address === "22 rue du Lac, Laval, QC H7N 1A1" && envoye.city === "Laval" && /Ajouter le cèdre/.test(envoye.notes || ""), `${envoye.address} / ${envoye.city}`);
   t("🚨 le consentement daté arrive dans les notes", /Consentement: accordé le .* via Formulaire \/renouvellement/.test(envoye.notes || ""));
   t("la provenance voyage", envoye.formAnswers?.referrer === "www.google.com", JSON.stringify(envoye.formAnswers));
   await ctx.close();
@@ -259,12 +300,13 @@ console.log("\n--- 3. Le simulateur et la calculatrice (inchangés) : la route -
     /const eventId = newLeadEventId\(\);[\s\S]{0,1500}meta_pixel: metaPixelBlock\(eventId\)/.test(calc) && /trackLead\(eventId\)/.test(calc));
   const { POST: postCalc } = await import(path.join(ROOT, "app/api/calc-noel/route.js"));
   const rc = await versCrm(postCalc, "https://site.test/api/calc-noel", {
-    measure_method: "manual", linearFt: 120, address: "5 rue B, Mirabel", etages: "1",
+    measure_method: "manual", linearFt: 120, address: "5 rue B, Mirabel, QC J7J 1A1", etages: "1",
     contact: { nom: "Paul", telephone: "4505550144", courriel: "p@exemple.ca" },
     consentement: "accordé le 2026-10-11 via Calculatrice toiture",
     meta_pixel: { event_id: "evt_calc_dry" },
   });
   const lead = rc.sorties.find((s) => /\/api\/leads$/.test(s.url))?.corps || {};
+  t("🚨 calculatrice → CRM : l'adresse ET la ville", lead.address === "5 rue B, Mirabel, QC J7J 1A1" && lead.city === "Mirabel", `${lead.address} / ${lead.city}`);
   t("🚨 calculatrice → CRM : la fiche part avec l'event_id et le consentement",
     lead.meta_pixel?.event_id === "evt_calc_dry" && /accordé le/.test(lead.consentement || "") && lead.name === "Paul",
     `${rc.sorties.map((s) => s.url.replace(/^https?:\/\/[^/]+/, "")).join(", ")}`);

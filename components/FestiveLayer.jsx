@@ -18,7 +18,7 @@ import { mouvementReduit, CLASSE_RACINE, surDefilement, borner } from "@/lib/mou
 //      lents, dans le premier écran seulement.
 //
 //   2. TOUT CE QUI S'ALLUME AU DÉFILEMENT. Apparitions, guirlande du
-//      hero, frise qui se trace, compteur d'avis.
+//      hero, frise qui se trace.
 //
 // ⚠️ « MOUVEMENT RÉDUIT » VEUT DIRE « RIEN NE BOUGE », PAS « RIEN ».
 // La première version sortait d'ici dès que `prefers-reduced-motion`
@@ -28,7 +28,7 @@ import { mouvementReduit, CLASSE_RACINE, surDefilement, borner } from "@/lib/mou
 // c'est la feuille (`@media (prefers-reduced-motion: reduce)`) qui garde
 // les FONDUS (300 ms, opacité seule) en retirant tout déplacement — pas
 // de montée, pas de dézoom, pas de découpage. Ici : pas de séquence
-// d'ampoules, pas de neige, et le compteur affiche le chiffre final.
+// d'ampoules, pas de neige.
 //
 // ⚠️ L'ÉTAT MASQUÉ EST POSÉ PAR CE SCRIPT, JAMAIS PAR LA FEUILLE SEULE.
 // Toutes les règles d'apparition sont préfixées `html.mvt`, et c'est ici
@@ -165,33 +165,6 @@ export default function FestiveLayer() {
       }
     };
     nettoyages.push(surDefilement(auDefilement));
-
-    // ── 4 · « 100+ avis » se compte ──────────────────────────────────
-    const avis = document.querySelector(".hero-ligne a, .hero-ligne strong");
-    if (avis && /\d/.test(avis.textContent || "")) {
-      const texte = avis.textContent;
-      const cible = parseInt(texte.match(/\d+/)?.[0] || "0", 10);
-      // En mouvement réduit, le chiffre final est déjà dans le HTML :
-      // on n'y touche pas.
-      if (cible > 0 && !doux) {
-        const debut = performance.now();
-        const duree = 1100;
-        let frame = 0;
-        const pas = (t) => {
-          const x = borner((t - debut) / duree, 0, 1);
-          // Sortie douce : le compteur ralentit en arrivant, il ne
-          // s'arrête pas net.
-          const e = 1 - (1 - x) ** 3;
-          avis.textContent = texte.replace(/\d+/, String(Math.round(cible * e)));
-          if (x < 1) frame = requestAnimationFrame(pas);
-        };
-        frame = requestAnimationFrame(pas);
-        nettoyages.push(() => {
-          cancelAnimationFrame(frame);
-          avis.textContent = texte;   // on rend le texte exact au démontage
-        });
-      }
-    }
 
     return () => {
       nettoyages.forEach((f) => { try { f(); } catch { /* démontage */ } });

@@ -27,7 +27,7 @@ export default function CalculatricePage() {
             entreposage compris.
           </p>
           <p style={{ color: "rgba(243,233,210,0.7)", fontSize: 15, marginBottom: 26, maxWidth: 560 }}>
-            Yahir confirme votre prix exact après une courte consultation. Colonnes, arbres et
+            Yahir confirme votre prix exact après un court appel. Colonnes, arbres et
             arbustes s'évaluent sur place.
           </p>
           <div style={{ display: "grid", gap: 10, color: "rgba(243,233,210,0.85)", fontSize: 16 }}>

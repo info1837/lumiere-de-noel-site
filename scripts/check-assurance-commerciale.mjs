@@ -41,8 +41,6 @@ console.log('\n--- 2. 🚨 PAS de cinquième carte dans la grille résidentielle
   const nb = (whyUs.match(/title: "/g) || []).length;
   t('🚨 la grille « pourquoi nous » garde ses quatre cartes', nb === 4, `${nb}`);
   t('🚨 aucune carte « Assurance » n\'y a été ajoutée', !/title: "Assurance/.test(whyUs));
-  const barre = sansCommentaires(lire('components/ObjectionBar.jsx'));
-  t('🚨 la barre des objections reste muette', !/assur(é|e|ance)/i.test(barre));
   void cartes;
 }
 

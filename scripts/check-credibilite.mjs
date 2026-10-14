@@ -99,13 +99,14 @@ console.log('\n--- 4. Le parcours est renommé ---');
 {
   const h = lire('components/HowItWorks.jsx');
   const hCode = sansCommentaires(h);
-  t('🚨 « Consultation design → Installation → Entretien → Retrait »',
-    /Consultation design → Installation → Entretien → Retrait/.test(hCode));
+  t('🚨 « Texto → Appel → Prix ferme → Installation → Retrait »',
+    /Texto → Appel → Prix ferme → Installation → Retrait/.test(hCode));
   t('🚨 plus de « De la soumission à l\'entreposage »', !/De la soumission à l'entreposage/.test(hCode));
   t('l\'étiquette dit « Le parcours »', /<SectionTag dark>Le parcours<\/SectionTag>/.test(hCode));
-  t('les cinq étapes existent toujours', /processSteps/.test(h));
+  t('les étapes existent toujours', /processSteps/.test(h));
   const etapes = lire('components/data.js');
-  t('la première étape est la consultation design', /title: "Consultation design"/.test(etapes));
+  t('la première étape est le texto, la deuxième l\'appel', /title: "Réponse par texto"/.test(etapes) && /title: "Appel avec Yahir"/.test(etapes));
+  t('🚨 aucune visite promise', !/Visite|Sous 3–5 jours/.test(etapes.match(/processSteps = \[[\s\S]*?\];/)?.[0] || ''));
 }
 
 console.log('\n--- 5. Ce à quoi on ne touche pas ---');

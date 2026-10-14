@@ -225,7 +225,11 @@ console.log('\n--- 6. Aucun autre identifiant Meta ne traîne dans le dépôt --
   // garde elle-même. La règle est donc générale — à part le pixel partagé
   // et les deux conversions personnalisées, aucun nombre de 14 à 18
   // chiffres n'a le droit d'exister dans le code.
-  const AUTORISES = new Set([PIXEL_PARTAGE, ...CONVERSIONS]);
+  // L'identifiant PUBLIC de la page Facebook de Lumière (lien du pied de
+  // page et `sameAs` du JSON-LD, components/data.js → company.social).
+  // Ce n'est pas un pixel : c'est l'adresse de la page, visible de tous.
+  const PAGE_FACEBOOK_LUMIERE = '61594775012079';
+  const AUTORISES = new Set([PIXEL_PARTAGE, ...CONVERSIONS, PAGE_FACEBOOK_LUMIERE]);
   const EXT = /\.(js|jsx|ts|tsx|mjs|cjs|json|md|css|txt|ya?ml|example|html)$/;
   const garderTexte = (n) => n !== 'package-lock.json' && (EXT.test(n) || n.startsWith('.env'));
   const IGNORER = new Set(['node_modules', '.next', '.git', '.vercel', '.audit-visuel', 'coverage']);
