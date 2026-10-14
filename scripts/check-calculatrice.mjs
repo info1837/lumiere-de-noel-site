@@ -59,9 +59,9 @@ console.log('\n--- 3. 🚨 L\'ancrage : deux chiffres, pas un de plus ---');
     /const ancrage = etages === '1' \? 1000 : etages === '2' \? 1500 : null;/.test(route));
   t('🚨 l\'écran affiche « Projets à partir de … »', /Projets à partir de \$\{/.test(calc) || /Projets à partir de \${Number\(resultat\.ancrage\)/.test(calc));
   t('🚨 sans ancrage, aucun montant n\'est inventé',
-    /Votre projet mérite une visite/.test(calc));
+    /Votre projet mérite un appel/.test(calc));
   t('🚨 la phrase de Yahir est là',
-    /Yahir confirme votre prix exact après une courte consultation/.test(calc));
+    /Yahir confirme votre prix exact après un court appel/.test(calc));
 }
 
 console.log('\n--- 4. 🚨 Téléphone + consentement avant l\'ancrage ---');

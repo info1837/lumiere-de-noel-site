@@ -112,9 +112,9 @@ console.log('\n--- 3. 🚨 Les effets sont là ---');
     /--frise-p/.test(couche) && /transform: scaleX\(var\(--frise-p, 0\)\)/.test(cssNu));
   t('🚨 …et ses points s\'allument un à un',
     /classList\.toggle\("atteinte"/.test(couche) && /\.frise-etape\.atteinte \.frise-point/.test(cssNu));
-  t('🚨 « 100+ avis » se compte', /requestAnimationFrame\(pas\)/.test(couche)
-    && /avis\.textContent = texte\.replace\(/.test(couche));
-  t('🚨 …et le texte exact revient au démontage', /avis\.textContent = texte;/.test(couche));
+  // Le compteur « 100+ avis » est parti avec la ligne des avis de Palencia
+  // (2026-10-14) : il partait de 0 et affichait « 0+ avis ».
+  t('🚨 plus de compteur d\'avis', !/avis\.textContent/.test(couche));
   t('🚨 le bouton primaire prend une lueur au survol',
     /html\.mvt a\[class\*="cta"\]:hover/.test(cssNu) && /rgba\(240, 186, 84/.test(cssNu));
   t('🚨 la FAQ s\'ouvre en hauteur, sans mesurer en JS',
@@ -172,7 +172,6 @@ console.log('\n--- 6. 🚨 Mouvement réduit : rien ne se DÉPLACE, mais la page
     && /@keyframes heroEclaire \{\s*from \{ filter: brightness\(0\.45\); \}/.test(cssNu));
   t('🚨 pas de séquence d\'ampoules', /doux \? "0ms"/.test(couche) && /animation-delay: 0ms;/.test(bloc));
   t('🚨 pas de neige', /if \(!doux\) setHero/.test(couche));
-  t('🚨 le compteur affiche le chiffre final', /cible > 0 && !doux/.test(couche));
   const defile = lire('components/VitrineDefilante.jsx');
   t('🚨 la bande devient une rangée manuelle, sans clones',
     /if \(mouvementReduit\(\)\) \{ setManuel\(true\); return; \}/.test(defile)

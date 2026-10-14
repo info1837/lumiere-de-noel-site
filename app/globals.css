@@ -1825,17 +1825,19 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   padding: 0;
   margin: 0;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  /* SIX étapes depuis le 2026-10-14 (texto, appel, prix ferme, pose,
+     entretien, retrait). */
+  grid-template-columns: repeat(6, 1fr);
   position: relative;
 }
-/* Le filet : derrière les points, d'un dixième à neuf dixièmes — c'est-à-dire
-   exactement du centre de la première colonne au centre de la dernière. */
+/* Le filet : derrière les points, du centre de la première colonne au
+   centre de la dernière — une demi-colonne de chaque côté, 1/12. */
 .frise::before {
   content: "";
   position: absolute;
   top: 5px;
-  left: 10%;
-  right: 10%;
+  left: calc(100% / 12);
+  right: calc(100% / 12);
   height: 1px;
   background: rgba(240, 234, 222, 0.22);
 }

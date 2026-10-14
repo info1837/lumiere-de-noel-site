@@ -67,13 +67,9 @@ console.log('\n--- 3. 🚨 La police est active : tous les marqueurs le disent -
   t('🚨 les étiquettes ASSURANCE restent, pour pouvoir tout repasser si la police s\'interrompt',
     marqueurs >= 4, `${marqueurs}`);
 
-  // La barre des objections est le SEUL endroit laissé muet, et c'est un
-  // choix documenté, pas un oubli.
-  const barre = lire('components/ObjectionBar.jsx');
-  t('la barre des objections reste muette — choix, pas oubli',
-    !/assur(é|e|ance)/i.test(sansCommentaires(barre)) && /Yahir tranche/.test(barre));
-  t('🚨 aucune note périmée ne dit plus « tant que la police n\'est pas active »',
-    !/tant que la\s*\n?\/\/ police n'est pas active/.test(barre) && !/police n'est pas active/.test(barre));
+  // La barre des objections (components/ObjectionBar.jsx) n'existe plus :
+  // retirée de l'accueil, puis supprimée le 2026-10-14 avec la ligne des
+  // avis de Palencia qu'elle portait.
 }
 
 console.log('\n--- 4. 🚨 Plus aucun argument de CONFORT dans tout le dépôt ---');

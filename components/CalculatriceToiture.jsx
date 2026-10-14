@@ -434,7 +434,7 @@ export default function CalculatriceToiture() {
             min={MANUEL_MIN} max={MANUEL_MAX} placeholder="ex. 165"
             value={piedsManuels} onChange={(e) => setPiedsManuels(e.target.value)} />
           <p style={{ color: "#666", fontSize: 13, marginTop: 8, marginBottom: 0 }}>
-            Entre {MANUEL_MIN} et {MANUEL_MAX} pi. Hors de cette plage, on passe par une visite.
+            Entre {MANUEL_MIN} et {MANUEL_MAX} pi. Hors de cette plage, on en parle au téléphone.
           </p>
           <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginTop: 18 }}>
             <button style={btn()}
@@ -614,10 +614,10 @@ export default function CalculatriceToiture() {
           }}>
             {resultat.ancrage
               ? `Projets à partir de ${Number(resultat.ancrage).toLocaleString("fr-CA")} $`
-              : "Votre projet mérite une visite"}
+              : "Votre projet mérite un appel"}
           </div>
           <p style={{ color: "#444", fontSize: 16, lineHeight: 1.6, marginBottom: 18, maxWidth: 420, marginInline: "auto" }}>
-            Yahir confirme votre prix exact après une courte consultation.
+            Yahir confirme votre prix exact après un court appel.
           </p>
 
           <div style={{ background: offWhite, borderRadius: 14, padding: 18, textAlign: "left", marginBottom: 18 }}>

@@ -26,7 +26,7 @@ export const metadata = {
 const advantages = [
   {
     title: "On connaît déjà votre propriété",
-    body: "Pas de visite d'évaluation à reprendre : le design est fait, les attaches sont posées. On confirme la date, on arrive, on installe.",
+    body: "Rien à remesurer : le design est fait, les attaches sont posées. On confirme la date, on arrive, on installe.",
   },
   {
     title: "Votre matériel est déjà chez nous",

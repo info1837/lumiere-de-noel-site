@@ -70,7 +70,7 @@ console.log('\n── 3. Il remplit le VRAI formulaire et l’envoie ──');
   // Partie 3 : le formulaire court — « Nom », et la Ville devient obligatoire.
   await page.locator('#qf-nom').fill('Test QR Voisin');
   await page.getByLabel(/Téléphone/i).first().fill('5145550123');
-  await page.locator('#qf-ville').fill('Blainville');
+  await page.locator('#qf-adresse').fill('34 Rue de Vaudreuil, Blainville, QC J7C 4A2');
   await page.getByLabel(/Courriel|Email/i).first().fill('test.qr@exemple.ca');
   // La case de consentement est obligatoire depuis le 2026-09-27.
   const cases = page.locator('input[type=checkbox]');
@@ -99,7 +99,7 @@ console.log('\n── 4. Une visite SANS UTM n’envoie rien de vide ──');
   await p2.waitForTimeout(700);
   await p2.locator('#qf-nom').fill('Sans UTM');
   await p2.getByLabel(/Téléphone/i).first().fill('5145550124');
-  await p2.locator('#qf-ville').fill('Laval');
+  await p2.locator('#qf-adresse').fill('22 rue du Lac, Laval, QC H7N 1A1');
   await p2.getByLabel(/Courriel|Email/i).first().fill('sans@exemple.ca');
   const c2 = p2.locator('input[type=checkbox]');
   if (await c2.count()) await c2.first().check({ force: true });

@@ -17,7 +17,7 @@ const lire = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 const sansCommentaires = (x) => x
   .replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
-const SOUS_TITRE = 'Nous confirmons votre place et votre prix après une courte consultation.';
+const SOUS_TITRE = 'Nous confirmons votre place et votre prix après un court appel.';
 
 console.log('\n--- 1. 🚨 Titre et sous-titre, aux trois endroits ---');
 {

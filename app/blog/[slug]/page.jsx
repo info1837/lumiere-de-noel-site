@@ -79,7 +79,7 @@ export default function BlogPost({ params }) {
             <div className="blog-reserver">
               <div className="blog-reserver__tag">Prêt à démarrer ?</div>
               <h2 className="blog-reserver__titre">Réservez votre date</h2>
-              <p>Une estimation claire pour votre propriété, après une courte consultation.</p>
+              <p>Une estimation claire pour votre propriété, après un court appel.</p>
               <CTAButton href="/soumission" variant="creme">Réserver ma date</CTAButton>
             </div>
 

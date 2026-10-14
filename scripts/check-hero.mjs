@@ -109,14 +109,11 @@ console.log('\n--- 5. La page lit le CRM côté serveur ---');
 
 console.log('\n--- 6. 🚨 La preuve sociale reste VRAIE ---');
 {
-  // Les 100+ avis sont ceux de PALENCIA SERVICES EXTÉRIEUR. Solution
-  // Lumière de Noël n'a pas encore d'avis publiés (components/reviews.js,
-  // REVIEWS_PENDING = true). Les écrire sans dire à qui ils appartiennent
-  // les attribuerait à Lumière — c'est faux, et la barre des objections
-  // qui portait la mention a été retirée du bas du hero.
-  t('🚨 l\'attribution à Palencia est écrite', /chez Palencia/.test(heroCode));
-  t('🚨 …et vérifiable : la fiche Google est en lien',
-    /AVIS_PALENCIA_URL/.test(heroCode) && /place_id:/.test(hero));
+  // Plus d'avis d'une AUTRE entreprise sur le site de Lumière (2026-10-14) :
+  // « 100+ avis 5★ chez Palencia » s'affichait « 0+ » avant l'animation et
+  // vendait Palencia en tête de page.
+  t('🚨 aucune mention de Palencia dans le hero', !/Palencia/.test(heroCode));
+  t('🚨 …ni dans le hero des pages intérieures', !/Palencia/.test(sansCommentaires(lire('components/sections.jsx'))));
   const avis = lire('components/reviews.js');
   t('🚨 aucun avis inventé dans reviews.js',
     /REVIEWS_PENDING = true/.test(avis) && /aggregateRating = null/.test(avis));

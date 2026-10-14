@@ -1,37 +1,11 @@
 "use client";
-import Select from "@/components/Select";
 
-// SEO P0 §5.3 — les deux champs que TOUS les formulaires du site doivent
+// SEO P0 §5.3 — la case que TOUS les formulaires du site doivent
 // porter, extraits ici pour qu'ils ne divergent pas d'un formulaire à l'autre.
 //
 // Le consentement n'est pas décoratif : Sophie B envoie des SMS aux leads,
 // et ni la Loi 25 ni la LCAP ne se contentent d'un formulaire soumis. La case
 // est décochée par défaut — une case pré-cochée n'est pas un consentement.
-
-export const VILLES_DESSERVIES = [
-  "Blainville", "Boisbriand", "Sainte-Thérèse", "Rosemère", "Mirabel",
-  "Saint-Eustache", "Terrebonne", "Mascouche", "Laval", "Saint-Jérôme",
-  "Montréal", "Rive-Sud", "Autre",
-];
-
-export const OPTIONS_ATTRIBUTION = [
-  "Google",
-  "Facebook ou Instagram",
-  "Vu une installation dans mon quartier",
-  "Vu le camion ou la remorque",
-  "Recommandation",
-  "Client de Palencia Services Extérieur",
-  "Autre",
-];
-
-export function ChampAttribution({ id = "attribution", value, onChange }) {
-  return (
-    <div>
-      <label htmlFor={id}>Comment avez-vous entendu parler de nous ?</label>
-      <Select id={id} value={value} onChange={onChange} options={OPTIONS_ATTRIBUTION} placeholder="Choisir…" />
-    </div>
-  );
-}
 
 export function CaseConsentement({ id = "consent", checked, onChange, erreur }) {
   return (
@@ -53,7 +27,7 @@ export function CaseConsentement({ id = "consent", checked, onChange, erreur }) 
 export function NoteSoumission() {
   return (
     <p style={{ fontSize: 13, opacity: 0.75, textAlign: "center", marginTop: 10, marginBottom: 0 }}>
-      Nous confirmons votre place et votre prix après une courte consultation
+      Nous confirmons votre place et votre prix après un court appel
     </p>
   );
 }

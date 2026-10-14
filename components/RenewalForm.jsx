@@ -3,6 +3,8 @@ import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import { sendLead, HONEYPOT_FIELD } from "@/components/data";
 import { CaseConsentement } from "@/components/ConsentementAttribution";
+import AdresseAutocomplete from "@/components/AdresseAutocomplete";
+import { villeDeAdresse } from "@/lib/adresse";
 import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
 
 // Formulaire dédié aux clients de l'an dernier — plus court que QuoteForm :
@@ -14,6 +16,7 @@ const empty = {
   telephone: "",
   courriel: "",
   adresse: "",
+  ville: "",
   message: "",
   existingClient: true,
   consent: false,
@@ -31,7 +34,10 @@ export default function RenewalForm() {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (!data.nom || !data.telephone || !data.courriel) { setErreurChamps(true); return; }
+    // ⚠️ L'ADRESSE EST OBLIGATOIRE (2026-10-14). Elle était facultative :
+    // la fiche de reconduction arrivait sans adresse, et Sophie devait la
+    // redemander à un client qui nous l'avait donnée l'an dernier.
+    if (!data.nom || !data.telephone || !data.courriel || !/\d/.test(data.adresse)) { setErreurChamps(true); return; }
     setErreurChamps(false);
     // ⚠️ LA CASE LOI 25 MANQUAIT ICI (trouvé à la partie 3). C'était le seul
     // formulaire du site qui créait une fiche sans consentement — donc sans
@@ -51,7 +57,8 @@ export default function RenewalForm() {
       nom: data.nom,
       telephone: data.telephone,
       courriel: data.courriel,
-      adresse: data.adresse,
+      adresse: data.adresse.trim(),
+      ville: data.ville || villeDeAdresse(data.adresse),
       message: data.message,
       existingClient: data.existingClient ? "oui" : "non",
       [HONEYPOT_FIELD]: data[HONEYPOT_FIELD],
@@ -93,8 +100,16 @@ export default function RenewalForm() {
 
       {/* Les deux champs propres au renouvellement — utiles, gardés. */}
       <div style={{ marginTop: 16 }}>
-        <label htmlFor="rf-adr">Adresse de l&apos;an passé</label>
-        <input id="rf-adr" type="text" autoComplete="street-address" value={data.adresse} onChange={set("adresse")} placeholder="Adresse civique + ville" />
+        <label htmlFor="rf-adr">Adresse de l&apos;an passé *</label>
+        <AdresseAutocomplete
+          id="rf-adr"
+          valeur={data.adresse}
+          onChange={(v) => setData((p) => ({ ...p, adresse: v, ville: "" }))}
+          onChoisir={(d) => setData((p) => ({ ...p, ville: d.ville || p.ville }))}
+          placeholder="123 rue Principale, Blainville"
+          requis
+          invalide={erreurChamps && !/\d/.test(data.adresse)}
+        />
       </div>
 
       <div style={{ marginTop: 16 }}>
@@ -120,7 +135,7 @@ export default function RenewalForm() {
       <div style={{ marginTop: 20 }}>
         {erreurChamps && (
           <p role="alert" className="formulaire__erreur">
-            Il nous faut votre nom, votre téléphone et votre courriel.
+            Il nous faut votre nom, votre téléphone, votre courriel et l&apos;adresse de l&apos;an passé.
           </p>
         )}
         <CTAButton type="submit" variant="creme" style={{ width: "100%" }}>

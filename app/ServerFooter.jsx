@@ -27,6 +27,16 @@ export function ServerFooter() {
               <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.7)", textDecoration: "none" }}>
                 {company.email}
               </a>
+              {/* Les comptes publics de Lumière — les mêmes URL que le
+                  `sameAs` du JSON-LD (components/data.js → company.social). */}
+              <div style={{ display: "flex", gap: 16, marginTop: 8 }}>
+                {Object.values(company.social || {}).map((r) => (
+                  <a key={r.href} href={r.href} target="_blank" rel="noopener noreferrer me"
+                    style={{ color: "rgba(243,233,210,0.85)", textDecoration: "underline", textUnderlineOffset: 3 }}>
+                    {r.label === "Instagram" ? `Instagram ${r.handle}` : r.label}
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
 

@@ -11,7 +11,7 @@ export const postBodies = {
 
     { type: "h2", text: "Tarif d'entrée résidentiel : à partir de 1 000 $" },
     { type: "p", text: "Pour une résidence québécoise typique — bungalow ou cottage avec une façade, quelques arbustes et une ou deux rangées de toiture — on est généralement entre 1 000 $ et 1 800 $ pour la première saison, matériel et main-d'œuvre inclus, retrait inclus." },
-    { type: "p", text: "Les années suivantes, le tarif baisse : le design est déjà conçu, les attaches sont en place, et on connaît votre propriété." },
+    { type: "p", text: "Les années suivantes, tout va plus vite : le design est déjà conçu, les attaches sont en place, et on connaît votre propriété." },
 
     { type: "h2", text: "Ce qui fait varier le prix" },
     { type: "ul", items: [
@@ -56,17 +56,17 @@ export const postBodies = {
     { type: "h3", text: "Fin novembre : les conditions deviennent dangereuses" },
     { type: "p", text: "Glace sur les toits, neige sur les échelles, températures sous zéro. Notre équipe travaille dans ces conditions — c'est le métier — mais ça ralentit tout. Une installation qui prendrait 3 h en octobre peut prendre 5-6 h en décembre." },
 
-    { type: "h3", text: "Décembre : on refuse des appels" },
+    { type: "h3", text: "Après le 20 novembre : les réservations sont fermées" },
     { type: "p", text: "À ce stade, on n'accepte plus de nouveaux clients pour cette saison. Trop de risques de ne pas livrer à temps, ou de livrer dans des conditions qu'on ne juge pas acceptables." },
 
     { type: "h2", text: "Le réflexe à adopter" },
-    { type: "p", text: "Réservez dès septembre si vous le pouvez. Sinon, octobre. Si vous lisez ceci en novembre : appelez quand même — on garde toujours quelques fenêtres — on vous dira franchement ce qui reste." },
+    { type: "p", text: "Réservez dès septembre si vous le pouvez. Sinon, octobre. Si vous lisez ceci en novembre : les réservations ferment le 20 novembre — écrivez-nous avant, on vous dira franchement ce qui reste." },
 
     { type: "ul", items: [
       "Septembre : meilleure sélection de dates, équipes disponibles, conditions parfaites.",
-      "Octobre : encore d'excellentes disponibilités, météo douce.",
+      "Octobre : encore d'excellentes disponibilités, météo douce — et 15 % de rabais sur les installations faites en octobre.",
       "Mi-novembre : possible mais les meilleurs créneaux sont partis.",
-      "Décembre : disponibilités limitées — appelez pour valider.",
+      "Après le 20 novembre : réservations fermées pour la saison — inscrivez-vous sur la liste d'attente.",
     ]},
 
     { type: "h2", text: "Et pour le commercial?" },

@@ -2,18 +2,28 @@
 import { useState } from "react";
 import { CTAButton } from "@/components/ui";
 import Select from "@/components/Select";
+import AdresseAutocomplete from "@/components/AdresseAutocomplete";
 import { serviceOptions, sendLead, HONEYPOT_FIELD } from "@/components/data";
 import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
 import { villeDeAdresse } from "@/lib/adresse";
 import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
 
-const empty = { nom: "", telephone: "", ville: "", courriel: "", service: "", message: "", consent: false, [HONEYPOT_FIELD]: "" };
+const empty = { nom: "", telephone: "", adresse: "", ville: "", courriel: "", service: "", message: "", consent: false, [HONEYPOT_FIELD]: "" };
 
+// ⚠️ L'ADRESSE, PAS LA VILLE (2026-10-14).
+//
+// Le formulaire demandait « Ville ». Sophie B devait donc redemander
+// l'adresse par texto — une question de plus, à quelqu'un qui venait de
+// remplir un formulaire. Le champ est maintenant « Adresse de la propriété »,
+// avec l'autocomplétion Places (Québec) : rue, ville et code postal partent
+// au CRM dans `address` et `city` — les MÊMES champs que le formulaire Meta —
+// et Sophie CONFIRME l'adresse au lieu de la demander.
+//
 // ⚠️ LE FORMULAIRE COURT, LE MÊME PARTOUT (partie 3, octobre 2026).
 //
 // Il avait 8 à 11 champs selon la page : budget en pastilles, « comment
 // avez-vous entendu parler de nous ? », adresse ET ville… Maintenant :
-//   obligatoires  Nom, Téléphone, Ville
+//   obligatoires  Nom, Téléphone, Adresse de la propriété
 //   facultatifs   Courriel, Service, Détails
 //   + la case Loi 25, décochée, obligatoire.
 // La provenance ne se demande plus : elle voyage déjà dans le paiement
@@ -25,6 +35,8 @@ const empty = { nom: "", telephone: "", ville: "", courriel: "", service: "", me
 //
 // `variante="sombre"` : sur le marine des pages intérieures. L'accueil
 // garde la variante claire, dans sa section crème.
+const adresseValide = (a) => /\d/.test(a || "") && (a || "").trim().length >= 6;
+
 export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote", serviceInitial = null, prerempli = null, variante = "claire" }) {
   // ⚠️ Le service PRÉSÉLECTIONNÉ, rien d'autre.
   //
@@ -51,10 +63,8 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
     ...(prerempli ? {
       nom: prerempli.nom || "",
       telephone: prerempli.telephone || "",
-      // L'adresse complète tapée au simulateur ne s'affiche plus (le champ
-      // est « Ville ») mais elle n'est PAS perdue : elle part telle quelle
-      // dans le paiement, plus bas. La ville en est tirée quand on peut.
-      ville: villeDeAdresse(prerempli.adresse || "") || "",
+      // L'adresse tapée au simulateur arrive dans le champ, telle quelle.
+      adresse: prerempli.adresse || "",
       message: prerempli.message || "",
     } : null),
   });
@@ -69,7 +79,9 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
     // SEO P0 §3.7 — le courriel n'est plus obligatoire : il coupait les
     // visiteurs qui n'ont que leur téléphone, et le rappel se fait par
     // téléphone de toute façon.
-    if (!data.nom || !data.telephone || !data.ville) {
+    // Une adresse, c'est au moins un numéro civique : « Blainville » seul
+    // ne permet ni de mesurer la toiture, ni à Sophie de confirmer.
+    if (!data.nom || !data.telephone || !adresseValide(data.adresse)) {
       setErreurChamps(true);
       return;
     }
@@ -88,8 +100,11 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
       nom: data.nom,
       telephone: data.telephone,
       courriel: data.courriel,
-      ville: data.ville,
-      ...(prerempli?.adresse ? { adresse: prerempli.adresse } : null),
+      adresse: data.adresse.trim(),
+      // La ville du détail Places quand on l'a ; sinon, tirée du texte
+      // (« …, Blainville, QC » → Blainville). Vide plutôt que devinée : le
+      // CRM la retrouve alors par géocodage (lib/enrich-city.js).
+      ville: data.ville || villeDeAdresse(data.adresse),
       service: data.service,
       message: data.message,
       [HONEYPOT_FIELD]: data[HONEYPOT_FIELD],
@@ -124,15 +139,24 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
         </div>
       </div>
 
-      <div className="grid-2" style={{ gap: 16, alignItems: "start", marginTop: 16 }}>
-        <div>
-          <label htmlFor="qf-ville">Ville *</label>
-          <input id="qf-ville" type="text" autoComplete="address-level2" value={data.ville} onChange={set("ville")} placeholder="Ex. : Blainville" required aria-required="true" />
-        </div>
-        <div>
-          <label htmlFor="qf-mail">Courriel <span className="facultatif">(facultatif)</span></label>
-          <input id="qf-mail" type="email" autoComplete="email" value={data.courriel} onChange={set("courriel")} placeholder="vous@exemple.com" />
-        </div>
+      <div style={{ marginTop: 16 }}>
+        <label htmlFor="qf-adresse">Adresse de la propriété *</label>
+        <AdresseAutocomplete
+          id="qf-adresse"
+          valeur={data.adresse}
+          // Taper à la main efface la ville du détail : elle appartenait à
+          // l'adresse choisie, plus à celle-ci.
+          onChange={(v) => setData((p) => ({ ...p, adresse: v, ville: "" }))}
+          onChoisir={(d) => setData((p) => ({ ...p, ville: d.ville || p.ville }))}
+          placeholder="123 rue Principale, Blainville"
+          requis
+          invalide={erreurChamps && !adresseValide(data.adresse)}
+        />
+      </div>
+
+      <div style={{ marginTop: 16 }}>
+        <label htmlFor="qf-mail">Courriel <span className="facultatif">(facultatif)</span></label>
+        <input id="qf-mail" type="email" autoComplete="email" value={data.courriel} onChange={set("courriel")} placeholder="vous@exemple.com" />
       </div>
 
       <div style={{ marginTop: 16 }}>
@@ -144,6 +168,14 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
           options={serviceOptions}
           placeholder="Sélectionnez…"
         />
+        {/* Le permanent n'a ni retrait ni entreposage : celui qui le choisit
+            doit pouvoir lire SON produit, pas celui de la saison. */}
+        {/permanent/i.test(data.service) && (
+          <p className="formulaire__petit" style={{ marginTop: 8 }}>
+            Installé une seule fois, allumé toute l&apos;année, garanti 10 ans.{" "}
+            <a href="/services/eclairage-architectural-permanent" style={{ textDecoration: "underline" }}>L&apos;éclairage permanent en détail</a>
+          </p>
+        )}
       </div>
 
       <div style={{ marginTop: 16 }}>
@@ -164,7 +196,7 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
           erreur={erreurConsent ? "Votre consentement est requis pour vous répondre." : ""} />
         {erreurChamps && (
           <p role="alert" className="formulaire__erreur">
-            Il nous faut votre nom, votre téléphone et votre ville pour vous rappeler.
+            Il nous faut votre nom, votre téléphone et l&apos;adresse de la propriété (numéro et rue).
           </p>
         )}
         <div style={{ marginTop: 16 }}>
