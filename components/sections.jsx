@@ -68,6 +68,7 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
           </div>
           {preuve && (
             <p className="hero-ligne" data-gabarit>
+              <span>3e saison · résidentiel et commercial</span>
               <span>À partir de {company.priceFrom}</span>
               <span>Rive-Nord · Montréal · Rive-Sud</span>
             </p>
