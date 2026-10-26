@@ -75,7 +75,8 @@ export function NavBar() {
     // avant que le texte du hero ne passe dessous.
     const onScroll = () => setScrolled(window.scrollY > 24);
     onScroll();
-    window.addEventListener("scroll", onScroll);
+    // `passive` : le navigateur n'attend jamais ce script pour défiler.
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 

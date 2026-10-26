@@ -120,7 +120,7 @@ export default function AppDemo() {
                     background: `radial-gradient(circle at 35% 30%, ${gold}, #b9923f)`,
                     boxShadow: `0 0 8px ${gold}`,
                   }} />
-                  <span style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: 17, letterSpacing: "0.06em" }}>
+                  <span style={{ fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", fontSize: 17, letterSpacing: "0.06em" }}>
                     LUMIÈRE · CONTRÔLE
                   </span>
                 </div>
@@ -217,7 +217,7 @@ export default function AppDemo() {
 function Label({ children }) {
   return (
     <div style={{
-      fontFamily: "'Nunito Sans', sans-serif", fontSize: 11, fontWeight: 700,
+      fontFamily: "'Nunito Sans', 'Nunito Repli', sans-serif", fontSize: 11, fontWeight: 700,
       letterSpacing: "0.16em", textTransform: "uppercase", color: "#7f8aa3", marginBottom: 7,
     }}>
       {children}
@@ -239,7 +239,7 @@ function Chips({ items, activeKey, onPick, swatch }) {
             style={{
               display: "inline-flex", alignItems: "center", gap: 6,
               padding: "7px 12px", borderRadius: 300, cursor: "pointer",
-              fontFamily: "'Nunito Sans', sans-serif", fontSize: 12.5, fontWeight: 600,
+              fontFamily: "'Nunito Sans', 'Nunito Repli', sans-serif", fontSize: 12.5, fontWeight: 600,
               border: `1px solid ${isOn ? gold : "#2a3142"}`,
               background: isOn ? gold : "transparent",
               color: isOn ? "#10131a" : "#c7cede",

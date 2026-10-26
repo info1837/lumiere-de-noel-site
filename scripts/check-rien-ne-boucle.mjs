@@ -7,8 +7,10 @@
 // qui clignote sans arrêt attire l'œil en continu — donc elle le retient sur
 // elle, et pas sur le texte.
 //
-// La neige du hero est la seule exception assumée : c'est une chute, pas un
-// clignotement, et elle vit dans le premier écran uniquement (bloc 4).
+// Passe « effets sobres » (2026-10-26) : la neige du hero, le point du
+// bandeau et la bande des réalisations bouclaient encore. Ils sont partis.
+// Seule reste la démo des DEL de l'éclairage permanent : l'animation y EST
+// le produit montré. Le détail des règles : scripts/check-animations.mjs.
 
 import fs from 'fs';
 import path from 'path';
@@ -19,95 +21,38 @@ const t = (nom, ok, d = '') => { console.log(`  ${ok ? '✅' : '❌'} ${nom}${d 
 const lire = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
 
 const css = lire('app/globals.css');
-// Mes commentaires citent lsWave et l'ancienne opacité : les lire ferait
-// passer des assertions sur du texte explicatif.
+// Les commentaires citent les anciennes boucles : les lire ferait passer
+// des assertions sur du texte explicatif.
 const cssNu = css.replace(/\/\*[\s\S]*?\*\//g, '');
-const guirlande = lire('components/LightString.jsx');
 
-console.log('\n--- 1. 🚨 La guirlande s\'allume une fois, puis se tait ---');
+console.log('\n--- 1. 🚨 Plus AUCUNE animation infinie, sauf la démo des DEL ---');
 {
-  t('🚨 la boucle est retirée', !/lsWave/.test(cssNu) && !/infinite/.test(cssNu.match(/\.ls-bulb \{[^}]*\}/)?.[0] || ''));
-  t('🚨 un simple fondu d\'une seconde', /@keyframes lsAllume \{ from \{ opacity: 0; \} to \{ opacity: 1; \} \}/.test(cssNu));
-  t('🚨 …joué une seule fois', /\.ls-bulb \{ animation: lsAllume 1s ease both; \}/.test(cssNu));
-  // `both` et pas `forwards` : sans l'état de départ, les ampoules
-  // s'afficheraient allumées puis sauteraient à zéro pour refaire le fondu.
-  t('🚨 l\'état de départ est appliqué avant le premier rendu (both)',
-    /animation: lsAllume 1s ease both;/.test(cssNu));
-  t('🚨 le décalage par ampoule est retiré (il n\'anime plus rien)',
-    !/animationDelay/.test(guirlande));
-  t('la guirlande reste allumée sous prefers-reduced-motion',
-    /\.ls-bulb \{ animation: none; opacity: 1; \}/.test(cssNu));
-}
-
-console.log('\n--- 2. 🚨 Plus AUCUNE animation infinie, sauf la neige du hero ---');
-{
-  // On lit toutes les règles qui déclarent une animation sans fin.
   const infinies = [...cssNu.matchAll(/([^{}]+)\{[^{}]*animation[^{}:]*:[^{};]*infinite[^{};]*;/g)]
     .map((m) => m[1].trim().replace(/\s+/g, ' '));
-  // Trois exceptions, et chacune a sa raison :
-  //   .flake                      la chute de neige du hero (bloc 4) — une
-  //                               chute, pas un clignotement, premier écran
-  //                               seulement ;
-  //   .bandeau-rarete__pastille   le point clignotant devant « Octobre »,
-  //                               demandé nommément ;
-  //   .led--twinkle/chase/breathe la démo interactive de l'éclairage
-  //                               permanent (/services/eclairage-architectural-permanent) :
-  //                               l'animation EST le produit montré, la
-  //                               couper viderait la démo de son sens.
-  //   html.mvt .defile--anime .defile-piste
-  //                               la bande des réalisations. Exception
-  //                               DEMANDÉE, et tenue court : la classe
-  //                               `defile--anime` n'est posée que
-  //                               pendant que la section est à l'écran
-  //                               (IntersectionObserver), l'animation
-  //                               s'arrête au survol et pendant qu'on
-  //                               tire la bande, et elle n'existe pas en
-  //                               mouvement réduit. Une boucle qui ne
-  //                               tourne que sous les yeux de quelqu'un
-  //                               n'est pas celle que le bloc 4
-  //                               reprochait — celle-là clignotait sur
-  //                               toutes les pages, tout le temps.
-  const AUTORISEES = ['.flake', '.bandeau-rarete__pastille',
-    '.led--twinkle', '.led--chase', '.led--breathe',
-    'html.mvt .defile--anime .defile-piste'];
+  const AUTORISEES = ['.led--twinkle', '.led--chase', '.led--breathe'];
   const intruses = infinies.filter((r) => !AUTORISEES.includes(r));
   t('🚨 aucune boucle décorative ne subsiste', intruses.length === 0, intruses.join(' | ') || 'aucune');
-
-  // L'exception de la bande n'est valable que BORNÉE. Si l'un des trois
-  // garde-fous saute, c'est redevenu une boucle permanente.
-  const defile = lire('components/VitrineDefilante.jsx');
-  t('🚨 la bande ne tourne QUE quand elle est à l\'écran',
-    /IntersectionObserver/.test(defile) && /setAnime\(!!e\[0\]\?\.isIntersecting\)/.test(defile));
-  t('🚨 …elle s\'arrête au survol et sous le doigt',
-    /\.defile--anime:hover \.defile-piste[\s\S]{0,120}animation-play-state: paused/.test(cssNu));
-  t('🚨 …et elle n\'existe pas en mouvement réduit',
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,1400}html\.mvt \.defile--anime \.defile-piste \{ animation: none; \}/.test(cssNu));
-  t('🚨 les puces de liste ne scintillent plus (5 pages)',
-    !/\.bulb--tw \{ animation/.test(cssNu));
-  t('🚨 le feston non plus', !/festoonGlow \d/.test(cssNu.match(/\.festoon::before \{[^}]*\}/)?.[0] || ''));
-  t('la neige du hero, elle, tombe toujours', infinies.includes('.flake'));
-  t('le point du bandeau clignote toujours (demandé nommément)',
-    infinies.includes('.bandeau-rarete__pastille'));
+  t('🚨 la neige du hero est partie', !infinies.includes('.flake') && !/snowFall/.test(cssNu));
+  t('🚨 le point du bandeau ne clignote plus', !infinies.includes('.bandeau-rarete__pastille'));
+  t('🚨 la bande des réalisations ne tourne plus', !/defileGauche/.test(cssNu));
+  t('🚨 les puces de liste ne scintillent pas', !/\.bulb--tw \{ animation/.test(cssNu));
+  t('🚨 la guirlande LightString (morte) est retirée', !/lsAllume|\.ls-bulb/.test(cssNu)
+    && !fs.existsSync(path.join(ROOT, 'components/LightString.jsx')));
   t('la démo d\'éclairage permanent garde ses DEL (c\'est le produit)',
-    ['.led--twinkle', '.led--chase', '.led--breathe'].every((c) => infinies.includes(c)));
+    AUTORISEES.every((c) => infinies.includes(c)));
 }
 
-console.log('\n--- 3. 🚨 Le flocon décoratif recule ---');
+console.log('\n--- 2. Le flocon décoratif reste du décor ---');
 {
-  t('🚨 son opacité est divisée par deux (0,07 → 0,035)',
+  t('🚨 son opacité reste à 0,035',
     /width: 230px; height: 230px; opacity: 0\.035;/.test(cssNu));
-  t('il reste en place — c\'est du décor, pas une animation',
-    /\.snowy::before \{/.test(cssNu) && !/\.snowy::before[\s\S]{0,400}animation:/.test(cssNu));
+  t('il ne bouge pas', /\.snowy::before \{/.test(cssNu) && !/\.snowy::before[\s\S]{0,400}animation:/.test(cssNu));
 }
 
-console.log('\n--- 4. Ce à quoi on ne touche pas ---');
+console.log('\n--- 3. Ce à quoi on ne touche pas ---');
 {
-  t('🚨 la barre du bas garde son comportement (bloc 2)',
+  t('🚨 la barre du bas garde son comportement',
     /mobile-bottom-bar\$\{visible \? " est-visible" : ""\}/.test(lire('app/ClientLayout.jsx')));
-  t('🚨 la neige reste dans le hero, 17 flocons (bloc 4)',
-    /const FLOCONS = 17;/.test(lire('components/FestiveLayer.jsx')));
-  t('🚨 les trois effets d\'apparition restent (bloc 4)',
-    /\.reveal--a \{/.test(cssNu) && /\.reveal--b \{/.test(cssNu) && /\.reveal--c \{/.test(cssNu));
   t('🚨 le pixel est intact', /eventID/.test(lire('lib/meta-lead-event.js')));
   t('🚨 l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
   t('🚨 le bandeau de rareté est intact', /<BandeauRarete/.test(lire('app/layout.jsx')));

@@ -1,120 +1,69 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
-import { mouvementReduit } from "@/lib/mouvement";
+import { useRef } from "react";
+import Image from "next/image";
 
-// Les réalisations défilent lentement, et s'arrêtent dès qu'on les
-// regarde de près.
+// La bande des réalisations : une rangée qu'on fait défiler soi-même.
 //
-// ⚠️ C'EST UNE BOUCLE, ET LE DOSSIER LES INTERDIT.
+// ⚠️ PLUS DE BOUCLE (passe « effets sobres », 2026-10-26). La bande
+// défilait toute seule en `infinite`, avec la liste dupliquée pour ne pas
+// laisser de trou, et un glissement maison en `transform` au-dessus. C'était
+// une exception à la règle « rien ne boucle » ; la règle a gagné :
 //
-// `scripts/check-rien-ne-boucle.mjs` existe parce qu'une guirlande
-// clignotait sans fin sur toutes les pages : « une lumière qui clignote
-// sans arrêt attire l'œil en continu — donc elle le retient sur elle, et
-// pas sur le texte ». L'argument est juste, et il vaut aussi pour une
-// bande de photos qui glisse.
+//   · le défilement est NATIF (overflow-x), au doigt comme au pavé tactile,
+//     sans aimantation (pas de scroll-snap) ;
+//   · à la souris, on peut tirer la bande : le geste déplace `scrollLeft`,
+//     c'est-à-dire le défilement natif lui-même, pas une transformation ;
+//   · plus de clones : chaque photo apparaît une fois, et les lecteurs
+//     d'écran n'entendent plus la liste deux fois ;
+//   · les photos passent par next/image (AVIF/WebP à la bonne largeur) au
+//     lieu des JPEG d'origine, jusqu'à 650 Ko chacun.
 //
-// Celle-ci est une exception demandée, et elle est tenue court :
-//
-//   · elle ne tourne QUE quand la section est à l'écran — hors de vue,
-//     le script retire la classe et l'animation s'arrête net. Une bande
-//     qui défile pour personne, c'est du calcul pour personne ;
-//   · elle s'arrête au survol et pendant qu'on la tire ;
-//   · elle n'existe pas du tout en mouvement réduit — la bande devient
-//     une rangée qu'on fait glisser soi-même (défilement natif, aimanté
-//     photo par photo), sans clones et sans glissement maison.
-//
-// ⚠️ DEUX TRANSFORMATIONS, DEUX ÉLÉMENTS. L'animation vit sur la piste,
-// le décalage du doigt sur le calque au-dessus. Les mettre sur le même
-// élément ferait que l'un écrase l'autre à chaque frame — le geste
-// « saute » alors en arrière dès qu'on relâche.
-//
-// ⚠️ LES CLONES SONT `aria-hidden`. La boucle n'est transparente que si
-// la liste est dupliquée : il faut qu'il y ait toujours de la matière
-// qui entre par la droite. Mais un lecteur d'écran n'a aucune raison
-// d'entendre « Blainville, Saint-Jérôme, Montréal, Mercier » deux fois,
-// et scripts/check-photos.mjs §7 ne doit pas compter ces copies comme
-// une deuxième apparition de la photo.
-export default function VitrineDefilante({ items = [], secondesParItem = 7 }) {
-  const [anime, setAnime] = useState(false);
-  // Mouvement réduit : plus de boucle, donc plus besoin des clones ni du
-  // glissement maison — le défilement natif du navigateur fait le geste.
-  const [manuel, setManuel] = useState(false);
-  const cadre = useRef(null);
-  const glisse = useRef(null);
-  const etat = useRef({ saisi: false, departX: 0, depart: 0, decalage: 0 });
+// `secondesParItem` n'a plus d'effet ; le paramètre reste accepté.
+// Suit `.defile-item { width: clamp(240px, 38vw, 420px) }`.
+export const TAILLES_VITRINE = "(max-width: 631px) 240px, (max-width: 1105px) 38vw, 420px";
 
-  // L'animation ne tourne que pendant que la section est visible.
-  useEffect(() => {
-    if (mouvementReduit()) { setManuel(true); return; }
-    const el = cadre.current;
-    if (!el) return;
-    const io = new IntersectionObserver(
-      (e) => setAnime(!!e[0]?.isIntersecting),
-      { threshold: 0.05 },
-    );
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+export default function VitrineDefilante({ items = [] }) {
+  const bande = useRef(null);
+  const tire = useRef(null);   // { x0, s0, bouge } — la souris qui tient la bande
 
-  // ── Le glissement au doigt (et à la souris) ───────────────────────
-  //
-  // Pointer events : un seul code pour le doigt, la souris et le
-  // stylet. On ne capture PAS le pointeur tant qu'il n'a pas bougé
-  // horizontalement de quelques pixels, sinon on vole le défilement
-  // vertical de la page — sur un téléphone, c'est la page entière qui
-  // se bloque sous le doigt.
-  const onPointerDown = (e) => {
-    const el = cadre.current;
-    if (!el || manuel) return;
-    etat.current.saisi = true;
-    etat.current.departX = e.clientX;
-    etat.current.depart = etat.current.decalage;
-    el.classList.add("saisi");
+  const auPointeurBas = (e) => {
+    if (e.pointerType !== "mouse" || e.button !== 0) return;
+    tire.current = { x0: e.clientX, s0: bande.current.scrollLeft, bouge: false };
   };
-
-  const onPointerMove = (e) => {
-    const s = etat.current;
-    if (!s.saisi) return;
-    const d = e.clientX - s.departX;
-    if (Math.abs(d) < 6) return;      // pas encore un geste horizontal
-    s.decalage = s.depart + d;
-    if (glisse.current) glisse.current.style.transform = `translateX(${s.decalage}px)`;
+  const auPointeurBouge = (e) => {
+    const t = tire.current;
+    if (!t) return;
+    const d = e.clientX - t.x0;
+    if (!t.bouge && Math.abs(d) < 6) return;     // un clic n'est pas un geste
+    if (!t.bouge) { t.bouge = true; bande.current.classList.add("saisi"); }
+    bande.current.scrollLeft = t.s0 - d;
   };
-
   const relacher = () => {
-    const s = etat.current;
-    if (!s.saisi) return;
-    s.saisi = false;
-    cadre.current?.classList.remove("saisi");
+    if (!tire.current) return;
+    tire.current = null;
+    bande.current?.classList.remove("saisi");
   };
 
   if (!items.length) return null;
 
-  // La piste porte la liste DEUX fois : l'original, puis des clones
-  // muets pour que la boucle n'ait pas de trou.
-  const carte = (p, i, clone) => (
-    <figure className="defile-item" key={`${clone ? "c" : "o"}-${i}-${p.image}`}>
-      <img src={p.image} alt={clone ? "" : p.alt} aria-hidden={clone || undefined} loading="lazy" />
-      <figcaption aria-hidden={clone || undefined}>{p.caption}</figcaption>
-    </figure>
-  );
-
   return (
     <div
-      ref={cadre}
-      className={`defile${anime ? " defile--anime" : ""}${manuel ? " defile--manuel" : ""}`}
-      style={{ "--defile-duree": `${items.length * secondesParItem * 2}s` }}
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
+      ref={bande}
+      className="defile"
+      onPointerDown={auPointeurBas}
+      onPointerMove={auPointeurBouge}
       onPointerUp={relacher}
       onPointerCancel={relacher}
       onPointerLeave={relacher}
     >
-      <div className="defile-glisse" ref={glisse}>
-        <div className="defile-piste">
-          {items.map((p, i) => carte(p, i, false))}
-          {!manuel && items.map((p, i) => carte(p, i, true))}
-        </div>
+      <div className="defile-piste">
+        {items.map((p, i) => (
+          <figure className="defile-item" key={`${i}-${p.image}`}>
+            <Image src={p.image} alt={p.alt} fill sizes={TAILLES_VITRINE}
+              draggable={false} style={{ objectFit: "cover" }} />
+            <figcaption>{p.caption}</figcaption>
+          </figure>
+        ))}
       </div>
     </div>
   );

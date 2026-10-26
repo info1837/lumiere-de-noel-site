@@ -304,8 +304,12 @@ console.log('\n--- 8. 🚨 Lisible : ambre plein, marine, 15 px ---');
   const ratio = (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
   t('🚨 le contraste dépasse le AAA (7:1)', ratio >= 7, `${ratio.toFixed(2)}:1`);
 
-  t('🚨 le point respire devant le premier mois', /\.bandeau-rarete__pastille \{[\s\S]{0,400}animation: bandeau-respire/.test(css));
-  t('…lentement (2,8 s), pas en alarme', /bandeau-respire 2\.8s/.test(css));
+  // Passe « effets sobres » (2026-10-26) : le bandeau est au premier
+  // écran, donc rien n'y bouge. Le point garde sa lueur, plus sa respiration.
+  t('🚨 le point devant le premier mois est allumé (lueur ambre)',
+    /\.bandeau-rarete__pastille \{[\s\S]{0,400}box-shadow: 0 0 7px rgba\(240, 186, 84/.test(css));
+  t('🚨 …et immobile : premier écran, aucune animation',
+    !/\.bandeau-rarete__pastille \{[^}]*animation:/.test(css) && !/bandeau-respire/.test(css));
 
   // ⚠️ La hauteur se MESURE. Un chiffre en dur se trompait de 24 px sur
   // téléphone, et la pilule recouvrait la barre.

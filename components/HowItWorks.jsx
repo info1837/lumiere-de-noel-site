@@ -85,7 +85,7 @@ export default function HowItWorks({ variant = "dark", showTitle = true }) {
                 width: 44, height: 44, borderRadius: "50%",
                 background: gold, color: charcoal,
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
-                fontFamily: "'Bebas Neue', sans-serif", fontSize: 20, letterSpacing: "0.04em",
+                fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", fontSize: 20, letterSpacing: "0.04em",
                 fontWeight: 700,
               }}>{s.num}</div>
               <div style={{

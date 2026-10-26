@@ -10,10 +10,10 @@
 //      visionneuse ; un toucher l'ouvre sur la photo affichée ;
 //   3. la visionneuse : glisser passe les photos du chantier puis le
 //      chantier suivant ; ← →, Échap, focus rendu, page bloquée derrière ;
-//   4. la maison du permanent : le fondu tourne seul (≈ 2,5 s + 0,8 s), les
-//      trois images sont chargées d'avance, un point choisit la couleur et
-//      l'étiquette suit, le premier toucher arrête le défilement ;
-//      en mouvement réduit, RIEN ne tourne seul ;
+//   4. la maison du permanent : rien ne tourne seul (passe « effets
+//      sobres », 2026-10-26), les trois images sont chargées quand la
+//      carte est à l'écran, un point choisit la couleur (fondu de 250 ms)
+//      et l'étiquette suit ;
 //   5. /secteur : chaque carte a une image, et celle de Laval ne nomme pas
 //      Laval.
 // =============================================================================
@@ -122,27 +122,20 @@ console.log("\n--- 3. Une maison, toutes les ambiances ---");
   const etat = () => page.locator(`${sel} .ambiances`).getAttribute("data-ambiance");
   // textContent : l'étiquette est en capitales par la feuille de style.
   const etiquette = () => page.locator(`${sel} .ambiances__etiquette`).textContent();
-  const chargees = await page.evaluate((s) => [...document.querySelectorAll(`${s} img`)].map((i) => i.loading === "eager" && i.complete && i.naturalWidth > 0), sel);
   await attendre(1200);
+  const chargees = await page.evaluate((s) => [...document.querySelectorAll(`${s} img`)].map((i) => i.complete && i.naturalWidth > 0), sel);
   const e0 = await etat();
-  const l0 = await etiquette();
-  t("les trois images sont chargées d'avance", chargees.length === 3 && (await page.evaluate((s) => [...document.querySelectorAll(`${s} img`)].every((i) => i.loading === "eager" && i.complete && i.naturalWidth > 0), sel)));
+  t("les trois images sont là quand la carte est à l'écran", chargees.length === 3 && chargees.every(Boolean), chargees.join(" / "));
   const transition = await page.evaluate((s) => getComputedStyle(document.querySelector(`${s} .ambiances__img`)).transitionDuration, sel);
-  t("le fondu dure 800 ms", transition === "0.8s", transition);
+  t("le fondu dure 250 ms", transition === "0.25s", transition);
   await attendre(3600);
-  const e1 = await etat();
-  t("🚨 la couleur change toute seule (≈ 3,3 s)", e1 !== e0, `${e0} → ${e1}`);
-  t("…et l'étiquette suit", (await etiquette()) !== l0, `${l0} → ${await etiquette()}`);
-  // Mi-fondu : deux images en même temps, aucune ne vaut 0 et 1 pile.
-  await attendre(2900);
-  const mi = await page.evaluate((s) => [...document.querySelectorAll(`${s} img`)].map((i) => Number(getComputedStyle(i).opacity)), sel);
-  t("pendant le fondu, jamais d'écran vide (somme des opacités ≥ 0,9)", mi.reduce((a, b) => a + b, 0) >= 0.9, mi.map((x) => x.toFixed(2)).join(" / "));
+  t("🚨 la couleur ne change PAS toute seule", (await etat()) === e0, `${e0} → ${await etat()}`);
   const points = page.locator(`${sel} .ambiances__point`);
   await points.nth(1).click();
   await attendre(900);
   t("🚨 un point choisit la couleur", (await etat()) === "1" && (await points.nth(1).getAttribute("aria-pressed")) === "true");
   t("l'étiquette dit la couleur vue", (await etiquette()) === "Bleu, blanc, rouge", await etiquette());
-  t("🚨 après un choix, plus rien ne tourne seul", (await page.locator(`${sel} .ambiances`).getAttribute("data-auto")) === "0");
+  t("🚨 rien ne tourne seul", (await page.locator(`${sel} .ambiances`).getAttribute("data-auto")) === "0");
   await attendre(3600);
   t("…la couleur reste celle choisie", (await etat()) === "1");
 }

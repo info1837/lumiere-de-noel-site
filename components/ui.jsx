@@ -14,7 +14,7 @@ export function CTAButton({ children, href, onClick, variant = "primary", type, 
     gap: 8,
     padding: "19px 32px",
     borderRadius: 300,
-    fontFamily: "'Nunito Sans', sans-serif",
+    fontFamily: "'Nunito Sans', 'Nunito Repli', sans-serif",
     fontWeight: 700,
     fontSize: 14,
     letterSpacing: "0.06em",
@@ -103,7 +103,7 @@ export function Breadcrumb({ items, dark }) {
 export function SectionTag({ children, dark }) {
   return (
     <div style={{
-      fontFamily: "'Nunito Sans', sans-serif",
+      fontFamily: "'Nunito Sans', 'Nunito Repli', sans-serif",
       fontSize: 13, fontWeight: 700, letterSpacing: "0.18em", textTransform: "uppercase",
       color: dark ? gold : goldText, marginBottom: 14,
     }}>
@@ -141,7 +141,7 @@ export function FaqAccordion({ items, dark }) {
                 width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
                 gap: 16, padding: "22px 4px", background: "transparent", border: "none",
                 cursor: "pointer", textAlign: "left", color: txt,
-                fontFamily: "'Nunito Sans', sans-serif", fontSize: 17, fontWeight: 700,
+                fontFamily: "'Nunito Sans', 'Nunito Repli', sans-serif", fontSize: 17, fontWeight: 700,
               }}
             >
               <span>{it.q}</span>
@@ -222,7 +222,7 @@ export function Gallery({ items, prechargees = 2 }) {
               position: "absolute", left: 0, right: 0, bottom: 0,
               padding: "28px 16px 12px",
               background: "linear-gradient(to top, rgba(6,18,31,0.85), transparent)",
-              color: ivory, fontFamily: "'Bebas Neue', sans-serif",
+              color: ivory, fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif",
               fontSize: 18, letterSpacing: "0.05em",
             }}>
               {it.caption}

@@ -2,10 +2,15 @@
 //
 //   node scripts/check-vie.mjs
 //
-// Six effets ont été ajoutés d'un coup. Chacun peut se dégrader
-// silencieusement : une animation sur `height` qui fait sauter la mise
-// en page, un état masqué qui survit sans JavaScript, une boucle qui
-// tourne hors de vue. Ce garde tient les règles qui les encadrent.
+// Chaque effet peut se dégrader silencieusement : une animation sur
+// `height` qui fait sauter la mise en page, un état masqué qui survit
+// sans JavaScript, une boucle qui tourne hors de vue. Ce garde tient les
+// règles qui les encadrent.
+//
+// ⚠️ PASSE « EFFETS SOBRES » (2026-10-26) : le hero qui s'allume, la
+// guirlande en cascade, la frise tracée au défilement et les fondus en
+// mouvement réduit sont PARTIS. Les règles détaillées vivent dans
+// scripts/check-animations.mjs ; ce garde-ci tient ce qui reste.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -41,24 +46,18 @@ const mvt = lire('lib/mouvement.js');
 
 console.log('\n--- 1. 🚨 Rien ne reste masqué si le JavaScript ne tourne pas ---');
 {
-  // ⚠️ LA RÈGLE QUI PROTÈGE LE CONTENU. Tout état masqué est derrière
+  // ⚠️ LA RÈGLE QUI PROTÈGE LE CONTENU. Le seul état masqué est derrière
   // `html.mvt`, et cette classe est posée par le script. Pas de script,
   // pas de classe, pas de masque : la page s'affiche entière.
-  const etatsMasques = [
-    ['.rv-t', /html\.mvt \.rv-t \{/],
-    ['.rv-p > img', /html\.mvt \.rv-p > img/],
-    ['le hero qui s\'allume', /html\.mvt \.hero-section > img \{/],
-    ['la guirlande du hero', /html\.mvt \.hero-guirlande span \{/],
-  ];
-  for (const [nom, re] of etatsMasques) t(`🚨 ${nom} est derrière html.mvt`, re.test(cssNu));
-  t('🚨 aucun état masqué à la racine de la feuille',
-    !/^\.rv-t \{/m.test(cssNu) && !/^\.rv-p > img/m.test(cssNu));
+  t('🚨 .rv est derrière html.mvt', /html\.mvt \.rv \{/.test(cssNu));
+  t('🚨 aucun état masqué à la racine de la feuille', !/^\.rv \{/m.test(cssNu));
   t('🚨 la classe est posée par le script', /classList\.add\(CLASSE_RACINE\)/.test(couche));
   t('🚨 …et retirée au démontage', /classList\.remove\(CLASSE_RACINE\)/.test(couche));
-  t('🚨 la guirlande reste allumée sans JS',
-    /html:not\(\.mvt\) \.hero-guirlande span \{ opacity: 0\.9;/.test(cssNu));
-  t('🚨 la bande reste défilable à la main sans JS',
-    /html:not\(\.mvt\) \.defile \{ overflow-x: auto; \}/.test(cssNu));
+  t('🚨 la guirlande du hero est allumée d\'office (rendue par le serveur)',
+    /\.hero-guirlande span \{[\s\S]{0,160}opacity: 0\.9;/.test(cssNu)
+    && /<GuirlandeHero \/>/.test(lire('components/Hero.jsx')));
+  t('🚨 la bande se fait défiler à la main, toujours',
+    /\.defile \{[\s\S]{0,80}overflow-x: auto;/.test(cssNu));
 }
 
 console.log('\n--- 2. 🚨 On n\'anime que ce qui ne coûte rien ---');
@@ -94,29 +93,17 @@ console.log('\n--- 2. 🚨 On n\'anime que ce qui ne coûte rien ---');
   t('🚨 ni `top`/`left`', !/transition:[^;]*\b(top|left)\b/.test(bloc));
 }
 
-console.log('\n--- 3. 🚨 Les effets sont là ---');
+console.log('\n--- 3. 🚨 Ce qui reste est là ---');
 {
-  t('🚨 le hero s\'allume (0,45 → 1 en 1,2 s)',
-    /@keyframes heroAllume/.test(cssNu) && /brightness\(0\.45\)/.test(cssNu)
-    && /animation: heroAllume 1200ms/.test(cssNu));
-  t('🚨 …une seule fois (`both`, pas `infinite`)',
-    /animation: heroAllume 1200ms[^;]*both;/.test(cssNu));
-  t('🚨 la guirlande du hero s\'allume de gauche à droite',
-    /AMPOULES_HERO/.test(couche) && /--amp-d/.test(couche) && /@keyframes ampouleAllume/.test(cssNu));
   // ⚠️ LA GUIRLANDE DE PROGRESSION EST RETIRÉE, et elle ne doit pas
-  // revenir par la bande. Elle courait sous l'entête sur toute la page ;
-  // les ampoules ne vivent plus que dans le hero et sur la frise.
+  // revenir par la bande.
   t('🚨 plus de guirlande de progression sous l\'entête',
     !/progression/i.test(couche) && !/\.progression\b/.test(cssNu) && !/AMPOULES_PROGRESSION/.test(couche));
-  t('🚨 la frise se trace au défilement',
-    /--frise-p/.test(couche) && /transform: scaleX\(var\(--frise-p, 0\)\)/.test(cssNu));
-  t('🚨 …et ses points s\'allument un à un',
-    /classList\.toggle\("atteinte"/.test(couche) && /\.frise-etape\.atteinte \.frise-point/.test(cssNu));
   // Le compteur « 100+ avis » est parti avec la ligne des avis de Palencia
   // (2026-10-14) : il partait de 0 et affichait « 0+ avis ».
   t('🚨 plus de compteur d\'avis', !/avis\.textContent/.test(couche));
   t('🚨 le bouton primaire prend une lueur au survol',
-    /html\.mvt a\[class\*="cta"\]:hover/.test(cssNu) && /rgba\(240, 186, 84/.test(cssNu));
+    /a\[class\*="cta"\]:hover/.test(cssNu) && /rgba\(240, 186, 84/.test(cssNu));
   t('🚨 la FAQ s\'ouvre en hauteur, sans mesurer en JS',
     /\.faq-panneau \{[\s\S]{0,120}grid-template-rows: 0fr;/.test(cssNu)
     && /\.faq-panneau\[data-ouvert="1"\] \{ grid-template-rows: 1fr; \}/.test(cssNu));
@@ -137,45 +124,25 @@ console.log('\n--- 4. 🚨 L\'ambre ne sert qu\'à la lumière ---');
   t('les lueurs, elles, sont bien en ambre', /box-shadow:[^;]*240, 186, 84/.test(bloc));
 }
 
-console.log('\n--- 5. 🚨 Le défilement ne se calcule qu\'une fois par image ---');
+console.log('\n--- 5. 🚨 Plus rien ne se calcule au défilement ---');
 {
-  // `scroll` se déclenche bien plus souvent que l'écran ne se
-  // rafraîchit. Sans ce garde-fou on calcule dix fois pour afficher une
-  // fois — et sur un téléphone, ça se sent.
-  t('🚨 un seul calcul par frame', /requestAnimationFrame\(tick\)/.test(mvt) && /enAttente/.test(mvt));
-  t('🚨 l\'écoute est passive', /\{ passive: true \}/.test(mvt));
-  t('🚨 …et elle se désabonne', /removeEventListener\('scroll'/.test(mvt));
-  t('🚨 une première mesure sans attendre un geste', /ecouter\(\); \/\/ une première mesure/.test(mvt));
+  // Le comparateur et la frise étaient pilotés par un écouteur `scroll`
+  // (un rendu React par image pour le comparateur). Il n'en reste aucun :
+  // l'apparition passe par un IntersectionObserver, qui ne coûte rien
+  // pendant que le doigt fait défiler.
+  t('🚨 lib/mouvement.js n\'exporte plus d\'abonnement au défilement',
+    !/surDefilement|progressionDansEcran/.test(mvt));
+  t('🚨 la couche d\'apparition n\'écoute pas le défilement',
+    !/addEventListener\(["']scroll/.test(couche) && /IntersectionObserver/.test(couche));
 }
 
-console.log('\n--- 6. 🚨 Mouvement réduit : rien ne se DÉPLACE, mais la page vit ---');
+console.log('\n--- 6. 🚨 Mouvement réduit : aucune animation ---');
 {
-  // La première version sortait avant de poser html.mvt : sur un Mac
-  // réglé sur « Réduire les animations », aucun effet — on l'a pris pour
-  // une panne sur ordinateur. Le contrat est maintenant : fondus oui,
-  // déplacement non.
-  const debut = cssNu.lastIndexOf('@media (prefers-reduced-motion: reduce) {\n  html.mvt .rv-t');
-  const bloc = debut >= 0 ? cssNu.slice(debut, cssNu.indexOf('\n}', debut)) : '';
-  t('le bloc mouvement réduit est trouvé', bloc.length > 400, `${bloc.length} car.`);
-  t('🚨 la classe racine est posée MÊME en mouvement réduit',
-    !/if \(mouvementReduit\(\)\) return;/.test(couche) && /const doux = mouvementReduit\(\);/.test(couche));
-  t('🚨 le texte apparaît en fondu, 300 ms, sans montée',
-    /html\.mvt \.rv-t \{ opacity: 0; transform: none; \}/.test(bloc)
-    && /html\.mvt \.rv-t\.est-la \{ opacity: 1; transform: none; transition: opacity 300ms/.test(bloc));
-  t('🚨 les photos aussi : ni découpage, ni dézoom',
-    /clip-path: none; transform: none; opacity: 0;/.test(bloc)
-    && /clip-path: none; transform: none; opacity: 1;\s*transition: opacity 300ms/.test(bloc));
-  t('🚨 aucune transition de transform ou de clip-path dans le bloc',
-    !/transition:[^;]*\b(transform|clip-path)\b/.test(bloc));
-  t('🚨 le hero s\'éclaire, luminosité seule',
-    /html\.mvt \.hero-section > img \{ animation: heroEclaire/.test(bloc)
-    && /@keyframes heroEclaire \{\s*from \{ filter: brightness\(0\.45\); \}/.test(cssNu));
-  t('🚨 pas de séquence d\'ampoules', /doux \? "0ms"/.test(couche) && /animation-delay: 0ms;/.test(bloc));
-  t('🚨 pas de neige', /if \(!doux\) setHero/.test(couche));
-  const defile = lire('components/VitrineDefilante.jsx');
-  t('🚨 la bande devient une rangée manuelle, sans clones',
-    /if \(mouvementReduit\(\)\) \{ setManuel\(true\); return; \}/.test(defile)
-    && /!manuel && items\.map/.test(defile) && /\.defile--manuel \{[\s\S]{0,80}overflow-x: auto;/.test(cssNu));
+  t('🚨 la classe racine n\'est PAS posée en mouvement réduit (rien de masqué)',
+    /if \(mouvementReduit\(\) \|\| typeof IntersectionObserver === "undefined"\) return;/.test(couche));
+  const fin = cssNu.slice(cssNu.lastIndexOf('@media (prefers-reduced-motion: reduce)'));
+  t('🚨 la feuille finit par un garde global qui coupe tout',
+    /animation-duration: 0s !important/.test(fin) && /transition-duration: 0s !important/.test(fin));
 }
 
 console.log('\n--- 7. 🚨 L\'entête est une seule surface pleine ---');

@@ -63,7 +63,7 @@ export default function RenouvellementPage() {
             <div style={{ display: "grid", gap: 12, color: "rgba(243,233,210,0.85)", fontSize: 15 }}>
               <a href={company.phoneHref} style={{
                 color: gold, textDecoration: "none", fontWeight: 700, fontSize: 22,
-                fontFamily: "'Bebas Neue', sans-serif", letterSpacing: "0.04em",
+                fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", letterSpacing: "0.04em",
               }}>
                 {company.phoneDisplay}
               </a>
