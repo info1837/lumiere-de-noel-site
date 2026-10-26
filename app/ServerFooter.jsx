@@ -71,7 +71,7 @@ export function ServerFooter() {
             <h2 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Ressources</h2>
             <div><Link href="/blog" style={linkStyle}>Blog</Link></div>
             <div><Link href="/realisations" style={linkStyle}>Réalisations</Link></div>
-            <div><Link href="/concours" style={linkStyle}>Règlement du concours</Link></div>
+            <div><Link href="/concours" style={linkStyle}>Concours 2026</Link></div>
             <div style={{ marginTop: 6 }}>
               <Link href="/soumission" style={{ ...linkStyle, color: gold, fontWeight: 700 }}>
                 Réserver ma date →
@@ -84,14 +84,17 @@ export function ServerFooter() {
           borderTop: `1px solid ${line}`, paddingTop: 24,
           display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 16, fontSize: 13,
         }}>
-          <div>© {new Date().getFullYear()} {company.name} — Tous droits réservés.</div>
+          <div>
+            <div>© {new Date().getFullYear()} {company.name} — Tous droits réservés.</div>
+            <div style={{ marginTop: 4, opacity: 0.8 }}>Ce concours n&apos;est pas associé à Meta/Facebook/Instagram.</div>
+          </div>
           <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Accueil</Link>
             <Link href="/services" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Services</Link>
             <Link href="/secteur" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Zones</Link>
             <Link href="/blog" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Blog</Link>
             <Link href="/soumission" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Soumission</Link>
-            <Link href="/concours" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Règlement du concours</Link>
+            <Link href="/concours#reglements" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Règlements</Link>
             <Link href="/confidentialite" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Confidentialité</Link>
           </div>
         </div>
