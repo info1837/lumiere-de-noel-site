@@ -91,8 +91,8 @@ console.log('\n▸ Vérification dans le navigateur');
     const q = (s) => document.querySelectorAll(s).length;
     return {
       classeRacine: document.documentElement.classList.contains('mvt'),
-      texteRevele: q('.rv-t'),
-      photosRevelees: q('.rv-p'),
+      texteRevele: q('.rv'),
+      photosRevelees: q('figure.rv'),
       guirlandeHero: q('.hero-guirlande span'),
       bande: q('.defile-item'),
 
