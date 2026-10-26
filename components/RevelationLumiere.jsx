@@ -1,7 +1,6 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Image from "next/image";
-import { mouvementReduit, surDefilement, progressionDansEcran } from "@/lib/mouvement";
 
 // Le curseur qui allume la maison.
 //
@@ -36,11 +35,6 @@ import { mouvementReduit, surDefilement, progressionDansEcran } from "@/lib/mouv
 // « Après — installation réelle, Léry » dit que le droit ne l'est pas.
 // La nuance porte toute l'honnêteté du bloc ; la coder en dur ici la
 // rendrait invisible aux pages qui l'affichent.
-// Les bornes du pilotage au défilement. Pas 0 et 100 : aux extrémités,
-// une des deux images disparaît complètement et il n'y a plus rien à
-// comparer.
-const DEBUT_PILOTE = 15;
-const FIN_PILOTE = 85;
 // Au doigt, la couture ne suit qu'au-delà de ce déplacement HORIZONTAL :
 // en dessous, c'est peut-être le début d'un défilement vertical.
 const SEUIL_DOIGT = 6;
@@ -58,56 +52,45 @@ export default function RevelationLumiere({
   altApres = null,
   depart = 50,              // position initiale du curseur, en %
   hauteur = "clamp(280px, 58vw, 560px)",
+  // Le comparateur en HAUT de page (/concours) : son « après » est le LCP,
+  // on le précharge. L'« avant » est chargé tout de suite aussi, mais sans
+  // passer devant : deux images prioritaires se disputent la bande
+  // passante et retardent toutes les deux le premier affichage.
+  prioritaire = false,
+  tailles = "(max-width: 900px) 100vw, 900px",
+  // Gardé pour les appelants qui le passent : le défilement ne pilote
+  // plus jamais la couture (voir plus bas).
+  pilote: _pilote = false, // eslint-disable-line no-unused-vars
 }) {
   const [position, setPosition] = useState(depart);
-  const [aBouge, setABouge] = useState(false);
-  const cadre = useRef(null);
-  // « La personne a touché au curseur » — en ref, pas en état : la boucle
-  // d'animation doit pouvoir le lire tout de suite.
-  const interrompu = useRef(false);
+  const figure = useRef(null);
 
-  // ⚠️ LE DÉFILEMENT PILOTE LA POIGNÉE — il ne la déclenche plus.
+  // ⚠️ LE DÉFILEMENT NE PILOTE PLUS LA POIGNÉE (passe « effets sobres »).
   //
-  // Avant : un aller-retour unique à l'entrée dans l'écran. Il montrait
-  // que la poignée bouge, et c'était tout : quelqu'un qui arrivait après
-  // l'animation ne voyait jamais la maison s'allumer.
-  //
-  // Maintenant la position SUIT le défilement pendant que le comparateur
-  // traverse l'écran — de 15 % à 85 %. La maison s'allume parce qu'on
-  // descend, et le geste a une cause. On ne va pas jusqu'à 0/100 : les
-  // deux extrémités garderaient une bande d'image invisible, et on perd
-  // la comparaison au moment précis où elle devrait être la plus nette.
-  //
-  // ⚠️ LA PREMIÈRE INTERACTION REND LA MAIN POUR DE BON. Tant que le
-  // défilement pilote, la personne qui saisit la poignée se la fait
-  // reprendre à chaque frame — c'est le défaut qu'on avait déjà avec le
-  // balayage. `interrompu` est un ref parce qu'il est lu dans un
-  // écouteur de défilement, hors du cycle de rendu.
-  useEffect(() => {
-    if (aBouge) return;
-    const el = cadre.current;
+  // La couture suivait le défilement de 15 % à 85 % : un `setState` à
+  // chaque image pendant que le doigt faisait défiler la page, donc un
+  // rendu React (et deux next/image) par frame — le défilement « pas
+  // constant » mesuré sur mobile. Le comparateur reste à sa position de
+  // départ et ne bouge que sous le doigt, la souris ou le clavier.
+
+  // ⚠️ PENDANT LE GLISSEMENT, ON ÉCRIT LA VARIABLE CSS, PAS L'ÉTAT.
+  // Un rendu React par `pointermove` faisait sauter des images sur un
+  // téléphone moyen. La couture suit le doigt à la fréquence de l'écran
+  // (une écriture par frame au plus) ; l'état n'est mis à jour qu'au
+  // relâchement, pour le curseur clavier et les lecteurs d'écran.
+  const enCours = useRef(null);   // { v, raf } — la position en attente d'écriture
+  const ecrire = (v) => {
+    const el = figure.current;
     if (!el) return;
-    if (mouvementReduit()) return;   // il reste à 50 %, et manuel
-
-    const stop = surDefilement(() => {
-      if (interrompu.current) return;
-      const q = progressionDansEcran(el);
-      setPosition(DEBUT_PILOTE + q * (FIN_PILOTE - DEBUT_PILOTE));
+    const t = enCours.current || (enCours.current = { v, raf: 0 });
+    t.v = v;
+    if (t.raf) return;
+    t.raf = requestAnimationFrame(() => {
+      t.raf = 0;
+      el.style.setProperty("--revel-pos", `${t.v}%`);
     });
-    return stop;
-  }, [aBouge]);
-
-  // La première interaction arrête le balayage DÉFINITIVEMENT : le ref
-  // est lu dans la boucle d'animation, qui tourne hors du cycle de
-  // rendu et ne verrait pas un état React posé à la même frame.
-  const prendreLaMain = () => {
-    interrompu.current = true;
-    setABouge(true);
   };
-  const bouger = (v) => {
-    prendreLaMain();
-    setPosition(v);
-  };
+  const bouger = (v) => setPosition(v);
 
   // ⚠️ LE GLISSEMENT SE FAIT AU POINTEUR, SUR TOUT LE CADRE.
   //
@@ -139,13 +122,10 @@ export default function RevelationLumiere({
   };
   const placer = (e) => {
     const v = versPosition(e);
-    if (v !== null) setPosition(v);
+    if (v !== null) { ecrire(v); glisse.current.v = v; }
   };
   const auPointeurBas = (e) => {
     if (e.button !== undefined && e.button !== 0) return;
-    // La règle d'avant, qui se déclenche ENFIN au doigt : le premier
-    // contact rend la main pour de bon.
-    prendreLaMain();
     const souris = e.pointerType === "mouse";
     glisse.current = { id: e.pointerId, x0: e.clientX, suit: souris };
     try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
@@ -167,6 +147,8 @@ export default function RevelationLumiere({
     // Un `pointercancel`, c'est le navigateur qui a pris le geste pour un
     // défilement : la couture ne bouge pas.
     if (e.type === "pointerup") placer(e);
+    // L'état rattrape la couture : un seul rendu, au relâchement.
+    if (g.v !== undefined) setPosition(g.v);
     glisse.current = null;
     try { e.currentTarget.releasePointerCapture(e.pointerId); } catch {}
   };
@@ -193,7 +175,7 @@ export default function RevelationLumiere({
   }
 
   return (
-    <figure className="revel" ref={cadre} style={{ "--revel-h": hauteur, "--revel-pos": `${position}%` }}>
+    <figure className="revel" ref={figure} style={{ "--revel-h": hauteur, "--revel-pos": `${position}%` }}>
       <div className="revel-cadre"
         onPointerDown={auPointeurBas}
         onPointerMove={auPointeurBouge}
@@ -210,7 +192,7 @@ export default function RevelationLumiere({
             « installation réelle ». */}
         <Image className="revel-img" src={photo.src}
           alt={altApres || photo.alt}
-          fill sizes="(max-width: 900px) 100vw, 900px" style={{ objectFit: "cover" }} />
+          fill sizes={tailles} priority={prioritaire} style={{ objectFit: "cover" }} />
 
         {/* ⚠️ Le découpage se fait au `clip-path`, PAS à la largeur.
             Le motif de .sim-apres (largeur variable + `img { width: 100vw;
@@ -228,7 +210,7 @@ export default function RevelationLumiere({
         <div className="revel-avant">
           <Image className="revel-img" src={photoAvant.src}
             alt={altAvant || photoAvant.alt}
-            fill sizes="(max-width: 900px) 100vw, 900px" style={{ objectFit: "cover" }} />
+            fill sizes={tailles} loading={prioritaire ? "eager" : undefined} style={{ objectFit: "cover" }} />
         </div>
 
         {/* La couture lumineuse — le seul ambre de la section. */}

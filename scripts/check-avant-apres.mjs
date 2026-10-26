@@ -143,29 +143,23 @@ console.log('\n--- 5. 🚨 Le repli « crépuscule » ne revient pas ---');
     c.indexOf('if (!photoAvant?.src') > dernierHook);
 }
 
-console.log('\n--- 6. 🚨 Le curseur est PILOTÉ par le défilement ---');
+console.log('\n--- 6. 🚨 Le curseur ne bouge que sous la main ---');
 {
   const c = lire('components/RevelationLumiere.jsx');
-  // ⚠️ LE BALAYAGE UNIQUE A ÉTÉ REMPLACÉ (passe « vie », 2026-10-09).
-  //
-  // Il faisait un aller-retour à l'entrée dans l'écran, puis plus rien :
-  // qui arrivait après l'animation ne voyait jamais la maison s'allumer.
-  // Maintenant la position SUIT le défilement pendant que le comparateur
-  // traverse l'écran — la maison s'allume parce qu'on descend, et le
-  // geste a une cause.
-  t('🚨 le défilement pilote la position', /surDefilement\(/.test(c) && /progressionDansEcran\(el\)/.test(c));
-  t('🚨 de 15 % à 85 %', /DEBUT_PILOTE = 15/.test(c) && /FIN_PILOTE = 85/.test(c));
-  t('🚨 …pas jusqu\'aux extrémités (sinon il n\'y a plus rien à comparer)',
-    !/DEBUT_PILOTE = 0\b/.test(c) && !/FIN_PILOTE = 100\b/.test(c));
+  // ⚠️ LE PILOTAGE AU DÉFILEMENT EST RETIRÉ (passe « effets sobres »,
+  // 2026-10-26). La couture suivait le défilement de 15 % à 85 % : un
+  // rendu React par image pendant que le doigt faisait défiler la page —
+  // le défilement « pas constant » mesuré sur mobile. Elle ne bouge plus
+  // que sous le doigt, la souris ou le clavier.
+  t('🚨 le défilement ne pilote plus la position',
+    !/surDefilement\(|progressionDansEcran\(|addEventListener\(["']scroll/.test(c));
   t('🚨 plus de balayage unique', !/Math\.sin\(Math\.PI \* p\)/.test(c));
-  t('🚨 en mouvement réduit il ne bouge pas du tout',
-    /if \(mouvementReduit\(\)\) return;/.test(c));
-  t('🚨 …et il reste à 50 %, manuel', /depart = 50/.test(c));
-  // Le défaut déjà réparé une fois : la boucle reprenait la main à
-  // chaque frame après que la personne ait saisi la poignée.
-  t('🚨 la première interaction rend la main POUR DE BON',
-    /interrompu\.current = true/.test(c) && /if \(interrompu\.current\) return;/.test(c));
-  t('…et l\'abonnement au défilement se coupe au démontage', /return stop;/.test(c));
+  t('🚨 il part de 50 %, et c\'est tout', /depart = 50/.test(c));
+  // Le glissement écrit la variable CSS à la fréquence de l'écran, et ne
+  // rend l'état React qu'au relâchement.
+  t('🚨 le glissement suit le doigt sans rendu React par mouvement',
+    /requestAnimationFrame/.test(c) && /setProperty\("--revel-pos"/.test(c));
+  t('🚨 …et l\'état rattrape la couture au relâchement', /if \(g\.v !== undefined\) setPosition\(g\.v\);/.test(c));
 }
 
 console.log('\n--- 7. 🚨 Les étiquettes correspondent aux IMAGES ---');
@@ -211,8 +205,7 @@ console.log('\n--- 8. 🚨 Le doigt tient la couture, le range ne couvre plus l\
     /onPointerDown=\{auPointeurBas\}/.test(c) && /onPointerMove=\{auPointeurBouge\}/.test(c)
     && /onPointerUp=\{auPointeurHaut\}/.test(c) && /onPointerCancel=\{auPointeurHaut\}/.test(c));
   t('🚨 …et capture le pointeur', /setPointerCapture\(e\.pointerId\)/.test(c));
-  t('🚨 le premier contact coupe le pilotage au défilement',
-    /auPointeurBas = \(e\) => \{[\s\S]{0,160}prendreLaMain\(\)/.test(c));
+  // (Il n'y a plus de pilotage au défilement à couper : §6.)
   t('🚨 le défilement vertical reste à la page (touch-action: pan-y)',
     /\.revel-cadre \{[\s\S]{0,500}touch-action: pan-y/.test(css));
   const regleCurseur = (css.match(/^\.revel-cadre input\.revel-curseur\[type="range"\] \{[\s\S]*?\}/m) || [''])[0];

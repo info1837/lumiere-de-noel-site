@@ -23,11 +23,10 @@ const BASE = company.baseUrl;
 const DESCRIPTION =
   "Lumières de Noël posées, entretenues et retirées, à partir de 1 000 $. Rive-Nord, Montréal et Rive-Sud. Un nombre limité de propriétés chaque saison.";
 
-// Une seule écriture de l'URL des polices : elle apparaît trois fois dans
-// le <head> (preload, feuille différée, repli sans JavaScript), et trois
-// copies finiraient par diverger d'une graisse.
-const POLICES =
-  "https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;500;600;700&display=swap";
+// Les deux fichiers de police du premier écran (latin). Les sous-ensembles
+// latin-ext ne se chargent que si une page en a besoin (unicode-range).
+// Voir le haut de globals.css.
+const POLICES = ["/fonts/bebas-latin.woff2", "/fonts/nunito-latin.woff2"];
 
 export const metadata = {
   metadataBase: new URL(BASE),
@@ -103,37 +102,16 @@ export default async function RootLayout({ children }) {
   return (
     <html lang="fr">
       <head>
-        {/* ⚠️ LES POLICES NE BLOQUENT PLUS LE RENDU.
-            Un <link rel="stylesheet"> est bloquant par construction : le
-            navigateur ne peint rien tant qu'il n'a pas la feuille. Mesuré
-            par Lighthouse mobile sur l'accueil : 1 374 ms de rendu bloqué,
-            à lui seul.
-
-            Le motif ci-dessous est le classique « media=print puis onload » :
-            une feuille dont le media ne correspond pas est téléchargée
-            SANS bloquer, et on la bascule sur `all` dès qu'elle est là. Le
-            `preload` lance le téléchargement tôt pour que la bascule arrive
-            vite, et le <noscript> garde les polices pour qui coupe le
-            JavaScript.
-
-            `display=swap` était déjà là : le texte s'affiche en police de
-            secours puis bascule, au lieu de rester invisible. 
-
-            `suppressHydrationWarning` : le script ci-dessous bascule `media`
-            AVANT l'hydratation, à dessein. Sans lui, React signale en
-            développement un écart « print » / « all » qui n'en est pas un. */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preload" as="style" href={POLICES} />
-        <link rel="stylesheet" href={POLICES} media="print" data-polices="" suppressHydrationWarning />
-        <noscript><link rel="stylesheet" href={POLICES} /></noscript>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "(function(){var l=document.querySelector('link[data-polices]');"
-              + "if(!l)return;function go(){l.media='all';}"
-              + "if(l.sheet)go();else l.addEventListener('load',go);})();",
-          }}
-        />
+        {/* LES POLICES SONT SERVIES PAR LE SITE ET PRÉCHARGÉES.
+            Avant : Google Fonts, en « media=print puis onload » pour ne pas
+            bloquer le rendu — mais deux domaines tiers, une feuille à lire
+            avant de connaître les fichiers, et une police qui arrivait tard
+            (le titre de /concours sautait à l'échange). Maintenant les
+            fichiers partent dès le HTML, du même domaine, et le repli
+            calibré de globals.css garde la place pendant l'attente. */}
+        {POLICES.map((href) => (
+          <link key={href} rel="preload" as="font" type="font/woff2" href={href} crossOrigin="anonymous" />
+        ))}
 
         <script
           type="application/ld+json"
@@ -204,13 +182,32 @@ export default async function RootLayout({ children }) {
 
         {PIXEL_ENABLED && (
           <>
+            {/* ⚠️ LE PIXEL EST DIFFÉRÉ, SANS PERDRE UN ÉVÉNEMENT.
+                fbevents.js et sa configuration coûtaient ~1,6 s de thread
+                principal sur un téléphone (Lighthouse mobile, accueil,
+                2026-10-26) : la moitié du temps de blocage de la page, en
+                plein chargement, quand le visiteur commence à défiler.
+
+                Le « stub » officiel est posé tout de suite : `fbq` existe,
+                les appels (init, PageView, Lead, CallClick) s'empilent dans
+                sa file. Seul le TÉLÉCHARGEMENT de fbevents.js attend : la fin
+                du chargement de la page, puis un moment libre (au plus
+                ~3,5 s). La bibliothèque vide la file en arrivant : rien ne
+                se perd. `window.__chargerPixel` le force tout de suite —
+                trackLead() s'en sert avant une redirection (lib/meta-lead-event.js). */}
             <Script id="meta-pixel" strategy="afterInteractive" dangerouslySetInnerHTML={{
-              __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`,
+              __html: `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];var c=!1;function go(){if(c)return;c=!0;t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}f.__chargerPixel=go;function tard(){setTimeout(function(){(f.requestIdleCallback||function(k){setTimeout(k,1)})(go,{timeout:2000})},1500)}if(b.readyState==='complete')tard();else f.addEventListener('load',tard)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${META_PIXEL_ID}');fbq('track','PageView');`,
             }} />
-            <noscript>
-              <img height="1" width="1" style={{ display: "none" }} alt=""
-                src={`https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1`} />
-            </noscript>
+            {/* ⚠️ L'<img> du repli SANS JavaScript est écrite en TEXTE.
+                En JSX, React la voyait comme une image et ajoutait dans le
+                <head> un `<link rel="preload" as="image">` vers
+                facebook.com/tr?…&noscript=1 — que le navigateur
+                téléchargeait AVEC JavaScript actif : une requête PageView
+                en trop vers Meta, et le cookie tiers « fr » qui coûtait 21 points en
+                Bonnes pratiques à toutes les pages (Lighthouse, 2026-10-26). */}
+            <noscript dangerouslySetInnerHTML={{
+              __html: `<img height="1" width="1" style="display:none" alt="" src="https://www.facebook.com/tr?id=${META_PIXEL_ID}&ev=PageView&noscript=1" />`,
+            }} />
           </>
         )}
 

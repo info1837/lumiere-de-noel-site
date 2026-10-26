@@ -15,6 +15,14 @@
 - **Saisonnier vs permanent** : retrait, entreposage et « de la pose au retrait » ne valent que pour les lumières saisonnières ; le permanent reste en place toute l'année (garantie 10 ans, sur soumission). `/permanent` redirige vers `/services/eclairage-architectural-permanent`.
 - **Aucune mention de Palencia** sur le site, sauf la divulgation légale de `/confidentialite` (même outil de gestion des clients).
 
+## Effets et performance (règle permanente, 2026-10-26)
+- **Défilement natif partout** : aucun smooth-scroll (JS ou `scroll-behavior`), aucun `scroll-snap`, aucun parallaxe, rien de piloté par le défilement. Aucune librairie d'animation (framer-motion, GSAP, AOS, Lenis…).
+- **Premier écran immobile** : hero, titre, bandeau, guirlande s'affichent tels quels, sans fondu ni cascade. Une section de premier écran qui n'est pas `.hero-section` porte `data-sans-apparition`.
+- **Plus bas** : seulement l'apparition de `components/FestiveLayer.jsx` (opacité + 10 px, 320 ms ease-out, une fois, `rootMargin` 15 %, cascade de 3 au plus). L'état masqué n'existe que sous `html.mvt` : sans JS, tout est visible.
+- **Micro-interactions** : survols 150 à 200 ms ; le comparateur avant/après suit le doigt. Aucune boucle `infinite` sauf la démo des DEL (`.led--*`).
+- **`prefers-reduced-motion`** : aucune animation (garde global en fin de `globals.css`).
+- **Perf** : images en `next/image` avec `sizes`, une seule image `priority` par page (l'image LCP), polices locales (`public/fonts`, préchargées, replis calibrés `Bebas Repli` / `Nunito Repli` à garder dans chaque `font-family`), Meta Pixel différé (stub + chargement après `load`). Garde : `node scripts/check-animations.mjs`. Objectif Lighthouse mobile ≥ 90, CLS < 0,1.
+
 ## Déploiement
 - Vercel (`vercel.json` : `framework: nextjs`). README : `npx vercel deploy --prod` (repo GitHub `info1837/lumiere-de-noel-site`, travail par PR vers `main`). Ne jamais commiter ni afficher `.env*`.
 

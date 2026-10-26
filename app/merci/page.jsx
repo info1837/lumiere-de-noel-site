@@ -127,7 +127,7 @@ export default function MerciPage() {
                   width: 48, height: 48, borderRadius: "50%",
                   background: gold, color: charcoal,
                   display: "inline-flex", alignItems: "center", justifyContent: "center",
-                  fontWeight: 700, fontFamily: "'Bebas Neue', sans-serif", fontSize: 22,
+                  fontWeight: 700, fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", fontSize: 22,
                   letterSpacing: "0.04em",
                 }}>{s.n}</div>
                 <div>

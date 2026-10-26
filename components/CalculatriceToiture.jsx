@@ -609,7 +609,7 @@ export default function CalculatriceToiture() {
               C'est la règle de Sophie, appliquée ici : deux chiffres, pas
               un de plus, et rien du tout au-dessus de 2 étages. */}
           <div style={{
-            fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(32px,7vw,48px)",
+            fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", fontSize: "clamp(32px,7vw,48px)",
             color: charcoal, lineHeight: 1.05, marginBottom: 12,
           }}>
             {resultat.ancrage

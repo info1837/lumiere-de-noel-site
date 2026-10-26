@@ -120,7 +120,7 @@ export default function Concours() {
           <div style={{ fontSize: 12, letterSpacing: "0.18em", textTransform: "uppercase", color: gold, marginBottom: 12 }}>
             Règlement officiel
           </div>
-          <h1 style={{ fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(2.4rem,5vw,3.6rem)", lineHeight: 1.05, margin: 0 }}>
+          <h1 style={{ fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", fontSize: "clamp(2.4rem,5vw,3.6rem)", lineHeight: 1.05, margin: 0 }}>
             Concours « Gagnez votre installation 2026 » — Règlement officiel
           </h1>
           <p style={{ marginTop: 14, opacity: 0.85, fontSize: 17 }}>

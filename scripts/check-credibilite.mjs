@@ -49,14 +49,13 @@ console.log('\n--- 2. 🚨 Elle est plus GRANDE ---');
   t('une seule colonne sur téléphone',
     /max-width: 640px[\s\S]{0,400}\.vitrine \{ grid-template-columns: 1fr/.test(css));
   t('🚨 QUATRE photos, pas six', /HOME_VITRINE_INDICES = \[0, 2, 10, 9\]/.test(lire('components/data.js')));
+  // Passe « effets sobres » (2026-10-26) : la bande ne boucle plus, il n'y
+  // a donc plus de clones — chaque photo apparaît une fois, avec son alt.
   t('🚨 chacune nomme sa ville',
-    /<figcaption aria-hidden=\{clone \|\| undefined\}>\{p\.caption\}<\/figcaption>/
-      .test(lire('components/VitrineDefilante.jsx')));
-  // Les clones de bouclage ne doivent pas être relus par un lecteur
-  // d'écran — ni compter comme une deuxième apparition de la photo.
-  t('🚨 les clones de bouclage sont muets',
-    /alt=\{clone \? "" : p\.alt\} aria-hidden=\{clone \|\| undefined\}/
-      .test(lire('components/VitrineDefilante.jsx')));
+    /<figcaption>\{p\.caption\}<\/figcaption>/.test(lire('components/VitrineDefilante.jsx')));
+  t('🚨 plus de clones de bouclage (chaque photo une seule fois, avec son alt)',
+    /alt=\{p\.alt\}/.test(lire('components/VitrineDefilante.jsx'))
+      && !/clone/.test(lire('components/VitrineDefilante.jsx').replace(/^\s*\/\/.*$/gm, '')));
   t('la grille générique à 3 colonnes existe toujours pour /realisations',
     /\.gallery-grid \{ display: grid; grid-template-columns: repeat\(3, 1fr\)/.test(css));
 }

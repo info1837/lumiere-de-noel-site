@@ -1,205 +1,100 @@
 "use client";
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
+import { useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { mouvementReduit, CLASSE_RACINE, surDefilement, borner } from "@/lib/mouvement";
+import { mouvementReduit, CLASSE_RACINE } from "@/lib/mouvement";
 
-// La couche qui fait vivre la page.
+// Les apparitions au défilement — et RIEN D'AUTRE.
 //
-// Elle fait deux choses qui n'ont rien à voir, et c'est volontaire :
-// elles partagent le même garde (`prefers-reduced-motion`) et le même
-// cycle de vie, et les séparer donnerait deux composants qui doivent se
-// surveiller l'un l'autre.
+// ⚠️ PASSE « EFFETS SOBRES » (2026-10-26). Cette couche faisait quatre
+// choses : la neige du hero (17 flocons en boucle infinie), la guirlande
+// injectée sous l'entête (28 ampoules en cascade), la frise tracée au
+// défilement (un écouteur `scroll` sur toute la page), et les apparitions.
+// Il ne reste que la dernière, réduite à la règle de l'agence :
 //
-//   1. LA NEIGE NE TOMBE QUE DANS LE HERO. Elle était `position: fixed`
-//      sur le viewport : elle suivait le visiteur jusque dans le
-//      formulaire. De la neige derrière un champ « Téléphone », ce n'est
-//      plus une ambiance, c'est du bruit. 17 flocons, deux fois plus
-//      lents, dans le premier écran seulement.
+//   · AU-DESSUS DE LA LIGNE DE FLOTTAISON, RIEN NE S'ANIME. Ce qui est à
+//     l'écran au moment où le script tourne est affiché tel quel — pas de
+//     fondu sur le hero ni sur le titre.
+//   · PLUS BAS : opacité + 10 px de montée, 320 ms, ease-out, UNE fois.
+//     Déclenchée tôt (rootMargin de 15 % sous l'écran) : l'élément a fini
+//     d'apparaître quand il entre vraiment dans la vue.
+//   · CASCADE BORNÉE À TROIS : les éléments qui entrent ensemble se
+//     décalent de 0, 60 et 120 ms ; au-delà, tous partent à 120 ms.
+//   · MOUVEMENT RÉDUIT : la classe racine n'est pas posée. Aucune
+//     animation, rien de masqué.
+//   · SANS JAVASCRIPT (ou s'il tarde), rien n'est caché : l'état masqué
+//     n'existe que sous `html.mvt`, posé ici.
 //
-//   2. TOUT CE QUI S'ALLUME AU DÉFILEMENT. Apparitions, guirlande du
-//      hero, frise qui se trace.
-//
-// ⚠️ « MOUVEMENT RÉDUIT » VEUT DIRE « RIEN NE BOUGE », PAS « RIEN ».
-// La première version sortait d'ici dès que `prefers-reduced-motion`
-// était actif : aucune classe, aucun effet. Sur un Mac où « Réduire les
-// animations » est coché — un réglage courant, pas un cas rare — le site
-// paraissait mort. Désormais la classe est posée dans les deux cas, et
-// c'est la feuille (`@media (prefers-reduced-motion: reduce)`) qui garde
-// les FONDUS (300 ms, opacité seule) en retirant tout déplacement — pas
-// de montée, pas de dézoom, pas de découpage. Ici : pas de séquence
-// d'ampoules, pas de neige.
-//
-// ⚠️ L'ÉTAT MASQUÉ EST POSÉ PAR CE SCRIPT, JAMAIS PAR LA FEUILLE SEULE.
-// Toutes les règles d'apparition sont préfixées `html.mvt`, et c'est ici
-// qu'on pose la classe. Si ce fichier ne s'exécute pas — erreur,
-// bloqueur, réseau coupé en plein chargement — la page s'affiche
-// entière. Masquer du contenu en pariant sur un script, c'est accepter
-// qu'il disparaisse le jour où le pari est perdu.
+// Plus aucun écouteur de défilement : l'IntersectionObserver ne coûte
+// rien pendant que le doigt fait défiler la page.
 
-const FLOCONS = 17;
-
-// Combien d'ampoules sous l'entête du hero. Un nombre pair et rond : on
-// les répartit en `space-between`, donc elles tombent juste à toutes les
-// largeurs.
-//
-// ⚠️ IL N'Y A PLUS DE GUIRLANDE DE PROGRESSION. Elle courait sous
-// l'entête sur toute la page : 40 ampoules qui changeaient à chaque
-// geste, collées au contenu qui défilait dessous. Les ampoules ne vivent
-// plus que dans deux moments — le hero qui s'allume, et les points de la
-// frise. Une lumière partout n'est plus une lumière.
-const AMPOULES_HERO = 28;
-
-/** Le décalage entre deux apparitions d'un même groupe. */
 const PAS_MS = 60;
+const CASCADE_MAX = 3;
+
+const TEXTES = "h2, h3, p, .section-lien, .offre-liste li, .frise-etape, a[class*='cta'], button[class*='cta']";
 
 export default function FestiveLayer() {
-  const [hero, setHero] = useState(null);
-  // ⚠️ LE MOUVEMENT SUIT LA NAVIGATION (partie 3). Le calque est monté une
-  // fois, dans le layout : sans le chemin en dépendance, une page atteinte
-  // par un lien interne n'avait AUCUNE apparition, aucun hero qui s'allume
-  // — seule la première page de la visite bougeait.
+  // Le calque est monté une fois, dans le layout : sans le chemin en
+  // dépendance, une page atteinte par un lien interne n'aurait aucune
+  // apparition.
   const chemin = usePathname();
 
   useEffect(() => {
-    // Mouvement réduit : la classe racine est posée quand même — les
-    // fondus en dépendent — mais la feuille retire tout déplacement, et
-    // la neige n'est pas rendue.
-    const doux = mouvementReduit();
+    if (mouvementReduit() || typeof IntersectionObserver === "undefined") return;
     const racine = document.documentElement;
-    racine.classList.add(CLASSE_RACINE);
-    if (!doux) setHero(document.querySelector(".hero-section"));
 
-    const nettoyages = [];
-
-    // ── 1 · Les apparitions ──────────────────────────────────────────
-    //
-    // Le texte monte de 16 px en fondu, les photos se dévoilent au
-    // découpage. Une seule fois par élément.
     const io = new IntersectionObserver((entrees) => {
-      entrees.forEach((e) => {
-        if (!e.isIntersecting) return;
-        e.target.classList.add("est-la");
-        io.unobserve(e.target);
-      });
-    }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
-    nettoyages.push(() => io.disconnect());
-
-    const vh = window.innerHeight;
-    const sections = Array.from(document.querySelectorAll("main section"))
-      // Le hero est le premier écran : il a sa propre entrée (la photo
-      // qui s'allume). Le faire monter ferait clignoter la page.
-      .filter((s) => !s.classList.contains("hero-section"));
-
-    for (const section of sections) {
-      // Le texte : titres, paragraphes, boutons. Dans l'ordre du
-      // document, pour que le décalage suive la lecture.
-      const textes = Array.from(section.querySelectorAll(
-        "h2, h3, p, .section-lien, .offre-liste li, .frise-etape, a[class*='cta'], button[class*='cta']",
-      )).filter((el) => {
-        // Rien qui vive déjà dans un bloc révélé : on révélerait deux
-        // fois, et le second décalage s'ajouterait au premier.
-        if (el.closest(".rv-t, .rv-p")) return false;
-        // Rien d'invisible ni de minuscule (séparateurs, pastilles).
-        const r = el.getBoundingClientRect();
-        return r.height > 8;
-      });
-
-      // Les photos : on observe le PARENT, jamais l'image découpée.
-      const photos = Array.from(section.querySelectorAll("figure, .revel"))
-        .filter((f) => f.querySelector("img"));
-
       let rang = 0;
-      const poser = (el, classe) => {
-        el.classList.add(classe);
-        el.style.setProperty("--rv-d", `${Math.min(rang, 6) * PAS_MS}ms`);
+      for (const e of entrees) {
+        if (!e.isIntersecting) continue;
+        const el = e.target;
+        el.style.setProperty("--rv-d", `${Math.min(rang, CASCADE_MAX - 1) * PAS_MS}ms`);
+        el.classList.add("est-la");
+        io.unobserve(el);
         rang += 1;
-        // Déjà à l'écran au chargement : on l'affiche sans animer. Un
-        // élément qu'on masque pour l'animer alors qu'il est DÉJÀ sous
-        // les yeux, c'est un clignotement, pas une apparition.
-        if (el.getBoundingClientRect().top < vh * 0.92) el.classList.add("est-la");
-        else io.observe(el);
-      };
-
-      photos.forEach((f) => poser(f, "rv-p"));
-      textes.forEach((el) => poser(el, "rv-t"));
-    }
-
-    // ── 2 · La guirlande du hero ─────────────────────────────────────
-    const heroEl = document.querySelector(".hero-section");
-    if (heroEl && !heroEl.querySelector(".hero-guirlande")) {
-      const g = document.createElement("div");
-      g.className = "hero-guirlande";
-      g.setAttribute("aria-hidden", "true");
-      for (let i = 0; i < AMPOULES_HERO; i++) {
-        const b = document.createElement("span");
-        // Gauche → droite : 34 ms par ampoule, ~0,95 s pour la rangée,
-        // donc elle finit en même temps que la photo s'éclaircit. En
-        // mouvement réduit, pas de séquence : elles s'allument ensemble.
-        b.style.setProperty("--amp-d", doux ? "0ms" : `${i * 34}ms`);
-        g.appendChild(b);
       }
-      heroEl.appendChild(g);
-      nettoyages.push(() => g.remove());
+    }, { threshold: 0, rootMargin: "0px 0px 15% 0px" });
+
+    // Le premier écran n'a pas d'apparition : ni le hero du gabarit, ni un
+    // premier écran marqué `data-sans-apparition` (/concours).
+    const sections = Array.from(document.querySelectorAll("main section"))
+      .filter((s) => !s.classList.contains("hero-section") && !s.hasAttribute("data-sans-apparition"));
+
+    // Les photos sont révélées par leur cadre (figure), le texte élément
+    // par élément. Rien qui vive déjà dans un bloc révélé : le second
+    // décalage s'ajouterait au premier.
+    const vus = new Set();
+    for (const section of sections) {
+      for (const f of section.querySelectorAll("figure")) if (f.querySelector("img")) vus.add(f);
+      for (const el of section.querySelectorAll(TEXTES)) if (!el.closest("figure")) vus.add(el);
     }
+    const candidats = Array.from(vus).filter((el) => {
+      for (let p = el.parentElement; p; p = p.parentElement) if (vus.has(p)) return false;
+      return true;
+    });
 
-    // ── 3 · La frise se trace ────────────────────────────────────────
-    const frise = document.querySelector(".frise");
-    const etapes = frise ? Array.from(frise.querySelectorAll(".frise-etape")) : [];
+    // ⚠️ TOUTES LES LECTURES D'ABORD, TOUTES LES ÉCRITURES ENSUITE.
+    // Lire une position puis poser une classe, en boucle, force le
+    // navigateur à recalculer la mise en page à CHAQUE élément — une
+    // centaine de fois sur /concours, en plein chargement.
+    const vh = window.innerHeight;
+    const mesures = candidats.map((el) => el.getBoundingClientRect());
 
-    const auDefilement = () => {
-      // La frise se trace, et chaque point s'allume quand elle
-      // l'atteint. En mouvement réduit le filet est entier d'emblée (la
-      // feuille ignore --frise-p) : seuls les points changent d'état.
-      if (frise && etapes.length) {
-        const r = frise.getBoundingClientRect();
-        const vh2 = window.innerHeight || 1;
-        // 0 quand la frise arrive au tiers bas de l'écran, 1 quand elle
-        // atteint le milieu : le tracé se fait pendant qu'on la regarde,
-        // pas pendant qu'elle est encore en bas.
-        const q = borner((vh2 * 0.85 - r.top) / Math.max(1, r.height + vh2 * 0.25), 0, 1);
-        frise.style.setProperty("--frise-p", String(q));
-        etapes.forEach((e, i) => {
-          e.classList.toggle("atteinte", q >= (i + 0.5) / etapes.length);
-        });
-      }
-    };
-    nettoyages.push(surDefilement(auDefilement));
+    const masques = [];
+    candidats.forEach((el, i) => {
+      const r = mesures[i];
+      if (r.height <= 8) return;               // séparateurs, pastilles
+      if (r.top < vh) return;                  // déjà à l'écran : affiché tel quel
+      masques.push(el);
+    });
+    masques.forEach((el) => { el.classList.add("rv"); io.observe(el); });
+    racine.classList.add(CLASSE_RACINE);
 
     return () => {
-      nettoyages.forEach((f) => { try { f(); } catch { /* démontage */ } });
+      io.disconnect();
       racine.classList.remove(CLASSE_RACINE);
+      masques.forEach((el) => el.classList.remove("rv", "est-la"));
     };
   }, [chemin]);
 
-  if (!hero) return null;
-
-  const flocons = Array.from({ length: FLOCONS }, (_, i) => {
-    const taille = 2 + (i % 4);
-    const gauche = (i * 97) % 100;
-    const duree = 18 + (i % 7) * 4;
-    const retard = -((i * 1.7) % 12);
-    const dx = ((i % 5) - 2) * 16;
-    const o = 0.32 + (i % 4) * 0.08;
-    return (
-      <span
-        key={i}
-        className="flake"
-        style={{
-          left: `${gauche}%`,
-          width: taille,
-          height: taille,
-          animationDuration: `${duree}s`,
-          animationDelay: `${retard}s`,
-          "--dx": `${dx}px`,
-          "--o": o,
-        }}
-      />
-    );
-  });
-
-  return createPortal(
-    <div className="snow" aria-hidden="true">{flocons}</div>,
-    hero,
-  );
+  return null;
 }

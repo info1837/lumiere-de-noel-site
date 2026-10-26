@@ -28,6 +28,7 @@ import QuoteForm from "@/components/QuoteForm";
 import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 import HowItWorks from "@/components/HowItWorks";
 import RevelationLumiere from "@/components/RevelationLumiere";
+import { GuirlandeHero } from "@/components/Hero";
 import { PHOTOS, paireAvantApres } from "@/components/photos";
 import { flouDe } from "@/components/photos-flou";
 import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } from "@/components/data";
@@ -37,8 +38,9 @@ export const MARINE_PROFOND = "#060E18";
 
 // ── 1 · Le hero ──────────────────────────────────────────────────────────
 // Le hero de l'accueil, en plus court : photo réelle pleine largeur, un H1,
-// une phrase, deux boutons. `.hero-section` fait qu'il s'allume comme
-// l'accueil (FestiveLayer). La ligne de preuve est la même : le prix et le
+// une phrase, deux boutons. `.hero-section` lui donne la même
+// guirlande que l'accueil, et le même premier écran sans animation.
+// La ligne de preuve est la même : le prix et le
 // territoire (plus d'avis d'une autre entreprise).
 export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true }) {
   return (
@@ -56,6 +58,7 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
         />
       )}
       <div className="hero-voile" aria-hidden="true" />
+      <GuirlandeHero />
       <div className="hero-container" style={{ position: "relative", width: "100%" }}>
         <div className="hero-texte">
           {filAriane && <Breadcrumb items={filAriane} dark />}

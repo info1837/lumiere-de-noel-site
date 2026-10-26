@@ -1,14 +1,23 @@
-// Moins d'animations, et variées.
+// Les effets, niveau agence : sobres, et jamais au prix du défilement.
 //
 //   node scripts/check-animations.mjs
 //
-// Avant : 34 flocons `position: fixed` sur le viewport — ils tombaient sur
-// TOUTE la page, y compris derrière les champs du formulaire et dans le pied
-// de page — et un seul effet d'apparition, appliqué à chaque section entière.
+// Passe « effets sobres » (2026-10-26). /concours chargeait lentement et
+// son défilement n'était pas constant ; l'accueil passait 1,4 s à bloquer
+// le thread principal (Lighthouse mobile). Les règles qu'on tient ici :
 //
-// Le comportement se prouve en navigateur (voir la PR). Ce harnais tient les
-// deux pièges qui ne se voient pas à l'œil : la neige qui redevient globale,
-// et un effet qui se répète d'une section à la suivante.
+//   1. Défilement NATIF partout : aucun smooth-scroll (JS ou CSS), aucun
+//      scroll-snap, aucun parallaxe, rien de piloté par le défilement.
+//   2. Au-dessus de la ligne de flottaison : rien ne s'anime.
+//   3. Plus bas : opacité + translateY 8 à 12 px, 250 à 400 ms, ease-out,
+//      une fois, déclenchée tôt, jamais de contenu caché si le JS tarde,
+//      cascade de trois éléments au plus.
+//   4. Survols 150 à 200 ms ; le comparateur suit le doigt.
+//   5. prefers-reduced-motion : aucune animation.
+//   6. Aucune boucle, sauf la démo des DEL (c'est le produit montré).
+//
+// Le comportement se prouve en navigateur (captures et Lighthouse de la
+// PR). Ce harnais tient ce qui se dégrade sans se voir.
 
 import fs from 'fs';
 import path from 'path';
@@ -17,119 +26,115 @@ const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), '..');
 let pass = 0, fail = 0;
 const t = (nom, ok, d = '') => { console.log(`  ${ok ? '✅' : '❌'} ${nom}${d ? ` — ${d}` : ''}`); ok ? pass++ : fail++; };
 const lire = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
+const nu = (x) => x.replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
-const couche = lire('components/FestiveLayer.jsx');
-const css = lire('app/globals.css');
-// Mes commentaires citent les valeurs d'AVANT (34 flocons, clip-path, fixed) :
-// les lire ferait passer des assertions sur du texte explicatif.
-const cssNu = css.replace(/\/\*[\s\S]*?\*\//g, '');
-const codeNu = couche.replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
+const css = nu(lire('app/globals.css'));
+const couche = nu(lire('components/FestiveLayer.jsx'));
+const revel = nu(lire('components/RevelationLumiere.jsx'));
+const defile = nu(lire('components/VitrineDefilante.jsx'));
+const ambiances = nu(lire('components/AmbiancesPermanent.jsx'));
+const hero = nu(lire('components/Hero.jsx'));
 
-console.log('\n--- 1. 🚨 La neige ne tombe que dans le hero ---');
+// Tout le code client du site, pour les interdits globaux.
+const sources = [];
+for (const dir of ['app', 'components', 'lib']) {
+  const marcher = (d) => {
+    for (const e of fs.readdirSync(path.join(ROOT, d), { withFileTypes: true })) {
+      const p = path.join(d, e.name);
+      if (e.isDirectory()) { if (e.name !== 'api') marcher(p); }
+      else if (/\.(jsx?|mjs)$/.test(e.name)) sources.push([p, nu(lire(p))]);
+    }
+  };
+  marcher(dir);
+}
+const ou = (re) => sources.filter(([, c]) => re.test(c)).map(([p]) => p);
+
+console.log('\n--- 1. 🚨 Le défilement est celui du navigateur ---');
 {
-  t('🚨 deux fois moins de flocons (34 → 17)', /const FLOCONS = 17;/.test(codeNu));
-  t('🚨 elle est montée DANS le hero, par un portail',
-    /createPortal\(\s*<div className="snow"[\s\S]{0,120}hero,?\s*\)/.test(codeNu));
-  t('🚨 …et la cible est bien la section du hero', /querySelector\("\.hero-section"\)/.test(codeNu));
-  t('🚨 sans hero, aucune neige', /if \(!hero\) return null;/.test(codeNu));
-  t('🚨 la couche n\'est plus fixée au viewport',
-    /\.snow \{ position: absolute; inset: 0;/.test(cssNu));
-  t('🚨 …et surtout plus `fixed`', !/\.snow \{ position: fixed/.test(cssNu));
-  t('🚨 les flocons sont deux fois plus lents', /const duree = 18 \+ \(i % 7\) \* 4;/.test(codeNu));
-  t('🚨 la chute est en % du hero, pas en vh',
-    /translate3d\(var\(--dx, 14px\), 105%, 0\)/.test(cssNu) && !/110vh/.test(cssNu));
+  t('🚨 aucun scroll-behavior: smooth dans la feuille', !/scroll-behavior:\s*smooth/.test(css));
+  t('🚨 aucun scroll-snap', !/scroll-snap/.test(css));
+  t('🚨 aucun scroll-snap posé en ligne dans le JSX', ou(/scrollSnap/).length === 0, ou(/scrollSnap/).join(', '));
+  const lib = ['lenis', 'locomotive-scroll', 'gsap', 'framer-motion', 'aos', 'react-scroll-parallax', 'smooth-scrollbar'];
+  const deps = Object.keys({ ...JSON.parse(lire('package.json')).dependencies, ...JSON.parse(lire('package.json')).devDependencies });
+  t('🚨 aucune librairie d\'animation ou de smooth-scroll', !deps.some((d) => lib.includes(d)), deps.filter((d) => lib.includes(d)).join(', '));
+  t('🚨 aucun scrollTo/scrollBy « smooth » dans le code', ou(/behavior:\s*["']smooth["']/).length === 0, ou(/behavior:\s*["']smooth["']/).join(', '));
+  // Plus rien de piloté par le défilement : ni le comparateur, ni la frise.
+  const ecoutes = ou(/addEventListener\(\s*["']scroll["']/);
+  t('🚨 un seul écouteur de défilement : l\'opacité de l\'entête', ecoutes.length === 1 && ecoutes[0] === 'app/ClientLayout.jsx', ecoutes.join(', '));
+  t('🚨 …et il est passif', /addEventListener\("scroll", onScroll, \{ passive: true \}\)/.test(lire('app/ClientLayout.jsx')));
+  t('🚨 le comparateur ne suit plus le défilement', !/surDefilement|progressionDansEcran/.test(revel));
+  t('🚨 la frise ne se trace plus au défilement', !/--frise-p/.test(css) && !/frise/.test(couche.replace(/\.frise-etape/g, '')));
 }
 
-console.log('\n--- 2. 🚨 Les apparitions : le texte monte, les photos se dévoilent ---');
+console.log('\n--- 2. 🚨 Au-dessus de la ligne de flottaison, rien ne s\'anime ---');
 {
-  // ⚠️ LE JEU D'EFFETS A CHANGÉ (passe « vie », 2026-10-09).
-  //
-  // Avant : trois effets (A · B · C · B) posés sur le TITRE de chaque
-  // section et son image maîtresse, en alternant pour ne jamais répéter
-  // le voisin. C'était la bonne réponse à « ne pas faire monter un bloc
-  // de 1 800 px » — mais ça ne révélait que deux éléments par section,
-  // et la page restait plate entre les deux.
-  //
-  // Maintenant : un seul vocabulaire, appliqué à ce qui se lit — titres,
-  // paragraphes, boutons, items de liste — avec un décalage de 60 ms
-  // dans l'ordre du document. Les photos ont leur propre effet.
-  // Plus besoin d'alterner : il n'y a plus qu'un effet par nature
-  // d'élément, donc deux voisins ne peuvent pas « tomber sur le même ».
-  t('🚨 le texte visé est celui qui se lit',
-    /"h2, h3, p, \.section-lien, \.offre-liste li, \.frise-etape/.test(codeNu));
-  t('🚨 un décalage de 60 ms, dans l\'ordre du document', /const PAS_MS = 60;/.test(codeNu));
-  t('🚨 …borné, pour qu\'un long bloc ne finisse pas une seconde plus tard',
-    /Math\.min\(rang, 6\) \* PAS_MS/.test(codeNu));
-  t('🚨 le hero ne s\'anime pas (il a sa propre entrée)',
-    /!s\.classList\.contains\("hero-section"\)/.test(codeNu));
-  t('🚨 une seule fois par élément', /io\.unobserve\(e\.target\)/.test(codeNu));
-  t('🚨 rien n\'est révélé deux fois', /el\.closest\("\.rv-t, \.rv-p"\)/.test(codeNu));
-  t('🚨 déjà à l\'écran au chargement → affiché sans animer (pas de clignotement)',
-    /getBoundingClientRect\(\)\.top < vh \* 0\.92/.test(codeNu));
+  t('🚨 la photo du hero ne « s\'allume » plus', !/heroAllume|heroEclaire/.test(css));
+  t('🚨 plus de neige', !/\.flake|snowFall|\.snow\b/.test(css) && !/flake|FLOCONS/.test(couche));
+  t('🚨 la guirlande du hero est rendue par le serveur, allumée',
+    /<GuirlandeHero \/>/.test(hero) && /\.hero-guirlande span \{[^}]*opacity: 0\.9;/.test(css) && !/ampouleAllume/.test(css));
+  t('🚨 le point du bandeau ne respire plus', !/bandeau-respire/.test(css));
+  t('🚨 les sections du premier écran sont exclues de l\'apparition',
+    /!s\.classList\.contains\("hero-section"\) && !s\.hasAttribute\("data-sans-apparition"\)/.test(couche));
+  t('🚨 ce qui est à l\'écran au chargement n\'est jamais masqué', /if \(r\.top < vh\) return;/.test(couche));
 }
 
-console.log('\n--- 3. 🚨 Deux effets : le texte, et la photo ---');
+console.log('\n--- 3. 🚨 L\'apparition plus bas : douce, une fois, tôt ---');
 {
-  t('🚨 texte — fondu + 16 px de montée',
-    /html\.mvt \.rv-t \{[\s\S]{0,80}translateY\(16px\);/.test(cssNu));
-  t('🚨 photo — dévoilement au découpage + dézoom 1,04 → 1',
-    /clip-path: inset\(0 100% 0 0\);[\s\S]{0,60}scale\(1\.04\)/.test(cssNu));
-  t('…et elle revient à 1', /clip-path: inset\(0 0 0 0\);[\s\S]{0,60}scale\(1\)/.test(cssNu));
-
-  // ⚠️ LE PIÈGE DU clip-path, QUI N'A PAS DISPARU.
-  //
-  // L'ancienne garde interdisait clip-path sur l'effet B parce qu'une
-  // aire d'intersection nulle empêche l'observateur de se déclencher —
-  // et le titre restait invisible à jamais. Le piège est le même ici :
-  // la photo EST découpée. Ce qui le désamorce, c'est qu'on observe le
-  // PARENT (`.rv-p`) et jamais l'image.
-  t('🚨 on observe le PARENT, jamais l\'image découpée',
-    /querySelectorAll\("figure, \.revel"\)/.test(codeNu)
-    && /html\.mvt \.rv-p > img/.test(cssNu));
-  t('🚨 …et le texte, lui, n\'est jamais découpé',
-    !/\.rv-t[^{]*\{[^}]*clip-path/.test(cssNu));
-  t('les durées restent sobres (≤ 900 ms)',
-    /transition: opacity 520ms/.test(cssNu) && /clip-path 820ms/.test(cssNu));
+  const base = css.match(/html\.mvt \.rv \{([^}]*)\}/)?.[1] || '';
+  const fin = css.match(/html\.mvt \.rv\.est-la \{([^}]*)\}/)?.[1] || '';
+  const px = Number(base.match(/translateY\((\d+)px\)/)?.[1]);
+  t('🚨 opacité + translateY de 8 à 12 px', /opacity: 0;/.test(base) && px >= 8 && px <= 12, `${px} px`);
+  const durees = [...fin.matchAll(/(\d+)ms ease-out/g)].map((m) => Number(m[1]));
+  t('🚨 250 à 400 ms, ease-out', durees.length === 2 && durees.every((d) => d >= 250 && d <= 400), durees.join(', '));
+  t('🚨 rien d\'autre que opacity et transform', !/clip-path|filter|scale/.test(base + fin));
+  t('🚨 une seule fois par élément', /io\.unobserve\(el\)/.test(couche));
+  t('🚨 déclenchée tôt (rootMargin positif sous l\'écran)', /rootMargin: "0px 0px 1\d% 0px"/.test(couche));
+  t('🚨 cascade de trois éléments au plus', /const CASCADE_MAX = 3;/.test(couche) && /Math\.min\(rang, CASCADE_MAX - 1\) \* PAS_MS/.test(couche));
+  t('🚨 l\'état masqué n\'existe que sous html.mvt (sans JS, tout est visible)', !/^\.rv \{/m.test(css));
+  t('🚨 toutes les lectures de position avant les écritures (pas de recalcul en boucle)',
+    /const mesures = candidats\.map\(\(el\) => el\.getBoundingClientRect\(\)\);/.test(couche));
 }
 
-console.log('\n--- 4. 🚨 Rien ne bouge pour qui l\'a demandé ---');
+console.log('\n--- 4. Survols et comparateur ---');
 {
-  // Le test `matchMedia` vit maintenant dans lib/mouvement.js, derrière
-  // `mouvementReduit()` — une seule écriture pour tous les composants
-  // qui bougent, au lieu de quatre copies qui finiraient par diverger.
-  const mvt = lire('lib/mouvement.js');
-  t('🚨 le garde existe, en un seul endroit',
-    /prefers-reduced-motion: reduce/.test(mvt) && /export function mouvementReduit/.test(mvt));
-  // ⚠️ « Mouvement réduit » ne veut plus dire « rien ». La couche pose
-  // la classe racine dans les deux cas — les FONDUS restent — et la
-  // feuille retire tout déplacement. Voir check-vie §6.
-  t('🚨 le garde est lu AVANT de poser la classe racine',
-    /const doux = mouvementReduit\(\);/.test(codeNu)
-    && codeNu.indexOf('const doux = mouvementReduit();') < codeNu.indexOf('classList.add(CLASSE_RACINE)'));
-
-  // ⚠️ LA RÈGLE QUI COMPTE VRAIMENT : l'état masqué n'existe QUE si le
-  // script a posé la classe sur <html>. Sans JS, aucune règle
-  // `html.mvt .rv-*` ne s'applique et la page s'affiche entière.
-  t('🚨 tout état masqué est préfixé par la classe racine',
-    !/^\.rv-t \{/m.test(cssNu) && /html\.mvt \.rv-t \{/.test(cssNu));
-  t('🚨 …et la classe est posée par le script', /classList\.add\(CLASSE_RACINE\)/.test(codeNu));
-  t('🚨 la neige est coupée aussi en CSS',
-    /@media \(prefers-reduced-motion: reduce\) \{[\s\S]{0,60}\.snow \{ display: none; \}/.test(cssNu));
-  t('🚨 les apparitions ne déplacent plus rien (fondu seul)',
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,900}html\.mvt \.rv-t\.est-la \{ opacity: 1; transform: none; transition: opacity 300ms/.test(cssNu));
-  t('🚨 le hero s\'éclaire sans bouger (luminosité seule)',
-    /@media \(prefers-reduced-motion: reduce\)[\s\S]{0,1200}html\.mvt \.hero-section > img \{ animation: heroEclaire/.test(cssNu));
+  t('🚨 les cartes répondent en 180 ms', /\.glow-card \{\s*transition: transform 180ms ease-out/.test(css));
+  t('🚨 les boutons aussi', /a\[class\*="cta"\], button\[class\*="cta"\], \.sim-cta \{\s*transition: box-shadow 180ms ease-out, transform 180ms ease-out;/.test(css));
+  // Aucune transition de plus de 400 ms ne doit subsister (hors démo des DEL).
+  const longues = [...css.matchAll(/transition:[^;]*?(\d{3,4})ms/g)].map((m) => Number(m[1])).filter((d) => d > 400);
+  t('🚨 aucune transition de plus de 400 ms', longues.length === 0, longues.join(', '));
+  t('🚨 le comparateur suit le doigt sans rendu React par mouvement',
+    /requestAnimationFrame/.test(revel) && /setProperty\("--revel-pos"/.test(revel));
+  t('🚨 …et rend l\'état au relâchement (clavier, lecteurs d\'écran)', /if \(g\.v !== undefined\) setPosition\(g\.v\);/.test(revel));
+  t('🚨 le diaporama des ambiances ne tourne plus seul', !/setTimeout|TENUE_MS/.test(ambiances));
+  t('🚨 la bande des réalisations ne boucle plus', !/infinite/.test(css.match(/\.defile[\s\S]*?\}/)?.[0] || '') && !/defileGauche|defile--anime/.test(css) && !/clone/.test(defile));
 }
 
-console.log('\n--- 5. Ce à quoi on ne touche pas ---');
+console.log('\n--- 5. 🚨 prefers-reduced-motion : aucune animation ---');
+{
+  const fin = css.slice(css.lastIndexOf('@media (prefers-reduced-motion: reduce)'));
+  t('🚨 garde global en fin de feuille',
+    /\*, \*::before, \*::after \{[\s\S]*animation-duration: 0s !important;[\s\S]*transition-duration: 0s !important;/.test(fin));
+  t('🚨 aucune apparition (la classe racine n\'est pas posée)', /if \(mouvementReduit\(\) \|\| typeof IntersectionObserver === "undefined"\) return;/.test(couche));
+}
+
+console.log('\n--- 6. 🚨 Aucune boucle, sauf la démo des DEL ---');
+{
+  const infinies = [...css.matchAll(/([^{}]+)\{[^{}]*animation[^{}:]*:[^{};]*infinite[^{};]*;/g)].map((m) => m[1].trim());
+  // .led--* : la démo de l'éclairage permanent (/services/eclairage-
+  // architectural-permanent). L'animation EST le produit montré ; elle ne
+  // tourne qu'une fois qu'on a choisi un effet, et s'arrête en mouvement
+  // réduit (garde global ci-dessus).
+  const AUTORISEES = ['.led--twinkle', '.led--chase', '.led--breathe'];
+  const intruses = infinies.filter((r) => !AUTORISEES.includes(r));
+  t('🚨 aucune boucle décorative', intruses.length === 0, intruses.join(' | ') || 'aucune');
+}
+
+console.log('\n--- 7. Ce à quoi on ne touche pas ---');
 {
   t('🚨 le pixel est intact', /eventID/.test(lire('lib/meta-lead-event.js')));
   t('🚨 l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
   t('🚨 le bandeau de rareté est intact', /<BandeauRarete/.test(lire('app/layout.jsx')));
-  t('🚨 la barre du bas reste conditionnelle (bloc 2)',
-    /mobile-bottom-bar\$\{visible \? " est-visible" : ""\}/.test(lire('app/ClientLayout.jsx')));
-  t('🚨 la respiration mobile reste (bloc 3)',
-    /section \{ padding-top: 84px; padding-bottom: 84px; \}/.test(cssNu));
+  t('🚨 la barre du bas reste conditionnelle', /mobile-bottom-bar\$\{visible \? " est-visible" : ""\}/.test(lire('app/ClientLayout.jsx')));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

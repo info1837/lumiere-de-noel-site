@@ -18,7 +18,7 @@ export default function NotFound() {
       alignItems: "center", justifyContent: "center", textAlign: "center", padding: "120px 24px 80px",
     }}>
       <div style={{
-        fontFamily: "'Bebas Neue', sans-serif", fontSize: "clamp(4rem, 14vw, 9rem)",
+        fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", fontSize: "clamp(4rem, 14vw, 9rem)",
         color: gold, lineHeight: 1, letterSpacing: "0.04em",
       }}>
         Oups !

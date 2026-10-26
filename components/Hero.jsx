@@ -22,6 +22,20 @@ import { PHOTOS } from "@/components/photos";
 //
 // Conséquence technique agréable : plus d'état, plus de « use client ».
 // Le premier écran est redevenu du HTML.
+// La rangée d'ampoules qui pend sous l'entête du hero. Rendue par le
+// serveur, allumée et immobile : elle est là dès la première image, comme
+// le reste du premier écran (elle était injectée par JS après
+// l'hydratation, puis allumée en cascade). 28 : un nombre pair et rond,
+// réparti en `space-between`, qui tombe juste à toutes les largeurs.
+const AMPOULES_HERO = 28;
+export function GuirlandeHero() {
+  return (
+    <div className="hero-guirlande" aria-hidden="true">
+      {Array.from({ length: AMPOULES_HERO }, (_, i) => <span key={i} />)}
+    </div>
+  );
+}
+
 export default function Hero() {
   // ⚠️ LÉRY A QUITTÉ LE HERO — elle ne sert plus qu'au comparateur.
   //
@@ -75,6 +89,8 @@ export default function Hero() {
           qu'aucune arête ne coupe la page. */}
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(10,21,36,0.92) 0%, rgba(10,21,36,0.74) 46%, rgba(10,21,36,0.30) 100%)" }} />
       <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,21,36,0) 46%, rgba(10,21,36,0.82) 84%, #0A1524 100%)" }} />
+
+      <GuirlandeHero />
 
       <div className="hero-container" style={{ position: "relative", width: "100%" }}>
         <div className="hero-texte">
