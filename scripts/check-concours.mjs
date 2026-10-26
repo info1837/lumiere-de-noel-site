@@ -141,7 +141,7 @@ for (const [nom, vp] of [["375", { width: 375, height: 812 }], ["1440", { width:
   t("🚨 règlement complet visible", /Règlements officiels/i.test(regle) && regle.includes("jeudi 5 novembre 2026 à 23 h 59") && regle.includes("vendredi 6 novembre 2026")
     && regle.includes("habileté mathématique") && regle.includes("Aucun achat requis") && regle.includes("jusqu'à 1 000 $") && regle.includes("avant le 6 novembre 2026")
     && regle.includes("Une seule participation par foyer") && regle.includes("20 novembre 2026"));
-  t("ligne RACJ (espace réservé) gardée", (await p.locator("[data-a-completer=racj]").count()) === 1);
+  t("aucune section RACJ (retirée, comme sur main)", !/RACJ|Régie des alcools/.test(regle));
   const pied = await p.locator("footer").innerText();
   t("pied : « Règlements » + « pas associé à Meta/Facebook/Instagram »", (await p.locator("footer a[href='/concours#reglements']").innerText()).trim() === "Règlements" && pied.includes("Ce concours n'est pas associé à Meta/Facebook/Instagram"));
   t("aucun prix au pied linéaire", !/\$\s*\/\s*(pi|pied)|par pied/i.test(await p.locator("main").innerText()));

@@ -8,8 +8,8 @@ import {
 // pied de page et de la case « J'ai lu les règlements »).
 //
 // ⚠️ Les dates viennent de lib/concours.js — alignées sur le CRM.
-// ⚠️ La ligne RACJ est un espace réservé que l'organisateur remplit lui-même :
-//    ne pas l'inventer ni la retirer. Jamais de prix au pied linéaire ici.
+// ⚠️ Section RACJ retirée à la demande de l'organisateur (comme sur main, #66) :
+//    ne pas la remettre sans lui. Jamais de prix au pied linéaire ici.
 const lien = { color: "#F0BA54", fontWeight: 600 };
 const villes = `${VILLES_CONCOURS.slice(0, -1).join(", ")} et ${VILLES_CONCOURS.at(-1)}`;
 
@@ -55,12 +55,7 @@ const SECTIONS = [
     "L'organisateur ne vous enverra des offres par message texte ou par courriel que si vous avez coché la case de consentement du formulaire. Vous pouvez vous désabonner en tout temps en répondant STOP à un message texte ou en cliquant sur le lien de désabonnement d'un courriel.",
     <>Pour en savoir plus, consultez notre <Link href="/confidentialite" style={lien}>politique de confidentialité</Link>.</>,
   ] },
-  { t: "11. Régie des alcools, des courses et des jeux (Québec)",
-    placeholder: "[À COMPLÉTER — Déclaration à la Régie des alcools, des courses et des jeux (RACJ) : numéro/mention à insérer par l'organisateur.]",
-    p: [
-      "Un différend quant à l'organisation ou à la conduite d'un concours publicitaire peut être soumis à la Régie des alcools, des courses et des jeux afin qu'il soit tranché. Un différend quant à l'attribution d'un prix peut être soumis à la Régie uniquement aux fins d'une intervention pour tenter de le régler.",
-    ] },
-  { t: "12. Facebook et Instagram", p: [
+  { t: "11. Facebook et Instagram", p: [
     "Ce concours n'est aucunement commandité, appuyé, administré ou associé à Meta, Facebook ou Instagram.",
   ] },
 ];
@@ -73,7 +68,6 @@ export default function Reglement() {
         {SECTIONS.map((s) => (
           <div key={s.t} className="concours-reglement__bloc">
             <h3>{s.t}</h3>
-            {s.placeholder && <p data-a-completer="racj" className="concours-racj">{s.placeholder}</p>}
             {s.p.map((par, i) => <p key={i}>{par}</p>)}
           </div>
         ))}
