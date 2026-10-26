@@ -1,17 +1,18 @@
 import Link from "next/link";
-import { navy, ivory, gold, company, cities } from "@/components/data";
+import { navy, ivory, gold, company } from "@/components/data";
 
 // Règlement officiel du concours « Gagnez votre installation 2026 ».
 // Lien obligatoire depuis le formulaire de la publicité Meta (Facebook /
 // Instagram). Même gabarit que /confidentialite.
 //
-// ⚠️ Le texte DOIT rester aligné sur la config du concours dans le CRM :
-//    fin des inscriptions 31 octobre 2026 23 h 59 (HE), tirage 1er novembre
-//    2026, 15 % de rabais aux participants jusqu'au 15 novembre 2026.
-//    Jamais de prix au pied linéaire ici. La ligne RACJ est un espace
-//    réservé que l'organisateur remplit lui-même.
+// ⚠️ Règlement fourni par l'organisateur le 2026-10-25 (aligné sur la
+//    vidéo de la pub) : fin des inscriptions jeudi 5 novembre 2026, 23 h 59
+//    (HE), tirage vendredi 6 novembre 2026 en direct sur Instagram, prix
+//    jusqu'à 1 000 $, 4 villes, 15 % sur une réservation faite avant le
+//    6 novembre 2026. Section RACJ retirée à la demande de l'organisateur.
+//    Jamais de prix au pied linéaire ici.
 const DESCRIPTION =
-  "Règlement officiel du concours « Gagnez votre installation 2026 » de Solution Lumière de Noël inc. : admissibilité, prix, tirage du 1er novembre 2026.";
+  "Règlement officiel du concours « Gagnez votre installation 2026 » de Solution Lumière de Noël inc. : admissibilité, prix, tirage du 6 novembre 2026.";
 
 export const metadata = {
   title: "Règlement du concours — Gagnez votre installation 2026",
@@ -26,7 +27,6 @@ export const metadata = {
 };
 
 const lien = { color: "#F0BA54", fontWeight: 600 };
-const villes = cities.map((c) => c.name);
 
 const SECTIONS = [
   {
@@ -43,41 +43,37 @@ const SECTIONS = [
   {
     t: "2. Durée du concours",
     p: [
-      "Les inscriptions sont acceptées jusqu'au 31 octobre 2026 à 23 h 59 (heure de l'Est). Toute participation reçue après cette heure n'est pas admissible.",
-      "Le tirage aura lieu le 1er novembre 2026.",
+      "Les inscriptions sont acceptées jusqu'au jeudi 5 novembre 2026 à 23 h 59 (heure de l'Est). Toute participation reçue après cette heure n'est pas admissible.",
+      "Le tirage aura lieu le vendredi 6 novembre 2026, en direct sur Instagram.",
     ],
   },
   {
     t: "3. Admissibilité",
     p: [
-      <>
-        Le concours s'adresse aux résidents du Québec âgés de 18 ans et plus dont l'adresse de la propriété
-        inscrite se trouve dans la zone desservie par l'organisateur ({company.region}, notamment{" "}
-        {villes.join(", ")}). Voir la liste des{" "}
-        <Link href="/secteur" style={lien}>zones desservies</Link>.
-      </>,
-      "Sont exclus les employés, représentants et mandataires de l'organisateur, ainsi que les personnes avec qui ils sont domiciliés.",
+      "Le concours s'adresse aux résidents de Blainville, Sainte-Thérèse, Rosemère et Boisbriand, âgés de 18 ans et plus, propriétaires de la résidence inscrite ou ayant l'accord du propriétaire.",
+      "Sont exclus les employés de l'organisateur et les personnes de leur foyer.",
     ],
   },
   {
     t: "4. Comment participer",
     p: [
       "Pour participer, remplissez le formulaire d'inscription accessible depuis la publicité du concours sur Facebook ou Instagram (Meta), en fournissant des renseignements exacts et complets.",
-      "Aucun achat requis. Une seule participation par adresse de propriété est acceptée; les participations en double sont annulées.",
+      "Aucun achat requis. Une seule participation par adresse; les participations en double sont annulées.",
+      "Réserver une installation, ou non, n'influence pas les chances de gagner.",
     ],
   },
   {
     t: "5. Prix",
     p: [
-      "Un (1) prix est offert : une installation de lumières de Noël d'une valeur pouvant atteindre 1 500 $.",
-      "Le prix comprend l'installation pour la saison 2026, selon une conception standard établie par l'organisateur, ainsi que l'entretien et le retrait selon l'offre en vigueur. Toute portion de la valeur non utilisée n'est pas remboursable.",
+      "Un (1) prix est offert : une installation de lumières de Noël sur la ligne de toit, d'une valeur pouvant atteindre 1 000 $ (jusqu'à 100 pieds), installée avant le 20 novembre 2026.",
+      "L'entretien, le démontage et l'entreposage sont inclus.",
       "Le prix n'est pas échangeable en argent, n'est pas transférable et doit être accepté tel quel.",
     ],
   },
   {
     t: "6. Tirage et chances de gagner",
     p: [
-      "Le 1er novembre 2026, un tirage au hasard sera effectué parmi toutes les participations admissibles reçues pendant la durée du concours.",
+      "Le vendredi 6 novembre 2026, un tirage au hasard sera effectué en direct sur Instagram parmi toutes les participations admissibles reçues pendant la durée du concours.",
       "Les chances de gagner dépendent du nombre de participations admissibles reçues.",
     ],
   },
@@ -92,7 +88,8 @@ const SECTIONS = [
   {
     t: "8. Rabais offert à tous les participants",
     p: [
-      "Tous les participants admissibles reçoivent un rabais de 15 % sur une installation de lumières de Noël réservée au plus tard le 15 novembre 2026. Ce rabais n'est pas monnayable et ne peut être jumelé à aucune autre promotion.",
+      "Tous les participants obtiennent un rabais de 15 % sur une réservation faite avant le 6 novembre 2026.",
+      "Si la personne gagnante a déjà réservé, la valeur du prix (jusqu'à 1 000 $) lui est remboursée.",
     ],
   },
   {
@@ -107,17 +104,9 @@ const SECTIONS = [
     ],
   },
   {
-    t: "10. Régie des alcools, des courses et des jeux (Québec)",
-    placeholder:
-      "[À COMPLÉTER — Déclaration à la Régie des alcools, des courses et des jeux (RACJ) : numéro/mention à insérer par l'organisateur.]",
+    t: "10. Facebook et Instagram",
     p: [
-      "Un différend quant à l'organisation ou à la conduite d'un concours publicitaire peut être soumis à la Régie des alcools, des courses et des jeux afin qu'il soit tranché. Un différend quant à l'attribution d'un prix peut être soumis à la Régie uniquement aux fins d'une intervention pour tenter de le régler.",
-    ],
-  },
-  {
-    t: "11. Facebook et Instagram",
-    p: [
-      "Ce concours n'est aucunement commandité, appuyé, administré ou associé à Facebook ou Instagram (Meta).",
+      "Ce concours n'est pas associé à Meta, Facebook ou Instagram.",
     ],
   },
 ];
@@ -135,7 +124,7 @@ export default function Concours() {
             Concours « Gagnez votre installation 2026 » — Règlement officiel
           </h1>
           <p style={{ marginTop: 14, opacity: 0.85, fontSize: 17 }}>
-            Inscriptions jusqu'au 31 octobre 2026 à 23 h 59 (HE) · Tirage le 1er novembre 2026
+            Inscriptions jusqu'au jeudi 5 novembre 2026 à 23 h 59 (HE) · Tirage le vendredi 6 novembre 2026
           </p>
         </div>
       </section>

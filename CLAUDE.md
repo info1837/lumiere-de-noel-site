@@ -18,12 +18,10 @@
 ## Déploiement
 - Vercel (`vercel.json` : `framework: nextjs`). README : `npx vercel deploy --prod` (repo GitHub `info1837/lumiere-de-noel-site`, travail par PR vers `main`). Ne jamais commiter ni afficher `.env*`.
 
-## Page /concours (règlement du concours Meta)
-- Le texte de `app/concours/page.jsx` DOIT correspondre à la config du concours dans le CRM :
-  fin des inscriptions **31 octobre 2026 à 23 h 59 (HE)**, tirage **1er novembre 2026**,
-  **15 %** de rabais aux participants pour une installation réservée **au plus tard le 15 novembre 2026**.
-  Toute modification d'une de ces valeurs se fait des deux côtés en même temps.
-- La ligne RACJ (« [À COMPLÉTER — Déclaration à la Régie…] ») est un espace réservé géré par le propriétaire : ne pas l'inventer ni la retirer.
+## Page /concours (règlement du concours)
+- Règlement fourni par Yahir le 2026-10-25 (aligné sur la vidéo de la pub) : fin des inscriptions **jeudi 5 novembre 2026 à 23 h 59 (HE)**, tirage **vendredi 6 novembre 2026** en direct sur Instagram, prix jusqu'à **1 000 $** (ligne de toit, jusqu'à 100 pi, installée avant le 20 novembre 2026), résidents de **Blainville, Sainte-Thérèse, Rosemère, Boisbriand**, **15 %** sur une réservation faite **avant le 6 novembre 2026**, remboursement de la valeur du prix si le gagnant a déjà réservé.
+- La section RACJ a été retirée à la demande de Yahir (2026-10-25) : ne pas la remettre sans lui.
+- Toute modification d'une de ces valeurs se fait aussi dans la config du concours du CRM (palencia-crm `lib/concours-2026.js`).
 - Ne jamais afficher de prix au pied linéaire (ni sur /concours ni ailleurs dans le texte du concours).
 
 ## Git
