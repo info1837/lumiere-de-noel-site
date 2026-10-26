@@ -31,6 +31,11 @@ const nextConfig = {
   async redirects() {
     return [
       { source: "/home", destination: "/", permanent: true },
+      // Liens courts du parrainage et de l'avis Google (CRM, palencia-crm
+      // lib/parrainage-lumiere.js). La page et le suivi du clic vivent sur
+      // soumission.lumieredenoelinc.com ; 302 pour que le CRM reste maître.
+      { source: "/r/:code", destination: "https://soumission.lumieredenoelinc.com/r/:code", permanent: false },
+      { source: "/go/avis/:code", destination: "https://soumission.lumieredenoelinc.com/go/avis/:code", permanent: false },
       // Le portfolio s'appelait /lumiere-de-noel — une URL qui ne dit pas ce
       // qu'elle contient, et que le pied de page appelait « Portfolio lumières »
       // pendant que la nav disait « Réalisations ». Un seul nom, une seule URL,
