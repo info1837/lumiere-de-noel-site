@@ -4,6 +4,7 @@ import AdresseAutocomplete from "@/components/AdresseAutocomplete";
 import { HONEYPOT_FIELD, company } from "@/components/data";
 import { lireUtm } from "@/lib/utm";
 import { newLeadEventId, metaPixelBlock, trackLead } from "@/lib/meta-lead-event";
+import { lireGoogleAds, trackQuoteConversion } from "@/lib/google-ads";
 import {
   CHOIX_ILLUMINER, VILLES_CONCOURS, TIRAGE_COURT, RABAIS_AVANT, VALEUR_PRIX,
   villeConcours, adresseComplete, formaterTelephone,
@@ -30,6 +31,21 @@ const vide = {
 
 function lireFbclid() {
   try { return new URLSearchParams(window.location.search).get("fbclid") || ""; } catch { return ""; }
+}
+
+// L'inscription au concours du CRM ne garde que les UTM et le fbclid
+// (palencia-crm lib/concours-2026-page.js) : pas de colonne pour le gclid.
+// Un visiteur venu d'une pub Google part donc avec utm_source=google /
+// utm_medium=cpc s'il n'avait pas déjà ses UTM ; le gclid suit dans le bloc,
+// et le CRM l'ignore tant qu'il ne le lit pas.
+function utmConcours() {
+  const u = { ...lireUtm(), fbclid: lireFbclid() };
+  const g = lireGoogleAds();
+  if (g) {
+    if (!u.utm_source) { u.utm_source = "google"; u.utm_medium = u.utm_medium || "cpc"; }
+    if (g.gclid) u.gclid = g.gclid;
+  }
+  return u;
 }
 
 export default function FormulaireConcours() {
@@ -77,7 +93,7 @@ export default function FormulaireConcours() {
           adresse: d.adresse, ville: villeConcours(d.ville) || d.ville, codePostal: d.codePostal,
           illuminer: d.illuminer, soumission: d.soumission,
           reglements: d.reglements, consentement: d.consentement,
-          utm: { ...lireUtm(), fbclid: lireFbclid() },
+          utm: utmConcours(),
           meta_pixel: metaPixelBlock(eventId),
           [HONEYPOT_FIELD]: d[HONEYPOT_FIELD],
         }),
@@ -91,6 +107,11 @@ export default function FormulaireConcours() {
       setEtat("inscrit");
       // Le pixel avec le MÊME event_id que le jumeau serveur du CRM : dédupliqué.
       trackLead(eventId, { content_name: "concours" });
+      // Google Ads « Request quote » : seulement si le participant VEUT sa
+      // soumission. Une simple inscription au tirage n'est pas une demande.
+      if (d.soumission === "oui") {
+        void trackQuoteConversion({ email: d.courriel, phone: d.telephone, transactionId: eventId, honeypot: d[HONEYPOT_FIELD] });
+      }
     } else if (r?.erreur === "hors_villes") { setErreurs({ ville: "hors" }); setEtat("saisie"); return; }
     else if (r?.erreur === "concours_termine") { setEtat("ferme"); }
     else { setEtat("erreur"); return; }

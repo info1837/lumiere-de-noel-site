@@ -10,6 +10,7 @@ import FestiveLayer from "@/components/FestiveLayer";
 import { company, serviceArea, services } from "@/components/data";
 import { aggregateRating, sameAs } from "@/components/reviews";
 import { PHOTOS } from "@/components/photos";
+import { GOOGLE_ADS_ID } from "@/lib/google-ads";
 
 // Meta Pixel piloté par variable d'environnement. Absent = pixel inactif.
 // Voir .env.example — NEXT_PUBLIC_META_PIXEL_ID.
@@ -210,6 +211,17 @@ export default async function RootLayout({ children }) {
             }} />
           </>
         )}
+
+        {/* Google Ads — UNE balise pour tout le site (lib/google-ads.js).
+            Aucune bannière de témoins sur le site : pas de Mode de
+            consentement pour l'instant (voir le haut de lib/google-ads.js).
+            La conversion « Request quote » ne part que des formulaires,
+            après la réponse du CRM — jamais d'ici. */}
+        <Script id="google-ads-lib" strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`} />
+        <Script id="google-ads" strategy="afterInteractive" dangerouslySetInnerHTML={{
+          __html: `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}window.gtag=gtag;gtag('js',new Date());gtag('config','${GOOGLE_ADS_ID}');`,
+        }} />
 
         {/* Le bandeau AU-DESSUS de l'entête : c'est le premier chiffre que
             le visiteur lit, et il ne doit pas disparaître au défilement

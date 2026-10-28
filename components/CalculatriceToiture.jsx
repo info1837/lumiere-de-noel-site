@@ -6,6 +6,7 @@ import { CAS_DEMO, PANNEAUX, cheminPanneau } from "@/components/demos";
 import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
 import { signalerPanne } from "@/lib/calc-telemetrie";
 import { newLeadEventId, metaPixelBlock, trackLead } from "@/lib/meta-lead-event";
+import { lireGoogleAds, trackQuoteConversion } from "@/lib/google-ads";
 
 // =============================================================================
 // Calculatrice de toiture — le visiteur trace, le serveur chiffre
@@ -336,6 +337,7 @@ export default function CalculatriceToiture() {
             ? `accordé le ${new Date().toISOString().slice(0, 10)} via Calculatrice toiture`
             : null,
           meta_pixel: metaPixelBlock(eventId),
+          google_ads: lireGoogleAds(),
           ...(manuel ? { measure_method: "manual", linearFt: Number(piedsManuels) } : {}),
         }),
       });
@@ -349,7 +351,14 @@ export default function CalculatriceToiture() {
       }
       // Le lead est cree cote serveur : c'est ICI que la conversion est
       // reelle, pas au moment ou le visiteur ouvre la calculatrice.
-      void trackLead(eventId);
+      // ⚠️ SEULEMENT SI LA FICHE EXISTE. Le CRM peut chiffrer le prix et
+      // refuser le lead (ou le visiteur n'a laissé aucun contact) : l'écran
+      // affiche alors le prix, mais aucune demande n'est arrivée. Avant,
+      // le Lead Meta partait quand même.
+      if (d.leadEnregistre === true) {
+        void trackLead(eventId);
+        void trackQuoteConversion({ email: contact.courriel, phone: contact.telephone, transactionId: eventId });
+      }
       setResultat(d); setEtape("prix");
       evenement("calc_price_shown", {
         ancrage: d.ancrage ?? null,
@@ -703,6 +712,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
           ancrage: resultat.ancrage ?? null,
           measure_method: manuel ? "manual" : "map",
           photoParTexto: true,
+          google_ads: lireGoogleAds(),
         }),
       });
       const d = await r.json().catch(() => ({}));

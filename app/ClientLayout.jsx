@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { company, ivory, gold, charcoal, creme } from "@/components/data";
 import { TiroirMobile } from "@/components/TiroirMobile";
 import { capturerUtm } from "@/lib/utm";
+import { capturerGoogleAds } from "@/lib/google-ads";
 
 // Items du menu horizontal desktop.
 //
@@ -68,7 +69,9 @@ export function NavBar() {
   // à `/?utm_campaign=voisin_2026`, et le visiteur clique « Soumission »
   // deux écrans plus loin — l'URL ne porte alors plus rien. Voir
   // lib/utm.js.
-  useEffect(() => { capturerUtm(); }, []);
+  // Même chose pour un clic sur une pub Google (gclid / utm_source=google),
+  // mais retenu 90 jours, premier contact : voir lib/google-ads.js.
+  useEffect(() => { capturerUtm(); capturerGoogleAds(); }, []);
 
   useEffect(() => {
     // 24 px : l'entête devient opaque dès le premier geste de défilement,

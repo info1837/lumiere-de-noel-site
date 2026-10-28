@@ -7,6 +7,7 @@ import { serviceOptions, sendLead, HONEYPOT_FIELD } from "@/components/data";
 import { CaseConsentement, NoteSoumission } from "@/components/ConsentementAttribution";
 import { villeDeAdresse } from "@/lib/adresse";
 import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
+import { trackQuoteConversion } from "@/lib/google-ads";
 
 const empty = { nom: "", telephone: "", adresse: "", ville: "", courriel: "", service: "", message: "", consent: false, [HONEYPOT_FIELD]: "" };
 
@@ -115,7 +116,11 @@ export default function QuoteForm({ compact = false, source = "Formulaire de sou
       // navigateur et le serveur comptent deux conversions.
       // On ATTEND que le pixel soit pret ET que sa requete parte : une
       // redirection immediate la coupait, et aucun Lead n'etait compte.
+      // Google Ads « Request quote » en même temps que le Lead Meta, et on
+      // attend les deux avant de quitter la page (lib/google-ads.js).
+      const conversion = trackQuoteConversion({ email: data.courriel, phone: data.telephone, transactionId: eventId, honeypot: data[HONEYPOT_FIELD] });
       await trackLead(eventId);
+      await conversion;
       await laisserPartir();
       window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=${encodeURIComponent(redirectSrc)}`);
       return;

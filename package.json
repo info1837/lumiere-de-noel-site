@@ -8,6 +8,7 @@
     "start": "next start",
     "check:photos": "node --no-warnings scripts/check-photos.mjs",
     "check:pixel": "node --no-warnings scripts/check-pixel-lead.mjs",
+    "check:google-ads": "node --no-warnings scripts/check-google-ads.mjs",
     "audit:visuel": "node scripts/audit-visuel.mjs",
     "audit:visuel:autotest": "node scripts/audit-visuel-autotest.mjs",
     "check:logo": "node scripts/check-logo.mjs",

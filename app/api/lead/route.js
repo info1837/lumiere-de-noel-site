@@ -11,6 +11,9 @@
 //
 // Variable requise (Vercel, sur ce projet) : LUMIERE_INTAKE_KEY
 
+import { alerter } from '../../../lib/alerte.js';
+import { attributionGoogleAds, sourceAvecGoogleAds, noteGoogleAds } from '../../../lib/google-ads.js';
+
 const CRM_BASE = (process.env.CRM_BASE_URL || 'https://palencia-crm.vercel.app').replace(/\/$/, '');
 const CRM_INTAKE_URL = `${CRM_BASE}/api/leads`;
 
@@ -32,7 +35,8 @@ export async function POST(request) {
   const key = process.env.LUMIERE_INTAKE_KEY;
   if (!key) {
     // Échec bruyant : mieux vaut une erreur visible qu'un lead avalé.
-    console.error('[lumiere/intake] LUMIERE_INTAKE_KEY absente — lead NON transmis au CRM');
+    await alerter('intake-sans-cle',
+      `⚠️ LUMIERE_INTAKE_KEY absente : un lead du site n'est PAS arrivé au CRM.\n\n${name} — ${phone || email}\nRappeler à la main.`);
     return Response.json({ ok: false, error: 'intake_not_configured' }, { status: 500 });
   }
 
@@ -55,6 +59,13 @@ export async function POST(request) {
     if (v) utm[c] = v;
   }
 
+  // ── GOOGLE ADS (2026-10-28) ──────────────────────────────────────
+  // Retenu 90 jours par lib/google-ads.js. Trois traces, pour que rien ne
+  // dépende d'une seule : la source (suffixe « — Google Ads », le préfixe
+  // qui inscrit Sophie reste intact), formAnswers (lead_source + gclid
+  // brut, colonne JSON déjà persistée) et une ligne de notes.
+  const gads = attributionGoogleAds(body.google_ads);
+
   // Notes : le CRM n'a pas encore de colonnes pour budget/service Noël
   // (étape 7). On les met dans les notes pour ne rien perdre.
   const notes = [
@@ -67,7 +78,9 @@ export async function POST(request) {
     // etait jetee ici : la preuve du consentement n'existait donc nulle
     // part dans le CRM, alors que c'est elle qui autorise les SMS.
     body.consentement ? `Consentement: ${clean(body.consentement, 160)}` : '',
+    noteGoogleAds(gads),
   ].filter(Boolean).join('\n');
+  const formAnswers = { ...utm, ...(gads || {}) };
 
   try {
     const res = await fetch(CRM_INTAKE_URL, {
@@ -92,7 +105,7 @@ export async function POST(request) {
         // ici : ces cookies n'existent que dans le navigateur du visiteur.
         ...(body.meta_pixel && typeof body.meta_pixel === 'object' ? { meta_pixel: body.meta_pixel } : {}),
         service: clean(body.service, 120) || 'Lumières de Noël',
-        source: clean(body.source, 80) || 'Site — Lumière de Noël',
+        source: sourceAvecGoogleAds(clean(body.source, 80) || 'Site — Lumière de Noël', gads),
         notes,
         language: 'fr',
         // Les UTM partent dans `formAnswers`, la colonne JSON que le CRM
@@ -101,14 +114,18 @@ export async function POST(request) {
         // « Offre voisin 250 $ » sur la fiche. Omis quand il n'y en a
         // pas — `formAnswers: {}` écraserait ce qu'un autre chemin
         // aurait pu y mettre.
-        ...(Object.keys(utm).length ? { formAnswers: utm } : {}),
+        ...(Object.keys(formAnswers).length ? { formAnswers } : {}),
         // Aucun business_id ici, volontairement : le CRM le déduit de la
         // clé. Un champ envoyé par le client serait ignoré de toute façon.
       }),
     });
     if (!res.ok) {
       const detail = await res.text().catch(() => '');
-      console.error('[lumiere/intake] CRM a refusé:', res.status, detail.slice(0, 200));
+      // ⚠️ Le visiteur voit « Erreur » et peut réessayer — ou pas. Sans cette
+      // alerte, un refus du CRM ne laissait qu'une ligne de journal.
+      await alerter(`intake-refus-${res.status}`,
+        `⚠️ UN LEAD DU SITE N'A PAS ÉTÉ ENREGISTRÉ (HTTP ${res.status}).\n\n`
+        + `${name} — ${phone || email}\n${clean(body.source, 80)}\nRappeler à la main.\n${detail.slice(0, 200)}`);
       return Response.json({ ok: false, error: 'crm_rejected', status: res.status }, { status: 502 });
     }
     // L'id de la fiche remonte jusqu'au navigateur.
@@ -122,7 +139,8 @@ export async function POST(request) {
     const corpsCrm = await res.json().catch(() => ({}));
     return Response.json({ ok: true, id: corpsCrm?.id ?? null });
   } catch (e) {
-    console.error('[lumiere/intake] échec réseau:', e?.message);
+    await alerter('intake-reseau',
+      `⚠️ UN LEAD DU SITE EST PERDU (réseau vers le CRM).\n\n${name} — ${phone || email}\n${clean(body.source, 80)}\nRappeler à la main. ${e?.message || ''}`);
     return Response.json({ ok: false, error: 'network' }, { status: 502 });
   }
 }
