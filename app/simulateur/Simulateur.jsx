@@ -4,6 +4,7 @@ import Link from "next/link";
 import { company, sendLeadEtRendreId, HONEYPOT_FIELD } from "@/components/data";
 import { CaseConsentement } from "@/components/ConsentementAttribution";
 import { newLeadEventId, metaPixelBlock, trackLead } from "@/lib/meta-lead-event";
+import { trackQuoteConversion } from "@/lib/google-ads";
 import { evenement } from "@/lib/evenements";
 import AdresseAutocomplete from "@/components/AdresseAutocomplete";
 import RevelationLumiere from "@/components/RevelationLumiere";
@@ -228,14 +229,17 @@ export default function Simulateur() {
       message: `Style choisi au simulateur : ${styleActif.titre}`,
       [HONEYPOT_FIELD]: coord[HONEYPOT_FIELD],
     });
-    await trackLead(eventId);
-    evenement("sim_lead", { style: styleActif.cle });
     setEnvoi(false);
 
     if (!ok) {
       setErreur("On n'a pas pu enregistrer vos coordonnées. Appelez-nous et on s'en occupe.");
       return;
     }
+    // Les conversions APRÈS la réponse du CRM : le Lead Meta partait avant
+    // le test, et comptait donc aussi les envois refusés.
+    void trackQuoteConversion({ email: coord.courriel, phone: coord.telephone, transactionId: eventId, honeypot: coord[HONEYPOT_FIELD] });
+    await trackLead(eventId);
+    evenement("sim_lead", { style: styleActif.cle });
     if (id) setLeadId(id);
 
     // Deux chemins. Dans le repli, l'image n'existe pas encore : on la

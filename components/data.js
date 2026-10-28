@@ -64,6 +64,7 @@ export const textMuted = "#5A5A5A";
 import { getSiteUrl } from "@/lib/site-url";
 import { PHOTOS, cityVisuel, legendeVisuel, servicePhoto } from "@/components/photos";
 import { lireUtm } from "@/lib/utm";
+import { lireGoogleAds } from "@/lib/google-ads";
 
 const DOMAIN = "lumieredenoelinc.com";
 
@@ -774,7 +775,7 @@ async function sendLeadToCrm(payload) {
     const res = await fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...payload, utm: lireUtm() }),
+      body: JSON.stringify({ ...payload, utm: lireUtm(), google_ads: lireGoogleAds() }),
     });
     if (!res.ok && typeof console !== "undefined") {
       console.warn("[Lumière] CRM intake a répondu", res.status);
@@ -810,7 +811,7 @@ export async function sendLeadEtRendreId(payload) {
     const res = await fetch("/api/lead", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...payload, utm: lireUtm() }),
+      body: JSON.stringify({ ...payload, utm: lireUtm(), google_ads: lireGoogleAds() }),
     });
     const corps = await res.json().catch(() => ({}));
     if (!res.ok && typeof console !== "undefined") console.warn("[Lumière] CRM intake a répondu", res.status);

@@ -36,6 +36,7 @@
 import { piLineaires, lignesMesurables } from '@/lib/geo';
 import { alerter } from '@/lib/alerte';
 import { villeDeAdresse } from '@/lib/adresse';
+import { attributionGoogleAds, sourceAvecGoogleAds, noteGoogleAds } from '@/lib/google-ads';
 
 const CRM = 'https://palencia-crm.vercel.app';
 const URL_DEVIS = `${CRM}/api/quote/lumiere`;
@@ -58,6 +59,9 @@ const json = (d, status = 200) => Response.json(d, { status });
 export async function POST(request) {
   let body;
   try { body = await request.json(); } catch { body = {}; }
+  // Visiteur arrivé par une pub Google (lib/google-ads.js) : même étiquette
+  // que /api/lead — suffixe de source, formAnswers, ligne de notes.
+  const gads = attributionGoogleAds(body.google_ads);
 
   // Pot de miel : un robot remplit tous les champs, un humain ne voit pas
   // celui-ci. On répond 200 pour ne rien lui apprendre.
@@ -92,6 +96,7 @@ export async function POST(request) {
       Number.isFinite(ancrageM) && ancrageM > 0 ? `Ancrage montré au client : à partir de ${ancrageM} $.` : '',
       'Le client attend une maquette de sa maison avec le design proposé.',
       body.photoParTexto ? 'A dit vouloir envoyer sa photo par texto.' : '',
+      noteGoogleAds(gads),
     ].filter(Boolean).join('\n');
 
     let enregistre = false;
@@ -108,7 +113,8 @@ export async function POST(request) {
           // « Calculatrice… », avec la majuscule : c'est le préfixe que
           // l'inscription automatique de Sophie reconnaît (business-config
           // → autoEnrollPrefixes), comme l'autre chemin de la calculatrice.
-          source: 'Calculatrice toiture — maquette (site Lumière)',
+          source: sourceAvecGoogleAds('Calculatrice toiture — maquette (site Lumière)', gads),
+          ...(gads ? { formAnswers: gads } : {}),
           notes: notesM, language: 'fr',
           linear_ft: Number.isFinite(piedsM) && piedsM > 0 ? Math.round(piedsM) : undefined,
           estimated_price: undefined,
@@ -234,6 +240,7 @@ export async function POST(request) {
       devis.note ? `Note affichée : ${devis.note}` : '',
       surPlace.length ? `À évaluer sur place : ${surPlace.join(', ')}.` : '',
       propre(body.message, 800) ? `Message : ${propre(body.message, 800)}` : '',
+      noteGoogleAds(gads),
     ].filter(Boolean).join('\n');
 
     try {
@@ -245,7 +252,8 @@ export async function POST(request) {
           address: adresse,
           city: villeDeAdresse(adresse),
           service: 'Lumières de Noël',
-          source: 'Calculatrice toiture — site Lumière',
+          source: sourceAvecGoogleAds('Calculatrice toiture — site Lumière', gads),
+          ...(gads ? { formAnswers: gads } : {}),
           notes, language: 'fr',
           // Colonnes déjà présentes sur `leads` et acceptées par /api/leads.
           linear_ft: linearFt,

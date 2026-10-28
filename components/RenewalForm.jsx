@@ -6,6 +6,7 @@ import { CaseConsentement } from "@/components/ConsentementAttribution";
 import AdresseAutocomplete from "@/components/AdresseAutocomplete";
 import { villeDeAdresse } from "@/lib/adresse";
 import { newLeadEventId, metaPixelBlock, trackLead, laisserPartir, merciUrl } from "@/lib/meta-lead-event";
+import { trackQuoteConversion } from "@/lib/google-ads";
 
 // Formulaire dédié aux clients de l'an dernier — plus court que QuoteForm :
 // pas de choix de service (on sait déjà ce qu'ils avaient), pas de budget
@@ -68,7 +69,11 @@ export default function RenewalForm() {
       // navigateur et le serveur comptent deux conversions.
       // On ATTEND que le pixel soit pret ET que sa requete parte : une
       // redirection immediate la coupait, et aucun Lead n'etait compte.
+      // Google Ads « Request quote » en même temps que le Lead Meta, et on
+      // attend les deux avant de quitter la page (lib/google-ads.js).
+      const conversion = trackQuoteConversion({ email: data.courriel, phone: data.telephone, transactionId: eventId, honeypot: data[HONEYPOT_FIELD] });
       await trackLead(eventId);
+      await conversion;
       await laisserPartir();
       window.location.assign(`${merciUrl("", eventId)}${eventId ? "&" : "?"}src=renouvellement`);
       return;
