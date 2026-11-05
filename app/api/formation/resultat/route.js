@@ -1,22 +1,22 @@
 // =============================================================================
 // POST /api/formation/resultat — le résultat du test, vers Ops › Lumière
 // =============================================================================
-// Le jeton du bot reste ici. La page n'envoie que le nom et les réponses : le
-// score et les questions manquées sont recalculés sur le serveur, donc le nom
-// est le seul texte libre qui puisse arriver dans le groupe. Texte simple, sans
-// parse_mode.
+// La page n'envoie que le nom et les réponses : le score et les questions
+// manquées sont recalculés ici, donc le nom est le seul texte libre qui puisse
+// arriver dans le groupe.
 //
-// Le groupe et le sujet ne sont pas des secrets : ce sont ceux de
-// palencia-crm lib/telegram-sujets.js.
+// La publication passe par le CRM (palencia-crm app/api/formation/resultat) :
+// le bot de ce site n'est pas membre du groupe Ops, celui du CRM oui. La clé
+// reste sur le serveur, comme le jeton du bot reste dans le CRM.
 //
-// Variable (Vercel) : TELEGRAM_BOT_TOKEN
+// Variables (Vercel) : LUMIERE_INTAKE_KEY, CRM_BASE_URL (facultative)
 // =============================================================================
 
 import { alerter } from '@/lib/alerte';
 import { composerMessage, corriger, dateFin, nettoyerNom } from '@/lib/formation-resultat';
 
-const OPS_CHAT_ID = '-1003809205118';
-const SUJET_LUMIERE = 4;
+const CRM_BASE = (process.env.CRM_BASE_URL || 'https://palencia-crm.vercel.app').replace(/\/$/, '');
+const CRM_RESULTAT = `${CRM_BASE}/api/formation/resultat`;
 
 const json = (d, status = 200) => Response.json(d, { status });
 
@@ -65,23 +65,18 @@ export async function POST(request) {
 
   if (tropDeResultats(ipClient(request) || 'inconnue')) return json({ ok: false }, 429);
 
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  if (!token) return json({ ok: false }, 503);
+  const key = process.env.LUMIERE_INTAKE_KEY;
+  if (!key) return json({ ok: false }, 503);
 
   try {
-    const res = await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
+    const res = await fetch(CRM_RESULTAT, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: OPS_CHAT_ID,
-        message_thread_id: SUJET_LUMIERE,
-        text: composerMessage({ nom, resultat, date: dateFin(body?.finiLe) }),
-        disable_web_page_preview: true,
-      }),
+      headers: { 'Content-Type': 'application/json', 'x-intake-key': key },
+      body: JSON.stringify({ texte: composerMessage({ nom, resultat, date: dateFin(body?.finiLe) }) }),
     });
-    const d = await res.json();
-    if (!d.ok) throw new Error(`${res.status} ${d.description || ''}`);
-    return json({ ok: true, messageId: d.result?.message_id, sujet: d.result?.message_thread_id ?? null });
+    const d = await res.json().catch(() => ({}));
+    if (!res.ok || !d.ok) throw new Error(`${res.status} ${d.erreur || ''}`);
+    return json({ ok: true, messageId: d.messageId, sujet: d.sujet });
   } catch (e) {
     await alerter('formation-resultat', `Résultat de formation non publié dans Ops.\n\n${e.message}`);
     return json({ ok: false }, 502);
