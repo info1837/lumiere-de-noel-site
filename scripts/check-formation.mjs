@@ -12,10 +12,18 @@
 //   4. les huit écrans de formation, sans débordement horizontal ;
 //   5. les 5 boutons ouvrent la bonne vidéo (id dans l'URL, titre YouTube) ;
 //   6. le test : 20/23 échoue, 21/23 passe, 23/23 passe, reprise après
-//      rechargement, certificat avec le nom.
+//      rechargement, certificat avec le nom ;
+//   7. le résultat : nom demandé avant le résultat, un envoi par essai, repris
+//      après une panne. La route est INTERCEPTÉE ici : ce fichier ne publie
+//      jamais rien dans Ops, même lancé contre la production ;
+//   8. la route refuse sans publier : autre origine, réponses invalides ;
+//   9. score recalculé et message (lib/formation-resultat.js), aucun jeton
+//      dans la page.
 // =============================================================================
 import { chromium, webkit } from "playwright";
 import path from "node:path";
+import { QUIZ } from "../lib/formation-quiz.js";
+import { composerMessage, corriger, dateFin, nettoyerNom } from "../lib/formation-resultat.js";
 
 const BASE = (process.env.BASE_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
 const CAPTURES = process.env.CAPTURES;
@@ -39,13 +47,18 @@ const t = (nom, cond, d = "") => {
 const passerLesModules = async (p) => {
   while (await p.evaluate(() => st.step < MODULES.length)) await p.click("#next");
 };
-const repondre = async (p, nbBonnes) => {
+const donnerNom = async (p, nom) => {
+  await p.fill("#nm", nom);
+  await p.click("#next");
+};
+const repondre = async (p, nbBonnes, nom = "Essai Harnais") => {
   const total = await p.evaluate(() => QUIZ.length);
   for (let i = 0; i < total; i++) {
     const bonne = await p.evaluate((i) => QUIZ[i].a, i);
     await p.click(`.opt[data-k="${i < nbBonnes ? bonne : (bonne + 1) % 4}"]`);
     await p.click("#next");
   }
+  if (nom) await donnerNom(p, nom);
 };
 const entete = (p) => p.evaluate(() => {
   const h = document.querySelector(".brand h1").getBoundingClientRect();
@@ -61,8 +74,14 @@ async function parcours(nomMoteur, moteur, theme) {
   const p = await ctx.newPage();
   const erreurs = [], interdits = [];
   p.on("pageerror", (e) => erreurs.push(e.message));
-  p.on("console", (m) => m.type() === "error" && erreurs.push(m.text()));
+  p.on("console", (m) => m.type() === "error" && !m.text().includes("502") && erreurs.push(m.text())); // 502 : la panne simulée plus bas
   p.on("request", (r) => HOTES_INTERDITS.test(r.url()) && interdits.push(r.url()));
+  const envois = [];
+  let panne = false;
+  await p.route("**/api/formation/resultat", async (r) => {
+    envois.push(r.request().postDataJSON());
+    await r.fulfill({ status: panne ? 502 : 200, json: { ok: !panne } });
+  });
   const capture = async (nom) => {
     if (CAPTURES) await p.screenshot({ path: path.join(CAPTURES, `${nomMoteur}-${theme}-${nom}.png`) });
   };
@@ -140,8 +159,18 @@ async function parcours(nomMoteur, moteur, theme) {
   await capture("question-23");
   await p.evaluate(() => { st.qi = 0; render(); });
 
-  // Échec à 20/23.
-  await repondre(p, 20);
+  // Le nom vient avant le résultat, pour tous.
+  await repondre(p, 20, null);
+  t("nom demandé avant le résultat", (await p.locator("#nm").count()) === 1 && (await p.locator(".score").count()) === 0);
+  t("résultat bloqué sans nom", await p.isDisabled("#next"));
+  t("rien d'envoyé avant le nom", envois.length === 0);
+  t("écran du nom sans débordement", !(await deborde(p)));
+  await capture("nom");
+  await donnerNom(p, "Essai Harnais");
+  await p.waitForFunction(() => !(st.envois || []).length);
+  t("échec : un envoi, nom et 23 réponses", envois.length === 1 && envois[0].nom === "Essai Harnais" && envois[0].reponses.length === 23 && !Number.isNaN(Date.parse(envois[0].finiLe)));
+  await p.reload({ waitUntil: "networkidle" });
+  t("rechargement : aucun deuxième envoi", envois.length === 1);
   t("20/23 : échec", (await p.textContent(".score")).trim() === "20 / 23" && (await p.textContent("#app h2")) === "Pas encore");
   t("20/23 : les 3 points à revoir", (await p.locator("#app ul li").count()) === 3);
   t("échec : aucun certificat", (await p.locator(".cert").count()) === 0);
@@ -151,14 +180,23 @@ async function parcours(nomMoteur, moteur, theme) {
   t("« Refaire le test » repart à la question 1", (await p.textContent("#count")) === "Question 1 sur 23");
 
   // Réussite à la limite, 21/23.
+  panne = true;
   await repondre(p, 21);
+  await p.waitForFunction(() => st.envois.length === 1);
+  t("panne : le résultat attend dans le téléphone", (await p.textContent("#app h2")) === "Réussi");
+  panne = false;
+  await p.reload({ waitUntil: "networkidle" });
+  await p.waitForFunction(() => !(st.envois || []).length);
+  t("panne réparée : renvoyé au chargement", envois.length === 3 && envois[2].nom === envois[1].nom);
   t("21/23 : réussi", (await p.textContent(".score")).trim() === "21 / 23" && (await p.textContent("#app h2")) === "Réussi");
   await p.click("#restart");
   await passerLesModules(p);
 
   // Réussite à 23/23, certificat.
-  await repondre(p, 23);
+  await repondre(p, 23, "Marie-Ève Tremblay-Gagnon");
   t("23/23 : réussi", (await p.textContent(".score")).trim() === "23 / 23");
+  t("certificat : le nom est déjà rempli", (await p.inputValue("#nm")) === "Marie-Ève Tremblay-Gagnon");
+  await p.fill("#nm", "Marie-Ève Tremblay");
   await p.fill("#nm", "Marie-Ève Tremblay-Gagnon");
   t("certificat : le nom s'écrit en direct", (await p.textContent("#cname")) === "Marie-Ève Tremblay-Gagnon");
   const cert = await p.textContent(".cert");
@@ -177,6 +215,28 @@ const site = await (await fetch(`${BASE}/sitemap.xml`)).text();
 t("sitemap servi, sans /formation", site.includes("<urlset") && !site.includes("/formation"));
 const robots = await (await fetch(`${BASE}/robots.txt`)).text();
 t("robots.txt ne bloque pas /formation", !/Disallow:\s*\/formation/i.test(robots));
+
+// La route refuse sans publier : ces trois appels s'arrêtent avant Telegram.
+const envoyer = (corps, entetes = {}) => fetch(`${BASE}/api/formation/resultat`, { method: "POST", headers: { "Content-Type": "application/json", ...entetes }, body: JSON.stringify(corps) });
+const origine = { Origin: BASE };
+const valide = QUIZ.map((q) => q.a);
+t("route : autre origine refusée", (await envoyer({ nom: "Essai", reponses: valide }, { Origin: "https://exemple.com" })).status === 403);
+t("route : réponses incomplètes refusées", (await envoyer({ nom: "Essai", reponses: [0, 1] }, origine)).status === 400);
+t("route : nom vide refusé", (await envoyer({ nom: " ", reponses: valide }, origine)).status === 400);
+t("route : GET refusé", (await fetch(`${BASE}/api/formation/resultat`)).status === 405);
+
+// Le score vient du serveur.
+const toutFaux = QUIZ.map((q) => (q.a + 1) % q.o.length);
+const parfait = corriger(valide), rate = corriger(toutFaux);
+t("score : 23/23 réussi", parfait.score === 23 && parfait.reussi && parfait.manquees.length === 0);
+t("score : 21/23 réussi, 20/23 échoué", corriger(valide.map((a, i) => (i < 2 ? toutFaux[i] : a))).reussi && !corriger(valide.map((a, i) => (i < 3 ? toutFaux[i] : a))).reussi);
+t("score : réponse hors limites refusée", corriger(valide.map((a, i) => (i ? a : 9))) === null);
+t("nom : une seule ligne", nettoyerNom("  Jean\n\nTremblay ") === "Jean Tremblay" && nettoyerNom("x") === "");
+t("date : une date impossible devient maintenant", dateFin("n'importe quoi", 1000).getTime() === 1000);
+const msg = composerMessage({ nom: "Jean Tremblay", resultat: rate, date: new Date("2026-11-05T17:30:00Z") });
+t("message : tout y est, sous la limite Telegram", /Nom : Jean Tremblay/.test(msg) && /Échoué, 0 \/ 23/.test(msg) && /5 novembre 2026/.test(msg) && /12 h 30/.test(msg) && /Questions manquées \(23\)/.test(msg) && msg.length < 4096, `${msg.length} caractères`);
+const page = await (await fetch(`${BASE}/formation`)).text();
+t("page : aucun jeton, aucun appel direct à Telegram", !/api\.telegram\.org|TELEGRAM|bot\d{6,}:/i.test(page));
 
 for (const theme of ["light", "dark"]) {
   await parcours("chromium", chromium, theme);
