@@ -1,0 +1,383 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Formation installateur Lumière</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito+Sans:wght@400;600;700;800&display=swap">
+<style>
+/* Layout: one module per screen, phone-first column, sticky progress bar; study then quiz then certificate */
+:root{
+  --bg:#0A1524; --surface:#13223A; --line:#24375A; --fg:#F0EADE; --muted:#A2B4CC;
+  --amber:#F0BA54; --amber-ink:#0A1524; --good:#6FCF97; --bad:#F2994A;
+  --display:"Bebas Neue", "Oswald", Impact, sans-serif;
+  --body:"Nunito Sans", system-ui, -apple-system, sans-serif;
+  color-scheme:dark;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#F0EADE; --surface:#FFFFFF; --line:#D9D0BE; --fg:#0A1524; --muted:#4A5A75;
+    --amber:#B9801A; --amber-ink:#FFFFFF; --good:#1E7F4C; --bad:#B4561A; color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#F0EADE; --surface:#FFFFFF; --line:#D9D0BE; --fg:#0A1524; --muted:#4A5A75;
+  --amber:#B9801A; --amber-ink:#FFFFFF; --good:#1E7F4C; --bad:#B4561A; color-scheme:light;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:0 48px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);padding-block:14px 12px;border-bottom:1px solid var(--line)}
+.brand{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.brand h1{font-family:var(--display);font-weight:400;font-size:26px;letter-spacing:.04em;margin:0;line-height:1}
+.brand span{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--amber);transition:width .3s}
+main{padding-top:24px}
+.eyebrow{font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--amber);margin:0 0 6px}
+h2{font-family:var(--display);font-weight:400;font-size:40px;line-height:1;letter-spacing:.02em;margin:0 0 14px;text-wrap:balance}
+h3{font-size:17px;font-weight:800;margin:22px 0 6px}
+p{margin:0 0 12px}
+ul,ol{margin:0 0 12px;padding-left:22px}
+li{margin-bottom:6px}
+.why{border-left:3px solid var(--amber);padding:10px 14px;background:var(--surface);border-radius:0 8px 8px 0;margin:16px 0}
+.why b{color:var(--amber)}
+.rule{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:12px 0;border-bottom:1px solid var(--line)}
+.rule:last-child{border-bottom:0}
+.tag{font-size:11px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:999px;white-space:nowrap}
+.tag.oui{background:color-mix(in srgb,var(--good) 20%,transparent);color:var(--good)}
+.tag.non{background:color-mix(in srgb,var(--bad) 20%,transparent);color:var(--bad)}
+figure{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px}
+figure svg{width:100%;height:auto;display:block}
+figcaption{font-size:14px;color:var(--muted);margin-top:8px}
+.todo{border:1px dashed var(--amber);border-radius:12px;padding:14px;color:var(--muted);font-size:15px}
+.vidlink{display:flex;align-items:center;gap:14px;margin:16px 0;padding:14px 16px;border-radius:12px;background:var(--amber);color:var(--amber-ink);text-decoration:none;min-height:60px}
+.vidlink b{display:block;font-size:17px}
+.vidlink small{display:block;font-size:14px;opacity:.85}
+.vidlink .play{flex:none;width:0;height:0;border-left:16px solid currentColor;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+.vidlink:focus-visible{outline:3px solid var(--fg);outline-offset:2px}
+.vid{margin:16px 0;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px}
+.vid video{display:block;width:100%;max-width:360px;max-height:70vh;margin:0 auto;border-radius:8px;background:#000}
+.vid p{font-size:14px;color:var(--muted);margin:8px 4px 2px}
+.nav{display:flex;gap:10px;margin-top:28px}
+button{font:inherit;cursor:pointer}
+.btn{flex:1;min-height:52px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-weight:800;font-size:16px}
+.btn.main{background:var(--amber);color:var(--amber-ink);border-color:var(--amber)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn:focus-visible,.opt:focus-visible,input:focus-visible{outline:3px solid var(--amber);outline-offset:2px}
+.opt{display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg);font-size:16px;line-height:1.4}
+.opt.sel{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.opt.ok{border-color:var(--good);box-shadow:inset 0 0 0 1px var(--good)}
+.opt.ko{border-color:var(--bad);box-shadow:inset 0 0 0 1px var(--bad)}
+.fb{padding:12px 14px;border-radius:10px;background:var(--surface);margin-top:6px;font-size:15px}
+.fb b.ok{color:var(--good)} .fb b.ko{color:var(--bad)}
+.score{font-family:var(--display);font-size:72px;line-height:1;color:var(--amber);font-variant-numeric:tabular-nums}
+.cert{border:2px solid var(--amber);border-radius:16px;padding:22px;background:var(--surface);text-align:center}
+.cert .name{font-family:var(--display);font-size:36px;letter-spacing:.03em;margin:6px 0}
+.cert small{color:var(--muted);display:block}
+label{font-weight:700;display:block;margin-bottom:6px}
+input[type=text]{width:100%;font:inherit;padding:14px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.toc{list-style:none;padding:0;margin:16px 0 0}
+.toc li{display:flex;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-weight:700}
+.toc li span{color:var(--muted);font-weight:600;font-size:14px;white-space:nowrap}
+.toc li.done span{color:var(--good)}
+@media (prefers-reduced-motion: reduce){.bar i{transition:none}}
+/* Page autonome : pas de layout du site, donc pas de reset. Logo : une variante par thème, mêmes conditions que les jetons de couleur. */
+body{margin:0}
+.brand-id{display:flex;align-items:baseline;gap:6px;min-width:0}
+.brand-logo{display:block;height:26px;width:auto;flex:none;align-self:center}
+.brand-logo.pale{display:none}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]) .brand-logo.fonce{display:none}
+  :root:not([data-theme="dark"]) .brand-logo.pale{display:block}
+}
+:root[data-theme="light"] .brand-logo.fonce{display:none}
+:root[data-theme="light"] .brand-logo.pale{display:block}
+/* Sous 410 px, titre + logo + « Question 23 sur 23 » ne tiennent plus sur une ligne à 26 px. */
+@media (max-width:410px){
+  .brand{gap:8px}
+  .brand h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><div class="brand-id"><img class="brand-logo fonce" src="/images/icone-pour-fond-fonce.svg" alt="Lumière de Noël" width="120" height="180"><img class="brand-logo pale" src="/images/icone-pour-fond-pale.svg" alt="Lumière de Noël" width="120" height="180"><h1>Formation installateur</h1></div><span id="count">Étape 1</span></div>
+    <div class="bar" aria-hidden="true"><i id="prog"></i></div>
+  </header>
+  <main id="app" aria-live="polite"></main>
+</div>
+
+<script>
+const MODULES = [
+{ id:"intro", eyebrow:"Avant de commencer", title:"Le standard Lumière de Noël",
+  html:`
+  <p>Cette formation se fait sur ton téléphone, à ton rythme. Elle contient tout ce qu'on s'attend à ce que tu saches <b>avant</b> ta première journée sur le terrain.</p>
+  <p>À la fin, il y a un test. Il faut <b>21 bonnes réponses sur 23</b> pour passer. Tu peux le refaire autant de fois que tu veux.</p>
+  <div class="why"><b>Pourquoi c'est important :</b> le client regarde sa maison tous les soirs pendant 2 mois. Une ampoule de travers, un fil visible ou une prise qui lâche, il le voit. Et chaque retour pour corriger, c'est du temps perdu et de l'argent en moins dans la prime de l'équipe.</div>
+  <h3>Ce que tu vas apprendre</h3>
+  <ol id="tocList"></ol>`},
+{ id:"securite", eyebrow:"Module 1", title:"Sécurité d'abord",
+  html:`
+  <div class="rule"><span class="tag oui">Toujours</span><div>3 points de contact sur l'échelle (2 mains et 1 pied, ou 2 pieds et 1 main).</div></div>
+  <div class="rule"><span class="tag oui">Toujours</span><div>Échelle sur une base stable et à plat, bien appuyée. Quelqu'un la tient si elle est haute ou si le sol est glissant.</div></div>
+  <div class="rule"><span class="tag oui">Toujours</span><div><b>Échelle de 32 pieds = stabilisateur (ladder stand) installé.</b> Pas de négociation. Seule exception tolérée : une façade en brique. Et même là, on le met quand c'est possible.</div></div>
+  <div class="rule"><span class="tag oui">Toujours</span><div><b>Échelle contre une gouttière :</b> prends une échelle qui ne touche pas la gouttière. Si elle la touche, mets du ruban sur l'échelle aux points de contact. Jamais de métal contre métal : ça égratigne et ça bosse la gouttière du client.</div></div>
+  <div class="rule"><span class="tag non">Jamais</span><div>Monter sur un toit mouillé, givré ou glacé. On attend ou on travaille autrement.</div></div>
+  <div class="rule"><span class="tag non">Jamais</span><div>Travailler proche des fils d'Hydro qui entrent dans la maison. On garde ses distances, échelle comprise.</div></div>
+  <div class="rule"><span class="tag oui">Toujours</span><div>On branche seulement dans une prise extérieure avec disjoncteur DDFT (GFCI) et un couvercle étanche.</div></div>
+  <div class="rule"><span class="tag oui">Toujours</span><div><b>On installe la minuterie avec télécommande en premier.</b> Comme ça, on contrôle les lumières à distance pendant toute la job.</div></div>
+  <div class="rule"><span class="tag oui">Toujours</span><div><b>Lumières éteintes avec la télécommande</b> avant de faire une connexion ou de couper un fil. On les rallume seulement pour tester.</div></div>`},
+{ id:"spt1", eyebrow:"Module 2", title:"Fil SPT-1 et prises vampire",
+  html:`
+  <p>On fabrique nos rallonges sur mesure avec du fil <b>SPT-1</b> et des <b>prises vampire</b> (prises à clipser). Une prise mal faite, c'est une section entière éteinte et un retour chez le client.</p>
+  <a class="vidlink" href="https://youtube.com/shorts/BgXOVFQIzQQ" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span><b>Voir la vidéo</b><small>La première connexion · YouTube</small></span></a>
+  <h3>Faire une prise, étape par étape</h3>
+  <ol>
+    <li>Éteins les lumières avec la télécommande de la minuterie.</li>
+    <li>Coupe le fil <b>bien droit</b>, net, avec la pince. Pas en biseau, pas effiloché.</li>
+    <li>Ouvre la prise vampire.</li>
+    <li>Repère le côté <b>nervuré</b> du fil (la petite strie sur la gaine). C'est le neutre : il va du côté de la <b>lame large</b> de la fiche.</li>
+    <li>Pousse le fil <b>jusqu'au fond</b> de la prise. S'il n'est pas au fond, les dents ne percent pas bien.</li>
+    <li>Referme fort, d'un coup, jusqu'au clic.</li>
+    <li>Rallume avec la télécommande et <b>teste la prise</b> avant de passer à la suite.</li>
+    <li><b>Ruban électrique sur chaque connexion</b> que tu installes. Toutes, sans exception. (La fiche branchée dans la minuterie n'en a pas besoin.)</li>
+  </ol>
+  <div class="why"><b>Règle simple :</b> courant coupé pendant que tu fais la connexion, puis on teste. Une prise qui n'a pas été testée n'est pas finie.</div>
+  <h3>Prise au milieu d'une ligne</h3>
+  <a class="vidlink" href="https://youtube.com/shorts/bKcbsWL6cj4" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span><b>Voir la vidéo</b><small>La prise au milieu · YouTube</small></span></a>
+  <p>Parfois, il faut une prise <b>au milieu</b> d'un fil. Pour ça, on utilise <b>seulement une prise femelle</b>.</p>
+  <div class="rule"><span class="tag non">Jamais</span><div>Une prise mâle au milieu d'une ligne. Si tu penses que c'est nécessaire, demande au contremaître. Jamais de ta propre initiative.</div></div>
+  <ol>
+    <li>Lumières éteintes avec la télécommande.</li>
+    <li>La prise femelle a un bout ouvert et un bout fermé. Avec la pince, <b>retire le petit muret</b> du bout fermé.</li>
+    <li>Passe ton fil à travers la prise, d'un bout à l'autre.</li>
+    <li>Assure-toi que le fil est <b>bien placé entre les deux dents</b>.</li>
+    <li>Pousse, puis appuie fort avec la pince pour bien le fixer.</li>
+    <li>Remets le capuchon.</li>
+    <li>Rallume avec la télécommande et teste.</li>
+    <li>Si tout marche : ruban électrique.</li>
+  </ol>
+  <h3>Les longueurs</h3>
+  <p>Mesure avant de couper : il vaut mieux 30 cm de trop qu'un fil tendu. Respecte le nombre maximum de lumières par circuit que le contremaître te donne.</p>`},
+{ id:"ampoules", eyebrow:"Module 3", title:"Ampoules vers le bas",
+  html:`
+  <p>Le plus possible, les ampoules pointent <b>vers le bas</b>.</p>
+  <figure>
+    <svg viewBox="0 0 320 120" role="img" aria-label="À gauche, ampoules alignées vers le bas sous la gouttière. À droite, ampoules dans tous les sens.">
+      <rect x="10" y="20" width="140" height="8" fill="var(--muted)"/>
+      <rect x="170" y="20" width="140" height="8" fill="var(--muted)"/>
+      <g fill="var(--amber)">
+        <ellipse cx="30" cy="48" rx="7" ry="13"/><ellipse cx="62" cy="48" rx="7" ry="13"/><ellipse cx="94" cy="48" rx="7" ry="13"/><ellipse cx="126" cy="48" rx="7" ry="13"/>
+        <ellipse cx="190" cy="48" rx="7" ry="13" transform="rotate(35 190 48)"/><ellipse cx="222" cy="42" rx="7" ry="13" transform="rotate(-70 222 42)"/><ellipse cx="254" cy="50" rx="7" ry="13"/><ellipse cx="286" cy="38" rx="7" ry="13" transform="rotate(160 286 38)"/>
+      </g>
+      <text x="80" y="100" text-anchor="middle" font-size="15" font-weight="800" fill="var(--good)">OUI</text>
+      <text x="240" y="100" text-anchor="middle" font-size="15" font-weight="800" fill="var(--bad)">NON</text>
+    </svg>
+    <figcaption>Même direction, même espacement, sur toute la ligne.</figcaption>
+  </figure>
+  <h3>Pourquoi</h3>
+  <ul>
+    <li><b>C'est plus beau</b> : de la rue, la ligne est propre et égale.</li>
+    <li><b>L'eau s'écoule</b> au lieu de rester dans la douille, donc moins d'ampoules qui brûlent ou qui flashent.</li>
+  </ul>
+  <p>Quand ce n'est pas possible (certains angles, certaines surfaces), garde au minimum <b>toutes les ampoules d'une même section dans le même sens</b>.</p>`},
+{ id:"clips", eyebrow:"Module 4", title:"Les clips : bardeaux et pignons",
+  html:`
+  <a class="vidlink" href="https://youtube.com/shorts/fsS1PBsuJX0" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span><b>Voir la vidéo</b><small>Clips : bardeaux et pignon · YouTube</small></span></a>
+  <h3>Sur les bardeaux (pas sur une gouttière)</h3>
+  <p>Nos clips sont faits pour être posés à l'endroit sur la gouttière. Quand on pose la ligne <b>sur les bardeaux</b> (le long d'une pente de toit), on <b>retourne le clip à l'envers</b> pour qu'il rentre sous le bardeau et que l'ampoule pointe <b>vers le bas</b>.</p>
+  <h3>Au sommet du pignon</h3>
+  <p>La ligne doit <b>toujours finir avec une ampoule au sommet</b> du pignon. C'est plus propre. Planifie ton espacement pour que ça tombe pile au sommet.</p>
+  <p>Sur une ligne droite, le clip se pose normalement. Mais au <b>sommet d'un pignon</b>, il y a <b>deux pentes</b> qui se rejoignent, pas une seule languette. Un clip entier ne rentre pas.</p>
+  <h3>La technique</h3>
+  <ol>
+    <li>Prends un clip.</li>
+    <li><b>Coupe-le au milieu</b> avec la pince.</li>
+    <li>Pose chaque moitié de chaque côté du sommet, une sur chaque pente.</li>
+    <li>L'ampoule du sommet reste centrée et droite, vers le bas.</li>
+  </ol>
+  <figure>
+    <svg viewBox="0 0 320 150" role="img" aria-label="Pignon vu de face : le clip coupé en deux, une moitié sur chaque pente, l'ampoule centrée au sommet.">
+      <polyline points="30,130 160,30 290,130" fill="none" stroke="var(--muted)" stroke-width="8" stroke-linejoin="round"/>
+      <rect x="128" y="40" width="22" height="10" rx="2" fill="var(--fg)" transform="rotate(-37 139 45)"/>
+      <rect x="170" y="40" width="22" height="10" rx="2" fill="var(--fg)" transform="rotate(37 181 45)"/>
+      <line x1="160" y1="22" x2="160" y2="60" stroke="var(--amber)" stroke-width="2" stroke-dasharray="4 3"/>
+      <ellipse cx="160" cy="68" rx="7" ry="13" fill="var(--amber)"/>
+      <text x="160" y="14" text-anchor="middle" font-size="12" font-weight="800" fill="var(--amber)">COUPE ICI</text>
+    </svg>
+    <figcaption>Une moitié de clip sur chaque pente, l'ampoule centrée au sommet.</figcaption>
+  </figure>
+  <div class="why"><b>Le test :</b> de la rue, le sommet du pignon doit être aussi propre que le reste de la ligne. Pas de trou, pas d'ampoule croche.</div>`},
+{ id:"fils", eyebrow:"Module 5", title:"Le chemin du fil",
+  html:`
+  <p>Avant de poser quoi que ce soit, <b>regarde la maison et planifie le trajet</b> : d'où vient le courant, où va le fil, où il se cache.</p>
+  <a class="vidlink" href="https://youtube.com/shorts/_0iGm54N3dY" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span><b>Voir la vidéo</b><small>Cacher le fil · YouTube</small></span></a>
+  <div class="rule"><span class="tag oui">Oui</span><div><b>Cache le fil</b> entre la gouttière et le fascia, ou dans le soffite. Toujours le trajet le plus simple et le plus propre.</div></div>
+  <div class="rule"><span class="tag oui">Oui</span><div>Le trajet le plus <b>court</b> et le plus <b>caché</b> : derrière la gouttière, le long des coins, sous les bordures.</div></div>
+  <div class="rule"><span class="tag oui">Oui</span><div>Les rallonges au sol longent les murs et les plates-bandes.</div></div>
+  <div class="rule"><span class="tag oui">Oui</span><div>Les connexions sont à l'abri de l'eau (pas dans une flaque, pas dans le chemin de la gouttière).</div></div>
+  <div class="rule"><span class="tag non">Non</span><div>Du fil visible sur la façade. Si on le voit de la rue, on le reprend.</div></div>
+  <div class="rule"><span class="tag non">Non</span><div>Une rallonge en travers d'une allée, d'un escalier ou de l'entrée de garage.</div></div>
+  <div class="rule"><span class="tag non">Non</span><div>Le trajet « le plus vite posé » qui laisse des boucles et des surplus qui pendent.</div></div>
+  <div class="why"><b>Si tu hésites</b> entre deux trajets, demande au contremaître <b>avant</b> de poser. Une question coûte 30 secondes. Tout défaire coûte une heure.</div>`},
+{ id:"minuterie", eyebrow:"Module 6", title:"La minuterie",
+  html:`
+  <p>La minuterie, c'est ce qui fait que les lumières s'allument toutes seules chaque soir. Si elle est mal réglée, le client appelle le soir même.</p>
+  <a class="vidlink" href="https://youtube.com/shorts/6epD2EPai2Y" target="_blank" rel="noopener"><span class="play" aria-hidden="true"></span><span><b>Voir la vidéo</b><small>Régler la minuterie · YouTube</small></span></a>
+  <div class="why"><b>La minuterie avec télécommande s'installe au début de la job</b>, pas à la fin. Elle sert à éteindre les lumières chaque fois que tu fais une connexion ou que tu coupes un fil, et à les rallumer pour tester.</div>
+  <h3>Les étapes à ne jamais sauter</h3>
+  <ol>
+    <li>Mets l'<b>heure actuelle</b> exacte.</li>
+    <li>Règle l'heure d'<b>allumage</b> et l'heure d'<b>arrêt</b> que le client a choisies (par défaut, celles que le contremaître te donne).</li>
+    <li><b>Teste</b> : passe en mode manuel, vérifie que tout s'allume, puis remets en mode automatique.</li>
+    <li>Montre au client où est la minuterie et comment la mettre en marche ou à l'arrêt.</li>
+  </ol>`},
+{ id:"inspection", eyebrow:"Module 7", title:"Inspection finale",
+  html:`
+  <p>Avant de quitter un chantier, <b>tu fais le tour de la maison et tu regardes de la rue</b>, comme le client le fera ce soir.</p>
+  <ol>
+    <li>Toutes les ampoules sont allumées.</li>
+    <li>Elles pointent toutes dans le même sens, vers le bas.</li>
+    <li>Les lignes sont droites et l'espacement est égal.</li>
+    <li>Aucun fil visible sur la façade.</li>
+    <li>Les sommets des pignons sont propres.</li>
+    <li>La minuterie est réglée et testée.</li>
+    <li>Le terrain est propre : pas de bouts de fil, de clips ou d'emballages.</li>
+    <li>Les photos de la job sont prises et envoyées dans le CRM.</li>
+  </ol>
+  <div class="why"><b>Le mot d'ordre :</b> on part une seule fois. Si on doit revenir pour corriger, la job n'était pas finie.</div>`}
+];
+
+const QUIZ = [
+ {q:"Avant de refermer une prise vampire, le fil doit être :", o:["Coupé en biseau pour mieux entrer","Coupé bien droit et poussé jusqu'au fond","Dénudé au bout","Enroulé d'un tour autour de la prise"], a:1, e:"Coupe nette et fil au fond de la prise, sinon les dents percent mal."},
+ {q:"Le côté nervuré (strié) du fil SPT-1, c'est :", o:["La phase, du côté de la lame étroite","Le neutre, du côté de la lame large","Ça ne change rien","La mise à la terre"], a:1, e:"Côté nervuré = neutre = lame large de la fiche."},
+ {q:"Tu viens de faire une prise. Ensuite :", o:["Tu la testes avant de passer à la suite","Tu la testes une fois que toute la maison est faite","Pas besoin si le clic s'est fait","Tu demandes au client de vérifier"], a:0, e:"Courant coupé pendant la connexion, puis on rallume et on teste tout de suite."},
+ {q:"Il faut une prise au milieu d'une ligne. Tu utilises :", o:["Une prise mâle","Une prise femelle","N'importe laquelle","Deux prises mâles"], a:1, e:"Au milieu : toujours une femelle. Une mâle, jamais sans l'accord du contremaître."},
+ {q:"Prise femelle au milieu : avant de passer le fil, tu :", o:["Coupes la prise en deux","Retires le petit muret du bout fermé avec la pince","Enlèves les dents","Perces un trou dans le capuchon"], a:1, e:"On retire le muret du bout fermé, on passe le fil entre les deux dents, on pousse, on serre avec la pince, on remet le capuchon."},
+ {q:"De quel côté doivent pointer les ampoules, le plus possible ?", o:["Vers le haut","Vers la rue","Vers le bas","Peu importe, tant qu'elles allument"], a:2, e:"Vers le bas, le plus possible."},
+ {q:"Pourquoi les ampoules vers le bas ?", o:["C'est plus rapide à poser","La ligne est plus belle et l'eau ne reste pas dans la douille","Ça consomme moins","C'est le client qui décide"], a:1, e:"Look propre et uniforme, et l'eau s'écoule."},
+ {q:"Au sommet d'un pignon, le clip ne rentre pas. Tu fais quoi ?", o:["Tu sautes cette ampoule","Tu mets du ruban adhésif","Tu coupes le clip au milieu et tu poses une moitié sur chaque pente","Tu forces le clip entier"], a:2, e:"Deux pentes, donc un clip coupé en deux, une moitié de chaque côté."},
+ {q:"Tu poses la ligne sur les bardeaux, pas sur une gouttière. Le clip :", o:["Se pose comme d'habitude","Se pose à l'envers pour rentrer sous le bardeau, ampoule vers le bas","Se colle avec du ruban","Ne sert à rien, on pose l'ampoule directement"], a:1, e:"Sur les bardeaux, clip à l'envers pour que l'ampoule pointe vers le bas."},
+ {q:"Sur un pignon, la ligne doit finir :", o:["N'importe où, tant que c'est droit","Avec une ampoule au sommet du pignon","Juste avant le sommet","Avec le fil qui dépasse"], a:1, e:"Toujours une ampoule au sommet, c'est plus propre."},
+ {q:"De la rue, tu vois un bout de fil sur la façade. C'est :", o:["Correct si c'est court","À reprendre, on ne doit pas le voir","Correct la nuit, parce qu'on ne le voit pas","Au client de le cacher"], a:1, e:"Si on le voit de la rue, on le reprend."},
+ {q:"Où peut-on cacher le fil ?", o:["Collé sur le revêtement, bien droit","Entre la gouttière et le fascia, ou dans le soffite","Dans la gouttière, sous l'eau","Nulle part, on le laisse visible"], a:1, e:"Gouttière, fascia ou soffite : toujours le trajet le plus simple et le plus propre."},
+ {q:"Le meilleur trajet pour le fil, c'est :", o:["Le plus rapide à poser","Le plus court et le plus caché","Celui qui utilise le plus de fil","Toujours par la façade"], a:1, e:"Court et caché : derrière la gouttière, le long des coins."},
+ {q:"Une rallonge au sol doit passer :", o:["En travers de l'allée, c'est plus court","Le long des murs et des plates-bandes","Dans la neige, peu importe où","Par-dessus l'entrée de garage"], a:1, e:"Jamais en travers d'un passage."},
+ {q:"On peut brancher les lumières dans :", o:["N'importe quelle prise","Une prise intérieure, par une fenêtre","Une prise extérieure avec disjoncteur DDFT et couvercle étanche","Une rallonge de garage"], a:2, e:"Prise extérieure DDFT avec couvercle."},
+ {q:"Le toit est givré ce matin. Tu fais quoi ?", o:["Tu montes doucement","Tu ne montes pas : on attend ou on travaille autrement","Tu montes avec des bottes neuves","Tu montes si personne ne regarde"], a:1, e:"Jamais sur un toit mouillé, givré ou glacé."},
+ {q:"Dernière étape avec la minuterie :", o:["La brancher et partir","Mettre l'heure, régler, tester en manuel, remettre en automatique","Laisser le client la régler","La mettre en marche en permanence"], a:1, e:"On teste toujours avant de partir."},
+ {q:"Avant de quitter le chantier :", o:["Tu pars dès que la dernière ampoule est posée","Tu fais le tour, tu regardes de la rue, tu nettoies et tu prends les photos","Tu attends que le client inspecte","Tu reviens le lendemain pour vérifier"], a:1, e:"On part une seule fois."},
+ {q:"Tu montes une échelle de 32 pieds contre une maison en vinyle :", o:["Pas besoin de stabilisateur si elle est bien appuyée","Le stabilisateur (ladder stand) est obligatoire","Seulement s'il vente","Seulement si le contremaître est là"], a:1, e:"32 pieds = stabilisateur, toujours. Seule exception tolérée : la brique."},
+ {q:"Ton échelle touche la gouttière du client :", o:["C'est normal, la gouttière est solide","Tu mets du ruban sur l'échelle aux points de contact, ou tu prends une échelle qui ne la touche pas","Tu appuies plus fort pour qu'elle bouge moins","Tu mets un chiffon sur la gouttière"], a:1, e:"Jamais de métal contre métal sur une gouttière."},
+ {q:"Quelles connexions reçoivent du ruban électrique ?", o:["Aucune, les prises sont étanches","Seulement celles sur le toit","Toutes les connexions que tu installes (sauf la fiche dans la minuterie)","Seulement si le client le demande"], a:2, e:"Ruban électrique sur chaque connexion installée."},
+ {q:"Tu dois couper un fil ou faire une connexion. Avant :", o:["Tu fais vite, ça ne prend qu'une seconde","Tu éteins les lumières avec la télécommande de la minuterie","Tu mets des gants et tu continues","Tu attends la fin de la job"], a:1, e:"La minuterie avec télécommande est installée en premier pour ça : on éteint avant chaque connexion ou coupe."},
+ {q:"Tu hésites entre deux trajets de fil :", o:["Tu prends le plus rapide","Tu demandes au contremaître avant de poser","Tu fais les deux","Tu demandes après, si le client se plaint"], a:1, e:"Une question coûte 30 secondes, tout défaire coûte une heure."}
+];
+const PASS = QUIZ.length - 2;
+const STORE = "formation-lumiere-v1";
+
+let st = load() || {step:0, answers:{}, name:"", qi:0, done:false, best:null};
+function load(){ try{ return JSON.parse(localStorage.getItem(STORE)); }catch(e){ return null; } }
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(st)); }catch(e){} }
+
+const app = document.getElementById("app");
+const TOTAL = MODULES.length + 1; // modules + quiz
+
+function setProgress(){
+  let pct, label;
+  if (st.step < MODULES.length){ pct = st.step / TOTAL; label = st.step === 0 ? "Introduction" : `Module ${st.step} sur ${MODULES.length-1}`; }
+  else if (!st.done){ pct = (MODULES.length + st.qi/QUIZ.length) / TOTAL; label = `Question ${st.qi+1} sur ${QUIZ.length}`; }
+  else { pct = 1; label = "Terminé"; }
+  document.getElementById("prog").style.width = Math.round(pct*100)+"%";
+  document.getElementById("count").textContent = label;
+}
+
+function render(){
+  setProgress();
+  window.scrollTo(0,0);
+  if (st.step < MODULES.length) return renderModule();
+  if (!st.done) return renderQuestion();
+  renderResult();
+}
+
+function renderModule(){
+  const m = MODULES[st.step];
+  const last = st.step === MODULES.length-1;
+  app.innerHTML = `<p class="eyebrow">${m.eyebrow}</p><h2>${m.title}</h2>${m.html}
+    <div class="nav">
+      ${st.step>0?'<button class="btn" id="prev">Retour</button>':''}
+      <button class="btn main" id="next">${st.step===0?'Commencer':(last?'Passer au test':'J\'ai compris')}</button>
+    </div>`;
+  if (m.id==="intro"){
+    document.getElementById("tocList").innerHTML = MODULES.slice(1).map(x=>`<li>${x.title}</li>`).join("") + `<li>Le test (${QUIZ.length} questions)</li>`;
+  }
+  const p = document.getElementById("prev"); if (p) p.onclick = ()=>{ st.step--; save(); render(); };
+  document.getElementById("next").onclick = ()=>{ st.step++; if(st.step===MODULES.length){st.qi=0; st.answers={};} save(); render(); };
+}
+
+function renderQuestion(){
+  const i = st.qi, item = QUIZ[i], chosen = st.answers[i];
+  const answered = chosen !== undefined;
+  app.innerHTML = `<p class="eyebrow">Test · question ${i+1} / ${QUIZ.length}</p><h2 style="font-size:30px">${item.q}</h2>
+    <div id="opts">${item.o.map((t,k)=>{
+      let c = "opt";
+      if (answered){ if (k===item.a) c+=" ok"; else if (k===chosen) c+=" ko"; }
+      return `<button class="${c}" data-k="${k}" ${answered?'disabled':''}>${t}</button>`;
+    }).join("")}</div>
+    ${answered?`<div class="fb"><b class="${chosen===item.a?'ok':'ko'}">${chosen===item.a?'Bonne réponse.':'Pas tout à fait.'}</b> ${item.e}</div>`:''}
+    <div class="nav">
+      <button class="btn" id="back">Revoir la formation</button>
+      <button class="btn main" id="next" ${answered?'':'disabled'}>${i===QUIZ.length-1?'Voir mon résultat':'Question suivante'}</button>
+    </div>`;
+  app.querySelectorAll(".opt").forEach(b=> b.onclick = ()=>{ st.answers[i] = +b.dataset.k; save(); renderQuestion(); });
+  document.getElementById("back").onclick = ()=>{ st.step = 1; save(); render(); };
+  document.getElementById("next").onclick = ()=>{
+    if (i < QUIZ.length-1){ st.qi++; save(); render(); }
+    else { st.done = true; const s = score(); if (st.best===null || s>st.best) st.best = s; save(); render(); }
+  };
+}
+
+function score(){ return QUIZ.reduce((n,q,i)=> n + (st.answers[i]===q.a?1:0), 0); }
+
+function renderResult(){
+  const s = score(), pass = s >= PASS;
+  const wrong = QUIZ.map((q,i)=>({q,i})).filter(x=> st.answers[x.i]!==x.q.a);
+  const today = new Date().toLocaleDateString("fr-CA",{year:"numeric",month:"long",day:"numeric"});
+  if (!pass){
+    app.innerHTML = `<p class="eyebrow">Résultat</p><div class="score">${s} / ${QUIZ.length}</div>
+      <h2 style="margin-top:10px">Pas encore</h2>
+      <p>Il faut ${PASS} sur ${QUIZ.length}. Relis ces points, puis refais le test :</p>
+      <ul>${wrong.map(x=>`<li><b>${x.q.q}</b><br>${x.q.e}</li>`).join("")}</ul>
+      <div class="nav"><button class="btn" id="review">Revoir la formation</button><button class="btn main" id="retry">Refaire le test</button></div>`;
+    document.getElementById("review").onclick = ()=>{ st.step=1; st.done=false; st.answers={}; st.qi=0; save(); render(); };
+    document.getElementById("retry").onclick = ()=>{ st.done=false; st.answers={}; st.qi=0; save(); render(); };
+    return;
+  }
+  app.innerHTML = `<p class="eyebrow">Résultat</p><div class="score">${s} / ${QUIZ.length}</div>
+    <h2 style="margin-top:10px">Réussi</h2>
+    <label for="nm">Ton nom complet</label>
+    <input type="text" id="nm" autocomplete="name" placeholder="Prénom Nom" value="${(st.name||'').replace(/"/g,'&quot;')}">
+    <div class="cert" style="margin-top:18px">
+      <small>Solution Lumière de Noël Inc.</small>
+      <div class="name" id="cname">${st.name||'Ton nom ici'}</div>
+      <div>a réussi la formation installateur</div>
+      <small style="margin-top:8px">${s} / ${QUIZ.length} · ${today}</small>
+    </div>
+    <p style="margin-top:16px"><b>Dernière étape :</b> fais une capture d'écran de ce certificat et envoie-la à Yahir par texto.</p>
+    <div class="nav"><button class="btn" id="restart">Recommencer du début</button></div>`;
+  const nm = document.getElementById("nm");
+  nm.oninput = ()=>{ st.name = nm.value; document.getElementById("cname").textContent = nm.value || "Ton nom ici"; save(); };
+  document.getElementById("restart").onclick = ()=>{ st = {step:0, answers:{}, name:st.name, qi:0, done:false, best:st.best}; save(); render(); };
+}
+
+render();
+</script>
+</body>
+</html>

@@ -31,6 +31,7 @@
     "check:theme": "node scripts/check-theme-sombre.mjs",
     "check:galerie": "node scripts/check-galerie.mjs",
     "check:vie": "node scripts/check-vie.mjs",
+    "check:formation": "node scripts/check-formation.mjs",
     "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs && node --no-warnings --import ./scripts/next-alias-register.mjs scripts/dry-run-formulaires.mjs",
     "captures:vie": "node scripts/captures-vie.mjs"
   },
