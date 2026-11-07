@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#0A1524">
+<title>Dévoilement du tirage | Solution Lumière de Noël</title>
+<link rel="icon" href="/favicon-32.png" sizes="32x32">
+<link rel="preload" href="/fonts/bebas-latin.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/nunito-latin.woff2" as="font" type="font/woff2" crossorigin>
+<style>
+@font-face{font-family:"Bebas Neue";src:url(/fonts/bebas-latin.woff2) format("woff2");font-display:swap}
+@font-face{font-family:"Nunito Sans";font-weight:400 700;src:url(/fonts/nunito-latin.woff2) format("woff2");font-display:swap}
+:root{--marine:#0A1524;--nuit:#060E18;--ambre:#F0BA54;--creme:#F0EADE;--acier:#A2B4CC;color-scheme:dark}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;background:var(--nuit)}
+body{color:var(--creme);font-family:"Nunito Sans",system-ui,sans-serif;text-align:center;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:transparent;overflow:hidden}
+.ecran{position:fixed;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:space-between;gap:2dvh;padding:max(3dvh,env(safe-area-inset-top)) 20px max(2.4dvh,env(safe-area-inset-bottom));background:radial-gradient(120% 70% at 50% 52%,#14263F 0%,var(--marine) 55%,var(--nuit) 100%);overflow:hidden}
+.logo{width:min(58vw,230px,24dvh);height:auto;flex:none}
+.tete{flex:none;width:100%;max-width:440px}
+h1{font-family:"Bebas Neue",Impact,sans-serif;font-weight:400;font-size:min(13.4vw,62px,8dvh);line-height:1.04;letter-spacing:.01em}
+.compte{margin-top:.6dvh;font-size:min(6.2vw,28px,3.6dvh);font-weight:700;color:var(--ambre)}
+/* La scène garde sa hauteur à chaque étape : l'image filmée ne saute pas. */
+.scene{position:relative;flex:1;width:100%;max-width:440px;min-height:0;display:flex;align-items:center;justify-content:center}
+.defile{display:none;width:100%}
+.defile p{font-family:"Bebas Neue",Impact,sans-serif;line-height:1.14;white-space:nowrap}
+.voisin{font-size:min(9vw,42px,5.4dvh);color:var(--acier);opacity:.42}
+.centre{font-size:min(19vw,88px,11.5dvh);color:var(--ambre);text-shadow:0 0 30px rgba(240,186,84,.5)}
+.resultat{display:none;width:100%}
+.bravo{font-family:"Bebas Neue",Impact,sans-serif;font-size:min(11.4vw,54px,7dvh);letter-spacing:.03em;color:var(--creme)}
+.gagnante{margin-top:.8dvh;font-family:"Bebas Neue",Impact,sans-serif}
+.gagnante span{display:block}
+.nom{font-size:min(23vw,108px,14dvh);line-height:1.02;color:var(--ambre);text-shadow:0 0 42px rgba(240,186,84,.65)}
+.ville{font-size:min(12.6vw,60px,7.6dvh);line-height:1.1;color:var(--creme)}
+[data-etape="defile"] .defile,[data-etape="resultat"] .resultat{display:block}
+[data-etape="resultat"] .resultat{animation:apparait 700ms cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes apparait{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+.etincelles{position:absolute;inset:-14dvh -20px;pointer-events:none;overflow:hidden}
+.etincelles i{position:absolute;top:50%;left:50%;width:7px;height:7px;border-radius:50%;background:var(--ambre);opacity:0}
+.etincelles i:nth-child(3n){background:var(--creme);width:5px;height:5px}
+[data-etape="resultat"] .etincelles i{animation:etincelle 1500ms cubic-bezier(.15,.7,.3,1) both}
+@keyframes etincelle{0%{opacity:1;transform:translate(0,0)}70%{opacity:.9}100%{opacity:0;transform:translate(var(--x),var(--y))}}
+.bas{flex:none;width:100%;max-width:440px}
+button{display:block;width:100%;min-height:min(74px,10dvh);border:0;border-radius:999px;background:var(--creme);color:var(--marine);font-family:"Bebas Neue",Impact,sans-serif;font-size:min(8.6vw,38px,5dvh);letter-spacing:.04em;cursor:pointer;touch-action:manipulation;box-shadow:0 0 34px rgba(240,186,84,.35)}
+button:active{transform:scale(.98)}
+button:focus-visible{outline:3px solid var(--ambre);outline-offset:3px}
+[data-etape="defile"] button,[data-etape="resultat"] button{visibility:hidden}
+.petit{margin-top:1.6dvh;font-size:min(3.6vw,15px,2dvh);color:var(--acier)}
+@media (prefers-reduced-motion:reduce){
+  [data-etape="resultat"] .resultat{animation:none}
+  .etincelles{display:none}
+}
+</style>
+</head>
+<body>
+<main class="ecran" id="ecran" data-etape="pret">
+  <img class="logo" src="/images/logo-horizontal-transparent-fonce.svg" width="400" height="160" alt="Solution Lumière de Noël">
+  <header class="tete">
+    <h1>Concours 2026 : dévoilement du tirage</h1>
+    <p class="compte">44 participants</p>
+  </header>
+  <section class="scene">
+    <div class="defile" id="defile" aria-hidden="true">
+      <p class="voisin" id="haut"></p>
+      <p class="centre" id="centre"></p>
+      <p class="voisin" id="dessous"></p>
+    </div>
+    <div class="resultat" id="resultat">
+      <div class="etincelles" id="etincelles" aria-hidden="true"></div>
+      <p class="bravo">Félicitations&nbsp;!</p>
+      <p class="gagnante"><span class="nom" id="nom"></span> <span class="ville" id="ville"></span></p>
+    </div>
+  </section>
+  <footer class="bas">
+    <button type="button" id="devoiler">Dévoiler la gagnante</button>
+    <p class="petit">Tirage effectué le 6 novembre 2026, sous réserve du règlement</p>
+  </footer>
+</main>
+<script>
+// Données fixes : le tirage a eu lieu le 6 novembre. Aucun appel au CRM, rien
+// n'est gardé : recharger la page remet au départ.
+var GAGNANTE = { nom: "Laura L.,", ville: "Sainte-Thérèse", arret: "Laura L." };
+// Prénoms et initiales INVENTÉS. Jamais un vrai participant dans cette liste.
+var NOMS = ["Olivier T.", "Camille B.", "Mathis R.", "Noémie P.", "Félix G.", "Rosalie M.", "Antoine D.", "Éléonore C.",
+  "Thomas V.", "Juliette S.", "Émile F.", "Charlotte H.", "Louis N.", "Zoé A.", "Hugo K.", "Alice J.", "Victor Q.", "Florence W."];
+var TICS = 38, DUREE_DEFILE_MS = 4550, PAUSE_ARRET_MS = 450;
+
+var $ = function (id) { return document.getElementById(id); };
+var calme = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+// Rapide au début, de plus en plus lent, comme une roue qui s'arrête.
+function delais() {
+  var d = [], total = 0, i;
+  for (i = 0; i < TICS; i++) { d[i] = 0.09 + Math.pow(i / (TICS - 1), 3); total += d[i]; }
+  return d.map(function (x) { return x / total * DUREE_DEFILE_MS; });
+}
+
+function afficher(i) {
+  var nom = function (k) { return k === TICS - 1 ? GAGNANTE.arret : NOMS[k % NOMS.length]; };
+  $("haut").textContent = i > 0 ? nom(i - 1) : NOMS[NOMS.length - 1];
+  $("centre").textContent = nom(i);
+  $("dessous").textContent = i < TICS - 1 ? NOMS[(i + 1) % NOMS.length] : "";
+  if (!calme && $("defile").animate) {
+    $("defile").animate([{ transform: "translateY(18px)" }, { transform: "none" }], { duration: 90, easing: "ease-out" });
+  }
+}
+
+function etincelles() {
+  var html = "", i;
+  for (i = 0; i < 26; i++) {
+    var a = i / 26 * Math.PI * 2, r = 130 + (i * 53) % 150;
+    html += '<i style="--x:' + Math.round(Math.cos(a) * r) + "px;--y:" + Math.round(Math.sin(a) * r * 1.5) + "px;animation-delay:" + (i % 5) * 40 + 'ms"></i>';
+  }
+  $("etincelles").innerHTML = html;
+}
+
+function devoiler() {
+  var ecran = $("ecran"), liste = delais(), i = 0;
+  $("devoiler").disabled = true;
+  afficher(0);
+  ecran.dataset.etape = "defile";
+  (function suivant() {
+    if (i < TICS - 1) { setTimeout(function () { afficher(++i); suivant(); }, liste[i]); return; }
+    setTimeout(function () {
+      $("nom").textContent = GAGNANTE.nom;
+      $("ville").textContent = GAGNANTE.ville;
+      etincelles();
+      ecran.dataset.etape = "resultat";
+    }, liste[i] + PAUSE_ARRET_MS);
+  })();
+}
+
+$("devoiler").addEventListener("click", devoiler);
+</script>
+</body>
+</html>
