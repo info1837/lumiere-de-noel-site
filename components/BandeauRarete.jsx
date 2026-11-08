@@ -7,7 +7,7 @@ import { ligneSaison } from "@/lib/season";
 // La valeur retenue pour la durée de la visite. `session` et non `local` :
 // le chiffre change toutes les heures, et un onglet rouvert demain doit
 // repartir de zéro plutôt que d'afficher la capacité d'hier.
-const CLE_SESSION = "lumiere:dispos";
+const CLE_SESSION = "lumiere:dispos:v2"; // v2 : plus d'état « complet » en cache
 
 // La ligne de saison — le premier fait que le visiteur lit.
 //
@@ -102,11 +102,9 @@ export default function BandeauRarete({ rarete }) {
             {seg}
           </span>
         ))}
-        {msg.listeAttente && (
-          <Link href="/soumission?liste-attente=1" className="bandeau-rarete__lien">
-            Liste d’attente
-          </Link>
-        )}
+        <Link href="/soumission" className="bandeau-rarete__lien">
+          Réservez votre date
+        </Link>
       </div>
     </div>
   );

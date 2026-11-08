@@ -57,158 +57,48 @@ console.log('\n--- 1. 🚨 Sans réponse du CRM, AUCUN bandeau ---');
     /return null;/.test(lecteur) && !/restantes: \d/.test(lecteur));
 }
 
-console.log('\n--- 2. 🚨 Un segment par mois, le rabais collé au sien ---');
-{
-  const m = messageRarete(OUVERT);
-  t('🚨 « Octobre : 18 places restantes, −15 % »',
-    m.segments[0] === 'Octobre : 18 places restantes, −15 %', m.segments[0]);
-  t('🚨 « Novembre : 4 places »', m.segments[1] === 'Novembre : 4 places', m.segments[1]);
-  t('🚨 « Octobre » n\'apparaît QU\'UNE FOIS dans toute la ligne',
-    (m.segments.join(' · ').match(/Octobre/g) || []).length === 1, m.segments.join(' · '));
-  t('🚨 plus d\'année dans les noms de mois — on est dedans',
-    !/\d{4}/.test(m.segments.join(' ')), m.segments.join(' · '));
-  t('seul le premier dit « restantes » en toutes lettres',
-    /restantes/.test(m.segments[0]) && !/restantes/.test(m.segments[1]));
-
-  const octComplet = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1]] };
-  const m2 = messageRarete(octComplet);
-  t('🚨 octobre complet → il disparaît, novembre passe en tête',
-    m2.segments.length === 1 && /^Novembre/.test(m2.segments[0]), m2.segments.join(' · '));
-  t('🚨 …et son rabais part avec lui — on ne peut plus le tenir',
-    !/%/.test(m2.segments.join(' ')), m2.segments.join(' · '));
-
-  const une = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 1, rabais: 0 }] };
-  t('🚨 « 1 place restante », au singulier',
-    messageRarete(une).segments[0] === 'Octobre : 1 place restante', messageRarete(une).segments[0]);
-  const deux = { ...OUVERT, mois: [OUVERT.mois[0], { ...OUVERT.mois[1], restantes: 1 }] };
-  t('le second mois au singulier aussi',
-    messageRarete(deux).segments[1] === 'Novembre : 1 place', messageRarete(deux).segments[1]);
-  t('moisSansAnnee retire l\'année', moisSansAnnee('Octobre 2026') === 'Octobre');
-  t('…et ne casse pas un nom sans année', moisSansAnnee('Octobre') === 'Octobre');
-}
-
-console.log('\n--- 2a. 🚨 Les places de la SAISON (le chiffre des pubs) ---');
+console.log('\n--- 2. 🚨 Rareté honnête : aucun compteur, aucun « complet » (2026-11-08) ---');
 {
   const { ligneSaison } = await import(path.join(ROOT, 'lib/season.js'));
-  const saison = { ...OUVERT, places_saison: 20, places_prises: 3, places_restantes: 17 };
-  const m = messageRarete(saison);
-  t('🚨 le bandeau prend les places de la SAISON, pas celles du mois', m.restantes === 17, String(m.restantes));
-  t('🚨 la ligne dit « 17 places restantes »', ligneSaison(m).includes('17 places restantes'), ligneSaison(m).join(' · '));
-  t('🚨 0 place de saison → complet, même si le calendrier a de la place',
-    messageRarete({ ...saison, places_restantes: 0 }).etat === 'complet');
-  t('sans le compteur, rien ne change (capacité d\'octobre)', messageRarete(OUVERT).restantes === 18);
-  t('🚨 aucun chiffre par mois ne contredit la saison', m.segments.length === 1 && m.segments[0] === '17 places restantes, −15 % si réservé en octobre'
-    && !m.compacts.some((c) => /18|Novembre/.test(c)), `${m.segments.join(' · ')} / ${m.compacts.join(' · ')}`);
-  const octPlein = { ...saison, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, OUVERT.mois[1]] };
-  // 2026-10-14 : le rabais suit la RÉSERVATION (CRM : rabais_reservation).
-  const resa = { ...saison, rabais_reservation: 15, mois: [{ ...OUVERT.mois[0], restantes: 0, complet: true }, { ...OUVERT.mois[1], rabais: 15 }] };
-  t('🚨 octobre plein, réservation en octobre → le rabais RESTE', messageRarete(resa).rabaisOctobre === 15);
-  t('🚨 la ligne dit « −15 % si réservé en octobre », jamais « Novembre : −15 % »',
-    ligneSaison(messageRarete(resa)).includes('−15 % si réservé en octobre') && !/Novembre : −/.test(ligneSaison(messageRarete(resa)).join(' ')),
-    ligneSaison(messageRarete(resa)).join(' · '));
-  t('🚨 le 1er novembre (rabais_reservation 0) → plus de rabais', messageRarete({ ...resa, rabais_reservation: 0 }).rabaisOctobre === 0);
-  t('🚨 octobre plein → pas de « Novembre : −15 % »', messageRarete(octPlein).rabaisOctobre === 0, String(messageRarete(octPlein).rabaisOctobre));
-}
-
-console.log('\n--- 2b. 🚨 « PLACES », jamais « dates » ---');
-{
-  // Une date, c'est un jour du calendrier. Ce qu'on vend, c'est une place
-  // dans la saison : un client peut occuper le 14 novembre sans que le
-  // 14 novembre disparaisse pour tout le monde. « 35 dates restantes »
-  // laissait croire qu'il restait 35 JOURS ouvrables — un visiteur qui
-  // compte les jours de novembre trouve autre chose et doute du chiffre.
-  const m = messageRarete(OUVERT);
-  t('🚨 plus aucune « date » dans la ligne',
-    !/\bdates?\b/i.test(m.segments.join(' ')), m.segments.join(' · '));
-  t('🚨 ni dans la version compacte',
-    !/\bdates?\b/i.test((m.compacts || []).join(' ')), (m.compacts || []).join(' · '));
-  t('le mot « places » est bien là', /places/.test(m.segments.join(' ')));
-}
-
-console.log('\n--- 2c. 🚨 ≤ 480 px : une seule ligne ---');
-{
-  const m = messageRarete(OUVERT);
-  t('🚨 « Octobre −15 % · 35 places · Novembre 34 »',
-    (m.compacts || []).join(' · ') === 'Octobre −15 % · 18 places · Novembre 4',
-    (m.compacts || []).join(' · '));
-  t('le rabais colle au mois, sans deux-points', /^Octobre −15 %$/.test((m.compacts || [])[0] || ''));
-  t('🚨 le deuxième mois n\'a que son chiffre', /^Novembre \d+$/.test((m.compacts || [])[2] || ''));
-  t('🚨 pas de « restantes » — c\'est ce qui faisait déborder', !/restantes/.test((m.compacts || []).join(' ')));
-
-  const sansRabais = { ...OUVERT, rabais_octobre: 0, mois: OUVERT.mois.map((x) => ({ ...x, rabais: 0 })) };
-  t('sans rabais, le mois reste seul', (messageRarete(sansRabais).compacts || [])[0] === 'Octobre',
-    (messageRarete(sansRabais).compacts || [])[0]);
-  const une = { ...OUVERT, mois: [{ ...OUVERT.mois[0], restantes: 1 }] };
-  t('« 1 place » au singulier', (messageRarete(une).compacts || [])[1] === '1 place',
-    (messageRarete(une).compacts || [])[1]);
+  const TEXTE = 'Places limitées — dernières installations le 12 décembre';
+  const le8 = { maintenant: new Date('2026-11-08T15:00:00Z') };
+  const m = messageRarete(OUVERT, le8);
+  t('🚨 la phrase exacte', m?.texte === TEXTE, m?.texte);
+  t('🚨 la ligne : « Saison 2026 · Places limitées — … »', ligneSaison(m)?.join(' · ') === `Saison 2026 · ${TEXTE}`,
+    ligneSaison(m)?.join(' · '));
+  // Le cas qui a fait mentir le site : le CRM disait 20 places prises sur 20.
+  const pleine = { ...OUVERT, places_saison: 20, places_prises: 20, places_restantes: 0 };
+  const mp = messageRarete(pleine, le8);
+  t('🚨 20/20 au CRM → toujours « Places limitées », jamais « Complet »', mp?.texte === TEXTE && !/complet/i.test(JSON.stringify(mp)));
+  const tousPleins = { ...OUVERT, mois: OUVERT.mois.map((x) => ({ ...x, restantes: 0, complet: true })) };
+  t('🚨 mois pleins au CRM → pas de « Complet » non plus', messageRarete(tousPleins, le8)?.texte === TEXTE);
+  const fermeCrm = { ...OUVERT, reservations_ouvertes: false };
+  t('🚨 la date du CRM (20 novembre) ne ferme plus rien', messageRarete(fermeCrm, le8)?.texte === TEXTE);
+  t('🚨 aucun chiffre de places', !/\d+ places?/.test(JSON.stringify(mp)));
+  t('🚨 aucune liste d\'attente', !/attente/i.test(JSON.stringify(mp)));
+  t('le 12 décembre, la ligne est encore là', messageRarete(OUVERT, { maintenant: new Date('2026-12-12T20:00:00Z') }) !== null);
+  t('🚨 après le 12 décembre, plus rien', messageRarete(OUVERT, { maintenant: new Date('2026-12-13T12:00:00Z') }) === null);
+  const resa = { ...OUVERT, rabais_reservation: 15 };
+  t('le rabais d\'octobre reste une clause, quand le CRM le donne',
+    ligneSaison(messageRarete(resa, le8)).includes('−15 % si réservé en octobre'));
+  t('sans rabais, deux segments', ligneSaison(messageRarete({ ...OUVERT, rabais_reservation: 0 }, le8)).length === 2);
+  t('la date se lit en français', dateEnFrancais('2026-12-12') === '12 décembre');
 
   const css = lire('app/globals.css');
   const composant = lire('components/BandeauRarete.jsx');
-  // ⚠️ IL N'Y A PLUS DEUX ÉCRITURES.
-  //
-  // Le composant rendait en parallèle une version « large » et une version
-  // « compacte », le CSS cachant l'une ou l'autre. C'était deux
-  // formulations de la même donnée dans le même HTML — donc deux occasions
-  // de les faire diverger, et c'est exactement le défaut que ce fichier
-  // traque. Maintenant lib/season.js compose UNE phrase en segments, et le
-  // CSS ne fait que laisser tomber les derniers sur un petit écran.
   t('🚨 une SEULE écriture, en segments', /bandeau-rarete__seg/.test(composant)
     && !/bandeau-rarete__large/.test(composant) && !/bandeau-rarete__compact/.test(composant));
   t('🚨 la phrase est composée à UN endroit', /ligneSaison/.test(composant)
     && /export function ligneSaison/.test(lire('lib/season.js')));
-  t('🚨 le CSS choisit ce qui tombe, pas le JavaScript',
+  t('🚨 le lien du bandeau mène au formulaire normal',
+    /href="\/soumission" className="bandeau-rarete__lien"/.test(composant) && /Réservez votre date/.test(composant));
+  t('🚨 plus de lien « Liste d\'attente »', !/liste-attente|Liste d.attente/.test(sansCommentaires(composant)));
+  t('le CSS choisit ce qui tombe, pas le JavaScript',
     /@media \(max-width: 480px\)[\s\S]{0,700}\.bandeau-rarete__seg:nth-child\(n\+4\) \{ display: none; \}/.test(css));
-
-  // ⚠️ La mention de fermeture DESCEND, elle ne disparaît pas. Elle est
-  // passée du hero à la section de réservation, en bas de l'accueil : à
-  // l'endroit exact où quelqu'un hésite devant le formulaire.
-  t('🚨 la fermeture est dans la section de réservation',
-    /Réservations fermées le \{fermeture\}/.test(lire('app/page.jsx')));
-  t('🚨 …et elle n\'est plus dans le hero',
-    !/hero-fermeture/.test(lire('components/Hero.jsx')));
-}
-
-console.log('\n--- 3. 🚨 DÉCEMBRE ne doit jamais apparaître ---');
-{
-  // La route ne l'envoie plus (PR #225). Le site ne doit pas non plus le
-  // fabriquer : il n'affiche QUE ce qu'on lui donne.
-  const m = messageRarete(OUVERT);
-  t('🚨 aucun « Décembre » dans le bandeau', !/Décembre/i.test(m.segments.join(' ')), m.segments.join(' · '));
-  t('🚨 le site affiche exactement ce que la route envoie — ni plus, ni moins',
-    m.segments.length === OUVERT.mois.filter((x) => x.restantes > 0).length, `${m.segments.length}`);
-  const composant = lire('components/BandeauRarete.jsx');
-  t('🚨 aucun mois écrit en dur dans le composant',
-    !/Octobre|Novembre|Décembre/.test(sansCommentaires(composant)));
-  const lecteur = lire('lib/disponibilites.js');
-  t('🚨 ni dans le lecteur — sauf la table des noms de mois',
-    !/Décembre/.test(sansCommentaires(lecteur).replace(/'décembre'/g, '')));
-}
-
-console.log('\n--- 4. 🚨 Complet, et la liste d\'attente ---');
-{
-  const complet = { ...OUVERT, mois: OUVERT.mois.map((m) => ({ ...m, restantes: 0, complet: true })) };
-  const m = messageRarete(complet);
-  t('🚨 « Complet pour cette saison »', /Complet/.test(m.texte), m.texte);
-  t('🚨 la liste d\'attente s\'ouvre', m.listeAttente === true);
-  t('aucun chiffre quand tout est complet', !/\d/.test(m.texte), m.texte);
-
-  const ferme = { ...OUVERT, reservations_ouvertes: false };
-  const f = messageRarete(ferme);
-  t('🚨 réservations fermées → on le dit', /fermées/.test(f.texte), f.texte);
-  t('…et la liste d\'attente reste offerte', f.listeAttente === true);
-  t('aucun chiffre non plus', !/\d/.test(f.texte));
-}
-
-console.log('\n--- 5. « Réservations fermées le 20 novembre » ---');
-{
-  t('🚨 la date se lit en français', dateEnFrancais('2026-11-20') === '20 novembre', String(dateEnFrancais('2026-11-20')));
-  t('sans zéro devant le jour', dateEnFrancais('2026-10-05') === '5 octobre', String(dateEnFrancais('2026-10-05')));
-  t('une date illisible ne rend rien', dateEnFrancais('bientôt') === null && dateEnFrancais(null) === null);
-  const saison = lire('lib/season.js');
-  t('🚨 la phrase l\'inclut', /Réservations fermées le \$\{fermeture\}/.test(saison));
-  t('…mais pas quand les réservations sont déjà fermées (deux messages contraires)',
-    /rarete\.etat !== 'ferme'/.test(saison));
-  t('🚨 le label de saison vient d\'une seule constante', /label: 'Saison 2026'/.test(saison));
+  const accueil = lire('app/page.jsx');
+  t('🚨 la section de réservation de l\'accueil répète la phrase', /\{rarete\.texte\}\. Réservez votre date\./.test(accueil));
+  t('🚨 …et ne dit plus « Réservations fermées »', !/Réservations fermées/.test(accueil));
+  t('…et elle n\'est pas dans le hero', !/hero-fermeture/.test(lire('components/Hero.jsx')));
 }
 
 console.log('\n--- 6. 🚨 Lecture côté SERVEUR, rafraîchie chaque heure ---');
@@ -320,23 +210,25 @@ console.log('\n--- 8. 🚨 Lisible : ambre plein, marine, 15 px ---');
   t('le composant est monté dans le bandeau', /<MesureBandeau \/>/.test(lire('components/BandeauRarete.jsx')));
 }
 
-console.log('\n--- 9. 🚨 La liste d\'attente passe par le MÊME envoi ---');
+console.log('\n--- 9. 🚨 Plus de liste d\'attente : le formulaire normal pour tous ---');
 {
   const page = lire('app/soumission/page.jsx');
-  t('🚨 le paramètre est lu', /liste-attente/.test(page));
-  t('🚨 seule la SOURCE change', /Liste d'attente — site Lumière/.test(page));
-  // `sourceFinale` remplace `sourceFormulaire` : /soumission distingue
-  // maintenant une arrivée depuis le simulateur (fiche préremplie) d'une
-  // arrivée directe. La liste d'attente, elle, passe toujours par la MÊME
-  // variable et le MÊME formulaire.
-  t('🚨 c\'est le même QuoteForm', /<QuoteForm source=\{sourceFinale\}/.test(page)
-    && /sourceFormulaire/.test(page));
+  const code = sansCommentaires(page);
+  t('🚨 le paramètre n\'est plus lu', !/searchParams\?\.\["liste-attente"\]/.test(code));
+  t('🚨 plus de source « Liste d\'attente »', !/Liste d'attente/.test(code));
+  t('🚨 plus de « saison complète »', !/complète/.test(code));
+  t('🚨 c\'est le QuoteForm normal', /<QuoteForm source=\{sourceFinale\}/.test(page)
+    && /const sourceFormulaire = "Formulaire de soumission \(complet\)"/.test(page));
   t('un seul formulaire dans la page', (page.match(/<QuoteForm/g) || []).length === 1);
   const form = lire('components/QuoteForm.jsx');
   t('🚨 le consentement dérive toujours de la source', /consentement: `accordé le .*via \$\{source\}`/.test(form));
   t('🚨 l\'envoi vers /api/lead est intact', /fetch\("\/api\/lead"/.test(lire('components/data.js')));
   const pixel = lire('lib/meta-lead-event.js');
   t('🚨 le pixel et l\'event_id sont intacts', /eventID/.test(pixel) && /event_id/.test(pixel));
+  const blog = lire('app/blog/posts.js');
+  t('🚨 le blogue ne ferme plus les réservations le 20 novembre',
+    !/réservations (sont fermées|ferment le 20 novembre|fermées pour la saison)/i.test(blog) && /12 décembre/.test(blog));
+  t('🚨 le blogue n\'envoie plus à la liste d\'attente', !/liste d'attente/i.test(blog));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

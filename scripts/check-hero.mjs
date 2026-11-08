@@ -86,8 +86,8 @@ console.log('\n--- 4. 🚨 Aucun chiffre de rareté dans le hero ---');
     !/dates de novembre partent en premier/.test(heroCode));
   // La date de fermeture est descendue dans la section de réservation,
   // à l'endroit où quelqu'un hésite devant le formulaire.
-  t('🚨 la fermeture est dans la page, pas dans le hero',
-    /Réservations fermées le \{fermeture\}/.test(sansCommentaires(page))
+  t('🚨 la dernière date est dans la page, pas dans le hero',
+    /\{rarete\.texte\}\. Réservez votre date\./.test(sansCommentaires(page))
     && !/hero-fermeture/.test(heroCode));
 }
 

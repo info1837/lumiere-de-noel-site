@@ -123,7 +123,7 @@ console.log('\n--- 5. Ce à quoi on ne touche pas ---');
   // La rareté vit dans le bandeau du haut, plus dans le hero (bloc 1).
   // La date de fermeture a quitté le hero avec le formulaire : elle est
   // dans la section de réservation, en bas, là où quelqu'un hésite.
-  t('la page garde la date de fermeture du CRM', /rarete\?\.fermetureLe/.test(lire('app/page.jsx')));
+  t('la page garde la phrase de saison', /rarete\?\.texte/.test(lire('app/page.jsx')));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

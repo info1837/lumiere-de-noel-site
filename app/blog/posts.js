@@ -56,17 +56,17 @@ export const postBodies = {
     { type: "h3", text: "Fin novembre : les conditions deviennent dangereuses" },
     { type: "p", text: "Glace sur les toits, neige sur les échelles, températures sous zéro. Notre équipe travaille dans ces conditions — c'est le métier — mais ça ralentit tout. Une installation qui prendrait 3 h en octobre peut prendre 5-6 h en décembre." },
 
-    { type: "h3", text: "Après le 20 novembre : les réservations sont fermées" },
-    { type: "p", text: "À ce stade, on n'accepte plus de nouveaux clients pour cette saison. Trop de risques de ne pas livrer à temps, ou de livrer dans des conditions qu'on ne juge pas acceptables." },
+    { type: "h3", text: "Le 12 décembre : les dernières installations" },
+    { type: "p", text: "Nos dernières installations de la saison se font le 12 décembre. Après, on n'installe plus : trop de risques de livrer dans des conditions qu'on ne juge pas acceptables." },
 
     { type: "h2", text: "Le réflexe à adopter" },
-    { type: "p", text: "Réservez dès septembre si vous le pouvez. Sinon, octobre. Si vous lisez ceci en novembre : les réservations ferment le 20 novembre — écrivez-nous avant, on vous dira franchement ce qui reste." },
+    { type: "p", text: "Réservez dès septembre si vous le pouvez. Sinon, octobre. Si vous lisez ceci en novembre : les places sont limitées et les dernières installations se font le 12 décembre — écrivez-nous, on vous dira franchement ce qui reste." },
 
     { type: "ul", items: [
       "Septembre : meilleure sélection de dates, équipes disponibles, conditions parfaites.",
       "Octobre : encore d'excellentes disponibilités, météo douce — et 15 % de rabais si vous réservez (avec dépôt) en octobre, pour une installation n'importe quand avant le 20 novembre.",
       "Mi-novembre : possible mais les meilleurs créneaux sont partis.",
-      "Après le 20 novembre : réservations fermées pour la saison — inscrivez-vous sur la liste d'attente.",
+      "Jusqu'au 12 décembre : dernières installations de la saison — places limitées, réservez votre date.",
     ]},
 
     { type: "h2", text: "Et pour le commercial?" },
