@@ -24,19 +24,9 @@ export const metadata = {
 const nextSteps = processSteps.slice(0, 3).map((e) => ({ n: e.num, title: e.title, body: e.desc }));
 
 export default function Soumission({ searchParams }) {
-  // ⚠️ La liste d'attente passe par le MÊME formulaire et le MÊME envoi.
-  //
-  // Seule la `source` change. C'est elle qui porte l'étiquette jusque dans
-  // le CRM, et le consentement en dérive — il reste donc exact : « accordé
-  // le … via Liste d'attente ». Rien d'autre n'est touché : ni le pixel,
-  // ni l'event_id, ni /api/lead.
-  //
-  // Un deuxième formulaire aurait voulu dire un deuxième consentement, un
-  // deuxième envoi et deux endroits où une correction peut être oubliée.
-  const listeAttente = String(searchParams?.["liste-attente"] || "") === "1";
-  const sourceFormulaire = listeAttente
-    ? "Liste d'attente — site Lumière"
-    : "Formulaire de soumission (complet)";
+  // La liste d'attente n'existe plus (2026-11-08) : la saison n'était pas
+  // complète. Un vieux lien ?liste-attente=1 retombe sur le formulaire normal.
+  const sourceFormulaire = "Formulaire de soumission (complet)";
 
   // ?service=commercial — présélectionne l'option du menu déroulant. La
   // valeur vient de serviceOptions, pas d'une chaîne écrite ici : si
@@ -86,12 +76,10 @@ export default function Soumission({ searchParams }) {
           </div>
           <SectionTag dark>Réservation</SectionTag>
           <h1 style={{ color: ivory, marginBottom: 14 }}>
-            {listeAttente ? "Liste d’attente" : "Réservez votre date"}
+            Réservez votre date
           </h1>
           <p style={{ color: "rgba(243,233,210,0.86)", fontSize: 18, marginBottom: 26 }}>
-            {listeAttente
-              ? "La saison est complète. Laissez-nous vos coordonnées : on vous appelle dès qu’une date se libère, et en priorité l’an prochain."
-              : "Nous confirmons votre place et votre prix après un court appel."}
+            Nous confirmons votre place et votre prix après un court appel.
           </p>
           <QuoteForm source={sourceFinale} serviceInitial={serviceInitial} prerempli={prerempli} variante="sombre" />
         </div>

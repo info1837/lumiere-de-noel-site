@@ -5,7 +5,7 @@ import QuoteForm from "@/components/QuoteForm";
 import RevelationLumiere from "@/components/RevelationLumiere";
 import VitrineDefilante from "@/components/VitrineDefilante";
 import { PucesVilles } from "@/components/sections";
-import { lireDisponibilites, messageRarete, dateEnFrancais } from "@/lib/disponibilites";
+import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
 import { paireAvantApres } from "@/components/photos";
 import { faqHome, faqRabaisOctobre, company, homeVitrine, navy, creme } from "@/components/data";
@@ -54,7 +54,6 @@ export default async function Home() {
   // La page lit le CRM (serveur). Null quand le CRM se tait : aucune
   // mention de place ni de date, plutôt qu'un chiffre inventé.
   const rarete = messageRarete(await lireDisponibilites());
-  const fermeture = dateEnFrancais(rarete?.fermetureLe);
   // La question du rabais n'existe que pendant qu'il existe (le CRM le dit).
   const faq = rarete?.rabaisOctobre > 0
     ? [faqHome[0], faqRabaisOctobre(rarete.rabaisOctobre), ...faqHome.slice(1)]
@@ -258,11 +257,9 @@ export default async function Home() {
           <p className="bloc-formulaire__pied">
             Vous préférez parler à quelqu&apos;un ?{" "}
             <a href={company.phoneHref}>{company.phoneDisplay}</a>
-            {/* La date de fermeture est ICI, à l'endroit exact où quelqu'un
-                hésite à remplir le formulaire — et sur téléphone c'est le
-                seul endroit où elle apparaît, la ligne de saison la laissant
-                tomber sous 480 px pour tenir sur une ligne. */}
-            {fermeture && <><br />Réservations fermées le {fermeture}.</>}
+            {/* La dernière date est ICI, à l'endroit exact où quelqu'un
+                hésite à remplir le formulaire. Aucun compteur (2026-11-08). */}
+            {rarete?.texte && <><br />{rarete.texte}. Réservez votre date.</>}
           </p>
         </div>
       </section>

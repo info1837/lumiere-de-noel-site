@@ -71,8 +71,8 @@ console.log('\n--- 3. 🚨 La ligne de saison ne se lit qu\'UNE fois ---');
     /export function ligneSaison/.test(lire('lib/season.js')));
   // La date de fermeture est descendue en bas de l'accueil, dans la
   // section de réservation.
-  t('🚨 la fermeture est dans la section de réservation',
-    /Réservations fermées le \{fermeture\}/.test(lire('app/page.jsx')));
+  t('🚨 la dernière date est dans la section de réservation',
+    /\{rarete\.texte\}\. Réservez votre date\./.test(lire('app/page.jsx')));
 }
 
 console.log('\n--- 4. Ce à quoi on ne touche pas ---');
