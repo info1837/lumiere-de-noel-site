@@ -1237,6 +1237,14 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   .bandeau-rarete { font-size: 13.5px; }
   .bandeau-rarete__contenu { padding: 7px 16px; gap: 8px; flex-wrap: nowrap; overflow: hidden; }
   .bandeau-rarete__lien { margin-left: 0; }
+  /* 2026-11-08 : la phrase « Places limitées — dernières installations le
+     12 décembre » ne tient pas sur une ligne à 390 px avec le lien. Sur
+     téléphone : « Saison 2026 » saute, la phrase peut se replier, et le
+     lien « Réservez votre date » passe dessous au lieu d'être coupé. */
+  .bandeau-rarete__contenu { flex-wrap: wrap; overflow: visible; row-gap: 2px; }
+  .bandeau-rarete__seg { white-space: normal; }
+  .bandeau-rarete__seg--marque { display: none; }
+  .bandeau-rarete__seg--marque + .bandeau-rarete__seg::before { content: none; }
 }
 
 /* ── ≤ 480 px : UNE seule ligne ──────────────────────────────────────
