@@ -21,7 +21,11 @@ import { useEffect, useRef, useState } from "react";
 //   drone de Mercier (DJI_0328, passé de jour à nuit dans Higgsfield en
 //   prenant la vraie photo de nuit de la même maison comme référence : les
 //   lumières sont là où elles sont vraiment) → façade de Laval (VIDEO 27)
-//   → grand arbre de Mercier allumé (VIDEO 8) → Laval large → drone.
+//   → grand arbre de Mercier allumé (VIDEO 8) → Laval large → drone à
+//   rebours. Seules les 3,2 premières secondes du drone servent : plus
+//   loin, l’IA faisait pendre une guirlande verticale à gauche (vu par
+//   Yahir le 2026-11-08). Le retour à rebours finit sur la 1re image :
+//   la boucle se raccorde sans saut.
 export default function HeroVideo() {
   const ref = useRef(null);
   const [joue, setJoue] = useState(false);
