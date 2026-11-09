@@ -70,8 +70,8 @@ console.log('\n--- 2. 🚨 Au-dessus de la ligne de flottaison, rien ne s\'anime
 {
   t('🚨 la photo du hero ne « s\'allume » plus', !/heroAllume|heroEclaire/.test(css));
   t('🚨 plus de neige', !/\.flake|snowFall|\.snow\b/.test(css) && !/flake|FLOCONS/.test(couche));
-  t('🚨 la guirlande du hero est rendue par le serveur, allumée',
-    /<GuirlandeHero \/>/.test(hero) && /\.hero-guirlande span \{[^}]*opacity: 0\.9;/.test(css) && !/ampouleAllume/.test(css));
+  t('🚨 plus de guirlande d\'ampoules sous l\'entête (retirée le 2026-11-09)',
+    !/GuirlandeHero|hero-guirlande/.test(hero) && !/\.hero-guirlande/.test(css) && !/ampouleAllume/.test(css));
   t('🚨 le point du bandeau ne respire plus', !/bandeau-respire/.test(css));
   t('🚨 les sections du premier écran sont exclues de l\'apparition',
     /!s\.classList\.contains\("hero-section"\) && !s\.hasAttribute\("data-sans-apparition"\)/.test(couche));
