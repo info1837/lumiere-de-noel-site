@@ -4,6 +4,7 @@ import HowItWorks from "@/components/HowItWorks";
 import QuoteForm from "@/components/QuoteForm";
 import RevelationLumiere from "@/components/RevelationLumiere";
 import VitrineDefilante from "@/components/VitrineDefilante";
+import VideoParlee from "@/components/VideoParlee";
 import { PucesVilles } from "@/components/sections";
 import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
@@ -204,6 +205,32 @@ export default async function Home() {
       {/* ── 5 · Le parcours, sur une ligne ──────────────────────────── */}
       <HowItWorks variant="ligne" />
 
+      {/* ── 5b · Qui on est — Yahir raconte le départ (VIDEO 17) ───────
+          Ajouté le 2026-11-08 à la demande de Yahir. Une seule vidéo, lancée
+          par le visiteur, avec le texte à côté pour qui ne met pas le son. */}
+      <section style={{ background: "#060E18" }}>
+        <div className="container bloc-video">
+          <VideoParlee
+            src="/videos/fondateur.mp4"
+            affiche="/videos/fondateur.jpg"
+            titre="Pourquoi j'ai lancé Solution Lumière de Noël — Yahir, fondateur"
+          />
+          <div>
+            <SectionTag dark>Qui on est</SectionTag>
+            <SectionTitle light style={{ margin: "0 0 18px" }}>
+              Un service qu&apos;on ne trouvait pas au Québec
+            </SectionTitle>
+            <p className="section-phrase" style={{ margin: "0 0 14px", textAlign: "left" }}>
+              L&apos;hiver, mon équipe n&apos;avait rien à faire. J&apos;ai vu ce
+              service aux États-Unis, je l&apos;ai essayé ici, et ça a marché.
+            </p>
+            <p className="section-phrase" style={{ margin: 0, textAlign: "left" }}>
+              — Yahir, fondateur
+            </p>
+          </div>
+        </div>
+      </section>
+
       {/* ── 6 · Renouvellement ──────────────────────────────────────── */}
       <section style={{ background: "#060E18" }}>
         <div className="container bloc-etroit">
@@ -231,7 +258,17 @@ export default async function Home() {
               Ce qu&apos;on nous demande le plus
             </SectionTitle>
           </div>
-          <FaqAccordion items={faq} dark />
+          {/* La garantie, dite par Yahir (VIDEO 12) : elle répond en
+              13 secondes à « que se passe-t-il si une lumière brûle ». */}
+          <div className="bloc-video bloc-video--faq">
+            <VideoParlee
+              src="/videos/garantie.mp4"
+              affiche="/videos/garantie.jpg"
+              titre="La garantie de lumière, expliquée par Yahir"
+              legende="Une lumière brûle ? On revient la réparer, tout le mandat."
+            />
+            <FaqAccordion items={faq} dark />
+          </div>
         </div>
       </section>
 
