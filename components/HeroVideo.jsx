@@ -17,8 +17,11 @@ import { useEffect, useRef, useState } from "react";
 //   · prefers-reduced-motion ou économie de données : rien ne se charge,
 //     la photo reste.
 //
-// Plans : VIDEO 27 (1,75 s → 7,85 s, façade de nuit) + VIDEO 8 (le grand
-// arbre de Mercier allumé). Sans texte ni logo. 540×960, ~400 Ko.
+// Montage (11 s, 540×960, ~450 Ko, sans texte ni logo) :
+//   drone de Mercier (DJI_0328, passé de jour à nuit dans Higgsfield en
+//   prenant la vraie photo de nuit de la même maison comme référence : les
+//   lumières sont là où elles sont vraiment) → façade de Laval (VIDEO 27)
+//   → grand arbre de Mercier allumé (VIDEO 8) → Laval large → drone.
 export default function HeroVideo() {
   const ref = useRef(null);
   const [joue, setJoue] = useState(false);
