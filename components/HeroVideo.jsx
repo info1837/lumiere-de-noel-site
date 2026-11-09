@@ -21,7 +21,11 @@ import { useEffect, useRef, useState } from "react";
 //   drone de Mercier (DJI_0328, passé de jour à nuit dans Higgsfield en
 //   prenant la vraie photo de nuit de la même maison comme référence : les
 //   lumières sont là où elles sont vraiment) → façade de Laval (VIDEO 27)
-//   → grand arbre de Mercier allumé (VIDEO 8) → Laval large → drone.
+//   → grand arbre de Mercier allumé (VIDEO 8) → Laval large → drone à
+//   rebours. Seules les 3,2 premières secondes du drone servent : plus
+//   loin, l’IA faisait pendre une guirlande verticale à gauche (vu par
+//   Yahir le 2026-11-08). Le retour à rebours finit sur la 1re image :
+//   la boucle se raccorde sans saut.
 export default function HeroVideo() {
   const ref = useRef(null);
   const [joue, setJoue] = useState(false);
@@ -53,10 +57,19 @@ export default function HeroVideo() {
       playsInline
       preload="none"
       aria-hidden="true"
-      onPlaying={() => setJoue(true)}
+      onPlaying={() => {
+        setJoue(true);
+        // Les deux voiles du hero sont réglés pour une photo claire : sur la
+        // vidéo de nuit, ils la cachaient presque au complet (2026-11-08,
+        // « la vidéo ne s'affiche pas »). La section passe en mode vidéo
+        // et globals.css allège les voiles.
+        ref.current?.closest(".hero-section")?.classList.add("hero--video");
+      }}
     >
-      <source data-src="/videos/hero-mobile.webm" type="video/webm" />
+      {/* MP4 d'abord : Safari iOS annonce « maybe » pour le WebM et peut
+          s'y arrêter sans jamais jouer. */}
       <source data-src="/videos/hero-mobile.mp4" type="video/mp4" />
+      <source data-src="/videos/hero-mobile.webm" type="video/webm" />
     </video>
   );
 }
