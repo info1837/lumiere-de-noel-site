@@ -53,9 +53,8 @@ console.log('\n--- 1. 🚨 Rien ne reste masqué si le JavaScript ne tourne pas 
   t('🚨 aucun état masqué à la racine de la feuille', !/^\.rv \{/m.test(cssNu));
   t('🚨 la classe est posée par le script', /classList\.add\(CLASSE_RACINE\)/.test(couche));
   t('🚨 …et retirée au démontage', /classList\.remove\(CLASSE_RACINE\)/.test(couche));
-  t('🚨 la guirlande du hero est allumée d\'office (rendue par le serveur)',
-    /\.hero-guirlande span \{[\s\S]{0,160}opacity: 0\.9;/.test(cssNu)
-    && /<GuirlandeHero \/>/.test(lire('components/Hero.jsx')));
+  t('🚨 plus de guirlande d\'ampoules sous l\'entête (retirée le 2026-11-09)',
+    !/\.hero-guirlande/.test(cssNu) && !/GuirlandeHero/.test(lire('components/Hero.jsx')));
   t('🚨 la bande se fait défiler à la main, toujours',
     /\.defile \{[\s\S]{0,80}overflow-x: auto;/.test(cssNu));
 }
@@ -154,8 +153,6 @@ console.log('\n--- 7. 🚨 L\'entête est une seule surface pleine ---');
     /\.entete-fond \{[\s\S]{0,120}height: calc\(var\(--entete-total\) \+ var\(--entete-encart\)\);/.test(cssNu)
     && /body\.avec-bandeau \.entete-fond \{\s*height: calc\(var\(--bandeau-h\) \+ var\(--entete-total\) \+ var\(--entete-encart\)\);/.test(cssNu));
   t('🚨 …et ne capte aucun clic', /\.entete-fond \{[\s\S]{0,300}pointer-events: none;/.test(cssNu));
-  t('🚨 la guirlande du hero pend sous le fond, pas dessous',
-    /\.hero-guirlande \{[\s\S]{0,80}top: calc\(var\(--entete-total\) \+ var\(--entete-encart\)\);/.test(cssNu));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);

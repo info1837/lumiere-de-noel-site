@@ -28,7 +28,6 @@ import QuoteForm from "@/components/QuoteForm";
 import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 import HowItWorks from "@/components/HowItWorks";
 import RevelationLumiere from "@/components/RevelationLumiere";
-import { GuirlandeHero } from "@/components/Hero";
 import { PHOTOS, paireAvantApres } from "@/components/photos";
 import { flouDe } from "@/components/photos-flou";
 import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } from "@/components/data";
@@ -58,7 +57,6 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
         />
       )}
       <div className="hero-voile" aria-hidden="true" />
-      <GuirlandeHero />
       <div className="hero-container" style={{ position: "relative", width: "100%" }}>
         <div className="hero-texte">
           {filAriane && <Breadcrumb items={filAriane} dark />}

@@ -2284,30 +2284,8 @@ html.mvt .rv.est-la {
               transform 320ms ease-out var(--rv-d, 0ms);
 }
 
-/* ── 2 · La guirlande sous l'entête du hero — allumée, immobile ──────── */
-/* ⚠️ ELLE PEND SOUS L'ENTÊTE, PAS AU BORD DU HERO. Le haut du hero est
-   couvert par le fond plein de l'entête (.entete-fond) : elle commence là
-   où le fond s'arrête — entête + deux encarts. Rendue par le serveur
-   (components/Hero.jsx), elle est là dès la première image. */
-.hero-guirlande {
-  position: absolute;
-  top: calc(var(--entete-total) + var(--entete-encart));
-  left: 0; right: 0;
-  height: 10px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 10px;
-  pointer-events: none;
-  z-index: 2;
-}
-.hero-guirlande span {
-  width: 5px; height: 5px;
-  border-radius: 50%;
-  background: #F0BA54;
-  opacity: 0.9;
-  box-shadow: 0 0 8px 1px rgba(240, 186, 84, 0.7);
-}
+/* ── 2 · (La guirlande d'ampoules sous l'entête a été retirée le
+   2026-11-09 à la demande de Yahir — desktop et téléphone.) ─────────── */
 
 /* ── 3 · La bande des réalisations — défilement natif ───────────────── */
 .defile {
