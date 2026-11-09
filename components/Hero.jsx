@@ -2,6 +2,7 @@ import Image from "next/image";
 import { CTAButton } from "@/components/ui";
 import { ivory, company } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
+import HeroVideo from "@/components/HeroVideo";
 
 // Hero d'accueil : une photo, une phrase, deux portes.
 //
@@ -84,6 +85,9 @@ export default function Hero() {
         sizes="100vw"
         style={{ objectFit: "cover" }}
       />
+      {/* Téléphone seulement : une boucle de vraies installations de nuit
+          par-dessus la photo, une fois la page chargée (HeroVideo.jsx). */}
+      <HeroVideo />
       {/* Deux voiles, deux rôles : l'un rend le texte lisible à gauche,
           l'autre fond la photo dans le marine de la section suivante pour
           qu'aucune arête ne coupe la page. */}
