@@ -2895,3 +2895,37 @@ section.concours-reglement { background: #060E18; padding: clamp(48px, 8vw, 80px
   .glow-card:hover, .glow-card-light:hover,
   .glow-card:focus-within, .glow-card-light:focus-within { transform: none; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════════
+   VIDÉOS PARLÉES (components/VideoParlee.jsx) — V12 garantie, V17 fondateur
+   Verticales, lancées par le visiteur, aucune animation. 2026-11-08.
+   ═══════════════════════════════════════════════════════════════════════ */
+.bloc-video {
+  display: grid;
+  grid-template-columns: minmax(0, 300px) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+  max-width: 980px;
+  margin: 0 auto;
+}
+.bloc-video--faq { align-items: start; max-width: none; }
+.video-parlee { margin: 0; }
+.video-parlee video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 9 / 16;
+  border-radius: 18px;
+  background: #0A1524;
+  object-fit: cover;
+}
+.video-parlee figcaption {
+  margin-top: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(240, 234, 222, 0.75);
+  text-align: center;
+}
+@media (max-width: 768px) {
+  .bloc-video { grid-template-columns: 1fr; gap: 28px; }
+  .video-parlee { max-width: 300px; margin: 0 auto; width: 100%; }
+}
