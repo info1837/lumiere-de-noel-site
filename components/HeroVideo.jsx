@@ -53,10 +53,19 @@ export default function HeroVideo() {
       playsInline
       preload="none"
       aria-hidden="true"
-      onPlaying={() => setJoue(true)}
+      onPlaying={() => {
+        setJoue(true);
+        // Les deux voiles du hero sont réglés pour une photo claire : sur la
+        // vidéo de nuit, ils la cachaient presque au complet (2026-11-08,
+        // « la vidéo ne s'affiche pas »). La section passe en mode vidéo
+        // et globals.css allège les voiles.
+        ref.current?.closest(".hero-section")?.classList.add("hero--video");
+      }}
     >
-      <source data-src="/videos/hero-mobile.webm" type="video/webm" />
+      {/* MP4 d'abord : Safari iOS annonce « maybe » pour le WebM et peut
+          s'y arrêter sans jamais jouer. */}
       <source data-src="/videos/hero-mobile.mp4" type="video/mp4" />
+      <source data-src="/videos/hero-mobile.webm" type="video/webm" />
     </video>
   );
 }

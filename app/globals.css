@@ -950,6 +950,14 @@ textarea:focus-visible,
 }
 .hero-video.est-active { visibility: visible; }
 @media (min-width: 769px) { .hero-video { display: none; } }
+/* Mode vidéo (téléphone) : voiles allégés pour que les lumières se voient,
+   ombre portée sur le texte pour qu'il reste lisible. Changement d'un coup,
+   sans transition, comme le reste du premier écran. */
+@media (max-width: 768px) {
+  .hero--video .hero-voile-gauche { background: rgba(10, 21, 36, 0.42) !important; }
+  .hero--video .hero-voile-bas { background: linear-gradient(to bottom, rgba(10,21,36,0) 62%, rgba(10,21,36,0.7) 90%, #0A1524 100%) !important; }
+  .hero--video .hero-texte { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55); }
+}
 .hero-container {
   max-width: 1280px;
   margin: 0 auto;

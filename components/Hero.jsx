@@ -91,8 +91,8 @@ export default function Hero() {
       {/* Deux voiles, deux rôles : l'un rend le texte lisible à gauche,
           l'autre fond la photo dans le marine de la section suivante pour
           qu'aucune arête ne coupe la page. */}
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(10,21,36,0.92) 0%, rgba(10,21,36,0.74) 46%, rgba(10,21,36,0.30) 100%)" }} />
-      <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,21,36,0) 46%, rgba(10,21,36,0.82) 84%, #0A1524 100%)" }} />
+      <div className="hero-voile-gauche" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(10,21,36,0.92) 0%, rgba(10,21,36,0.74) 46%, rgba(10,21,36,0.30) 100%)" }} />
+      <div className="hero-voile-bas" style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,21,36,0) 46%, rgba(10,21,36,0.82) 84%, #0A1524 100%)" }} />
 
       <GuirlandeHero />
 
