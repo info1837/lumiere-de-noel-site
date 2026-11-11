@@ -60,6 +60,7 @@ export default function CityPage({ params }) {
         titre={`Lumières de Noël ${inCity(c.name)}`}
         phrase={c.intro}
         filAriane={[{ name: "Accueil", href: "/" }, { name: "Secteurs", href: "/secteur" }, { name: c.name }]}
+        montage
       />
 
       <AProposVille ville={c} />

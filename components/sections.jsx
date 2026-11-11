@@ -21,9 +21,11 @@
 //      autre ville n'entrent jamais dans un gabarit de ville
 //      (check-pages-locales le vérifie sur le rendu).
 // =============================================================================
-import Image from "next/image";
+import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Breadcrumb } from "@/components/ui";
+import HeroVideo from "@/components/HeroVideo";
+import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 import QuoteForm from "@/components/QuoteForm";
 import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 import HowItWorks from "@/components/HowItWorks";
@@ -41,10 +43,34 @@ export const MARINE_PROFOND = "#060E18";
 // guirlande que l'accueil, et le même premier écran sans animation.
 // La ligne de preuve est la même : le prix et le
 // territoire (plus d'avis d'une autre entreprise).
-export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true }) {
+//
+// `montage` (pages de secteur) : le hero de l'accueil en portrait — sur
+// téléphone / écran vertical, l'affiche du montage drone (image LCP), puis
+// la vidéo après `load` (HeroVideo.jsx, le même composant et le même
+// fichier que l'accueil) ; sur desktop, la photo de la page, sans vidéo.
+// Sans `montage`, rien ne change (services, page commerciale, blog…).
+export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true, montage = false }) {
+  let affiches = null;
+  if (montage && photo) {
+    // Un seul alt pour deux images (montage en portrait, photo sur desktop) :
+    // il doit décrire les deux, donc pas celui de la photo.
+    const commun = { alt: "Lumières de Noël installées par notre équipe, la nuit", fill: true, priority: true, sizes: "100vw" };
+    const { props: { srcSet: srcSetPortrait } } = getImageProps({ ...commun, src: HERO_MONTAGES.portrait.affiche });
+    const { props: img } = getImageProps({ ...commun, src: photo.src });
+    affiches = (
+      <>
+        <picture>
+          <source media={MEDIA_PORTRAIT} srcSet={srcSetPortrait} sizes="100vw" />
+          <img {...img} style={{ ...img.style, objectFit: "cover" }} />
+        </picture>
+        <HeroVideo />
+      </>
+    );
+  }
   return (
     <section className="hero-section hero-section--page">
-      {photo && (
+      {affiches}
+      {photo && !affiches && (
         <Image
           src={photo.src}
           alt={photo.alt}

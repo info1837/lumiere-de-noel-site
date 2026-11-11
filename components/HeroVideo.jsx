@@ -69,11 +69,33 @@ export default function HeroVideo() {
     };
     mq.addEventListener("change", suivre);
 
+    // ⚠️ RENDRE LA CONNEXION EN QUITTANT LA PAGE (2026-11-11). Une vidéo en
+    // cours de téléchargement garde sa connexion même après la navigation
+    // (page mise en cache arrière/avant). Sur les pages de secteur, sept
+    // pages vidéo de suite dans le même onglet épuisaient les 6 connexions
+    // par hôte de Chrome : la page suivante restait bloquée (reproduit,
+    // check-debordement). En partant, on vide la source — le téléchargement
+    // s'arrête — et on repart au retour par « Précédent ».
+    const liberer = () => {
+      if (!demarree) return;
+      demarree = false;
+      v.pause();
+      v.removeAttribute("src");
+      v.load();
+      setJoue(false);
+    };
+    const revenir = (e) => { if (e.persisted && mq.matches === (choix === "portrait")) demarrer(); };
+    window.addEventListener("pagehide", liberer);
+    window.addEventListener("pageshow", revenir);
+
     if (document.readyState === "complete") demarrer();
     else window.addEventListener("load", demarrer, { once: true });
     return () => {
       window.removeEventListener("load", demarrer);
+      window.removeEventListener("pagehide", liberer);
+      window.removeEventListener("pageshow", revenir);
       mq.removeEventListener("change", suivre);
+      liberer();
     };
   }, []);
 
