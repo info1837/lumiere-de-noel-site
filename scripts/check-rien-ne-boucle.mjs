@@ -29,7 +29,10 @@ console.log('\n--- 1. 🚨 Plus AUCUNE animation infinie, sauf la démo des DEL 
 {
   const infinies = [...cssNu.matchAll(/([^{}]+)\{[^{}]*animation[^{}:]*:[^{};]*infinite[^{};]*;/g)]
     .map((m) => m[1].trim().replace(/\s+/g, ' '));
-  const AUTORISEES = ['.led--twinkle', '.led--chase', '.led--breathe'];
+  // .cadre-ampoule__lueur : la lueur lente du cadre « ampoule »
+  // (components/CadreAmpoule.jsx), demandée par Yahir le 2026-11-11. Opacité
+  // d'un calque composité, 5,6 s ; coupée en mouvement réduit.
+  const AUTORISEES = ['.led--twinkle', '.led--chase', '.led--breathe', '.cadre-ampoule__lueur'];
   const intruses = infinies.filter((r) => !AUTORISEES.includes(r));
   t('🚨 aucune boucle décorative ne subsiste', intruses.length === 0, intruses.join(' | ') || 'aucune');
   t('🚨 la neige du hero est partie', !infinies.includes('.flake') && !/snowFall/.test(cssNu));

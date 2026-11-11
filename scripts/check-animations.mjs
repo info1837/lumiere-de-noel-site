@@ -124,7 +124,10 @@ console.log('\n--- 6. 🚨 Aucune boucle, sauf la démo des DEL ---');
   // architectural-permanent). L'animation EST le produit montré ; elle ne
   // tourne qu'une fois qu'on a choisi un effet, et s'arrête en mouvement
   // réduit (garde global ci-dessus).
-  const AUTORISEES = ['.led--twinkle', '.led--chase', '.led--breathe'];
+  // .cadre-ampoule__lueur : la lueur lente du cadre « ampoule »
+  // (components/CadreAmpoule.jsx), demandée par Yahir le 2026-11-11. Opacité
+  // d'un calque composité, 5,6 s ; coupée en mouvement réduit.
+  const AUTORISEES = ['.led--twinkle', '.led--chase', '.led--breathe', '.cadre-ampoule__lueur'];
   const intruses = infinies.filter((r) => !AUTORISEES.includes(r));
   t('🚨 aucune boucle décorative', intruses.length === 0, intruses.join(' | ') || 'aucune');
 }

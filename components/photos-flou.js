@@ -4,6 +4,7 @@
 export const FLOU = {
   "/images/before-lery.jpg": "data:image/webp;base64,UklGRkIAAABXRUJQVlA4IDYAAAAQAgCdASoQAAwAA4BaJZwAAudggqwLUfwAAP75DgHcVxPmfEPDCeDNEOI4Y6d8x4QO+wDwAAA=",
   "/images/before-ste-julienne.jpg": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQAwCdASoQABUAPu1iqU2ppaOiMAgBMB2JZgCdACGVDLbMv6PWJAAA/m7iWChedH/bmtZCvP+/OeC0BS02bNWYEQi8JftT8qfI/C+qtPzh3TFAB9OlGv29/1xQgVjMPFV4GoxdjYvizAAA",
+  "/images/reel/installateur-vieux-montreal.jpg": "data:image/webp;base64,UklGRq4AAABXRUJQVlA4IKIAAACQBACdASoQABcAPu1iqU2ppaOiMAgBMB2JYgCuKBFHxyHvK/nxlzcIZb0SWgAA4aWVFSEhaGC7zgg3VZw+spab5CmX7XL7uJErgoe3Ez0vlyCcuv/yTfy8pQ1XGI7rwBrHAf/a5oxpu0pDChkWtbsVMP/r5vw1/qMSkTnjai4ZhYDkG9DI3H9KcMf63kAxgfO/1yNo9j5eHiKbGyAOf5AAAAA=",
   "/images/reel/noel-arbre-enrubanne.jpg": "data:image/webp;base64,UklGRqoAAABXRUJQVlA4IJ4AAAAwBACdASoQABwAPu1iqU2ppaOiMAgBMB2JZACdMoAC+4Sprk75r9eD2UAA/vK0uhwKB7m21NJmJdZ9RSIY+LzOx0HvpOeNPZspbKaG19TyOeK1D8fMnxwXMjUBLHrwJlDhwdoy4Nm8hNVcp2yk3g1QE4EULEI+DhBz2Fx7p+n5xQ3VRlM99mHJIeuaM0Mej+Ti+EPjxd1iN9E1uS1QAA==",
   "/images/reel/noel-blainville-01.jpg": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAADwAQCdASoQAAkAA4BaJQAAYoNfNbaiKAAA/vNe4ZSZg0EqTZJl9nX33NCsDsHL4sIfO8IPLN/RcRnsAxKdvYJNoZroqImBPL3mffANw+8FAAAA",
   "/images/reel/noel-commercial-02.jpg": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAAAwAgCdASoQAAwAA4BaJYgCdAEO4/x6lD3WAAD+93bb5M4qzCezh7Eivbd2cRrrjmWYeAgHvdpJJztuV/jSFvIQGKaFOT/Uo/0ttOfWjqznDzgA",

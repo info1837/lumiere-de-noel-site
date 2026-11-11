@@ -30,6 +30,7 @@ import QuoteForm from "@/components/QuoteForm";
 import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 import HowItWorks from "@/components/HowItWorks";
 import RevelationLumiere from "@/components/RevelationLumiere";
+import { CadreAmpouleOffre } from "@/components/CadreAmpoule";
 import { PHOTOS, paireAvantApres } from "@/components/photos";
 import { flouDe } from "@/components/photos-flou";
 import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } from "@/components/data";
@@ -139,16 +140,31 @@ export function BandePhotos({ cles, legende = true, fond = MARINE }) {
 // ── 3 · Ce qui est compris ───────────────────────────────────────────────
 // Le bloc de l'offre de l'accueil (`.offre`) : le texte à gauche, la liste
 // et le prix à droite, au bas de ce qu'il achète.
-export function CeQuiEstCompris({ compris, titre = "Ce qui est compris", tag = "Forfait tout inclus", fond = MARINE_PROFOND }) {
+// `cadre` : clé d'une photo de PHOTOS à montrer dans le cadre « ampoule »
+// (components/CadreAmpoule.jsx) — la page commerciale seulement, pour l'instant.
+export function CeQuiEstCompris({ compris, titre = "Ce qui est compris", tag = "Forfait tout inclus", fond = MARINE_PROFOND, cadre = null }) {
   if (!compris) return null;
+  const photoCadre = cadre ? PHOTOS[cadre] : null;
   return (
     <section style={{ background: fond }}>
-      <div className="container offre">
-        <div>
+      {/* Téléphone : ici le bloc prix (« Sur soumission » + bouton) est plus
+          court que sur l'accueil ; une ampoule à 47 % monterait à côté des
+          lignes de la liste et toucherait leur texte (mesuré à 390 et 430).
+          46 % plafonnés à 180 px : la plus grande taille sans chevauchement. */}
+      <div
+        className={`container offre${photoCadre ? " offre--cadre" : ""}`}
+        style={photoCadre ? { "--ampoule-mobile": "min(46vw, 180px)" } : undefined}
+      >
+        <div className="offre-intro">
           <SectionTag dark>{tag}</SectionTag>
           <SectionTitle light style={{ margin: "0 0 20px" }}>{titre}</SectionTitle>
           <p className="offre-texte">{compris.texte}</p>
         </div>
+        {photoCadre && (
+          <div className="offre-cadre">
+            <CadreAmpouleOffre photo={photoCadre} fond={fond} />
+          </div>
+        )}
         <div className="offre-colonne">
           <ul className="offre-liste">
             {compris.items.map((t) => (

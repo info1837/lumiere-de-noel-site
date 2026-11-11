@@ -19,7 +19,7 @@
 - **Défilement natif partout** : aucun smooth-scroll (JS ou `scroll-behavior`), aucun `scroll-snap`, aucun parallaxe, rien de piloté par le défilement. Aucune librairie d'animation (framer-motion, GSAP, AOS, Lenis…).
 - **Premier écran immobile** : hero, titre, bandeau, guirlande s'affichent tels quels, sans fondu ni cascade. Une section de premier écran qui n'est pas `.hero-section` porte `data-sans-apparition`.
 - **Plus bas** : seulement l'apparition de `components/FestiveLayer.jsx` (opacité + 10 px, 320 ms ease-out, une fois, `rootMargin` 15 %, cascade de 3 au plus). L'état masqué n'existe que sous `html.mvt` : sans JS, tout est visible.
-- **Micro-interactions** : survols 150 à 200 ms ; le comparateur avant/après suit le doigt. Aucune boucle `infinite` sauf la démo des DEL (`.led--*`).
+- **Micro-interactions** : survols 150 à 200 ms ; le comparateur avant/après suit le doigt. Aucune boucle `infinite` sauf la démo des DEL (`.led--*`) et la lueur lente du cadre « ampoule » (`.cadre-ampoule__lueur`, demandée par Yahir le 2026-11-11).
 - **`prefers-reduced-motion`** : aucune animation (garde global en fin de `globals.css`).
 - **Perf** : images en `next/image` avec `sizes`, une seule image `priority` par page (l'image LCP), polices locales (`public/fonts`, préchargées, replis calibrés `Bebas Repli` / `Nunito Repli` à garder dans chaque `font-family`), Meta Pixel différé (stub + chargement après `load`). Garde : `node scripts/check-animations.mjs`. Objectif Lighthouse mobile ≥ 90, CLS < 0,1.
 
@@ -31,6 +31,13 @@
 - **`HeroVideo` rend sa connexion en quittant la page** (`pagehide` / démontage : pause, `src` retiré, `load()` ; reprise au retour par « Précédent »). Sans ça, sept pages vidéo de suite dans un onglet épuisaient les 6 connexions par hôte et la page suivante restait bloquée (`check-debordement` en timeout). Ne pas retirer.
 - Code : `components/Hero.jsx` (`<picture>` : affiche du montage en portrait, Mirabel sinon = image LCP), `components/HeroVideo.jsx` (portrait seulement, après `load`, rien si `prefers-reduced-motion` ou économie de données), `lib/hero-media.js` (requête média commune, `debut`, clé de l'affiche desktop).
 - Rushes : `~/Downloads/lumiere-header/src` (aussi dans le dossier Google Drive « drone »). Nouvelle affiche portrait = re-mesurer `debut` (image du montage d'où elle est tirée), sinon la vidéo saute au démarrage.
+
+## Cadre « ampoule » (2026-11-11)
+- **Ce que c'est** : l'ampoule du logo comme cadre photo — contour crème et culot EXACTS du logo (tracés copiés dans `lib/logo-ampoule.js`, vérifiés mot pour mot contre `public/images/icone-pour-fond-fonce.svg` par `check-photos` §8b : on ne redessine pas le logo), sans le S ; la photo reste droite dans le verre incliné (17°) ; lueur ambrée qui respire (coupée sous `prefers-reduced-motion`) ; étalonnage CSS (pierre plus sombre et froide, guirlandes chaudes), photo jamais retouchée.
+- **Code** : `components/CadreAmpoule.jsx` (`CadreAmpoule` réutilisable : `photo`, `inclinaison`, `placement`, `placementMobile` ; `CadreAmpouleOffre` pour les sections offre), `lib/logo-ampoule.js` (tracés + `geometrieAmpoule(deg)`), styles `.cadre-ampoule*` et `.offre--cadre` dans `app/globals.css`.
+- **Où** : accueil, section « Votre propriété, illuminée — sans le tracas » (`app/page.jsx`) ; page commerciale, « Ce qui est compris » (`CeQuiEstCompris` + `cadre` dans `components/data.js`). Photo : `PHOTOS["installateur-vieux-montreal"]` (Vieux-Montréal).
+- **Desktop (approuvé)** : grand visuel à gauche, plus haut que le texte, sort par le bas de la section. **Téléphone (approuvé)** : petite ampoule à droite du prix et du bouton, sans grandir la section (47 % de l'écran, 46 % plafonné à 180 px sur la page commerciale, où le bloc prix est plus court) ; rythme vertical resserré.
+- **Placements de la photo** (`ampoule`, `ampouleMobile` dans `components/photos.js`) : CALCULÉS par recherche (la photo couvre le verre, tête et mains à distance du contour, corps centré), pas au jugé. Nouvelle photo ou nouvelle taille = recalculer, puis vérifier à 360, 390, 430 et 1440 qu'aucun texte ne touche le contour.
 
 ## Déploiement
 - Vercel (`vercel.json` : `framework: nextjs`). README : `npx vercel deploy --prod` (repo GitHub `info1837/lumiere-de-noel-site`, travail par PR vers `main`). Ne jamais commiter ni afficher `.env*`.
