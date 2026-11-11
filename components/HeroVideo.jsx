@@ -1,75 +1,92 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 
-// Vidéo du hero, TÉLÉPHONE SEULEMENT (2026-11-08, demande de Yahir).
+// Vidéo du hero : vrais plans de drone de nos installations (2026-11-11).
 //
-// Pourquoi seulement sous 768 px : les plans de Nathan sont tournés en
-// vertical (9:16). Sur un téléphone le hero est vertical aussi, le cadre
-// tombe juste. En desktop, le hero est une bande 16:9 : le même plan
-// perdrait les deux tiers de son cadre et serait agrandi au flou — la photo
-// de Mirabel reste donc la seule image du desktop (voir Hero.jsx).
+// Deux montages, et chaque visiteur n'en télécharge qu'UN :
+//   · portrait (1080×1920, 12,9 s) — Blainville, Sainte-Anne, Terrebonne,
+//     Lorraine, Saint-Valentin — pour les téléphones et écrans verticaux ;
+//   · paysage (1920×1080, 10,3 s) — un seul plan, DJI_0457 (Terrebonne) —
+//     pour le reste.
+// Le choix suit MEDIA_PORTRAIT (lib/hero-media.js), la même requête que
+// l'affiche <picture> de Hero.jsx. Il est fait UNE fois, au chargement : si
+// l'écran pivote ensuite, on ne télécharge pas l'autre montage, on cache la
+// vidéo et l'affiche du bon format reprend la place (puis la vidéo revient
+// si l'écran retrouve son orientation de départ).
 //
 // Les règles de la page tiennent :
-//   · La photo next/image reste l'image LCP (priority). La vidéo n'est
-//     même pas demandée avant `load` : preload="none", src posé ensuite.
+//   · L'affiche (next/image, priority) est l'image LCP. La vidéo n'est même
+//     pas demandée avant `load` : aucune <source>, src posé ensuite.
 //   · Premier écran immobile : pas de fondu. La vidéo reste invisible tant
-//     qu'elle ne joue pas, puis apparaît d'un coup par-dessus la photo.
+//     qu'elle ne joue pas, puis remplace l'affiche d'un coup — et comme elle
+//     démarre sur l'image même de l'affiche (`debut`), rien ne bouge.
 //   · prefers-reduced-motion ou économie de données : rien ne se charge,
-//     la photo reste.
-//
-// Montage (11 s, 540×960, ~450 Ko, sans texte ni logo) :
-//   drone de Mercier (DJI_0328, passé de jour à nuit dans Higgsfield en
-//   prenant la vraie photo de nuit de la même maison comme référence : les
-//   lumières sont là où elles sont vraiment) → façade de Laval (VIDEO 27)
-//   → grand arbre de Mercier allumé (VIDEO 8) → Laval large → drone à
-//   rebours. Seules les 3,2 premières secondes du drone servent : plus
-//   loin, l’IA faisait pendre une guirlande verticale à gauche (vu par
-//   Yahir le 2026-11-08). Le retour à rebours finit sur la 1re image :
-//   la boucle se raccorde sans saut.
+//     l'affiche reste.
 export default function HeroVideo() {
   const ref = useRef(null);
   const [joue, setJoue] = useState(false);
+  const [masquee, setMasquee] = useState(false);
 
   useEffect(() => {
     const v = ref.current;
     if (!v) return;
-    const mobile = window.matchMedia("(max-width: 768px)").matches;
     const reduit = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const eco = navigator.connection?.saveData === true;
-    if (!mobile || reduit || eco) return;
+    if (reduit || eco) return;
+
+    const mq = window.matchMedia(MEDIA_PORTRAIT);
+    const choix = mq.matches ? "portrait" : "paysage";
+    const montage = HERO_MONTAGES[choix];
+    let demarree = false;
 
     const demarrer = () => {
-      v.querySelectorAll("source").forEach((s) => { s.src = s.dataset.src; });
+      if (demarree) return;
+      demarree = true;
+      v.addEventListener("loadedmetadata", () => {
+        // Démarrer sur l'image de l'affiche. Si le navigateur refuse de se
+        // positionner, la vidéo part du début : moins fluide, pas cassé.
+        try { v.currentTime = montage.debut; } catch {}
+      }, { once: true });
+      // React ne pose pas toujours la PROPRIÉTÉ muted : sans elle, iOS et
+      // Chrome refusent la lecture automatique.
+      v.muted = true;
+      v.src = montage.video;
       v.load();
       v.play().catch(() => {});
     };
+
+    // Rotation / redimensionnement : jamais l'autre fichier.
+    const suivre = () => {
+      const bonFormat = (mq.matches ? "portrait" : "paysage") === choix;
+      setMasquee(!bonFormat);
+      if (!demarree) return;
+      if (bonFormat) v.play().catch(() => {});
+      else v.pause();
+    };
+    mq.addEventListener("change", suivre);
+
     if (document.readyState === "complete") demarrer();
     else window.addEventListener("load", demarrer, { once: true });
-    return () => window.removeEventListener("load", demarrer);
+    return () => {
+      window.removeEventListener("load", demarrer);
+      mq.removeEventListener("change", suivre);
+    };
   }, []);
 
   return (
     <video
       ref={ref}
-      className={`hero-video${joue ? " est-active" : ""}`}
+      className={`hero-video${joue && !masquee ? " est-active" : ""}`}
       muted
       loop
       playsInline
+      disablePictureInPicture
+      disableRemotePlayback
       preload="none"
       aria-hidden="true"
-      onPlaying={() => {
-        setJoue(true);
-        // Les deux voiles du hero sont réglés pour une photo claire : sur la
-        // vidéo de nuit, ils la cachaient presque au complet (2026-11-08,
-        // « la vidéo ne s'affiche pas »). La section passe en mode vidéo
-        // et globals.css allège les voiles.
-        ref.current?.closest(".hero-section")?.classList.add("hero--video");
-      }}
-    >
-      {/* MP4 d'abord : Safari iOS annonce « maybe » pour le WebM et peut
-          s'y arrêter sans jamais jouer. */}
-      <source data-src="/videos/hero-mobile.mp4" type="video/mp4" />
-      <source data-src="/videos/hero-mobile.webm" type="video/webm" />
-    </video>
+      tabIndex={-1}
+      onPlaying={() => setJoue(true)}
+    />
   );
 }

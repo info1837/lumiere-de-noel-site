@@ -1,10 +1,10 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { CTAButton } from "@/components/ui";
 import { ivory, company } from "@/components/data";
-import { PHOTOS } from "@/components/photos";
 import HeroVideo from "@/components/HeroVideo";
+import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 
-// Hero d'accueil : une photo, une phrase, deux portes.
+// Hero d'accueil : une vidéo de nos installations, une phrase, deux portes.
 //
 // ⚠️ LE FORMULAIRE EST PARTI D'ICI, ET CE N'EST PAS UN OUBLI.
 //
@@ -24,61 +24,42 @@ import HeroVideo from "@/components/HeroVideo";
 // Conséquence technique agréable : plus d'état, plus de « use client ».
 // Le premier écran est redevenu du HTML.
 export default function Hero() {
-  // ⚠️ LÉRY A QUITTÉ LE HERO — elle ne sert plus qu'au comparateur.
+  // ⚠️ MIRABEL A QUITTÉ LE HERO (2026-11-11) : le premier écran montre
+  // maintenant de vrais plans de drone de nos installations (HeroVideo.jsx).
+  // La photo de Mirabel reste dans la vitrine et sur /realisations.
   //
-  // Elle tenait les deux : le hero pleine page ET le côté « après » du
-  // comparateur, deux sections plus bas. La même maison deux fois sur un
-  // écran laisse croire qu'on n'en a qu'une.
-  //
-  // Mirabel est choisie sur trois critères, mesurés sur captures
-  // (docs/hero/) et pas au jugé :
-  //
-  //   1. ELLE EST NATIVEMENT 16/9 (1920×1080). Le hero est une bande
-  //      paysage pleine largeur : les photos PORTRAIT du dossier —
-  //      st-donat-02, ste-anne, terrebonne… — y perdent les deux tiers
-  //      de leur cadre. st-donat-02 ne montrait plus qu'une rangée de
-  //      conifères et une grande étendue de neige vide, sans maison.
-  //   2. LA LIGNE DE TOIT ILLUMINÉE TRAVERSE LE HAUT DU CADRE, donc elle
-  //      reste visible à côté du titre, qui repose lui sur le voile
-  //      sombre. C'est la demande : le titre lisible ET les lumières
-  //      visibles derrière.
-  //   3. C'EST UNE MAISON, avec une pose professionnelle sur la
-  //      toiture — ce qu'on vend. Les conifères illuminés de
-  //      st-donat-02 sont jolis et ne montrent pas le métier.
-  //
-  // Mirabel est dans le territoire réel (Rive-Nord). Stratford, l'autre
-  // paysage disponible, est en Estrie — hors territoire, et le site a
-  // déjà eu à corriger ça.
-  const photo = PHOTOS["mirabel-01"];
+  // L'AFFICHE est l'image LCP, et c'est une image du montage même : la
+  // portrait pour les téléphones, la paysage pour le reste (MEDIA_PORTRAIT,
+  // la même requête que la vidéo). <picture> + getImageProps : next/image
+  // découpe toujours la bonne largeur et sert de l'AVIF, et le navigateur
+  // ne télécharge que l'affiche de SON format. `priority` : chargement
+  // immédiat, fetchpriority haute — c'est la seule image priority de la page.
+  const commun = {
+    alt: "Maison illuminée par nos installateurs, vue du drone, la nuit",
+    fill: true,
+    priority: true,
+    sizes: "100vw",
+  };
+  const { props: { srcSet: srcSetPortrait } } = getImageProps({ ...commun, src: HERO_MONTAGES.portrait.affiche });
+  const { props: affiche } = getImageProps({ ...commun, src: HERO_MONTAGES.paysage.affiche });
   return (
     <section className="hero-section" style={{ position: "relative" }}>
-      {/* La photo porte le premier écran. Elle est pleine page, pas
-          illustrative : c'est la seule chose ici qu'on ne peut pas
-          inventer. */}
-      {/* ⚠️ next/image, PAS un <img>. Mesuré, pas supposé.
-          En <img> brut, Lighthouse mobile donnait un LCP de 7,2 s sur
-          l'accueil : noel-lery-01.jpg fait 1920×1440 et 358 Ko, servis
-          tels quels à un écran de 375 px. `next/image` découpe la bonne
-          largeur et sert de l'AVIF — next.config.mjs l'attendait déjà
-          (« quand on migrera vers next/image »).
-          `fill` + `priority` : c'est l'image LCP, elle ne doit pas être
-          paresseuse et elle passe devant le reste de la file. */}
-      <Image
-        src={photo.src}
-        alt={photo.alt}
-        fill
-        priority
-        sizes="100vw"
-        style={{ objectFit: "cover" }}
-      />
-      {/* Téléphone seulement : une boucle de vraies installations de nuit
-          par-dessus la photo, une fois la page chargée (HeroVideo.jsx). */}
+      {/* L'affiche porte le premier écran ; la vidéo la remplace, sur la
+          même image, une fois la page chargée. */}
+      <picture>
+        <source media={MEDIA_PORTRAIT} srcSet={srcSetPortrait} sizes="100vw" />
+        <img {...affiche} style={{ ...affiche.style, objectFit: "cover" }} />
+      </picture>
+      {/* Vraies installations filmées au drone, un seul montage par
+          visiteur (HeroVideo.jsx). */}
       <HeroVideo />
       {/* Deux voiles, deux rôles : l'un rend le texte lisible à gauche,
-          l'autre fond la photo dans le marine de la section suivante pour
-          qu'aucune arête ne coupe la page. */}
-      <div className="hero-voile-gauche" style={{ position: "absolute", inset: 0, background: "linear-gradient(90deg, rgba(10,21,36,0.92) 0%, rgba(10,21,36,0.74) 46%, rgba(10,21,36,0.30) 100%)" }} />
-      <div className="hero-voile-bas" style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(10,21,36,0) 46%, rgba(10,21,36,0.82) 84%, #0A1524 100%)" }} />
+          l'autre fond l'image dans le marine de la section suivante pour
+          qu'aucune arête ne coupe la page. Réglés pour des plans de NUIT
+          (globals.css, .hero-voile-*) : identiques sur l'affiche et sur la
+          vidéo, donc rien ne change quand la vidéo démarre. */}
+      <div className="hero-voile-gauche" />
+      <div className="hero-voile-bas" />
 
       <div className="hero-container" style={{ position: "relative", width: "100%" }}>
         <div className="hero-texte">

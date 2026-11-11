@@ -23,6 +23,12 @@
 - **`prefers-reduced-motion`** : aucune animation (garde global en fin de `globals.css`).
 - **Perf** : images en `next/image` avec `sizes`, une seule image `priority` par page (l'image LCP), polices locales (`public/fonts`, préchargées, replis calibrés `Bebas Repli` / `Nunito Repli` à garder dans chaque `font-family`), Meta Pixel différé (stub + chargement après `load`). Garde : `node scripts/check-animations.mjs`. Objectif Lighthouse mobile ≥ 90, CLS < 0,1.
 
+## Vidéo du hero d'accueil (2026-11-11)
+- Fichiers : `public/videos/hero-portrait.mp4` + `hero-portrait.jpg` (affiche) pour téléphones / écrans verticaux, `public/videos/hero-paysage.mp4` + `hero-paysage.jpg` pour le reste. Fournis déjà montés et compressés pour le web : **ne pas les réencoder**.
+- Code : `components/Hero.jsx` (affiche `<picture>` = image LCP), `components/HeroVideo.jsx` (un seul montage téléchargé par visiteur, après `load`, rien si `prefers-reduced-motion` ou économie de données), `lib/hero-media.js` (requête média commune + instant de l'affiche dans chaque montage, d'où la vidéo démarre).
+- Rushes : dossier Google Drive « drone ». Montage portrait : Blainville, Sainte-Anne, Terrebonne, Lorraine et Saint-Valentin. Montage paysage : le seul plan DJI_0457 (Terrebonne).
+- Nouvelle affiche = re-mesurer `debut` dans `lib/hero-media.js` (image du montage la plus proche de l'affiche), sinon la vidéo saute au démarrage.
+
 ## Déploiement
 - Vercel (`vercel.json` : `framework: nextjs`). README : `npx vercel deploy --prod` (repo GitHub `info1837/lumiere-de-noel-site`, travail par PR vers `main`). Ne jamais commiter ni afficher `.env*`.
 
