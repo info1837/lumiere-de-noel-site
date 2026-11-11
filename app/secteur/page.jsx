@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { flouDe } from "@/components/photos-flou";
 import Link from "next/link";
-import { SectionTag, CTAButton, Breadcrumb } from "@/components/ui";
+import { CTAButton } from "@/components/ui";
+import { HeroPage } from "@/components/sections";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { cities, inCity, navy, ivory, gold } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
@@ -29,17 +30,20 @@ export default function SecteurIndex() {
         ]}
       />
 
-      <section className="snowy" style={{ background: navy, paddingTop: 140 }}>
+      {/* Le même hero que les pages de ville (HeroPage + montage drone sur
+          téléphone, photo sur desktop) : la page n'avait pas de zone d'image. */}
+      <HeroPage
+        photo={PHOTOS["arbre-enrubanne"]}
+        kicker="Zones desservies"
+        titre="Du Grand Montréal aux Laurentides"
+        phrase="Couronne nord, Laval, Île de Montréal, Rive-Sud — notre territoire couvre la grande région de Montréal. Votre ville n'est pas listée ? Appelez-nous, on dessert un large territoire."
+        filAriane={[{ name: "Accueil", href: "/" }, { name: "Zones desservies" }]}
+        reserver="/soumission"
+        montage
+      />
+
+      <section className="snowy" style={{ background: navy }}>
         <div className="container">
-          <Breadcrumb dark items={[{ name: "Accueil", href: "/" }, { name: "Zones desservies" }]} />
-          <div style={{ textAlign: "center", marginBottom: 44 }}>
-            <SectionTag dark>Zones desservies</SectionTag>
-            <h1 style={{ color: ivory, marginBottom: 18 }}>Du Grand Montréal aux Laurentides</h1>
-            <p style={{ color: "rgba(243,233,210,0.82)", fontSize: 19, margin: "0 auto", maxWidth: 700 }}>
-              Couronne nord, Laval, Île de Montréal, Rive-Sud — notre territoire couvre la grande région
-              de Montréal. Votre ville n'est pas listée ? Appelez-nous, on dessert un large territoire.
-            </p>
-          </div>
 
           <div className="grid-3" style={{ gap: 22 }}>
             {cities.map((c) => (
