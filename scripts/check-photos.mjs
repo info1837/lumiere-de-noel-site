@@ -201,8 +201,15 @@ for (const cle of CLES_GENERIQUES) {
 
   // a. Le hero.
   const hero = lireSrc("components/Hero.jsx");
-  const cleHero = clePhotoDe(hero, "const photo =");
-  if (!cleHero || !PHOTOS[cleHero]) {
+  const cleHero = hero.includes("const photo =") ? clePhotoDe(hero, "const photo =") : null;
+  // Depuis 2026-11-11, le hero montre la vidéo drone (affiches tirées du
+  // montage, /videos/hero-*.jpg via lib/hero-media.js) : aucune photo de
+  // chantier, donc aucun doublon possible avec la vitrine. On le vérifie
+  // quand même — un hero sans photo NI affiche, c'est une forme inconnue.
+  const heroVideo = !cleHero && /HERO_MONTAGES\.(portrait|paysage)\.affiche/.test(hero);
+  if (heroVideo) {
+    // rien à compter
+  } else if (!cleHero || !PHOTOS[cleHero]) {
     erreurs.push(
       `Impossible de lire la photo du hero dans components/Hero.jsx.\n` +
       `    La garde « deux fois la même photo sur l'accueil » ne peut pas faire son travail.\n` +

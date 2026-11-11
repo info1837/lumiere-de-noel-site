@@ -938,8 +938,9 @@ textarea:focus-visible,
   background: #0A1524;
   overflow: hidden;
 }
-/* Vidéo du hero (components/HeroVideo.jsx) : téléphone seulement, invisible
-   tant qu'elle ne joue pas, puis là d'un coup — aucun fondu. */
+/* Vidéo du hero (components/HeroVideo.jsx) : invisible tant qu'elle ne joue
+   pas, puis là d'un coup par-dessus l'affiche — aucun fondu. Elle démarre sur
+   l'image même de l'affiche, donc le changement ne se voit pas. */
 .hero-video {
   position: absolute;
   inset: 0;
@@ -949,14 +950,19 @@ textarea:focus-visible,
   visibility: hidden;
 }
 .hero-video.est-active { visibility: visible; }
-@media (min-width: 769px) { .hero-video { display: none; } }
-/* Mode vidéo (téléphone) : voiles allégés pour que les lumières se voient,
-   ombre portée sur le texte pour qu'il reste lisible. Changement d'un coup,
-   sans transition, comme le reste du premier écran. */
+/* Voiles du hero, réglés pour les plans de drone de NUIT (2026-11-11) : les
+   anciens (0,92 → 0,30) visaient une photo claire et cachaient presque toute
+   la vidéo (vu le 2026-11-08). Assez sombres à gauche pour le titre, assez
+   légers à droite pour que les lignes de toit se voient ; l'ombre portée
+   tient le texte sur les zones lumineuses. Les mêmes sur l'affiche et sur la
+   vidéo : rien ne bouge au démarrage. */
+.hero-voile-gauche, .hero-voile-bas { position: absolute; inset: 0; }
+.hero-voile-gauche { background: linear-gradient(90deg, rgba(10,21,36,0.80) 0%, rgba(10,21,36,0.55) 42%, rgba(10,21,36,0.10) 100%); }
+.hero-voile-bas { background: linear-gradient(to bottom, rgba(10,21,36,0) 58%, rgba(10,21,36,0.72) 88%, #0A1524 100%); }
+.hero-section .hero-texte { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55); }
 @media (max-width: 768px) {
-  .hero--video .hero-voile-gauche { background: rgba(10, 21, 36, 0.42) !important; }
-  .hero--video .hero-voile-bas { background: linear-gradient(to bottom, rgba(10,21,36,0) 62%, rgba(10,21,36,0.7) 90%, #0A1524 100%) !important; }
-  .hero--video .hero-texte { text-shadow: 0 2px 14px rgba(0, 0, 0, 0.55); }
+  .hero-voile-gauche { background: rgba(10, 21, 36, 0.42); }
+  .hero-voile-bas { background: linear-gradient(to bottom, rgba(10,21,36,0) 62%, rgba(10,21,36,0.7) 90%, #0A1524 100%); }
 }
 .hero-container {
   max-width: 1280px;
