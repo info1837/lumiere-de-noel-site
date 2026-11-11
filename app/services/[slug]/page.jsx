@@ -78,7 +78,7 @@ export default function ServicePage({ params }) {
 
       <BandePhotos cles={s.bande || []} />
 
-      <CeQuiEstCompris compris={s.compris} />
+      <CeQuiEstCompris compris={s.compris} cadre={s.cadre} />
 
       <AvantApres cle={s.paire} />
 

@@ -92,6 +92,29 @@ const SITUEES = {
     ville: "Montréal",
     alt: "Maison illuminée pour les Fêtes à Montréal — ligne de toit, galerie et colonnes enrubannées, sous la neige",
   },
+  // L'équipe au travail (2026-11-11) : sert au cadre « ampoule »
+  // (components/CadreAmpoule.jsx). Portrait 1170×1685. Aucun nom de client
+  // ni d'entreprise dans l'alt, seulement le quartier.
+  "installateur-vieux-montreal": {
+    src: `${REEL_PREFIX}installateur-vieux-montreal.jpg`,
+    ville: "Montréal",
+    largeur: 1170,
+    hauteur: 1685,
+    // Placement dans le cadre « ampoule » (components/CadreAmpoule.jsx,
+    // inclinaison 17°), CALCULÉ par recherche, pas au jugé : la photo couvre
+    // tout le verre ; la tête et les deux mains restent à 8,5 unités au
+    // moins du contour (demi-trait : 3,25) ; trois des cinq points témoins
+    // des arches illuminées sont dans le verre ; il fait 40 % de la hauteur
+    // du verre ; la nacelle sous ses pieds n'en occupe que 3,5 %.
+    ampoule: { pxParUnite: 10.25, x: -5.3, y: 34.6 },
+    // Téléphone : petite ampoule (~47 % de l'écran) à côté du prix. Zoom
+    // maximal qui garde la tête, le harnais, le dos, les deux bras et les
+    // deux mains à 5 unités au moins du contour, le corps CENTRÉ dans le
+    // verre (écart < 1 unité), six points des guirlandes illuminées dans le
+    // verre (tête ≈ 37 px à 390). Calculé, comme les autres.
+    ampouleMobile: { pxParUnite: 5.8125, x: -58.4, y: -26.4 },
+    alt: "Un de nos installateurs, en harnais sur une nacelle, pose des guirlandes illuminées autour de fenêtres en arche dans le Vieux-Montréal",
+  },
   "stratford-01": {
     src: `${REEL_PREFIX}noel-stratford-01.jpg`,
     ville: "Stratford",

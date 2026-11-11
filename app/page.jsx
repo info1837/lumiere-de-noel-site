@@ -8,7 +8,8 @@ import VideoParlee from "@/components/VideoParlee";
 import { PucesVilles } from "@/components/sections";
 import { lireDisponibilites, messageRarete } from "@/lib/disponibilites";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion } from "@/components/ui";
-import { paireAvantApres } from "@/components/photos";
+import { PHOTOS, paireAvantApres } from "@/components/photos";
+import { CadreAmpouleOffre } from "@/components/CadreAmpoule";
 import { faqHome, faqRabaisOctobre, company, homeVitrine, navy, creme } from "@/components/data";
 
 // Le canonical de l'accueil vit ICI, pas dans le layout racine (voir le
@@ -159,8 +160,8 @@ export default async function Home() {
           « Tarifs » et les quatre cartes du hero. Le prix est à DROITE, au
           bas de la liste de ce qu'il achète. */}
       <section id="inclus" style={{ background: navy, scrollMarginTop: 84 }}>
-        <div className="container offre">
-          <div>
+        <div className="container offre offre--cadre">
+          <div className="offre-intro">
             <SectionTag dark>Lumières de Noël — forfait tout inclus</SectionTag>
             <SectionTitle light style={{ margin: "0 0 20px" }}>
               Votre propriété, illuminée — sans le tracas
@@ -172,6 +173,11 @@ export default async function Home() {
             <p className="offre-texte">
               Vous, vous profitez du spectacle. Nous, on s&apos;occupe de tout le reste.
             </p>
+          </div>
+          {/* Le cadre « ampoule » : l'équipe au travail, dans l'ampoule du
+              logo (components/CadreAmpoule.jsx). */}
+          <div className="offre-cadre">
+            <CadreAmpouleOffre photo={PHOTOS["installateur-vieux-montreal"]} fond={navy} />
           </div>
           <div className="offre-colonne">
             <ul className="offre-liste">
@@ -196,7 +202,7 @@ export default async function Home() {
                 permanent est l'inverse — installé une fois, jamais retiré —
                 et il a sa propre porte. */}
             <p className="section-lien" style={{ marginTop: 18 }}>
-              <Link href="/services/eclairage-architectural-permanent">Éclairage permanent, allumé toute l&apos;année →</Link>
+              <Link href="/services/eclairage-architectural-permanent">Éclairage permanent, allumé toute l&apos;année&nbsp;→</Link>
             </p>
           </div>
         </div>

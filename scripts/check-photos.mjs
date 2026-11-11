@@ -276,6 +276,22 @@ for (const cle of CLES_GENERIQUES) {
   }
 }
 
+// --- 8b. Le cadre « ampoule » reprend le logo MOT POUR MOT ------------------
+// components/CadreAmpoule.jsx dessine l'ampoule du logo avec les tracés de
+// lib/logo-ampoule.js. Ils doivent se retrouver tels quels dans le fichier du
+// logo : si le logo change, le cadre suit — on ne redessine pas le logo.
+{
+  const { LOGO_SOURCE, CULOT, VERRE, LOGO_CREME } = await import(join(RACINE, "lib/logo-ampoule.js"));
+  const logo = readFileSync(join(RACINE, LOGO_SOURCE), "utf8");
+  for (const t of [...CULOT, VERRE]) {
+    if (!logo.includes(`d="${t.d}"`))
+      erreurs.push(`🚨 Le cadre « ampoule » utilise un tracé absent du logo (${LOGO_SOURCE}) :\n    ${t.d}`);
+    else if (!new RegExp(`d="${t.d.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"[^>]*stroke-width="${t.epaisseur}"`).test(logo))
+      erreurs.push(`🚨 Le cadre « ampoule » n'a pas l'épaisseur du logo pour ${t.d.slice(0, 20)}… (attendu ${t.epaisseur}).`);
+  }
+  if (!logo.includes(`stroke="${LOGO_CREME}"`)) erreurs.push(`🚨 La crème du cadre (${LOGO_CREME}) n'est plus celle du logo.`);
+}
+
 // --- 9. /realisations : une photo n'appartient qu'à UN chantier -------------
 // La galerie montrait la même propriété plusieurs fois et avait l'air de
 // compter MOINS de chantiers. Une carte = un chantier ; une photo dans deux

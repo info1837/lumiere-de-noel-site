@@ -350,6 +350,9 @@ export const services = [
     // complétaient la bande sont des chantiers RÉSIDENTIELS (l'un est à
     // Saint-Donat) : ils n'ont rien à faire sur la page commerciale.
     bande: ["commercial-02"],
+    // Le cadre « ampoule » dans « Ce qui est compris » : un vrai chantier
+    // commercial, notre installateur sur nacelle (2026-11-11).
+    cadre: "installateur-vieux-montreal",
     paire: null,
     compris: {
       texte: "Façades, vitrines, entrées et arbres : on conçoit, on installe hors de vos heures d'ouverture, on entretient et on retire en janvier.",

@@ -2029,6 +2029,164 @@ body.avec-bandeau form :is(input, select, textarea, button)[id] {
   .offre { grid-template-columns: 1fr; gap: 42px; }
   .offre-colonne { border-left: 0; padding-left: 0; border-top: 1px solid rgba(240, 234, 222, 0.18); padding-top: 34px; }
 }
+/* ── Le cadre « ampoule » (components/CadreAmpoule.jsx) ────────────────
+   L'ampoule du logo, inclinée, une photo dans le verre. La boîte a les
+   proportions du repère (102 × 169) : la place est réservée avant le
+   chargement, rien ne bouge. */
+.cadre-ampoule {
+  position: relative;
+  margin: 0;
+  /* aspect-ratio : posé par le composant (repère de l'inclinaison). */
+}
+.cadre-ampoule__defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+.cadre-ampoule__verre { position: absolute; inset: 0; overflow: hidden; }
+.cadre-ampoule__photo {
+  position: absolute;
+  left: var(--photo-x);
+  top: var(--photo-y);
+  width: var(--photo-l);
+  height: auto;
+  max-width: none;
+  /* Pierre plus sombre et plus froide ; la teinte vient du voile. */
+  filter: brightness(0.92) saturate(0.8) contrast(1.06);
+}
+/* Voile marine en lumière douce : fonce et bleuit les ombres et les tons
+   moyens, épargne les hautes lumières (les guirlandes restent chaudes). */
+.cadre-ampoule__etalonnage {
+  position: absolute;
+  inset: 0;
+  background: #0A1524;
+  opacity: 0.85;
+  mix-blend-mode: soft-light;
+  pointer-events: none;
+}
+.cadre-ampoule__lueur,
+.cadre-ampoule__contour {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.cadre-ampoule__lueur { animation: cadreLueur 5.6s ease-in-out infinite; will-change: opacity; }
+@keyframes cadreLueur {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cadre-ampoule__lueur { animation: none; opacity: 0.85; }
+}
+
+/* L'offre avec cadre (accueil + page commerciale). Desktop : l'ampoule à
+   gauche, PLUS HAUTE que la colonne de texte (elle déborde dans les marges
+   de la section et sort par le bas), le texte puis la liste à droite.
+   Téléphone : texte, ampoule presque pleine largeur, liste. La section
+   coupe ce qui déborde (overflow: clip) : jamais de défilement horizontal. */
+section:has(> .offre--cadre) { overflow: clip; }
+.offre--cadre {
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr);
+  grid-template-areas: "cadre intro" "cadre liste";
+  /* Le surplus va SOUS la liste, pas entre le titre et la liste. */
+  grid-template-rows: auto 1fr;
+  column-gap: clamp(48px, 6vw, 88px);
+  row-gap: 34px;
+  align-items: start;
+}
+.offre--cadre > .offre-intro { grid-area: intro; }
+.offre--cadre > .offre-cadre { grid-area: cadre; position: relative; align-self: stretch; }
+/* Plus haute que le texte (la colonne + 330 px), calée contre le texte à
+   droite : l'écart avec le texte reste le même sur les deux pages, et
+   l'ampoule sort par le bas de la section — et par le bord gauche de la
+   page quand le texte est long. Ses pieds restent visibles : ils tombent à
+   ~84 % de la boîte, au-dessus du bord de la section. */
+.offre--cadre > .offre-cadre > .cadre-ampoule {
+  position: absolute;
+  top: -96px;
+  right: -24px;
+  height: calc(100% + 330px);
+}
+.offre--cadre > .offre-colonne {
+  grid-area: liste;
+  border-left: 0;
+  padding-left: 0;
+  border-top: 1px solid rgba(240, 234, 222, 0.18);
+  padding-top: 26px;
+}
+/* Téléphone (2026-11-11, demandes de Yahir) : section COMPACTE. L'ampoule
+   est petite (~47 % de l'écran), debout avec l'inclinaison du desktop, posée
+   à droite du prix, du bouton et du lien — dans l'espace qui y était vide —
+   entière (culot compris), au ras du bord droit. Elle partage la cellule de la liste
+   (grid-area: liste), calée en bas : elle n'ajoute AUCUNE hauteur. Le prix,
+   le bouton et le lien restent à gauche, limités en largeur pour ne jamais
+   passer sous l'ampoule. Le rythme vertical de la section est resserré.
+   Géométrie en unités du repère du logo (u = px par unité) : l'ampoule
+   fait 81,26 u de large et 149,13 u de haut ; sa boîte a ~10 u de marge
+   (lueur) autour. */
+@media (max-width: 900px) {
+  .offre--cadre {
+    --ampoule-l: min(var(--ampoule-mobile, 47vw), 240px);
+    --u: calc(var(--ampoule-l) / 81.26);
+    /* Position du bord droit de l'ampoule par rapport au bord de l'écran
+       (négatif = en dedans) : le culot arrive presque aussi loin que le
+       verre (0,9 unité, ~2 px), donc un débord le couperait — l'ampoule
+       reste entière, au ras du bord, pour que le logo se lise. Et l'air
+       entre texte et ampoule. */
+    --debord: 0px;
+    --air: 8px;
+    /* minmax(0, 1fr), PAS 1fr : une boîte plus large que la colonne
+       élargirait une piste « 1fr » et le texte passerait sous le bord
+       droit (coupé par overflow: clip, sans barre pour le trahir). */
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "intro" "liste";
+    grid-template-rows: none;
+    row-gap: 22px;
+  }
+  section:has(> .offre--cadre) { padding-top: 56px; padding-bottom: 56px; }
+  .offre--cadre > .offre-cadre {
+    grid-area: liste;
+    align-self: end;
+    justify-self: end;
+    position: relative;
+    /* Au-dessus des filets de la liste, qui passent derrière le verre. */
+    z-index: 1;
+    pointer-events: none;
+  }
+  .offre--cadre > .offre-cadre > .cadre-ampoule {
+    position: relative; top: auto; right: auto; left: auto; height: auto;
+    width: calc(var(--u) * var(--vb-w));
+    /* Bord droit de l'ampoule à --debord du bord de l'écran (la cellule
+       s'arrête à 24 px du bord : padding de la section). */
+    margin-right: calc(-24px - var(--debord) - (var(--vb-x) + var(--vb-w) - 99.64) * var(--u));
+    /* Bas de l'ampoule 24 px SOUS le bas de la colonne, dans le padding
+       de la section : la marge négative ne grandit pas la rangée, donc la
+       section ne grandit pas (la marge de lueur dessous ne compte pas). */
+    margin-bottom: calc(-24px - (var(--vb-y) + var(--vb-h) - var(--ampoule-bas)) * var(--u));
+  }
+  .offre--cadre .cadre-ampoule__photo { left: var(--photo-x-m); top: var(--photo-y-m); width: var(--photo-l-m); }
+
+  /* Ce qui est à côté de l'ampoule reste à sa gauche. */
+  .offre--cadre .offre-prix,
+  .offre--cadre .offre-colonne > a,
+  .offre--cadre .section-lien {
+    max-width: calc(100vw - 48px + 24px + var(--debord) - var(--ampoule-l) - var(--air));
+  }
+  .offre--cadre .section-lien { text-align: left; margin-top: 14px !important; margin-bottom: 0; }
+  /* Bouton plus étroit, toujours facile à toucher (~46 px de haut). */
+  .offre--cadre .offre-colonne > a { padding: 16px 14px !important; font-size: 13px !important; letter-spacing: 0.04em !important; white-space: nowrap; }
+
+  /* Rythme resserré. */
+  .offre--cadre .offre-intro > div:first-child { margin-bottom: 10px !important; }
+  .offre--cadre .offre-intro h2 { margin-bottom: 14px !important; }
+  .offre--cadre .offre-texte { font-size: 16px; line-height: 1.55; margin-bottom: 10px; }
+  .offre--cadre .offre-texte:last-child { margin-bottom: 0; }
+  .offre--cadre > .offre-colonne { padding-top: 14px; }
+  .offre--cadre .offre-liste { margin-bottom: 18px; }
+  .offre--cadre .offre-liste li { padding: 8px 0; font-size: 16px; }
+  .offre--cadre .offre-prix { margin-bottom: 16px; }
+  .offre--cadre .offre-prix strong { margin: 2px 0 4px; }
+}
+
 @media (max-width: 640px) {
   .section-entete { margin-bottom: 34px; }
   .section-phrase { font-size: 17px; }
