@@ -2,7 +2,8 @@ import { getImageProps } from "next/image";
 import { CTAButton } from "@/components/ui";
 import { ivory, company } from "@/components/data";
 import HeroVideo from "@/components/HeroVideo";
-import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
+import { PHOTOS } from "@/components/photos";
+import { MEDIA_PORTRAIT, HERO_MONTAGES, AFFICHE_PAYSAGE } from "@/lib/hero-media";
 
 // Hero d'accueil : une vidéo de nos installations, une phrase, deux portes.
 //
@@ -24,24 +25,27 @@ import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 // Conséquence technique agréable : plus d'état, plus de « use client ».
 // Le premier écran est redevenu du HTML.
 export default function Hero() {
-  // ⚠️ MIRABEL A QUITTÉ LE HERO (2026-11-11) : le premier écran montre
-  // maintenant de vrais plans de drone de nos installations (HeroVideo.jsx).
-  // La photo de Mirabel reste dans la vitrine et sur /realisations.
+  // DEUX FORMATS, DEUX AFFICHES (2026-11-11) :
+  //   · téléphone / écran vertical : l'image 0 du montage drone, que la
+  //     vidéo (HeroVideo.jsx) remplace sans saut une fois la page chargée ;
+  //   · le reste : la photo de Mirabel, SEULE, sans vidéo. On n'a qu'un plan
+  //     de nuit tourné en paysage — un montage desktop attend les plans du
+  //     monteur. Mirabel est nativement 16/9, ligne de toit illuminée en
+  //     haut du cadre, et n'est pas dans la vitrine (check-photos le vérifie).
   //
-  // L'AFFICHE est l'image LCP, et c'est une image du montage même : la
-  // portrait pour les téléphones, la paysage pour le reste (MEDIA_PORTRAIT,
-  // la même requête que la vidéo). <picture> + getImageProps : next/image
+  // L'AFFICHE est l'image LCP. <picture> + getImageProps : next/image
   // découpe toujours la bonne largeur et sert de l'AVIF, et le navigateur
-  // ne télécharge que l'affiche de SON format. `priority` : chargement
-  // immédiat, fetchpriority haute — c'est la seule image priority de la page.
+  // ne télécharge que l'affiche de SON format (MEDIA_PORTRAIT, la même
+  // requête que la vidéo). `priority` : chargement immédiat, fetchpriority
+  // haute — c'est la seule image priority de la page.
   const commun = {
-    alt: "Maison illuminée par nos installateurs, vue du drone, la nuit",
+    alt: "Maison illuminée par nos installateurs, la nuit",
     fill: true,
     priority: true,
     sizes: "100vw",
   };
   const { props: { srcSet: srcSetPortrait } } = getImageProps({ ...commun, src: HERO_MONTAGES.portrait.affiche });
-  const { props: affiche } = getImageProps({ ...commun, src: HERO_MONTAGES.paysage.affiche });
+  const { props: affiche } = getImageProps({ ...commun, src: PHOTOS[AFFICHE_PAYSAGE].src });
   return (
     <section className="hero-section" style={{ position: "relative" }}>
       {/* L'affiche porte le premier écran ; la vidéo la remplace, sur la

@@ -202,13 +202,19 @@ for (const cle of CLES_GENERIQUES) {
   // a. Le hero.
   const hero = lireSrc("components/Hero.jsx");
   const cleHero = hero.includes("const photo =") ? clePhotoDe(hero, "const photo =") : null;
-  // Depuis 2026-11-11, le hero montre la vidéo drone (affiches tirées du
-  // montage, /videos/hero-*.jpg via lib/hero-media.js) : aucune photo de
-  // chantier, donc aucun doublon possible avec la vitrine. On le vérifie
-  // quand même — un hero sans photo NI affiche, c'est une forme inconnue.
-  const heroVideo = !cleHero && /HERO_MONTAGES\.(portrait|paysage)\.affiche/.test(hero);
-  if (heroVideo) {
-    // rien à compter
+  // Depuis 2026-11-11, le hero a deux affiches (lib/hero-media.js) : le
+  // téléphone a l'image 0 du montage drone (/videos/hero-portrait.jpg, pas
+  // une photo de chantier) ; le desktop a une PHOTO, PHOTOS[AFFICHE_PAYSAGE]
+  // — elle compte dans les doublons comme n'importe quelle photo du hero.
+  const media = lireSrc("lib/hero-media.js");
+  const clePaysage = (media.match(/AFFICHE_PAYSAGE\s*=\s*"([^"]+)"/) || [])[1];
+  const heroAffiches = !cleHero && /PHOTOS\[AFFICHE_PAYSAGE\]/.test(hero);
+  if (heroAffiches) {
+    if (!clePaysage || !PHOTOS[clePaysage]) {
+      erreurs.push(`lib/hero-media.js : AFFICHE_PAYSAGE (« ${clePaysage} ») n'est pas une clé de PHOTOS.`);
+    } else {
+      usages.push({ src: PHOTOS[clePaysage].src, ou: "le hero (affiche desktop)" });
+    }
   } else if (!cleHero || !PHOTOS[cleHero]) {
     erreurs.push(
       `Impossible de lire la photo du hero dans components/Hero.jsx.\n` +

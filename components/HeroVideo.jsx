@@ -4,16 +4,16 @@ import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 
 // Vidéo du hero : vrais plans de drone de nos installations (2026-11-11).
 //
-// Deux montages, et chaque visiteur n'en télécharge qu'UN :
-//   · portrait (1080×1920, 12,9 s) — Blainville, Sainte-Anne, Terrebonne,
-//     Lorraine, Saint-Valentin — pour les téléphones et écrans verticaux ;
-//   · paysage (1920×1080, 10,3 s) — un seul plan, DJI_0457 (Terrebonne) —
-//     pour le reste.
+// Un seul montage, et seulement pour les téléphones / écrans verticaux :
+//   · portrait (1080×1920, 13,1 s, 8 plans en coupes franches) — Terrebonne,
+//     Blainville, Sainte-Anne, Saint-Valentin, Lorraine.
+//   · paysage : AUCUNE vidéo (HERO_MONTAGES.paysage.video = null) — la photo
+//     de Mirabel reste seule, rien n'est téléchargé.
 // Le choix suit MEDIA_PORTRAIT (lib/hero-media.js), la même requête que
 // l'affiche <picture> de Hero.jsx. Il est fait UNE fois, au chargement : si
-// l'écran pivote ensuite, on ne télécharge pas l'autre montage, on cache la
-// vidéo et l'affiche du bon format reprend la place (puis la vidéo revient
-// si l'écran retrouve son orientation de départ).
+// l'écran pivote ensuite, on ne télécharge rien de plus, on cache la vidéo
+// et l'affiche du bon format reprend la place (puis la vidéo revient si
+// l'écran retrouve son orientation de départ).
 //
 // Les règles de la page tiennent :
 //   · L'affiche (next/image, priority) est l'image LCP. La vidéo n'est même
@@ -38,6 +38,9 @@ export default function HeroVideo() {
     const mq = window.matchMedia(MEDIA_PORTRAIT);
     const choix = mq.matches ? "portrait" : "paysage";
     const montage = HERO_MONTAGES[choix];
+    // Paysage : pas de montage, l'affiche reste. Rien à suivre non plus —
+    // si l'écran pivote en portrait, <picture> change d'affiche tout seul.
+    if (!montage.video) return;
     let demarree = false;
 
     const demarrer = () => {
