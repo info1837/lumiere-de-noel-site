@@ -2,7 +2,7 @@ import { notFound } from "next/navigation";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import {
   HeroPage, AProposVille, CartesServices, CeQuiEstCompris, Parcours, FaqCourte,
-  Reservation, PucesVilles,
+  Reservation, PucesVilles, LienVieuxMontreal,
 } from "@/components/sections";
 import { PHOTOS, cityHeroPhoto } from "@/components/photos";
 import { cities, findCity, inCity, findService } from "@/components/data";
@@ -64,6 +64,14 @@ export default function CityPage({ params }) {
       />
 
       <AProposVille ville={c} />
+
+      {/* Montréal : les commerces du Vieux-Montréal ont leur page. */}
+      {c.slug === "montreal" && (
+        <LienVieuxMontreal
+          tag="Commerces du Vieux-Montréal"
+          phrase="Hôtels, restaurants et boutiques du Vieux-Montréal et du Vieux-Port : décors des Fêtes posés hors de vos heures d'ouverture."
+        />
+      )}
 
       <CartesServices ville={c} />
 

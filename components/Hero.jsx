@@ -2,8 +2,7 @@ import { getImageProps } from "next/image";
 import { CTAButton } from "@/components/ui";
 import { ivory, company } from "@/components/data";
 import HeroVideo from "@/components/HeroVideo";
-import { PHOTOS } from "@/components/photos";
-import { MEDIA_PORTRAIT, HERO_MONTAGES, AFFICHE_PAYSAGE } from "@/lib/hero-media";
+import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 
 // Hero d'accueil : une vidéo de nos installations, une phrase, deux portes.
 //
@@ -25,13 +24,12 @@ import { MEDIA_PORTRAIT, HERO_MONTAGES, AFFICHE_PAYSAGE } from "@/lib/hero-media
 // Conséquence technique agréable : plus d'état, plus de « use client ».
 // Le premier écran est redevenu du HTML.
 export default function Hero() {
-  // DEUX FORMATS, DEUX AFFICHES (2026-11-11) :
-  //   · téléphone / écran vertical : l'image 0 du montage drone, que la
-  //     vidéo (HeroVideo.jsx) remplace sans saut une fois la page chargée ;
-  //   · le reste : la photo de Mirabel, SEULE, sans vidéo. On n'a qu'un plan
-  //     de nuit tourné en paysage — un montage desktop attend les plans du
-  //     monteur. Mirabel est nativement 16/9, ligne de toit illuminée en
-  //     haut du cadre, et n'est pas dans la vitrine (check-photos le vérifie).
+  // DEUX FORMATS, DEUX MONTAGES (2026-11-12) : chaque format a son
+  // montage drone et son affiche (image 0 du montage), que la vidéo
+  // (HeroVideo.jsx) remplace sans saut une fois la page chargée :
+  //   · téléphone / écran vertical : hero-portrait (8 plans, 1080×1920) ;
+  //   · le reste : hero-paysage (7 plans, 1920×1080, Beaconsfield et Léry).
+  // La photo de Mirabel qui tenait le desktop en attendant est partie.
   //
   // L'AFFICHE est l'image LCP. <picture> + getImageProps : next/image
   // découpe toujours la bonne largeur et sert de l'AVIF, et le navigateur
@@ -39,13 +37,13 @@ export default function Hero() {
   // requête que la vidéo). `priority` : chargement immédiat, fetchpriority
   // haute — c'est la seule image priority de la page.
   const commun = {
-    alt: "Maison illuminée par nos installateurs, la nuit",
+    alt: HERO_MONTAGES.alt,
     fill: true,
     priority: true,
     sizes: "100vw",
   };
   const { props: { srcSet: srcSetPortrait } } = getImageProps({ ...commun, src: HERO_MONTAGES.portrait.affiche });
-  const { props: affiche } = getImageProps({ ...commun, src: PHOTOS[AFFICHE_PAYSAGE].src });
+  const { props: affiche } = getImageProps({ ...commun, src: HERO_MONTAGES.paysage.affiche });
   return (
     <section className="hero-section" style={{ position: "relative" }}>
       {/* L'affiche porte le premier écran ; la vidéo la remplace, sur la

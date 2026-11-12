@@ -3189,3 +3189,8 @@ section.concours-reglement { background: #060E18; padding: clamp(48px, 8vw, 80px
     height: var(--hauteur-boite);
   }
 }
+
+/* ── Téléphone : jamais coupé en deux (2026-11-12) ─────────────────────
+   « (438) » en fin de ligne et « 812-NOEL » sur la suivante se lisait
+   comme deux morceaux. Tout lien d'appel passe à la ligne d'un bloc. */
+a[href^="tel:"] { white-space: nowrap; }

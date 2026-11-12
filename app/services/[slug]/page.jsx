@@ -4,9 +4,10 @@ import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
 import AppDemo from "@/components/AppDemo";
 import {
   HeroPage, BandePhotos, CeQuiEstCompris, AvantApres, Parcours, FaqCourte,
-  Reservation, PucesVilles, SectionAmbiances, MARINE, MARINE_PROFOND,
+  Reservation, PucesVilles, SectionAmbiances, LienVieuxMontreal, MARINE, MARINE_PROFOND,
 } from "@/components/sections";
 import { services, findService, serviceArea, serviceOptions } from "@/components/data";
+import { MONTAGES } from "@/lib/hero-media";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -54,6 +55,9 @@ export default function ServicePage({ params }) {
     : s.slug.includes("permanent") ? /permanent|architectural/i
     : /résidentiel|residentiel/i;
   const serviceInitial = serviceOptions.find((o) => motCle.test(o)) || null;
+  // Page commerciale : le hero vidéo du Vieux-Montréal (lib/hero-media.js),
+  // et la ligne de positionnement, une seule fois, vers /secteur/vieux-montreal.
+  const commercial = s.slug === "lumieres-de-noel-commercial";
 
   return (
     <>
@@ -72,11 +76,19 @@ export default function ServicePage({ params }) {
         titre={s.h1 || s.title}
         phrase={s.intro}
         filAriane={[{ name: "Accueil", href: "/" }, { name: "Services", href: "/services" }, { name: s.title }]}
+        montage={commercial ? MONTAGES.vieuxMontreal : false}
       />
 
       {s.ambiances && <SectionAmbiances />}
 
       <BandePhotos cles={s.bande || []} />
+
+      {commercial && (
+        <LienVieuxMontreal
+          tag="Fier partenaire des commerces du Vieux-Montréal"
+          phrase="Hôtels, restaurants et boutiques du Vieux-Montréal nous confient leurs entrées et leurs vitrines pour les Fêtes."
+        />
+      )}
 
       <CeQuiEstCompris compris={s.compris} cadre={s.cadre} />
 
@@ -92,7 +104,7 @@ export default function ServicePage({ params }) {
 
           Pas de cinquième carte dans la grille résidentielle : décision de
           Yahir (2026-09-30). Un bloc dédié, ici, où la question se pose. */}
-      {s.slug === "lumieres-de-noel-commercial" && (
+      {commercial && (
         <section style={{ background: MARINE }}>
           <div className="container bloc-etroit">
             <SectionTag dark>Assurance</SectionTag>

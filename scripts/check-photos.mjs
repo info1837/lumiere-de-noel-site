@@ -202,18 +202,18 @@ for (const cle of CLES_GENERIQUES) {
   // a. Le hero.
   const hero = lireSrc("components/Hero.jsx");
   const cleHero = hero.includes("const photo =") ? clePhotoDe(hero, "const photo =") : null;
-  // Depuis 2026-11-11, le hero a deux affiches (lib/hero-media.js) : le
-  // téléphone a l'image 0 du montage drone (/videos/hero-portrait.jpg, pas
-  // une photo de chantier) ; le desktop a une PHOTO, PHOTOS[AFFICHE_PAYSAGE]
-  // — elle compte dans les doublons comme n'importe quelle photo du hero.
+  // Depuis 2026-11-12, le hero n'a plus de photo : ses deux affiches sont
+  // des images tirées des montages vidéo (lib/hero-media.js, /videos/…),
+  // pas des photos de chantier — elles ne comptent pas dans les doublons.
   const media = lireSrc("lib/hero-media.js");
-  const clePaysage = (media.match(/AFFICHE_PAYSAGE\s*=\s*"([^"]+)"/) || [])[1];
-  const heroAffiches = !cleHero && /PHOTOS\[AFFICHE_PAYSAGE\]/.test(hero);
+  const heroAffiches = !cleHero
+    && /HERO_MONTAGES\.portrait\.affiche/.test(hero) && /HERO_MONTAGES\.paysage\.affiche/.test(hero);
   if (heroAffiches) {
-    if (!clePaysage || !PHOTOS[clePaysage]) {
-      erreurs.push(`lib/hero-media.js : AFFICHE_PAYSAGE (« ${clePaysage} ») n'est pas une clé de PHOTOS.`);
-    } else {
-      usages.push({ src: PHOTOS[clePaysage].src, ou: "le hero (affiche desktop)" });
+    for (const f of ["portrait", "paysage"]) {
+      const m = media.match(new RegExp(`accueil:[\\s\\S]*?${f}: \\{[^}]*affiche: "([^"]+)"`));
+      if (!m || !existsSync(join(PUBLIC, m[1]))) {
+        erreurs.push(`lib/hero-media.js : l'affiche ${f} du hero d'accueil est introuvable (${m ? m[1] : "non lue"}).`);
+      }
     }
   } else if (!cleHero || !PHOTOS[cleHero]) {
     erreurs.push(

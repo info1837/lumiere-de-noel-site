@@ -45,26 +45,28 @@ export const MARINE_PROFOND = "#060E18";
 // La ligne de preuve est la même : le prix et le
 // territoire (plus d'avis d'une autre entreprise).
 //
-// `montage` (pages de secteur) : le hero de l'accueil en portrait — sur
-// téléphone / écran vertical, l'affiche du montage drone (image LCP), puis
-// la vidéo après `load` (HeroVideo.jsx, le même composant et le même
-// fichier que l'accueil) ; sur desktop, la photo de la page, sans vidéo.
-// Sans `montage`, rien ne change (services, page commerciale, blog…).
-export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true, montage = false }) {
+// `montage` : un hero vidéo, comme l'accueil. `true` = le montage drone de
+// l'accueil (pages de secteur) ; sinon un montage de lib/hero-media.js
+// (`MONTAGES.vieuxMontreal` : page commerciale et /secteur/vieux-montreal).
+// Chaque format a son affiche (image LCP, <picture>) puis sa vidéo après
+// `load` (HeroVideo.jsx) — une seule vidéo par visiteur. `photo` ne sert
+// alors plus à l'écran (seulement à l'OG de la page).
+// Sans `montage`, rien ne change (blog, ville × service, services sans vidéo).
+export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true, montage = false, boutons = null }) {
   let affiches = null;
-  if (montage && photo) {
-    // Un seul alt pour deux images (montage en portrait, photo sur desktop) :
-    // il doit décrire les deux, donc pas celui de la photo.
-    const commun = { alt: "Lumières de Noël installées par notre équipe, la nuit", fill: true, priority: true, sizes: "100vw" };
-    const { props: { srcSet: srcSetPortrait } } = getImageProps({ ...commun, src: HERO_MONTAGES.portrait.affiche });
-    const { props: img } = getImageProps({ ...commun, src: photo.src });
+  const m = montage === true ? HERO_MONTAGES : montage || null;
+  if (m) {
+    // Un seul alt pour les deux affiches : celui du montage.
+    const commun = { alt: m.alt, fill: true, priority: true, sizes: "100vw" };
+    const { props: { srcSet: srcSetPortrait } } = getImageProps({ ...commun, src: m.portrait.affiche });
+    const { props: img } = getImageProps({ ...commun, src: m.paysage.affiche });
     affiches = (
       <>
         <picture>
           <source media={MEDIA_PORTRAIT} srcSet={srcSetPortrait} sizes="100vw" />
           <img {...img} style={{ ...img.style, objectFit: "cover" }} />
         </picture>
-        <HeroVideo />
+        <HeroVideo montages={m} />
       </>
     );
   }
@@ -91,8 +93,14 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
           <h1 className="hero-h1 hero-h1--page">{titre}</h1>
           {phrase && <p className="hero-phrase">{phrase}</p>}
           <div className="hero-boutons" data-barre-ancre data-gabarit>
-            <CTAButton href={reserver} variant="creme">Réserver ma date</CTAButton>
-            <CTAButton href="/simulateur" variant="outlineCreme">Voir ma maison illuminée</CTAButton>
+            {/* `boutons` : une page pour les commerces n'envoie pas vers le
+                simulateur de maison. Sans la prop, les deux portes du site. */}
+            {boutons ?? (
+              <>
+                <CTAButton href={reserver} variant="creme">Réserver ma date</CTAButton>
+                <CTAButton href="/simulateur" variant="outlineCreme">Voir ma maison illuminée</CTAButton>
+              </>
+            )}
           </div>
           {preuve && (
             <p className="hero-ligne" data-gabarit>
@@ -142,7 +150,7 @@ export function BandePhotos({ cles, legende = true, fond = MARINE }) {
 // et le prix à droite, au bas de ce qu'il achète.
 // `cadre` : clé d'une photo de PHOTOS à montrer dans le cadre « ampoule »
 // (components/CadreAmpoule.jsx) — la page commerciale seulement, pour l'instant.
-export function CeQuiEstCompris({ compris, titre = "Ce qui est compris", tag = "Forfait tout inclus", fond = MARINE_PROFOND, cadre = null }) {
+export function CeQuiEstCompris({ compris, titre = "Ce qui est compris", tag = "Forfait tout inclus", fond = MARINE_PROFOND, cadre = null, bouton = { href: "#reserver", texte: "Réserver ma date" } }) {
   if (!compris) return null;
   const photoCadre = cadre ? PHOTOS[cadre] : null;
   return (
@@ -175,7 +183,7 @@ export function CeQuiEstCompris({ compris, titre = "Ce qui est compris", tag = "
             <strong>{compris.prix}</strong>
             <span>{compris.prixNote}</span>
           </p>
-          <CTAButton href="#reserver" variant="creme">Réserver ma date</CTAButton>
+          <CTAButton href={bouton.href} variant="creme">{bouton.texte}</CTAButton>
         </div>
       </div>
     </section>
@@ -394,6 +402,23 @@ export function SectionAmbiances({ fond = MARINE }) {
         </div>
         <p className="section-phrase" style={{ textAlign: "center" }}>
           Une maison, toutes les ambiances : la même façade, trois réglages de l&apos;application.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+// ── 12 · Lien vers /secteur/vieux-montreal ───────────────────────────────
+// Une étiquette, une phrase, un lien. Page commerciale (avec la ligne de
+// positionnement, une seule fois sur cette page) et page de Montréal.
+export function LienVieuxMontreal({ tag, phrase, fond = MARINE }) {
+  return (
+    <section style={{ background: fond }}>
+      <div className="container bloc-etroit">
+        <SectionTag dark>{tag}</SectionTag>
+        <p className="section-phrase" style={{ margin: "0 auto 18px" }}>{phrase}</p>
+        <p className="section-lien" style={{ margin: 0 }}>
+          <Link href="/secteur/vieux-montreal">Voir nos installations du Vieux-Montréal →</Link>
         </p>
       </div>
     </section>
