@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "dev": "next dev",
-    "build": "node --no-warnings scripts/check-photos.mjs && next build && node --no-warnings scripts/check-pixel-lead.mjs",
+    "build": "node --no-warnings scripts/check-photos.mjs && node scripts/check-assurance.mjs && next build && node --no-warnings scripts/check-pixel-lead.mjs",
     "start": "next start",
     "check:photos": "node --no-warnings scripts/check-photos.mjs",
     "check:concours-tirage": "node scripts/check-concours-tirage.mjs",
@@ -35,7 +35,8 @@
     "check:formation": "node scripts/check-formation.mjs",
     "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs && node --no-warnings --import ./scripts/next-alias-register.mjs scripts/dry-run-formulaires.mjs",
     "captures:vie": "node scripts/captures-vie.mjs",
-    "check:telephone": "node scripts/check-telephone.mjs"
+    "check:telephone": "node scripts/check-telephone.mjs",
+    "check:assurance": "node scripts/check-assurance.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

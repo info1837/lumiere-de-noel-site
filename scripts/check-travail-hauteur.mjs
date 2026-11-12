@@ -1,10 +1,13 @@
-// « Travail en hauteur, par des professionnels assurés »
+// « Travail en hauteur, par notre propre équipe »
 //
 //   node scripts/check-travail-hauteur.mjs
 //
-// « Vous ne montez jamais dans l'échelle » vendait le CONFORT : la corvée
-// qu'on s'épargne. Le nouveau titre vend la COMPÉTENCE. Le fond ne bouge
-// pas — sécurité, équipement, assurance.
+// La carte vend la COMPÉTENCE, pas le confort (« Vous ne montez jamais dans
+// l'échelle » vendait la corvée qu'on s'épargne). Elle ne dit que ce qui est
+// vrai et visible : notre équipe, échelles, harnais, nacelle au besoin.
+//
+// ⚠️ PLUS D'ASSURANCE (2026-11-12) : pas de couverture en place. La garde
+// qui l'interdit partout est scripts/check-assurance.mjs.
 
 import fs from 'fs';
 import path from 'path';
@@ -13,74 +16,28 @@ const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), '..');
 let pass = 0, fail = 0;
 const t = (nom, ok, d = '') => { console.log(`  ${ok ? '✅' : '❌'} ${nom}${d ? ` — ${d}` : ''}`); ok ? pass++ : fail++; };
 const lire = (p) => fs.readFileSync(path.join(ROOT, p), 'utf8');
-// Les commentaires CITENT l'ancienne formulation pour expliquer pourquoi
-// elle a changé — quatrième fois que ce motif m'attrape si je l'oublie.
 const sansCommentaires = (x) => x
-  .replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '')
-  .replace(/,\s*\/\/ ASSURANCE/g, ',');
+  .replace(/\{\/\*[\s\S]*?\*\/\}/g, '').replace(/\/\*[\s\S]*?\*\//g, '').replace(/^\s*\/\/.*$/gm, '');
 
 const data = lire('components/data.js');
 const dataCode = sansCommentaires(data);
 
-console.log('\n--- 1. 🚨 Le titre ---');
+console.log('\n--- 1. 🚨 La carte ---');
 {
-  t('🚨 « Travail en hauteur, par des professionnels assurés »',
-    /title: "Travail en hauteur, par des professionnels assurés"/.test(dataCode));
-  t('🚨 plus de « Vous ne montez jamais dans l\'échelle »',
-    !/Vous ne montez jamais dans l'échelle/.test(dataCode));
-  t('🚨 plus de « Vous ne sortez jamais du salon » — c\'était le confort',
-    !/Vous ne sortez jamais du salon/.test(dataCode));
+  t('🚨 « Travail en hauteur, par notre propre équipe »',
+    /title: "Travail en hauteur, par notre propre équipe"/.test(dataCode));
+  const carte = dataCode.slice(dataCode.indexOf('Travail en hauteur, par'), dataCode.indexOf('Travail en hauteur, par') + 300);
+  t('l\'équipement', /Échelles, harnais et nacelle/.test(carte));
+  t('🚨 plus de « Vous ne montez jamais dans l\'échelle »', !/Vous ne montez jamais dans l'échelle/.test(dataCode));
+  t('« Service après-vente » est intact', /title: "Service après-vente"/.test(dataCode));
+  t('whyUs reste la source unique de ces faits', /export const whyUs = \[/.test(data));
 }
 
-console.log('\n--- 2. 🚨 Le fond est gardé : sécurité, équipement, assurance ---');
-{
-  const carte = dataCode.slice(
-    dataCode.indexOf('Travail en hauteur'),
-    dataCode.indexOf('Travail en hauteur') + 400);
-  t('🚨 la sécurité', /équipement de sécurité/.test(carte), 'équipement de sécurité');
-  t('🚨 l\'équipement', /Échelles/.test(carte));
-  t('🚨 l\'assurance', /assurance couvre le chantier/.test(carte));
-  t('la formation de l\'équipe', /formée pour la hauteur/.test(carte));
-}
-
-console.log('\n--- 3. 🚨 La police est active : tous les marqueurs le disent ---');
-{
-  // La consigne du 2026-08-30 disait : « le jour où la police démarre,
-  // remettre « assurée » ici ET AUX AUTRES MARQUEURS ». Yahir a confirmé
-  // le 2026-09-29. Ce test vérifie qu'aucun n'a été oublié — un marqueur
-  // resté muet, c'est un argument qu'on a payé et qu'on n'utilise pas.
-  const blog = sansCommentaires(lire('app/blog/posts.js'));
-  t('🚨 le billet de blogue dit l\'assurance', /assurance qui couvre le chantier/.test(blog));
-  t('🚨 …et plus « fini les chutes d\'échelle » (c\'était la peur, pas le métier)',
-    !/fini les chutes d'échelle/.test(blog));
-
-  t('🚨 le commercial dit « formée et assurée »',
-    /travail en hauteur fait par notre équipe, formée et assurée/.test(dataCode));
-  t('🚨 sa puce aussi', /Travail en hauteur par une équipe formée et assurée/.test(dataCode));
-
-  t('🚨 le résidentiel ne vend plus le confort',
-    !/sans que vous touchiez à une échelle/.test(dataCode));
-  t('…il dit la compétence', /par une équipe formée pour le travail en hauteur/.test(dataCode));
-
-  const marqueurs = (data.match(/\/\/ ASSURANCE/g) || []).length
-    + (lire('app/blog/posts.js').match(/\/\/ ASSURANCE/g) || []).length;
-  t('🚨 les étiquettes ASSURANCE restent, pour pouvoir tout repasser si la police s\'interrompt',
-    marqueurs >= 4, `${marqueurs}`);
-
-  // La barre des objections (components/ObjectionBar.jsx) n'existe plus :
-  // retirée de l'accueil, puis supprimée le 2026-10-14 avec la ligne des
-  // avis de Palencia qu'elle portait.
-}
-
-console.log('\n--- 4. 🚨 Plus aucun argument de CONFORT dans tout le dépôt ---');
+console.log('\n--- 2. 🚨 Plus aucun argument de CONFORT dans tout le dépôt ---');
 {
   // Yahir : « reformule en argument de pro, pas de confort ». C'est un
-  // PRINCIPE, pas une chaîne. Le même argument vivait à cinq endroits :
-  // le titre du hero, la carte « travail en hauteur », la carte « clé en
-  // main », une puce du service résidentiel et son intro par ville.
-  //
-  // Les commentaires qui CITENT l'ancienne formulation pour expliquer
-  // pourquoi elle a changé sont légitimes — on ne les compte pas.
+  // PRINCIPE, pas une chaîne. Les commentaires qui citent l'ancienne
+  // formulation sont légitimes — on ne les compte pas.
   const marcher = (d, acc = []) => {
     for (const e of fs.readdirSync(d, { withFileTypes: true })) {
       if (['node_modules', '.next', '.git', 'scripts'].includes(e.name)) continue;
@@ -95,34 +52,8 @@ console.log('\n--- 4. 🚨 Plus aucun argument de CONFORT dans tout le dépôt -
     .filter((f) => CONFORT.test(sansCommentaires(fs.readFileSync(f, 'utf8'))));
   t('🚨 aucune formulation de confort ne reste', fautifs.length === 0,
     fautifs.map((f) => path.relative(ROOT, f)).join(' '));
-  t('la carte « Clé en main » dit maintenant l\'interlocuteur unique',
+  t('la carte « Clé en main » dit l\'interlocuteur unique',
     /Un seul interlocuteur, du premier croquis au retrait de janvier/.test(dataCode));
-  t('🚨 la puce du résidentiel dit l\'équipe assurée',
-    /travail en hauteur par une équipe assurée/.test(dataCode));
-}
-
-console.log('\n--- 5. La carte reste rendue là où elle était ---');
-{
-  // ⚠️ « POURQUOI NOUS CHOISIR » A QUITTÉ L'ACCUEIL, et il faut le savoir.
-  //
-  // La refonte fusionne cette grille de quatre cartes dans la section de
-  // l'offre, dont la liste tient quatre lignes : conception, installation,
-  // rappels illimités, retrait + entreposage. LA MENTION DE L'ASSURANCE
-  // N'Y EST PAS — elle ne vit donc plus que sur /services et dans data.js.
-  // Pour un client COMMERCIAL, l'assurance est un critère d'achat : c'est
-  // signalé dans la PR pour que Yahir tranche.
-  //
-  // Ce qui reste verrouillé ici : la formulation elle-même, qui ne doit
-  // jamais s'élargir, et le fait que la police est bien active.
-  const data_ = lire('components/data.js');
-  t('🚨 la carte « travail en hauteur » existe toujours dans data.js',
-    /title: "Travail en hauteur, par des professionnels assurés"/.test(data_));
-  t('whyUs reste la source unique de ces quatre faits', /export const whyUs = \[/.test(data_));
-  const cartes = (dataCode.match(/^\s{2}\{/gm) || []).length;
-  t('les quatre cartes « pourquoi nous » existent toujours',
-    /export const whyUs = \[/.test(data) && cartes > 0);
-  t('« Service après-vente » est intact', /title: "Service après-vente"/.test(dataCode));
-  t('« Clé en main » est intact', /title: "Clé en main"/.test(dataCode));
 }
 
 console.log(`\n${pass}/${pass + fail} vérifications passées.`);
