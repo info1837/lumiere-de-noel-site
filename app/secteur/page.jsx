@@ -6,6 +6,7 @@ import { HeroPage } from "@/components/sections";
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { cities, inCity, navy, ivory, gold } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
+import { GALERIE_VIEUX_MONTREAL } from "@/components/vieux-montreal";
 
 export const metadata = {
   title: "Zones desservies — Grand Montréal",
@@ -67,6 +68,26 @@ export default function SecteurIndex() {
                 </div>
               </Link>
             ))}
+            {/* Page de secteur à part, pour les commerces (pas une ville de `cities`). */}
+            <Link href="/secteur/vieux-montreal" className="glow-card" style={{
+              display: "block", textDecoration: "none",
+              background: "#10202f", borderRadius: 16, overflow: "hidden",
+              border: "1px solid rgba(233,220,192,0.16)",
+            }}>
+              <div style={{ position: "relative", aspectRatio: "4 / 3", background: "#0b1b2b" }}>
+                <Image src={GALERIE_VIEUX_MONTREAL[0].image} alt={GALERIE_VIEUX_MONTREAL[0].alt} fill
+                  sizes="(max-width: 600px) 100vw, (max-width: 960px) 50vw, 380px" style={{ objectFit: "cover" }} />
+              </div>
+              <div style={{ padding: 22 }}>
+                <div style={{ color: gold, fontSize: 12, fontWeight: 700, letterSpacing: "0.14em", textTransform: "uppercase", marginBottom: 6 }}>
+                  Commerces
+                </div>
+                <h2 style={{ color: ivory, marginBottom: 8, fontSize: 26 }}>Commerces du Vieux-Montréal</h2>
+                <div style={{ color: gold, fontSize: 13, fontWeight: 700, marginTop: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>
+                  Voir les détails →
+                </div>
+              </div>
+            </Link>
           </div>
 
           <div style={{ textAlign: "center", marginTop: 48 }}>

@@ -2,18 +2,16 @@
 import { useEffect, useRef, useState } from "react";
 import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 
-// Vidéo du hero : vrais plans de drone de nos installations (2026-11-11).
+// Vidéo du hero : vrais plans de nos installations.
 //
-// Un seul montage, et seulement pour les téléphones / écrans verticaux :
-//   · portrait (1080×1920, 13,1 s, 8 plans en coupes franches) — Terrebonne,
-//     Blainville, Sainte-Anne, Saint-Valentin, Lorraine.
-//   · paysage : AUCUNE vidéo (HERO_MONTAGES.paysage.video = null) — la photo
-//     de Mirabel reste seule, rien n'est téléchargé.
-// Le choix suit MEDIA_PORTRAIT (lib/hero-media.js), la même requête que
-// l'affiche <picture> de Hero.jsx. Il est fait UNE fois, au chargement : si
-// l'écran pivote ensuite, on ne télécharge rien de plus, on cache la vidéo
-// et l'affiche du bon format reprend la place (puis la vidéo revient si
-// l'écran retrouve son orientation de départ).
+// Un MONTAGE par format (lib/hero-media.js, prop `montages`, par défaut
+// celui de l'accueil) : portrait pour les téléphones / écrans verticaux,
+// paysage pour le reste. Jamais l'un recadré dans l'autre.
+// Le choix suit MEDIA_PORTRAIT, la même requête que l'affiche <picture> du
+// serveur (Hero.jsx, HeroPage). Il est fait UNE fois, au chargement : UNE
+// seule vidéo par visiteur. Si l'écran pivote ensuite, on ne télécharge
+// rien de plus : on cache la vidéo et l'affiche du bon format reprend la
+// place (puis la vidéo revient si l'écran retrouve son orientation de départ).
 //
 // Les règles de la page tiennent :
 //   · L'affiche (next/image, priority) est l'image LCP. La vidéo n'est même
@@ -23,7 +21,7 @@ import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
 //     démarre sur l'image même de l'affiche (`debut`), rien ne bouge.
 //   · prefers-reduced-motion ou économie de données : rien ne se charge,
 //     l'affiche reste.
-export default function HeroVideo() {
+export default function HeroVideo({ montages = HERO_MONTAGES }) {
   const ref = useRef(null);
   const [joue, setJoue] = useState(false);
   const [masquee, setMasquee] = useState(false);
@@ -37,10 +35,10 @@ export default function HeroVideo() {
 
     const mq = window.matchMedia(MEDIA_PORTRAIT);
     const choix = mq.matches ? "portrait" : "paysage";
-    const montage = HERO_MONTAGES[choix];
-    // Paysage : pas de montage, l'affiche reste. Rien à suivre non plus —
-    // si l'écran pivote en portrait, <picture> change d'affiche tout seul.
-    if (!montage.video) return;
+    const montage = montages[choix];
+    // Un format sans vidéo : l'affiche reste. Rien à suivre non plus — si
+    // l'écran pivote, <picture> change d'affiche tout seul.
+    if (!montage?.video) return;
     let demarree = false;
 
     const demarrer = () => {
@@ -97,7 +95,7 @@ export default function HeroVideo() {
       mq.removeEventListener("change", suivre);
       liberer();
     };
-  }, []);
+  }, []); // le montage d'une page ne change pas
 
   return (
     <video

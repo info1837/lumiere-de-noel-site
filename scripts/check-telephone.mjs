@@ -52,6 +52,8 @@ const tiroir = lire("components/TiroirMobile.jsx"), entete = lire("app/ClientLay
 t("tiroir, entête, formulaire : les lettres", /Appeler \{company\.phoneVanity\}/.test(tiroir) && /phone-label">\{company\.phoneVanity\}/.test(entete) && /parler à quelqu&apos;un \? <a[^>]*>\{company\.phoneVanity\}/.test(form));
 t("barre du bas : aria-label avec les chiffres", /aria-label=\{company\.phoneAria\} className="bottom-bar-call"/.test(entete));
 t("🚨 pied de page : les lettres PUIS les chiffres", /<LienTelephone[\s\S]{0,200}\{company\.phoneDisplay\}/.test(pied));
+// « (438) » / « 812-NOEL » sur deux lignes (2026-11-12) : tout lien d'appel reste d'un bloc.
+t("🚨 un lien d'appel ne se coupe jamais (globals.css)", /a\[href\^="tel:"\]\s*\{[^}]*white-space:\s*nowrap/.test(lire("app/globals.css")));
 
 console.log("\n--- 3. Moteurs de recherche : les chiffres seulement ---");
 for (const f of ["app/layout.jsx", "components/jsonld.jsx"]) {

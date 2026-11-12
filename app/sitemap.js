@@ -15,6 +15,8 @@ export default function sitemap() {
     { url: `${BASE}/simulateur`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/services`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
     { url: `${BASE}/secteur`, lastModified: now, changeFrequency: "monthly", priority: 0.8 },
+    // Page de secteur à part (pas dans `cities`) : les commerces du Vieux-Montréal.
+    { url: `${BASE}/secteur/vieux-montreal`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/blog`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
     // Règlement du concours Meta « Gagnez votre installation 2026 ».
     { url: `${BASE}/concours`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
