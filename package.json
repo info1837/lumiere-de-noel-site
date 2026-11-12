@@ -34,7 +34,8 @@
     "check:vie": "node scripts/check-vie.mjs",
     "check:formation": "node scripts/check-formation.mjs",
     "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs && node --no-warnings --import ./scripts/next-alias-register.mjs scripts/dry-run-formulaires.mjs",
-    "captures:vie": "node scripts/captures-vie.mjs"
+    "captures:vie": "node scripts/captures-vie.mjs",
+    "check:telephone": "node scripts/check-telephone.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

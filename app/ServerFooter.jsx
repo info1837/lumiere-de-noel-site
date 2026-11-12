@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LienTelephone from "@/components/LienTelephone";
 import { company, services, cities, navy, ivory, gold, line } from "@/components/data";
 
 export function ServerFooter() {
@@ -21,9 +22,11 @@ export function ServerFooter() {
               résidentiel et commercial. {company.region}.
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14 }}>
-              <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
-                {company.phoneDisplay}
-              </a>
+              {/* Les lettres, puis les chiffres juste après (2026-11-11). */}
+              <div>
+                <LienTelephone style={{ color: gold, textDecoration: "none", fontWeight: 700 }} />
+                <span style={{ marginLeft: 8, color: "rgba(243,233,210,0.7)" }}>{company.phoneDisplay}</span>
+              </div>
               <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.7)", textDecoration: "none" }}>
                 {company.email}
               </a>
@@ -71,7 +74,6 @@ export function ServerFooter() {
             <h2 style={{ color: ivory, fontSize: 16, marginBottom: 14 }}>Ressources</h2>
             <div><Link href="/blog" style={linkStyle}>Blog</Link></div>
             <div><Link href="/realisations" style={linkStyle}>Réalisations</Link></div>
-            <div><Link href="/concours" style={linkStyle}>Concours 2026</Link></div>
             <div style={{ marginTop: 6 }}>
               <Link href="/soumission" style={{ ...linkStyle, color: gold, fontWeight: 700 }}>
                 Réserver ma date →
@@ -86,7 +88,6 @@ export function ServerFooter() {
         }}>
           <div>
             <div>© {new Date().getFullYear()} {company.name} — Tous droits réservés.</div>
-            <div style={{ marginTop: 4, opacity: 0.8 }}>Ce concours n&apos;est pas associé à Meta/Facebook/Instagram.</div>
           </div>
           <div style={{ display: "flex", gap: 18, flexWrap: "wrap" }}>
             <Link href="/" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Accueil</Link>
@@ -94,7 +95,6 @@ export function ServerFooter() {
             <Link href="/secteur" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Zones</Link>
             <Link href="/blog" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Blog</Link>
             <Link href="/soumission" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Soumission</Link>
-            <Link href="/concours#reglements" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Règlements</Link>
             <Link href="/confidentialite" style={{ color: "rgba(243,233,210,0.5)", textDecoration: "none" }}>Confidentialité</Link>
           </div>
         </div>

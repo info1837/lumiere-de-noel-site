@@ -93,7 +93,7 @@ export default function PhotoCellulaire({ code }) {
         <p className="sim-tele-pictogramme" aria-hidden="true">⏳</p>
         <h1 className="sim-titre">Lien expiré</h1>
         <p className="sim-sous">{message}</p>
-        <p className="sim-tel">une question ? <a href={company.phoneHref}>{company.phoneDisplay}</a></p>
+        <p className="sim-tel">une question ? <a href={company.phoneHref} aria-label={company.phoneAria}>{company.phoneVanity}</a></p>
       </div>
     );
   }

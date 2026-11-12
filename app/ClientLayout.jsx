@@ -166,7 +166,7 @@ export function NavBar() {
               L'entête garde le logo et le menu. Le numéro reste à un geste :
               il est sous le bouton du hero, dans le tiroir, et dans la
               barre du bas dès qu'on défile. */}
-          <a href={company.phoneHref} className="header-tel" style={{
+          <a href={company.phoneHref} aria-label={company.phoneAria} className="header-tel" style={{
             display: "inline-flex", alignItems: "center", gap: 8,
             padding: "10px 18px", borderRadius: 300,
             /* ⚠️ Contour, plus un aplat ambre. `gold` vaut maintenant
@@ -181,7 +181,7 @@ export function NavBar() {
             <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.24 1.02z" />
             </svg>
-            <span className="phone-label">{company.phoneDisplay}</span>
+            <span className="phone-label">{company.phoneVanity}</span>
           </a>
 
           {/* CTA header — visible à toutes les largeurs, label réduit sur très petit écran */}
@@ -283,7 +283,7 @@ export function MobileBottomBar() {
       aria-label="Actions rapides"
       aria-hidden={visible ? undefined : "true"}
     >
-      <a href={company.phoneHref} className="bottom-bar-call" tabIndex={visible ? undefined : -1}>
+      <a href={company.phoneHref} aria-label={company.phoneAria} className="bottom-bar-call" tabIndex={visible ? undefined : -1}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
           <path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11.36 11.36 0 0 0 .57 3.57 1 1 0 0 1-.24 1.02z" />
         </svg>

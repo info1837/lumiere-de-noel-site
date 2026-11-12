@@ -107,7 +107,7 @@ export default function Soumission({ searchParams }) {
               Ampoule brûlée ou section tombée ? On repasse sans frais, autant de fois qu&apos;il le faut — de la pose au retrait.
             </p>
             <p className="rassurance-contact">
-              <a href={company.phoneHref} className="rassurance-tel">{company.phoneDisplay}</a>
+              <a href={company.phoneHref} aria-label={company.phoneAria} className="rassurance-tel">{company.phoneVanity}</a>
               <a href={company.emailHref}>{company.email}</a>
               <span>{company.region}</span>
             </p>

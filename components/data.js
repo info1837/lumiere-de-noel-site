@@ -84,6 +84,11 @@ export const company = {
   // leur, et ils ne doivent jamais se croiser.
   phoneDisplay: "(438) 812-6635",
   phoneHref: "tel:+14388126635",
+  // Le même numéro, en lettres, pour les boutons et liens (2026-11-11) :
+  // N-O-E-L = 6-6-3-5. Le lien compose toujours les chiffres ; JSON-LD,
+  // meta et phrases sans lien gardent phoneDisplay. Voir LienTelephone.
+  phoneVanity: "(438) 812-NOEL",
+  phoneAria: "Appeler le (438) 812-6635",
   // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
   // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
   // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se
@@ -333,8 +338,15 @@ export const services = [
     seoTitle: "Lumières de Noël commerciales",
     h1: "Installation de lumières de Noël commerciales",
     kicker: "Pour vos commerces et bureaux",
-    heroImage: servicePhoto("lumieres-de-noel-commercial").src,
-    heroImageAlt: servicePhoto("lumieres-de-noel-commercial").alt,
+    // ⚠️ PLUS LA CHOCOLATERIE EN HERO (2026-11-11) : son enseigne montrait
+    // le nom du commerce et son numéro de téléphone en pleine page. Léry :
+    // une installation de nuit, sans enseigne, plaque ni numéro (vérifié à
+    // la loupe). Blainville écartée : une pancarte de pelouse « Palencia »
+    // et un numéro y sont lisibles. Le HERO seulement : servicePhoto()
+    // nourrit aussi les cartes des pages de ville, qui exigent une photo
+    // générique (check-photos), et garde donc commercial-01.
+    heroImage: PHOTOS["lery-01"].src,
+    heroImageAlt: PHOTOS["lery-01"].alt,
     metaDescription:
       "Façades, vitrines et entrées illuminées pour les Fêtes. Installation hors des heures d'ouverture, entretien inclus, retrait en janvier. Sur soumission.",
     intro:

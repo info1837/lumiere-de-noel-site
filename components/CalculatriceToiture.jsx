@@ -784,7 +784,7 @@ function BlocMaquette({ resultat, adresse, manuel, maquette, setMaquette }) {
           </div>
           <p style={{ fontSize: 14, color: "#444", margin: 0 }}>
             Une photo de votre maison aide au design — envoyez-la par texto au{" "}
-            <a href={company.phoneHref} style={{ color: charcoal, fontWeight: 700 }}>{company.phoneDisplay}</a>.
+            <a href={company.phoneHref} aria-label={company.phoneAria} style={{ color: charcoal, fontWeight: 700 }}>{company.phoneVanity}</a>.
           </p>
           <CaseConsentement id="mq-consent" checked={maquette.consent}
             onChange={(v) => majM("consent", v)} />

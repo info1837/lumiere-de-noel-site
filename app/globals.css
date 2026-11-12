@@ -2970,6 +2970,14 @@ section.concours-hero { position: relative; padding: 0; --concours-hero-h: min(8
 .concours-offre p { margin: 0; color: #F0EADE; font-size: 16px; line-height: 1.55; }
 .concours-offre__gros { font-family: 'Bebas Neue', 'Bebas Repli', sans-serif; font-size: clamp(1.9rem, 7vw, 2.6rem) !important; line-height: 1.05 !important; margin-bottom: 10px !important; }
 .concours-offre__gros b { color: #F0BA54; font-weight: 400; }
+/* Concours TERMINÉ (2026-11-11) : le bloc qui remplace le compte à rebours,
+   le 15 % et le formulaire. */
+.concours-termine h2.concours-offre__gros { color: #F0EADE; font-weight: 400; margin-top: 0; }
+.concours-termine .concours-offre p + p { margin-top: 12px; }
+.concours-termine .concours-offre a:not([class]) { color: #F0BA54; text-decoration: underline; text-underline-offset: 3px; }
+.concours-termine__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px; margin-top: 20px !important; }
+.concours-termine__lien { color: #F0BA54; font-weight: 700; font-size: 14px; letter-spacing: 0.06em; text-transform: uppercase; text-decoration: none; }
+.concours-termine__lien:hover { text-decoration: underline; text-underline-offset: 4px; }
 
 /* Formulaire. */
 .concours-section--form { background: #060E18; scroll-margin-top: 72px; }
@@ -3078,4 +3086,106 @@ section.concours-reglement { background: #060E18; padding: clamp(48px, 8vw, 80px
 @media (max-width: 768px) {
   .bloc-video { grid-template-columns: 1fr; gap: 28px; }
   .video-parlee { max-width: 300px; margin: 0 auto; width: 100%; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════
+   PASSE DE FINITION DESKTOP (2026-11-11, demande de Yahir)
+   ═══════════════════════════════════════════════════════════════════════
+   Tout est en min-width : le téléphone (< 768 px) est approuvé et ne
+   bouge pas. Vérifié à 1440 × 900 et 1280 × 800. */
+
+/* Le règlement du concours garde la mention Meta (retirée du pied de page). */
+.concours-reglement__meta { margin-top: 24px; font-size: 14px; opacity: 0.8; }
+
+@media (min-width: 768px) {
+  /* 3 · La ligne du hero se coupe PROPREMENT : chaque élément porte son
+     séparateur DEVANT lui, dans une case de 29 px ; la ligne est décalée de
+     29 px à gauche et ces 29 px sont découpés (clip-path). Le séparateur
+     d'un élément qui commence une ligne tombe donc dans la bande découpée :
+     jamais de « · » en début ni en fin de ligne, et un élément ne se coupe
+     pas en deux. */
+  .hero-ligne { gap: 6px 0; margin-left: -29px; clip-path: inset(0 0 0 29px); }
+  .hero-ligne > * { white-space: nowrap; }
+  .hero-ligne > *::before,
+  .hero-ligne > * + *::before {
+    content: "·";
+    display: inline-block;
+    width: 29px;
+    margin-right: 0;
+    text-align: center;
+    color: rgba(162, 180, 204, 0.5);
+  }
+
+  /* 4 · 5 · Un paragraphe est plafonné à 68ch (p { max-width }) : les liens
+     et boutons « centrés » de fin de section l'étaient dans une boîte de
+     694 px collée à gauche. Ils se centrent maintenant sur la page. */
+  .section-lien { max-width: none; }
+
+  /* 4 · Les réalisations : des cartes ENTIÈRES (deux, puis quatre de
+     front) au lieu d'une bande coupée au bord droit. La bande défilante
+     reste au téléphone. */
+  .defile { overflow: visible; -webkit-mask-image: none; mask-image: none; cursor: auto; }
+  .defile-piste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: auto; padding-inline: 0; }
+  .defile-item { width: auto; }
+
+  /* 6 · Les vidéos de Yahir : affiche propre et UN bouton lecture ; les
+     contrôles du navigateur seulement une fois lancée (VideoParlee.jsx). */
+  .video-parlee__cadre { position: relative; }
+  .video-parlee__lecture {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 76px;
+    height: 76px;
+    transform: translate(-50%, -50%);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    border: 1.5px solid rgba(240, 234, 222, 0.9);
+    background: rgba(10, 21, 36, 0.55);
+    color: #F0EADE;
+    box-shadow: 0 0 26px rgba(240, 186, 84, 0.35);
+    cursor: pointer;
+    transition: transform 0.18s ease;
+  }
+  .video-parlee__lecture svg { margin-left: 4px; }
+  .video-parlee__lecture:hover { transform: translate(-50%, -50%) scale(1.06); background: rgba(10, 21, 36, 0.72); }
+  .video-parlee__lecture:focus-visible { outline: 2px solid #F0BA54; outline-offset: 4px; }
+
+  /* 7 · Rythme vertical de l'accueil : 128 px en bas de CHAQUE bande plus
+     128 en haut de la suivante faisaient ~250 px de vide, et deux bandes de
+     même couleur (« Qui on est » → « Déjà client », FAQ → villes) se
+     lisaient comme un trou. 80 px en bas : ~200 px entre deux contenus,
+     partout pareil. (#inclus + section = la frise du parcours.) */
+  .bande-accueil, #inclus + section { padding-bottom: 80px; }
+}
+@media (min-width: 1024px) {
+  .defile-piste { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+@media (min-width: 769px) {
+  /* 6 · La vidéo du fondateur s'aligne sur la grille de la page (bord
+     gauche du contenu, même largeur que .container), au lieu d'un bloc de
+     980 px centré. */
+  .bloc-video:not(.bloc-video--faq) { max-width: var(--maxw); grid-template-columns: 300px minmax(0, 680px); }
+}
+@media (min-width: 901px) {
+  /* 2 · Le lien « Éclairage permanent » s'aligne à gauche, sous le bouton. */
+  .offre--cadre .offre-colonne .section-lien { text-align: left; }
+
+  /* 1 · L'ampoule ENTIÈRE, culot, bout arrondi et lueur compris : plus de
+     coupe nette par le bas de la section (la suivante a la même couleur,
+     on aurait dit un bogue). Elle tient dans un écran d'ordinateur (78 %
+     de la hauteur, 760 px au plus) et se centre sur la colonne de texte ;
+     elle déborde au besoin dans les marges de la section (128 px), jamais
+     au-delà. Placement de la photo recalculé pour cette taille
+     (components/photos.js, `ampoule`). */
+  /* Centrée par `top` et non par transform : l'apparition au défilement
+     (FestiveLayer, .rv) pose son propre transform sur la figure. */
+  .offre--cadre > .offre-cadre > .cadre-ampoule {
+    --hauteur-ampoule: min(78vh, 760px);
+    --hauteur-boite: calc(var(--hauteur-ampoule) * 169 / 149.13);
+    top: calc(50% - var(--hauteur-boite) / 2);
+    right: -24px;
+    height: var(--hauteur-boite);
+  }
 }

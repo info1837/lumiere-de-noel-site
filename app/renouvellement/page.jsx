@@ -61,11 +61,11 @@ export default function RenouvellementPage() {
               Remplissez le formulaire — on vous rappelle avec votre prix de reconduction.
             </p>
             <div style={{ display: "grid", gap: 12, color: "rgba(243,233,210,0.85)", fontSize: 15 }}>
-              <a href={company.phoneHref} style={{
+              <a href={company.phoneHref} aria-label={company.phoneAria} style={{
                 color: gold, textDecoration: "none", fontWeight: 700, fontSize: 22,
                 fontFamily: "'Bebas Neue', 'Bebas Repli', sans-serif", letterSpacing: "0.04em",
               }}>
-                {company.phoneDisplay}
+                {company.phoneVanity}
               </a>
               <a href={company.emailHref} style={{ color: "rgba(243,233,210,0.85)", textDecoration: "none" }}>
                 {company.email}

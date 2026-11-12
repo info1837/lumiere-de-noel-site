@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LienTelephone from "@/components/LienTelephone";
 import Hero from "@/components/Hero";
 import HowItWorks from "@/components/HowItWorks";
 import QuoteForm from "@/components/QuoteForm";
@@ -100,7 +101,7 @@ export default async function Home() {
           Six vignettes de 4/3 sur 1180 px faisaient des timbres-poste.
           Quatre photos en deux colonnes, chacune avec sa ville : la preuve
           avant l'argument, et assez grande pour être une preuve. */}
-      <section style={{ background: navy }}>
+      <section className="bande-accueil" style={{ background: navy }}>
         <div className="container">
           <div className="section-entete">
             <SectionTag dark>Réalisations</SectionTag>
@@ -128,7 +129,7 @@ export default async function Home() {
       {/* ── 3 · Le simulateur, et rien d'autre dans la section ──────────
           C'est la signature de la page. Lui donner un voisin, c'est lui
           demander de partager l'attention qu'on vient de lui construire. */}
-      <section style={{ background: "#060E18" }}>
+      <section className="bande-accueil" style={{ background: "#060E18" }}>
         <div className="container">
           <div className="section-entete">
             <SectionTag dark>Le simulateur</SectionTag>
@@ -159,7 +160,7 @@ export default async function Home() {
           Elle remplace « Forfait tout inclus », « Pourquoi nous choisir »,
           « Tarifs » et les quatre cartes du hero. Le prix est à DROITE, au
           bas de la liste de ce qu'il achète. */}
-      <section id="inclus" style={{ background: navy, scrollMarginTop: 84 }}>
+      <section id="inclus" className="bande-accueil" style={{ background: navy, scrollMarginTop: 84 }}>
         <div className="container offre offre--cadre">
           <div className="offre-intro">
             <SectionTag dark>Lumières de Noël — forfait tout inclus</SectionTag>
@@ -214,7 +215,7 @@ export default async function Home() {
       {/* ── 5b · Qui on est — Yahir raconte le départ (VIDEO 17) ───────
           Ajouté le 2026-11-08 à la demande de Yahir. Une seule vidéo, lancée
           par le visiteur, avec le texte à côté pour qui ne met pas le son. */}
-      <section style={{ background: "#060E18" }}>
+      <section className="bande-accueil" style={{ background: "#060E18" }}>
         <div className="container bloc-video">
           <VideoParlee
             src="/videos/fondateur.mp4"
@@ -238,7 +239,7 @@ export default async function Home() {
       </section>
 
       {/* ── 6 · Renouvellement ──────────────────────────────────────── */}
-      <section style={{ background: "#060E18" }}>
+      <section className="bande-accueil" style={{ background: "#060E18" }}>
         <div className="container bloc-etroit">
           <SectionTag dark>Déjà client</SectionTag>
           <SectionTitle light style={{ margin: "0 auto 18px" }}>
@@ -256,7 +257,7 @@ export default async function Home() {
       </section>
 
       {/* ── 7 · FAQ ─────────────────────────────────────────────────── */}
-      <section style={{ background: navy }}>
+      <section className="bande-accueil" style={{ background: navy }}>
         <div className="container">
           <div className="section-entete">
             <SectionTag dark>Questions fréquentes</SectionTag>
@@ -299,7 +300,7 @@ export default async function Home() {
           <QuoteForm source="Formulaire d'accueil (réservation)" redirectSrc="accueil" />
           <p className="bloc-formulaire__pied">
             Vous préférez parler à quelqu&apos;un ?{" "}
-            <a href={company.phoneHref}>{company.phoneDisplay}</a>
+            <LienTelephone />
             {/* La dernière date est ICI, à l'endroit exact où quelqu'un
                 hésite à remplir le formulaire. Aucun compteur (2026-11-08). */}
             {rarete?.texte && <><br />{rarete.texte}. Réservez votre date.</>}

@@ -178,8 +178,8 @@ export function TiroirMobile({ ouvert, onFermer, declencheurRef }) {
 
         <div className="tiroir__pied">
           <Link href="/calculatrice" onClick={onFermer} className="tiroir__cta">Estimer mon projet</Link>
-          <a href={company.phoneHref} className="tiroir__tel">
-            <PhoneIcon /> Appeler {company.phoneDisplay}
+          <a href={company.phoneHref} aria-label={company.phoneAria} className="tiroir__tel">
+            <PhoneIcon /> Appeler {company.phoneVanity}
           </a>
         </div>
       </div>

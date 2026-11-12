@@ -1,8 +1,11 @@
 import RevelationLumiere from "@/components/RevelationLumiere";
 import { paireAvantApres } from "@/components/photos";
-import { VILLES_CONCOURS, TIRAGE_COURT } from "@/lib/concours";
+import Link from "next/link";
+import { TIRAGE_TEXTE } from "@/lib/concours";
 
 // Le haut de /concours : la maison de Léry, avant / après, sous le titre.
+// Concours TERMINÉ (2026-11-11) : le titre le dit, le bouton mène à la
+// réservation (plus de formulaire).
 //
 // ⚠️ LES TEXTES SONT PAR-DESSUS LE CURSEUR, MAIS LE DOIGT PASSE À TRAVERS.
 // Les deux voiles (haut : titre ; bas : bouton) sont en `pointer-events:
@@ -30,16 +33,16 @@ export default function HeroConcours() {
         depart={50}
       />
       <div className="concours-hero__haut">
-        <p className="concours-hero__kicker">Concours 2026</p>
+        <p className="concours-hero__kicker">Concours 2026 · terminé</p>
         <h1 id="concours-titre" className="concours-hero__titre">
-          Ça pourrait être votre maison, gratuitement cet hiver!
+          Le concours est terminé — merci d&apos;avoir participé!
         </h1>
         <p className="concours-hero__sous">
-          {VILLES_CONCOURS.join(" · ")} — Tirage le {TIRAGE_COURT}
+          Tirage fait le {TIRAGE_TEXTE}, en direct sur Instagram.
         </p>
       </div>
       <div className="concours-hero__bas">
-        <a href="#participer" className="concours-bouton">Je participe</a>
+        <Link href="/soumission" className="concours-bouton">Réserver ma date</Link>
         <span className="concours-hero__indice" aria-hidden="true">← Glissez pour illuminer →</span>
       </div>
     </section>

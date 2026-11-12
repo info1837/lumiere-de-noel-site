@@ -15,7 +15,7 @@ const villes = `${VILLES_CONCOURS.slice(0, -1).join(", ")} et ${VILLES_CONCOURS.
 
 const SECTIONS = [
   { t: "1. Organisateur", p: [
-    <>Le concours « Gagnez votre installation 2026 » (le « concours ») est organisé par {company.name} (l'« organisateur »), entreprise établie à Blainville, au Québec. Téléphone : <a href={company.phoneHref} style={lien}>{company.phoneDisplay}</a> — courriel : <a href={company.emailHref} style={lien}>{company.email}</a>.</>,
+    <>Le concours « Gagnez votre installation 2026 » (le « concours ») est organisé par {company.name} (l'« organisateur »), entreprise établie à Blainville, au Québec. Téléphone : <a href={company.phoneHref} aria-label={company.phoneAria} style={lien}>{company.phoneVanity}</a> ({company.phoneDisplay}) — courriel : <a href={company.emailHref} style={lien}>{company.email}</a>.</>,
   ] },
   { t: "2. Durée du concours", p: [
     `Les inscriptions sont acceptées jusqu'au ${FIN_TEXTE}. Toute participation reçue après cette heure n'est pas admissible.`,
@@ -71,6 +71,9 @@ export default function Reglement() {
             {s.p.map((par, i) => <p key={i}>{par}</p>)}
           </div>
         ))}
+        {/* La mention vivait dans le pied de page de TOUT le site ; le tirage
+            fait (6 nov.), elle ne reste qu'ici (2026-11-11). */}
+        <p className="concours-reglement__meta">Ce concours n&apos;est pas associé à Meta/Facebook/Instagram.</p>
       </div>
     </section>
   );

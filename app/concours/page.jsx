@@ -1,30 +1,28 @@
-import { Gallery, FaqAccordion } from "@/components/ui";
+import { Gallery } from "@/components/ui";
 import { PHOTOS } from "@/components/photos";
+import Link from "next/link";
+import { company } from "@/components/data";
 import HeroConcours from "./HeroConcours";
-import CompteARebours from "./CompteARebours";
-import FormulaireConcours from "./FormulaireConcours";
 import Reglement from "./Reglement";
-import {
-  TIRAGE_COURT, RABAIS_AVANT, VALEUR_PRIX, VILLES_CONCOURS, FIN_TEXTE, TIRAGE_TEXTE,
-} from "@/lib/concours";
+import { FIN_TEXTE, TIRAGE_TEXTE } from "@/lib/concours";
 
-// /concours — la page d'atterrissage de la publicité Meta du concours, et
-// son règlement officiel (en bas, #reglements).
+// /concours — le concours 2026 est TERMINÉ (2026-11-11, demande de Yahir).
 //
-// Ordre voulu (375 px d'abord) : la maison qui s'allume → le compte à
-// rebours → ce qu'on fait → le 15 % → le formulaire → les vraies photos →
-// la FAQ → le règlement. Le formulaire arrive tôt : la personne qui clique
-// la pub est venue pour participer.
+// Inscriptions fermées le 5 novembre, tirage fait le 6 : la page ne montre
+// plus de compte à rebours, de formulaire ni le 15 % (valide jusqu'au
+// 6 novembre). Elle dit clairement que c'est fini, renvoie vers la
+// réservation, et garde le règlement officiel (#reglements, avec la mention
+// Meta). Ne jamais refaire de tirage d'ici : le gagnant est déjà choisi.
 const DESCRIPTION =
-  "Gagnez l'installation de vos lumières de Noël (valeur jusqu'à 1 000 $). Blainville, Sainte-Thérèse, Rosemère, Boisbriand. Tirage le 6 novembre.";
+  "Le concours 2026 de Solution Lumière de Noël est terminé : le tirage a eu lieu le 6 novembre 2026. Réservez votre installation pour cet hiver.";
 
 export const metadata = {
-  title: "Concours — Gagnez votre installation 2026",
+  title: "Concours 2026 — terminé",
   description: DESCRIPTION,
   alternates: { canonical: "/concours" },
   openGraph: {
     type: "website",
-    title: "Ça pourrait être votre maison, gratuitement cet hiver! | Solution Lumière de Noël",
+    title: "Le concours 2026 est terminé | Solution Lumière de Noël",
     description: DESCRIPTION,
     url: "/concours",
     images: [PHOTOS["lery-01"].src],
@@ -43,19 +41,29 @@ const BLOCS = [
 const GALERIE = ["blainville-01", "residentiel-01", "st-jerome-01", "mirabel-01", "ste-julienne-01", "arbres-01"]
   .map((k) => ({ image: PHOTOS[k].src, alt: PHOTOS[k].alt }));
 
-const FAQ = [
-  { q: "Qui peut participer?", a: `Les résidents de ${VILLES_CONCOURS.join(", ")}, âgés de 18 ans et plus, propriétaires ou avec la permission du propriétaire. Une participation par adresse et par numéro de téléphone. Inscriptions jusqu'au ${FIN_TEXTE}.` },
-  { q: "Comment le gagnant est choisi?", a: `Par tirage au hasard parmi toutes les participations admissibles, le ${TIRAGE_TEXTE}, en direct sur Instagram. La personne gagnante devra répondre à une question d'habileté mathématique. Aucun achat requis.` },
-  { q: "Et si j'ai déjà réservé?", a: `Vous participez quand même, et réserver ne change rien à vos chances. Si vous gagnez après avoir réservé, on vous rembourse la valeur du prix, jusqu'à ${VALEUR_PRIX}.` },
-  { q: "Le 15 % est valide jusqu'à quand?", a: `Pour toute réservation faite avant le ${RABAIS_AVANT}, pour tous les participants.` },
-];
-
 export default function Concours() {
   // Pas de <main> ici : le layout en pose déjà un (un seul par page).
   return (
     <div className="concours">
       <HeroConcours />
-      <CompteARebours />
+
+      <section className="concours-section concours-section--offre concours-termine" aria-labelledby="termine-titre">
+        <div className="concours-largeur">
+          <div className="concours-offre">
+            <h2 className="concours-offre__gros" id="termine-titre">Le concours 2026 est <b>terminé</b>.</h2>
+            <p>
+              Les inscriptions ont fermé le {FIN_TEXTE} et le tirage a eu lieu le {TIRAGE_TEXTE}, en direct sur{" "}
+              <a href={company.social.instagram.href} target="_blank" rel="noopener noreferrer">Instagram ({company.social.instagram.handle})</a>.
+              Merci à tous les participants!
+            </p>
+            <p>Vous voulez quand même une maison illuminée cet hiver? Réservez votre date : pose, entretien et retrait inclus.</p>
+            <p className="concours-termine__actions">
+              <Link href="/soumission" className="concours-bouton">Réserver ma date</Link>
+              <Link href="/realisations" className="concours-termine__lien">Voir nos réalisations →</Link>
+            </p>
+          </div>
+        </div>
+      </section>
 
       <section className="concours-section" aria-label="Le service compris dans le prix">
         <div className="concours-largeur concours-blocs">
@@ -70,34 +78,10 @@ export default function Concours() {
         </div>
       </section>
 
-      <section className="concours-section concours-section--offre" aria-labelledby="offre-titre">
-        <div className="concours-largeur">
-          <div className="concours-offre">
-            <p className="concours-offre__gros" id="offre-titre">Tous les participants : <b>15 % de rabais</b> sur une réservation faite avant le 6 novembre.</p>
-            <p>Réservez maintenant : si vous gagnez, on vous rembourse jusqu&apos;à {VALEUR_PRIX}. Vous ne perdez rien à réserver tôt.</p>
-          </div>
-        </div>
-      </section>
-
-      <section id="participer" className="concours-section concours-section--form" aria-labelledby="form-titre">
-        <div className="concours-largeur concours-largeur--form">
-          <h2 id="form-titre" className="concours-h2">Je participe</h2>
-          <p className="concours-intro">Une minute, et vous êtes dans le tirage du {TIRAGE_COURT}.</p>
-          <FormulaireConcours />
-        </div>
-      </section>
-
       <section className="concours-section" aria-labelledby="galerie-titre">
         <div className="concours-largeur">
           <h2 id="galerie-titre" className="concours-h2">Nos installations, en vrai</h2>
           <Gallery items={GALERIE} prechargees={0} />
-        </div>
-      </section>
-
-      <section className="concours-section" aria-labelledby="faq-titre">
-        <div className="concours-largeur">
-          <h2 id="faq-titre" className="concours-h2">Questions</h2>
-          <FaqAccordion items={FAQ} dark />
         </div>
       </section>
 
