@@ -1,10 +1,9 @@
 import { notFound } from "next/navigation";
-import { SectionTag, SectionTitle, CTAButton } from "@/components/ui";
 import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
 import AppDemo from "@/components/AppDemo";
 import {
   HeroPage, BandePhotos, CeQuiEstCompris, AvantApres, Parcours, FaqCourte,
-  Reservation, PucesVilles, SectionAmbiances, LienVieuxMontreal, MARINE, MARINE_PROFOND,
+  Reservation, PucesVilles, SectionAmbiances, LienVieuxMontreal, MARINE_PROFOND,
 } from "@/components/sections";
 import { services, findService, serviceArea, serviceOptions } from "@/components/data";
 import { MONTAGES } from "@/lib/hero-media";
@@ -38,7 +37,7 @@ export function generateMetadata({ params }) {
 //   3. ce qui est compris (le bloc de l'offre de l'accueil)
 //   4. le comparateur sur un vrai chantier — quand une VRAIE paire existe
 //      pour ce service (le résidentiel). Le permanent montre à cette place
-//      la démo de l'application ; le commercial, son assurance.
+//      la démo de l'application.
 //   5. le parcours en cinq points
 //   6. la FAQ, cinq questions au plus
 //   7. une rangée de villes, puis le formulaire court
@@ -95,33 +94,6 @@ export default function ServicePage({ params }) {
       <AvantApres cle={s.paire} />
 
       {s.appDemo && <AppDemo />}
-
-      {/* ⚠️ L'ASSURANCE, SUR LA PAGE COMMERCIALE SEULEMENT.
-          Pour un propriétaire, c'est une ligne rassurante parmi d'autres.
-          Pour un gestionnaire d'immeuble, c'est un CRITÈRE D'ACHAT : il ne
-          peut pas signer sans preuve, et s'il doit la demander par courriel
-          il appelle d'abord le concurrent qui l'affiche.
-
-          Pas de cinquième carte dans la grille résidentielle : décision de
-          Yahir (2026-09-30). Un bloc dédié, ici, où la question se pose. */}
-      {commercial && (
-        <section style={{ background: MARINE }}>
-          <div className="container bloc-etroit">
-            <SectionTag dark>Assurance</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto 16px" }}>
-              Assurance responsabilité en vigueur, preuve fournie sur demande
-            </SectionTitle>
-            <p className="section-phrase" style={{ margin: "0 auto 28px" }}>
-              Nos équipes travaillent en hauteur sur vos façades, vos marquises et vos
-              vitrines. La police est active pour toute la saison, et nous transmettons
-              l’attestation directement à votre gestionnaire ou à votre service des achats.
-            </p>
-            <CTAButton href="/soumission?service=commercial" variant="creme">
-              Demander notre preuve d’assurance
-            </CTAButton>
-          </div>
-        </section>
-      )}
 
       <Parcours />
 

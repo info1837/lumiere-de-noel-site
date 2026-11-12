@@ -47,13 +47,13 @@ const COMPRIS = {
     "Jardinières illuminées",
   ],
   prix: "Sur soumission",
-  prixNote: "attestation d'assurance sur demande", // ASSURANCE
+  prixNote: "prix ferme, écrit",
 };
 
 const FAQ = [
   { q: "Installez-vous en dehors de nos heures d'ouverture?", a: "Oui. La pose se planifie hors des heures d'ouverture, le soir ou tôt le matin, pour que votre clientèle ne voie que le résultat." },
-  { q: "Les rues sont étroites et les façades hautes. Comment travaillez-vous?", a: "Avec une nacelle quand la hauteur l'exige, et l'accès se prévoit avant de venir. Le travail en hauteur est fait par notre équipe, formée et assurée." },  // ASSURANCE
-  { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },  // ASSURANCE
+  { q: "Les rues sont étroites et les façades hautes. Comment travaillez-vous?", a: "Avec une nacelle quand la hauteur l'exige, et l'accès se prévoit avant de venir. Le travail en hauteur est fait par notre propre équipe, avec harnais." },
+  { q: "L'entretien est-il compris?", a: "Oui. Une lumière brûle ou une section tombe : un appel et on repasse sans frais pendant toute la saison." },
   { q: "Combien coûte un décor pour un commerce?", a: "C'est sur soumission : le prix dépend de la façade, de la hauteur et de l'envergure du décor. Il est confirmé par écrit après un court appel." },
   { q: "Qui retire le décor?", a: "Nous, en janvier. Le retrait fait partie du service." },
 ];

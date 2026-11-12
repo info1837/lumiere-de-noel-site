@@ -41,8 +41,8 @@ const adresseValide = (a) => /\d/.test(a || "") && (a || "").trim().length >= 6;
 export default function QuoteForm({ compact = false, source = "Formulaire de soumission (complet)", extraPayload = null, redirectSrc = "quote", serviceInitial = null, prerempli = null, variante = "claire" }) {
   // ⚠️ Le service PRÉSÉLECTIONNÉ, rien d'autre.
   //
-  // Un gestionnaire d'immeuble qui clique « Demander notre preuve
-  // d'assurance » depuis la page commerciale ne devrait pas avoir à
+  // Un gestionnaire d'immeuble qui clique « Réserver ma date »
+  // depuis la page commerciale ne devrait pas avoir à
   // rechoisir « commercial » dans une liste — il vient de le dire en
   // cliquant. Les champs, le consentement et l'envoi ne changent pas :
   // c'est la MÊME valeur que le menu déroulant propose, posée d'avance.

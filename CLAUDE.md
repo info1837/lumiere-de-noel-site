@@ -15,6 +15,11 @@
 - **Saisonnier vs permanent** : retrait, entreposage et « de la pose au retrait » ne valent que pour les lumières saisonnières ; le permanent reste en place toute l'année (garantie 10 ans, sur soumission). `/permanent` redirige vers `/services/eclairage-architectural-permanent`.
 - **Aucune mention de Palencia** sur le site, sauf la divulgation légale de `/confidentialite` (même outil de gestion des clients).
 
+## Affirmations : AUCUNE assurance (2026-11-12)
+- **Aucune mention d'assurance tant que Yahir n'a pas confirmé que la couverture est en place** : ni « assuré(e) », ni « attestation / preuve d'assurance », ni question FAQ, ni meta, JSON-LD ou alt — pas de version adoucie non plus. L'ancienne note « police active depuis le 2026-09-29 » ne vaut plus.
+- Pour parler du travail en hauteur, seulement ce qui est vrai et visible : notre propre équipe, harnais, échelles et nacelle au besoin, hors des heures d'ouverture pour les commerces, prix ferme écrit, réparations incluses toute la saison, retrait en janvier. Aucune certification, licence, formation ou couverture nouvelle.
+- Garde : `npm run check:assurance` (aussi lancé par `npm run build`, donc par Vercel) ; `--build` scanne en plus les pages construites (`.next`) pour « assur » tout court.
+
 ## Effets et performance (règle permanente, 2026-10-26)
 - **Défilement natif partout** : aucun smooth-scroll (JS ou `scroll-behavior`), aucun `scroll-snap`, aucun parallaxe, rien de piloté par le défilement. Aucune librairie d'animation (framer-motion, GSAP, AOS, Lenis…).
 - **Premier écran immobile** : hero, titre, bandeau, guirlande s'affichent tels quels, sans fondu ni cascade. Une section de premier écran qui n'est pas `.hero-section` porte `data-sans-apparition`.

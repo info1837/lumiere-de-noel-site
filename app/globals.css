@@ -2747,7 +2747,7 @@ a[class*="cta"], button[class*="cta"], .sim-cta {
 .bloc-formulaire__pied--sombre a { color: #F0BA54; }
 .section-reserver { scroll-margin-top: 84px; }
 
-/* ── /soumission : le formulaire d'abord, la réassurance ensuite ─────── */
+/* ── /soumission : le formulaire d'abord, ce qui rassure ensuite ─────── */
 .lien-pastille {
   display: inline-flex; align-items: center; gap: 8px;
   padding: 8px 14px; border-radius: 300px;
@@ -2756,33 +2756,33 @@ a[class*="cta"], button[class*="cta"], .sim-cta {
   color: #F0BA54; text-decoration: none;
   font-size: 13px; font-weight: 700; letter-spacing: 0.04em;
 }
-.rassurance {
+.apaisement {
   display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
   gap: 56px; align-items: start;
 }
-.rassurance-etapes { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 18px; }
-.rassurance-etapes li { display: grid; grid-template-columns: auto 1fr; gap: 16px; color: rgba(240, 234, 222, 0.76); font-size: 16px; }
-.rassurance-etapes strong { display: block; color: #F0EADE; font-size: 17px; margin-bottom: 2px; }
-.rassurance-num {
+.apaisement-etapes { list-style: none; padding: 0; margin: 6px 0 0; display: grid; gap: 18px; }
+.apaisement-etapes li { display: grid; grid-template-columns: auto 1fr; gap: 16px; color: rgba(240, 234, 222, 0.76); font-size: 16px; }
+.apaisement-etapes strong { display: block; color: #F0EADE; font-size: 17px; margin-bottom: 2px; }
+.apaisement-num {
   width: 38px; height: 38px; border-radius: 50%;
   border: 1px solid rgba(240, 186, 84, 0.6); color: #F0BA54;
   display: inline-flex; align-items: center; justify-content: center;
   font-family: 'Bebas Neue', 'Bebas Repli', sans-serif; font-size: 18px;
 }
-.rassurance-rappels {
+.apaisement-rappels {
   display: flex; gap: 12px; color: #F0EADE; font-size: 17px; line-height: 1.55;
   padding: 18px 20px; border-radius: 14px;
   background: rgba(240, 234, 222, 0.05); border: 1px solid rgba(240, 234, 222, 0.14);
   margin: 0 0 26px;
 }
-.rassurance-rappels span { color: #F0BA54; font-weight: 700; }
-.rassurance-contact { display: grid; gap: 8px; color: rgba(240, 234, 222, 0.7); font-size: 16px; margin: 0; }
-.rassurance-contact a { color: rgba(240, 234, 222, 0.88); text-decoration: none; }
-.rassurance-contact .rassurance-tel {
+.apaisement-rappels span { color: #F0BA54; font-weight: 700; }
+.apaisement-contact { display: grid; gap: 8px; color: rgba(240, 234, 222, 0.7); font-size: 16px; margin: 0; }
+.apaisement-contact a { color: rgba(240, 234, 222, 0.88); text-decoration: none; }
+.apaisement-contact .apaisement-tel {
   color: #F0BA54; font-family: 'Bebas Neue', 'Bebas Repli', sans-serif; font-size: 28px; letter-spacing: 0.04em;
 }
 @media (max-width: 900px) {
-  .rassurance { grid-template-columns: 1fr; gap: 36px; }
+  .apaisement { grid-template-columns: 1fr; gap: 36px; }
 }
 
 /* ── /realisations : filtres, grille, visionneuse ─────────────────── */

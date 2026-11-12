@@ -41,7 +41,7 @@ const SECTIONS = [
   {
     t: "3. Comment nous utilisons vos renseignements",
     p: [
-      "Pour vous répondre, préparer votre soumission, vous envoyer une maquette de votre installation, planifier les travaux et assurer le suivi de saison en saison.",
+      "Pour vous répondre, préparer votre soumission, vous envoyer une maquette de votre installation, planifier les travaux et faire le suivi de saison en saison.",
       "Pour vous joindre par téléphone, par message texte ou par courriel au sujet de votre demande — uniquement si vous y avez consenti, et vous pouvez retirer ce consentement en tout temps.",
       "Nous ne vendons jamais vos renseignements. Nous ne les échangeons pas. Nous ne les utilisons pas pour de la publicité ciblée par des tiers.",
     ],

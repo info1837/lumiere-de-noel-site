@@ -187,20 +187,12 @@ export const whyUs = [
     desc: "Lumières DEL de qualité commerciale, durables et écoénergétiques — fournies par nous.",
   },
   {
-    // ⚠️ ASSURANCE — la police est ACTIVE depuis le 2026-09-29, confirmé
-    // par Yahir en une ligne (« Assurance Lumière : yes »). La consigne du
-    // 2026-08-30 disait de ne pas écrire « assurée » avant son entrée en
-    // vigueur ; elle est levée, et tous les marqueurs // ASSURANCE du dépôt
-    // le disent maintenant.
-    //
-    // Si la police s'interrompait, il faudrait repasser sur CHACUN d'eux :
-    // c'est pour ça qu'ils gardent leur étiquette.
-    //
-    // « Vous ne montez jamais dans l'échelle » vendait le CONFORT : la
-    // corvée qu'on s'épargne. Le nouveau titre vend la COMPÉTENCE, et le
-    // fond ne bouge pas — sécurité, équipement, assurance.
-    title: "Travail en hauteur, par des professionnels assurés",
-    desc: "Échelles et équipement de sécurité fournis, équipe formée pour la hauteur, et notre assurance couvre le chantier. Un toit en décembre n'est pas un endroit pour improviser.",  // ASSURANCE
+    // ⚠️ AUCUNE MENTION D'ASSURANCE (2026-11-12) : pas de couverture en
+    // place tant que Yahir ne l'a pas confirmé. Ce titre ne dit que ce qui
+    // est vrai et visible : notre équipe, harnais, nacelle. Garde :
+    // scripts/check-assurance.mjs (aussi lancé par `npm run build`).
+    title: "Travail en hauteur, par notre propre équipe",
+    desc: "Échelles, harnais et nacelle au besoin, fournis par nous. Un toit en décembre n'est pas un endroit pour improviser.",
   },
   {
     title: "Service après-vente",
@@ -306,7 +298,7 @@ export const services = [
     bullets: [
       "Toiture, corniches, arbres, arbustes et façade",
       "DEL commerciales blanc-chaud ou multicolores",
-      "Pose, entretien et retrait inclus — travail en hauteur par une équipe assurée",  // ASSURANCE
+      "Pose, entretien et retrait inclus — travail en hauteur par notre propre équipe",
       "Rappels sans frais et illimités, de la pose au retrait",
     ],
     body: "On mesure votre toiture sur Google Maps, on en parle avec vous au téléphone et on propose un design qui met votre maison en valeur. Le matériel — guirlandes DEL de qualité commerciale, attaches, minuteries — est fourni et installé en sécurité, conformément aux pratiques d'élagage et de hauteur. En janvier, on revient tout retirer et on entrepose le matériel jusqu'à la prochaine saison.",
@@ -325,12 +317,12 @@ export const services = [
     },
     faq: [
       { q: "Fournissez-vous les lumières?", a: "Oui, tout le matériel : lumières DEL de qualité commerciale, attaches et minuteries. Rien à acheter de votre côté." },
-      { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par une équipe formée et assurée. Vous n'avez pas à sortir l'échelle." },
+      { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par notre propre équipe, avec harnais. Vous n'avez pas à sortir l'échelle." },
       { q: "Combien ça coûte?", a: "À partir de 1 000 $ pour une résidence, pose, entretien et retrait inclus. Le prix dépend de la hauteur, de la longueur de toiture et du nombre d'arbres ; il est confirmé par écrit après un court appel." },
       { q: "Et si une lumière brûle en décembre?", a: "Un appel et on repasse sans frais, autant de fois qu'il le faut, de la pose au retrait." },
       { q: "Qui enlève les lumières après les Fêtes?", a: "Nous. Le retrait est inclus en janvier, et on entrepose le matériel jusqu'à la prochaine saison." },
     ],
-    faqService: { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par une équipe formée et assurée. Vous n'avez pas à sortir l'échelle." },
+    faqService: { q: "Est-ce que vous montez sur le toit?", a: "Oui, c'est notre métier : le travail en hauteur est fait par notre propre équipe, avec harnais. Vous n'avez pas à sortir l'échelle." },
   },
   {
     slug: "lumieres-de-noel-commercial",
@@ -350,11 +342,11 @@ export const services = [
     metaDescription:
       "Façades, vitrines et entrées illuminées pour les Fêtes. Installation hors des heures d'ouverture, entretien inclus, retrait en janvier. Sur soumission.",
     intro:
-      "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, et le travail en hauteur fait par notre équipe, formée et assurée.",  // ASSURANCE
+      "Façades, vitrines, marquises, entrées — on attire l'œil et la clientèle. Planification hors-heures pour ne pas nuire à vos opérations, et le travail en hauteur fait par notre propre équipe, avec harnais et nacelle au besoin.",
     bullets: [
       "Façades, vitrines, marquises, entrées",
       "Planification hors-heures (soir / nuit) si requis",
-      "Travail en hauteur par une équipe formée et assurée",  // ASSURANCE
+      "Travail en hauteur par notre équipe, nacelle au besoin",
       "Maintenance pendant la saison incluse",
     ],
     body: "Restaurants, hôtels, bureaux, centres commerciaux, concessionnaires : conception personnalisée selon votre image de marque, échéancier respecté à la lettre, et un seul interlocuteur du début à la fin. Devis détaillé et un nombre limité de propriétés chaque saison.",
@@ -370,16 +362,16 @@ export const services = [
       texte: "Façades, vitrines, entrées et arbres : on conçoit, on installe hors de vos heures d'ouverture, on entretient et on retire en janvier.",
       items: ["Conception pour votre façade et vos entrées", "Installation hors des heures d'ouverture", "Entretien inclus pendant la saison", "Retrait en janvier"],
       prix: "Sur soumission",
-      prixNote: "attestation d'assurance sur demande",
+      prixNote: "prix ferme, écrit",
     },
     faq: [
       { q: "Installez-vous en dehors de nos heures d'ouverture?", a: "Oui. La pose se planifie hors des heures d'ouverture, pour que vos clients ne voient que le résultat." },
-      { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },
+      { q: "Qui fait le travail?", a: "Notre propre équipe, de la pose au retrait : harnais pour le travail en hauteur, et nacelle quand le bâtiment l'exige." },
       { q: "Combien coûte un projet commercial?", a: "C'est sur soumission : le prix dépend de la hauteur du bâtiment, de l'accès à l'électricité et de l'envergure du design. Il est confirmé par écrit après un court appel." },
       { q: "L'entretien est-il compris?", a: "Oui. Une section tombe ou une lumière brûle : un appel et on repasse sans frais pendant toute la saison." },
       { q: "Qui retire l'installation?", a: "Nous, en janvier. Le retrait fait partie du service." },
     ],
-    faqService: { q: "Avez-vous une assurance responsabilité?", a: "Oui, en vigueur toute la saison. On transmet l'attestation à votre gestionnaire ou à votre service des achats sur demande." },
+    faqService: { q: "Qui fait le travail?", a: "Notre propre équipe, de la pose au retrait : harnais pour le travail en hauteur, et nacelle quand le bâtiment l'exige." },
   },
   {
     slug: "eclairage-architectural-permanent",

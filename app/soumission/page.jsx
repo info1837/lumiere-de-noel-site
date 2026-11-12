@@ -86,13 +86,13 @@ export default function Soumission({ searchParams }) {
       </section>
 
       <section style={{ background: "#060E18" }}>
-        <div className="container rassurance">
+        <div className="container apaisement">
           <div>
             <SectionTag dark>Ce qui se passe ensuite</SectionTag>
-            <ol className="rassurance-etapes">
+            <ol className="apaisement-etapes">
               {nextSteps.map((st) => (
                 <li key={st.n}>
-                  <span className="rassurance-num" aria-hidden="true">{st.n}</span>
+                  <span className="apaisement-num" aria-hidden="true">{st.n}</span>
                   <span>
                     <strong>{st.title}</strong>
                     {st.body}
@@ -102,12 +102,12 @@ export default function Soumission({ searchParams }) {
             </ol>
           </div>
           <div>
-            <p className="rassurance-rappels">
+            <p className="apaisement-rappels">
               <span aria-hidden="true">✓</span>
               Ampoule brûlée ou section tombée ? On repasse sans frais, autant de fois qu&apos;il le faut — de la pose au retrait.
             </p>
-            <p className="rassurance-contact">
-              <a href={company.phoneHref} aria-label={company.phoneAria} className="rassurance-tel">{company.phoneVanity}</a>
+            <p className="apaisement-contact">
+              <a href={company.phoneHref} aria-label={company.phoneAria} className="apaisement-tel">{company.phoneVanity}</a>
               <a href={company.emailHref}>{company.email}</a>
               <span>{company.region}</span>
             </p>
