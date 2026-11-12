@@ -1,13 +1,19 @@
-// /concours — la page d'atterrissage du concours, au vrai navigateur.
+// /concours — la page du concours, au vrai navigateur.
 //
 //   npx next build && npx next start -p 4310 &
 //   node scripts/check-concours.mjs [http://localhost:4310]   (CAPTURES=docs/concours)
 //
-// 375 px puis 1440 px. `/api/concours` est INTERCEPTÉ : rien ne part au CRM.
-// Vérifie : curseur avant/après au glisser, attributs d'autoremplissage,
-// ville hors des 4 → message + lien, déjà inscrit, écran de remerciement
-// (Oui / Non), règlement visible, pied de page, aucun défilement horizontal,
-// aucun décalage de mise en page (CLS) au chargement.
+// ⚠️ LE CONCOURS EST TERMINÉ (inscriptions fermées le 5 nov., tirage fait le
+// 6) : la page montre un état « terminé ». Ce test vérifiait le compte à
+// rebours et le formulaire ; il vérifie maintenant qu'ils ont disparu et
+// que la page dit clairement que c'est fini (2026-11-11).
+//
+// 375 px puis 1440 px. `/api/concours` est INTERCEPTÉ : rien ne part au CRM
+// (et rien ne doit plus y partir). Vérifie : curseur avant/après au glisser,
+// état « terminé » (titre, date du tirage, bouton de réservation), ni compte
+// à rebours ni formulaire, règlement visible avec la mention Meta, pied de
+// page sans lien du concours, aucun défilement horizontal, aucun décalage de
+// mise en page (CLS) au chargement.
 import { chromium } from "playwright";
 import fs from "node:fs";
 
@@ -39,9 +45,9 @@ for (const [nom, vp] of [["375", { width: 375, height: 812 }], ["1440", { width:
   if (CAPTURES) await p.screenshot({ path: `${CAPTURES}/hero-${nom}.png` });
 
   // ── Héros ──
-  t("titre H1 exact", (await p.locator("h1").innerText()).toLowerCase().includes("ça pourrait être votre maison, gratuitement cet hiver"));
+  t("🚨 titre H1 : le concours est terminé", (await p.locator("h1").innerText()).toLowerCase().includes("le concours est terminé"));
   t("un seul H1", (await p.locator("h1").count()) === 1);
-  t("sous-ligne : 4 villes + tirage", /Blainville · Sainte-Thérèse · Rosemère · Boisbriand — Tirage le 6 novembre/.test(await p.locator(".concours-hero__sous").innerText()));
+  t("sous-ligne : tirage fait le 6 novembre", /Tirage fait le vendredi 6 novembre 2026/.test(await p.locator(".concours-hero__sous").innerText()));
   t("photos du héros préchargées (priority)", (await p.locator(".concours-hero img").evaluateAll((im) => im.every((i) => i.getAttribute("fetchpriority") === "high" || i.loading === "eager"))));
   t("images servies en AVIF/WebP par l'optimiseur", (await p.locator(".concours-hero img").first().getAttribute("src")).includes("/_next/image"));
   const pos = () => p.locator(".revel").evaluate((f) => parseFloat(f.style.getPropertyValue("--revel-pos")));
@@ -57,84 +63,19 @@ for (const [nom, vp] of [["375", { width: 375, height: 812 }], ["1440", { width:
     await p.touchscreen.tap(cadre.x + cadre.width * 0.8, cadre.y + cadre.height * 0.55);
     t("toucher (doigt) déplace la couture", Math.abs((await pos()) - 80) < 5, `${await pos()}%`);
   }
-  t("compte à rebours affiché", /Fin des inscriptions dans|5 novembre/i.test(await p.locator(".concours-compte").innerText()));
+  t("bouton du héros → réservation", (await p.locator(".concours-hero a.concours-bouton").getAttribute("href")) === "/soumission");
 
-  // ── Bouton → formulaire ──
-  await p.locator(".concours-hero a.concours-bouton").click();
-  await p.waitForTimeout(700);
-  const haut = await p.locator("#participer").evaluate((s) => s.getBoundingClientRect().top);
-  t("« Je participe » amène au formulaire", haut < 200 && haut > -50, `${Math.round(haut)} px`);
-
-  // ── Autoremplissage ──
-  const ac = async (sel) => p.locator(sel).getAttribute("autocomplete");
-  t("🚨 autocomplete : given-name / family-name / tel / email / street-address / address-level2 / postal-code",
-    (await ac("#cc-prenom")) === "given-name" && (await ac("#cc-nom")) === "family-name" && (await ac("#cc-tel")) === "tel"
-    && (await ac("#cc-courriel")) === "email" && (await ac("#cc-adresse")) === "street-address"
-    && (await ac("#cc-ville")) === "address-level2" && (await ac("#cc-postal")) === "postal-code");
-  t("inputmode tel / email", (await p.locator("#cc-tel").getAttribute("inputmode")) === "tel" && (await p.locator("#cc-courriel").getAttribute("inputmode")) === "email");
-  const petits = await p.locator(".concours-form input:not([type=checkbox]):not([type=radio]):not(#cc-site), .concours-puce, .concours-choix, .concours-form button[type=submit]")
-    .evaluateAll((els) => els.filter((e) => e.getBoundingClientRect().height < 44).length);
-  t("cibles tactiles ≥ 44 px", petits === 0, `${petits} trop petite(s)`);
-  await p.fill("#cc-tel", "4505550101");
-  t("téléphone formaté à la frappe", (await p.inputValue("#cc-tel")) === "(450) 555-0101");
-
-  // ── Validation ──
-  await p.locator("button[type=submit]").click();
-  t("champs vides → messages, rien envoyé", (await p.locator(".concours-erreur").count()) >= 4 && envois.length === 0);
-  await p.fill("#cc-prenom", "Test"); await p.fill("#cc-nom", "Concours"); await p.fill("#cc-courriel", "info@lumieredenoelinc.com");
-  await p.fill("#cc-adresse", "rue des Pins, Blainville");
-  await p.fill("#cc-ville", "Laval");
-  t("🚨 ville hors des 4 → message aimable + lien vers la soumission",
-    (await p.locator(".concours-avis").innerText()).includes("Le concours est réservé à Blainville, Sainte-Thérèse, Rosemère et Boisbriand. Vous pouvez quand même demander une soumission")
-    && (await p.locator(".concours-avis a").getAttribute("href")) === "/soumission");
-  if (CAPTURES) await p.locator(".concours-form").screenshot({ path: `${CAPTURES}/hors-villes-${nom}.png` });
-  await p.fill("#cc-ville", "Blainville");
-  await p.locator(".concours-puce", { hasText: "Toiture" }).click();
-  await p.locator(".concours-puce", { hasText: "Arbres" }).click();
-  await p.locator(".concours-choix", { hasText: "Oui" }).click();
-  await p.locator(".concours-case input").first().check();
-  await p.locator(".concours-case input").nth(1).check();
-  await p.locator("button[type=submit]").click();
-  t("🚨 adresse sans numéro civique → refusée", envois.length === 0 && /numéro civique/.test(await p.locator(".concours-form").innerText()));
-  await p.fill("#cc-adresse", "12 rue des Pins, Blainville, QC J7C 1A1");
-
-  // ── Déjà inscrit ──
-  reponse = { ok: true, statut: "deja_inscrit" };
-  await p.locator("button[type=submit]").click();
-  await p.waitForSelector(".concours-merci");
-  t("🚨 déjà inscrit → « Vous êtes déjà inscrit, bonne chance! » (pas une erreur)", (await p.locator(".concours-merci h2").innerText()).toLowerCase() === "vous êtes déjà inscrit, bonne chance!");
-  const e0 = envois[0] || {};
-  t("envoi : champs, puces, Oui, cases, UTM + fbclid, event_id", e0.prenom === "Test" && e0.ville === "Blainville" && JSON.stringify(e0.illuminer) === '["Toiture","Arbres"]'
-    && e0.soumission === "oui" && e0.reglements === true && e0.consentement === true && e0.utm?.utm_campaign === "concours-2026" && e0.utm?.fbclid === "IwAR-test" && !!e0.meta_pixel?.event_id, JSON.stringify(e0).slice(0, 160));
-
-  // ── Inscrit (Oui) ──
-  await p.reload({ waitUntil: "networkidle" });
-  reponse = { ok: true, statut: "inscrit", soumission: "oui" };
-  await p.fill("#cc-prenom", "Test"); await p.fill("#cc-nom", "Concours"); await p.fill("#cc-tel", "4505550101");
-  await p.fill("#cc-courriel", "info@lumieredenoelinc.com"); await p.fill("#cc-adresse", "12 rue des Pins, Blainville");
-  await p.fill("#cc-ville", "blainville");
-  await p.locator(".concours-choix", { hasText: "Oui" }).click();
-  await p.locator(".concours-case input").first().check();
-  await p.locator("button[type=submit]").click();
-  await p.waitForSelector(".concours-merci");
-  await p.waitForTimeout(600);
-  const merci = await p.locator(".concours-merci").innerText();
-  t("🚨 écran : « Vous êtes inscrit au tirage du 6 novembre! »", merci.toLowerCase().includes("vous êtes inscrit au tirage du 6 novembre!"));
-  t("rappel 15 % + « réservez maintenant, remboursé si vous gagnez »", /15 % de rabais/i.test(merci) && /si vous gagnez, on vous rembourse jusqu.à 1 000 \$/i.test(merci));
-  t("Oui → bouton « Voir mes options et réserver »", (await p.locator(".concours-merci a", { hasText: "Voir mes options et réserver" }).count()) === 1);
-  t("lien Instagram pour le tirage en direct", (await p.locator(".concours-merci a[href*='instagram.com']").count()) === 1);
-  if (CAPTURES) await p.locator(".concours-merci").screenshot({ path: `${CAPTURES}/merci-${nom}.png` });
-
-  // ── Inscrit (Non) : pas de bouton de réservation ──
-  await p.reload({ waitUntil: "networkidle" });
-  reponse = { ok: true, statut: "inscrit", soumission: "non" };
-  await p.fill("#cc-prenom", "Test"); await p.fill("#cc-nom", "Concours"); await p.fill("#cc-tel", "4505550101");
-  await p.fill("#cc-courriel", "info@lumieredenoelinc.com"); await p.fill("#cc-adresse", "12 rue des Pins, Blainville"); await p.fill("#cc-ville", "Blainville");
-  await p.locator(".concours-choix", { hasText: "Non" }).click();
-  await p.locator(".concours-case input").first().check();
-  await p.locator("button[type=submit]").click();
-  await p.waitForSelector(".concours-merci");
-  t("Non → pas de bouton « Voir mes options »", (await p.locator(".concours-merci a", { hasText: "Voir mes options" }).count()) === 0);
+  // ── État « terminé » ──
+  t("🚨 plus de compte à rebours", (await p.locator(".concours-compte, [role=timer]").count()) === 0);
+  t("🚨 plus de formulaire (ni champ, ni #participer)", (await p.locator("#participer, .concours-form, .concours form, .concours input:not([type=range])").count()) === 0);
+  t("plus d'offre de 15 % (expirée le 6 novembre)", !/15 % de rabais/i.test(await p.locator(".concours").innerText()));
+  const fin = await p.locator(".concours-termine").innerText();
+  t("🚨 bloc « terminé » : fermeture, tirage, merci", /concours 2026 est terminé/i.test(fin) && fin.includes("jeudi 5 novembre 2026") && fin.includes("vendredi 6 novembre 2026") && /merci/i.test(fin));
+  t("bloc « terminé » : réserver + réalisations", (await p.locator(".concours-termine a[href='/soumission']").count()) === 1 && (await p.locator(".concours-termine a[href='/realisations']").count()) === 1);
+  t("lien Instagram du tirage", (await p.locator(".concours-termine a[href*='instagram.com']").count()) === 1);
+  await p.waitForTimeout(300);
+  t("🚨 aucun envoi au CRM", envois.length === 0);
+  if (CAPTURES) await p.locator(".concours-termine").screenshot({ path: `${CAPTURES}/termine-${nom}.png` });
 
   // ── Règlement + pied de page ──
   const regle = await p.locator("#reglements").innerText();
@@ -142,8 +83,14 @@ for (const [nom, vp] of [["375", { width: 375, height: 812 }], ["1440", { width:
     && regle.includes("habileté mathématique") && regle.includes("Aucun achat requis") && regle.includes("jusqu'à 1 000 $") && regle.includes("avant le 6 novembre 2026")
     && regle.includes("Une seule participation par foyer") && regle.includes("20 novembre 2026"));
   t("aucune section RACJ (retirée, comme sur main)", !/RACJ|Régie des alcools/.test(regle));
+  // Le tirage fait (6 nov.), la mention Meta, « Concours 2026 » et
+  // « Règlements » ont quitté le pied de page de tout le site (2026-11-11) :
+  // la mention reste sur /concours, à la fin du règlement.
+  // « Règlements » est aussi parti du pied de page (le règlement reste ici).
   const pied = await p.locator("footer").innerText();
-  t("pied : « Règlements » + « pas associé à Meta/Facebook/Instagram »", (await p.locator("footer a[href='/concours#reglements']").innerText()).trim() === "Règlements" && pied.includes("Ce concours n'est pas associé à Meta/Facebook/Instagram"));
+  t("pied : plus aucun lien du concours ni la mention Meta", (await p.locator("footer a[href^='/concours']").count()) === 0
+    && !pied.includes("pas associé à Meta") && !/Concours 2026|Règlements/.test(pied));
+  t("🚨 la mention Meta reste sur /concours", regle.includes("Ce concours n'est pas associé à Meta/Facebook/Instagram."));
   t("aucun prix au pied linéaire", !/\$\s*\/\s*(pi|pied)|par pied/i.test(await p.locator("main").innerText()));
 
   // ── Mise en page ──

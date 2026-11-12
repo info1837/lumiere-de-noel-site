@@ -1,4 +1,5 @@
 import { navy, ivory, gold, charcoal, offWhite, textMuted, company } from "@/components/data";
+import LienTelephone from "@/components/LienTelephone";
 
 // Politique de confidentialité — page légale exigée par la case de
 // consentement du formulaire (Loi 25 / LCAP). Elle existait déjà chez
@@ -118,7 +119,7 @@ export default function Confidentialite() {
             <div style={{ fontWeight: 700, marginBottom: 10, color: ivory }}>Solution Lumière de Noël inc.</div>
             <div style={{ color: "rgba(240,234,222,0.8)", fontSize: 16, lineHeight: 1.9 }}>
               Blainville, Québec<br />
-              <a href={company.phoneHref} style={{ color: "#F0BA54", fontWeight: 600 }}>{company.phoneDisplay}</a><br />
+              <LienTelephone style={{ color: "#F0BA54", fontWeight: 600 }} /> ({company.phoneDisplay})<br />
               <a href={company.emailHref} style={{ color: "#F0BA54", fontWeight: 600 }}>{company.email}</a>
             </div>
           </div>

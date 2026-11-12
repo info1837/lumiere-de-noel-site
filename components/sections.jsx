@@ -273,7 +273,7 @@ export function Reservation({ source, redirectSrc, serviceInitial = null, titre 
         </div>
         <QuoteForm source={source} redirectSrc={redirectSrc} serviceInitial={serviceInitial} variante="sombre" />
         <p className="bloc-formulaire__pied bloc-formulaire__pied--sombre" data-gabarit>
-          Vous préférez parler à quelqu&apos;un ? <a href={company.phoneHref}>{company.phoneDisplay}</a>
+          Vous préférez parler à quelqu&apos;un ? <a href={company.phoneHref} aria-label={company.phoneAria}>{company.phoneVanity}</a>
         </p>
       </div>
     </section>

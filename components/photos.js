@@ -106,7 +106,10 @@ const SITUEES = {
     // moins du contour (demi-trait : 3,25) ; trois des cinq points témoins
     // des arches illuminées sont dans le verre ; il fait 40 % de la hauteur
     // du verre ; la nacelle sous ses pieds n'en occupe que 3,5 %.
-    ampoule: { pxParUnite: 10.25, x: -5.3, y: 34.6 },
+    // Desktop (2026-11-11, ampoule entière ≤ 78 % de la hauteur de l'écran) :
+    // tout le corps (tête → pieds) dans le verre, à 7,7 unités au moins du
+    // contour, centré sur la partie la plus large du verre (écart < 5).
+    ampoule: { pxParUnite: 6.25, x: -47.3, y: -31.6 },
     // Téléphone : petite ampoule (~47 % de l'écran) à côté du prix. Zoom
     // maximal qui garde la tête, le harnais, le dos, les deux bras et les
     // deux mains à 5 unités au moins du contour, le corps CENTRÉ dans le
@@ -137,12 +140,19 @@ const GENERIQUES = {
     src: `${REEL_PREFIX}noel-residentiel-01.jpg`,
     alt: "Maison de pierre illuminée pour les Fêtes, grand conifère décoré en façade",
   },
+  // La chocolaterie (2026-11-11) : les deux photos sont RECADRÉES sans
+  // perte (jpegtran, 1600 → 1248 px de large, aucune retouche) pour sortir
+  // l'enseigne sur pylône — nom du commerce et numéro de téléphone. Le
+  // bandeau de la vitrine (logo du commerce, n° civique) reste : il est
+  // dans l'avant-toit illuminé, on ne peut pas le couper sans couper
+  // l'installation. Nouveaux noms de fichier : aucune ancienne version en
+  // cache (optimiseur d'images, CDN, navigateurs) ne peut la remontrer.
   "commercial-01": {
-    src: `${REEL_PREFIX}noel-commercial.jpg`,
-    alt: "Chocolaterie illuminée pour les Fêtes — ligne de toit éclairée et enseigne sur pylône",
+    src: `${REEL_PREFIX}noel-commercial-recadree.jpg`,
+    alt: "Chocolaterie illuminée pour les Fêtes — ligne de toit et vitrine éclairées",
   },
   "commercial-02": {
-    src: `${REEL_PREFIX}noel-commercial-02.jpg`,
+    src: `${REEL_PREFIX}noel-commercial-02-recadree.jpg`,
     alt: "La même chocolaterie illuminée pour les Fêtes, autre angle",
   },
   "arbres-01": {

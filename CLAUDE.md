@@ -36,8 +36,14 @@
 - **Ce que c'est** : l'ampoule du logo comme cadre photo — contour crème et culot EXACTS du logo (tracés copiés dans `lib/logo-ampoule.js`, vérifiés mot pour mot contre `public/images/icone-pour-fond-fonce.svg` par `check-photos` §8b : on ne redessine pas le logo), sans le S ; la photo reste droite dans le verre incliné (17°) ; lueur ambrée qui respire (coupée sous `prefers-reduced-motion`) ; étalonnage CSS (pierre plus sombre et froide, guirlandes chaudes), photo jamais retouchée.
 - **Code** : `components/CadreAmpoule.jsx` (`CadreAmpoule` réutilisable : `photo`, `inclinaison`, `placement`, `placementMobile` ; `CadreAmpouleOffre` pour les sections offre), `lib/logo-ampoule.js` (tracés + `geometrieAmpoule(deg)`), styles `.cadre-ampoule*` et `.offre--cadre` dans `app/globals.css`.
 - **Où** : accueil, section « Votre propriété, illuminée — sans le tracas » (`app/page.jsx`) ; page commerciale, « Ce qui est compris » (`CeQuiEstCompris` + `cadre` dans `components/data.js`). Photo : `PHOTOS["installateur-vieux-montreal"]` (Vieux-Montréal).
-- **Desktop (approuvé)** : grand visuel à gauche, plus haut que le texte, sort par le bas de la section. **Téléphone (approuvé)** : petite ampoule à droite du prix et du bouton, sans grandir la section (47 % de l'écran, 46 % plafonné à 180 px sur la page commerciale, où le bloc prix est plus court) ; rythme vertical resserré.
+- **Desktop** (> 900 px, 2026-11-11) : l'ampoule ENTIÈRE à gauche du texte (culot, bout arrondi et lueur, rien de coupé par la section), 78 % de la hauteur de l'écran au plus (760 px), centrée sur la colonne de texte. **Téléphone (approuvé)** : petite ampoule à droite du prix et du bouton, sans grandir la section (47 % de l'écran, 46 % plafonné à 180 px sur la page commerciale, où le bloc prix est plus court) ; rythme vertical resserré.
 - **Placements de la photo** (`ampoule`, `ampouleMobile` dans `components/photos.js`) : CALCULÉS par recherche (la photo couvre le verre, tête et mains à distance du contour, corps centré), pas au jugé. Nouvelle photo ou nouvelle taille = recalculer, puis vérifier à 360, 390, 430 et 1440 qu'aucun texte ne touche le contour.
+
+## Téléphone en lettres (2026-11-11)
+- Boutons et liens : `company.phoneVanity` « (438) 812-NOEL » ; le lien compose toujours `phoneHref` (+14388126635) et porte `aria-label={company.phoneAria}` (les chiffres). Pied de page et textes légaux : les lettres PUIS les chiffres. JSON-LD, meta et phrases sans lien : `phoneDisplay` seulement. Composant `components/LienTelephone.jsx`, garde `npm run check:telephone`.
+
+## Concours 2026 : terminé
+- `/concours` montre l'état « terminé » (plus de compte à rebours, de formulaire ni de 15 %), garde le règlement et la mention Meta. Le pied de page n'a plus aucun lien du concours. Garde : `node scripts/check-concours.mjs <url>`.
 
 ## Déploiement
 - Vercel (`vercel.json` : `framework: nextjs`). README : `npx vercel deploy --prod` (repo GitHub `info1837/lumiere-de-noel-site`, travail par PR vers `main`). Ne jamais commiter ni afficher `.env*`.

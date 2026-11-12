@@ -31,8 +31,8 @@ export default function CalculatricePage() {
             arbustes s'évaluent sur place.
           </p>
           <div style={{ display: "grid", gap: 10, color: "rgba(243,233,210,0.85)", fontSize: 16 }}>
-            <a href={company.phoneHref} style={{ color: "#E9DCC0", textDecoration: "none", fontWeight: 700 }}>
-              {company.phoneDisplay}
+            <a href={company.phoneHref} aria-label={company.phoneAria} style={{ color: "#E9DCC0", textDecoration: "none", fontWeight: 700 }}>
+              {company.phoneVanity}
             </a>
             <div style={{ color: "rgba(243,233,210,0.6)" }}>{company.region}</div>
           </div>

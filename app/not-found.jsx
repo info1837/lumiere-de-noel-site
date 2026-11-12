@@ -1,4 +1,5 @@
 import Link from "next/link";
+import LienTelephone from "@/components/LienTelephone";
 import { CTAButton } from "@/components/ui";
 import { company, navy, ivory, gold } from "@/components/data";
 
@@ -32,9 +33,9 @@ export default function NotFound() {
         <CTAButton href="/" variant="outlineLight">Retour à l'accueil</CTAButton>
       </div>
       <p style={{ marginTop: 28 }}>
-        <a href={company.phoneHref} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
-          Ou appelez-nous : {company.phoneDisplay}
-        </a>
+        <LienTelephone libelle={`Ou appelez-nous au ${company.phoneDisplay}`} style={{ color: gold, textDecoration: "none", fontWeight: 700 }}>
+          Ou appelez-nous : {company.phoneVanity}
+        </LienTelephone>
       </p>
     </section>
   );

@@ -462,7 +462,7 @@ export default function Simulateur() {
             download="ma-maison-illuminee.jpg">
             Télécharger l&apos;image
           </a>
-          <p className="sim-tel">ou appelez-nous : <a href={company.phoneHref}>{company.phoneDisplay}</a></p>
+          <p className="sim-tel">ou appelez-nous : <a href={company.phoneHref} aria-label={company.phoneAria}>{company.phoneVanity}</a></p>
         </div>
       )}
     </div>
