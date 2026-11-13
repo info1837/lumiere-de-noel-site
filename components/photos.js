@@ -140,19 +140,18 @@ const GENERIQUES = {
     src: `${REEL_PREFIX}noel-residentiel-01.jpg`,
     alt: "Maison de pierre illuminée pour les Fêtes, grand conifère décoré en façade",
   },
-  // La chocolaterie (2026-11-11) : les deux photos sont RECADRÉES sans
-  // perte (jpegtran, 1600 → 1248 px de large, aucune retouche) pour sortir
-  // l'enseigne sur pylône — nom du commerce et numéro de téléphone. Le
-  // bandeau de la vitrine (logo du commerce, n° civique) reste : il est
-  // dans l'avant-toit illuminé, on ne peut pas le couper sans couper
-  // l'installation. Nouveaux noms de fichier : aucune ancienne version en
-  // cache (optimiseur d'images, CDN, navigateurs) ne peut la remontrer.
+  // La chocolaterie, photos ENTIÈRES (2026-11-13, demande de Yahir) : le
+  // camion, la remorque, la vitrine et l'enseigne sur pylône restent dans
+  // le cadre. C'est un commerce public qu'on a illuminé, photographié de la
+  // rue : on le montre au complet. Les versions recadrées du 2026-11-11
+  // (enseigne coupée) sont retirées. Nouveaux noms de fichier pour qu'aucun
+  // cache ne remontre l'ancienne version.
   "commercial-01": {
-    src: `${REEL_PREFIX}noel-commercial-recadree.jpg`,
-    alt: "Chocolaterie illuminée pour les Fêtes — ligne de toit et vitrine éclairées",
+    src: `${REEL_PREFIX}noel-commercial-entiere.jpg`,
+    alt: "Chocolaterie illuminée pour les Fêtes — ligne de toit, vitrine et enseigne sur pylône éclairées",
   },
   "commercial-02": {
-    src: `${REEL_PREFIX}noel-commercial-02-recadree.jpg`,
+    src: `${REEL_PREFIX}noel-commercial-02-entiere.jpg`,
     alt: "La même chocolaterie illuminée pour les Fêtes, autre angle",
   },
   "arbres-01": {

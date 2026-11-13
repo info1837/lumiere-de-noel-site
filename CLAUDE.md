@@ -13,6 +13,7 @@
 - **Tout nouveau champ de formulaire** doit être (1) relayé par `app/api/lead/route.js` (ou `app/api/calc-noel/route.js`) vers une colonne du CRM (`/api/leads` : `address`, `city`, `service`, `notes`, `formAnswers`…), (2) visible dans le contexte de Sophie (CRM : `lib/lumiere-qualification.js` → `ceQueLaFicheSait`, `lib/sophie-v2/contexte.js`), et (3) couvert par `scripts/dry-run-formulaires.mjs`. Un champ qui n'arrive pas jusqu'à Sophie, c'est une question qu'elle reposera au client.
 - **L'adresse** est demandée sur tous les formulaires (« Adresse de la propriété », `components/AdresseAutocomplete.jsx` → `/api/adresse`) et part dans `address` + `city`, les mêmes champs que le formulaire Meta : Sophie la CONFIRME au lieu de la demander.
 - **Saisonnier vs permanent** : retrait, entreposage et « de la pose au retrait » ne valent que pour les lumières saisonnières ; le permanent reste en place toute l'année (garantie 10 ans, sur soumission). `/permanent` redirige vers `/services/eclairage-architectural-permanent`.
+- **Photos de clients commerciaux : entières** (Yahir, 2026-11-13). Enseigne, nom du commerce, camion, remorque : on ne recadre pas pour les cacher — commerce public photographié de la rue. Une bande d'une seule photo s'affiche à son format (4:3), jamais coupée.
 - **Aucune mention de Palencia** sur le site, sauf la divulgation légale de `/confidentialite` (même outil de gestion des clients).
 
 ## Affirmations : AUCUNE assurance (2026-11-12)

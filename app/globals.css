@@ -2555,7 +2555,10 @@ a[class*="cta"], button[class*="cta"], .sim-cta {
 }
 .bande-photos--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .bande-photos--1 { grid-template-columns: minmax(0, 1fr); }
-.bande-photos--1 .bande-photo { aspect-ratio: 21 / 9; }
+/* Une seule photo : on la montre ENTIÈRE, à son format (4:3), centrée.
+   Le 21:9 d'avant coupait le bas — le camion, la remorque et la vitrine
+   de la chocolaterie disparaissaient (2026-11-13). */
+.bande-photos--1 .bande-photo { aspect-ratio: 4 / 3; max-width: 960px; width: 100%; margin-inline: auto; }
 .bande-photo {
   position: relative;
   margin: 0;
