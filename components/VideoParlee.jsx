@@ -13,9 +13,14 @@ import { useEffect, useRef, useState } from "react";
 // TÉLÉPHONE (< 768 px) : inchangé, contrôles natifs dès le départ (rendu
 // serveur avec `controls` ; ils ne sont retirés qu'après l'hydratation, et
 // seulement en desktop).
-export default function VideoParlee({ src, affiche, titre, legende }) {
+//
+// `paysage` (2026-11-13, promo du Vieux-Montréal) : vidéo 16:9, et l'affiche
+// + UN bouton lecture à TOUTES les largeurs, téléphone compris (rendu serveur
+// sans `controls`) ; les contrôles natifs, avec le son, n'apparaissent qu'au
+// clic. Toujours rien de téléchargé avant le clic, ni autoplay ni boucle.
+export default function VideoParlee({ src, affiche, titre, legende, paysage = false }) {
   const ref = useRef(null);
-  const [habille, setHabille] = useState(false); // desktop, pas encore lancée
+  const [habille, setHabille] = useState(paysage); // affiche + bouton, pas encore lancée
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
@@ -31,7 +36,7 @@ export default function VideoParlee({ src, affiche, titre, legende }) {
   };
 
   return (
-    <figure className={`video-parlee${habille ? " video-parlee--affiche" : ""}`}>
+    <figure className={`video-parlee${paysage ? " video-parlee--paysage" : ""}${habille ? " video-parlee--affiche" : ""}`}>
       <div className="video-parlee__cadre">
         <video
           ref={ref}
