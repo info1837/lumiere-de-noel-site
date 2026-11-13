@@ -1,5 +1,6 @@
 import { CTAButton, SectionTag, SectionTitle, Gallery } from "@/components/ui";
-import { BreadcrumbJsonLd } from "@/components/jsonld";
+import { BreadcrumbJsonLd, VideoObjectJsonLd } from "@/components/jsonld";
+import VideoParlee from "@/components/VideoParlee";
 import LienTelephone from "@/components/LienTelephone";
 import { HeroPage, CeQuiEstCompris, FaqCourte, MARINE } from "@/components/sections";
 import { GALERIE_VIEUX_MONTREAL } from "@/components/vieux-montreal";
@@ -21,6 +22,20 @@ import { MONTAGES } from "@/lib/hero-media";
 // =============================================================================
 
 const SOUMISSION = "/soumission?service=commercial";
+
+// La vidéo promo (2026-11-13) : 30,7 s, 1280×720, AVEC le son (musique
+// originale sous licence, piste AAC copiée telle quelle, jamais réencodée).
+// Lancée par le visiteur seulement (VideoParlee paysage) : affiche + bouton,
+// rien de téléchargé avant le clic, contrôles natifs ensuite, pas de boucle.
+const PROMO = {
+  src: "/videos/vieux-montreal-promo.mp4",
+  affiche: "/videos/vieux-montreal-promo.jpg",
+  titre: "Le Vieux-Montréal illuminé pour les Fêtes",
+  description:
+    "Une soirée dans les rues du Vieux-Montréal : entrées, vitrines et façades de pierre décorées de guirlandes et de mini-lumières blanc chaud par Solution Lumière de Noël.",
+  duree: "PT31S",
+  mise_en_ligne: "2026-11-13",
+};
 const TITRE = "Décoration des Fêtes pour les commerces du Vieux-Montréal";
 const DESCRIPTION =
   "Décoration des Fêtes pour hôtels, restaurants et boutiques du Vieux-Montréal et du Vieux-Port : guirlandes, mini-lumières, jardinières. Sur soumission.";
@@ -69,6 +84,16 @@ export default function VieuxMontreal() {
         ]}
       />
 
+      <VideoObjectJsonLd
+        name={PROMO.titre}
+        description={PROMO.description}
+        thumbnail={PROMO.affiche}
+        contentUrl={PROMO.src}
+        duration={PROMO.duree}
+        uploadDate={PROMO.mise_en_ligne}
+        pageUrl="/secteur/vieux-montreal"
+      />
+
       <HeroPage
         kicker="Fier partenaire des commerces du Vieux-Montréal"
         titre={TITRE}
@@ -83,6 +108,22 @@ export default function VieuxMontreal() {
           </>
         }
       />
+
+      <section style={{ background: MARINE }} aria-labelledby="promo-titre">
+        <div className="container">
+          <div className="section-entete">
+            <SectionTag dark>En vidéo</SectionTag>
+            <SectionTitle light id="promo-titre" style={{ margin: "0 auto 14px" }}>Le Vieux-Montréal, illuminé</SectionTitle>
+            <p className="section-phrase" style={{ margin: "0 auto" }}>
+              Trente secondes dans les rues du Vieux-Montréal, entre les entrées et les
+              vitrines que nous avons décorées. Montez le son.
+            </p>
+          </div>
+          <div className="bloc-video-paysage">
+            <VideoParlee paysage src={PROMO.src} affiche={PROMO.affiche} titre={PROMO.titre} />
+          </div>
+        </div>
+      </section>
 
       {/* Libellé court : sur téléphone, le bouton partage la ligne avec l'ampoule. */}
       <CeQuiEstCompris

@@ -113,9 +113,9 @@ export function SectionTag({ children, dark }) {
 }
 
 // --- Titre de section (Bebas) ------------------------------------------------
-export function SectionTitle({ children, light, style = {} }) {
+export function SectionTitle({ children, light, style = {}, id }) {
   return (
-    <h2 style={{ color: light ? ivory : charcoal, marginBottom: 20, maxWidth: 720, ...style }}>
+    <h2 id={id} style={{ color: light ? ivory : charcoal, marginBottom: 20, maxWidth: 720, ...style }}>
       {children}
     </h2>
   );

@@ -3091,6 +3091,36 @@ section.concours-reglement { background: #060E18; padding: clamp(48px, 8vw, 80px
   .video-parlee { max-width: 300px; margin: 0 auto; width: 100%; }
 }
 
+/* Variante PAYSAGE (promo du Vieux-Montréal, 2026-11-13) : 16:9, pleine
+   largeur du conteneur, affiche + bouton lecture à TOUTES les largeurs. */
+.bloc-video-paysage { max-width: 960px; margin: 0 auto; }
+.video-parlee.video-parlee--paysage { max-width: none; margin: 0; }
+.video-parlee--paysage video { aspect-ratio: 16 / 9; object-fit: contain; border-radius: 14px; }
+.video-parlee--paysage .video-parlee__cadre { position: relative; }
+.video-parlee--paysage .video-parlee__lecture {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 64px;
+  height: 64px;
+  transform: translate(-50%, -50%);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid rgba(240, 234, 222, 0.9);
+  background: rgba(10, 21, 36, 0.55);
+  color: #F0EADE;
+  box-shadow: 0 0 26px rgba(240, 186, 84, 0.35);
+  cursor: pointer;
+  transition: transform 0.18s ease;
+}
+.video-parlee--paysage .video-parlee__lecture svg { margin-left: 4px; }
+.video-parlee--paysage .video-parlee__lecture:hover { transform: translate(-50%, -50%) scale(1.06); background: rgba(10, 21, 36, 0.72); }
+.video-parlee--paysage .video-parlee__lecture:focus-visible { outline: 2px solid #F0BA54; outline-offset: 4px; }
+@media (min-width: 768px) {
+  .video-parlee--paysage .video-parlee__lecture { width: 76px; height: 76px; }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════
    PASSE DE FINITION DESKTOP (2026-11-11, demande de Yahir)
    ═══════════════════════════════════════════════════════════════════════

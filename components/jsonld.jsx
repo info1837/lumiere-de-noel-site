@@ -57,6 +57,29 @@ export function BreadcrumbJsonLd({ items }) {
   );
 }
 
+// VideoObject — une vidéo hébergée sur le site (fichiers dans public/videos).
+export function VideoObjectJsonLd({ name, description, thumbnail, contentUrl, duration, uploadDate, pageUrl }) {
+  const abs = (u) => (u.startsWith("http") ? u : `${BASE}${u}`);
+  return (
+    <Script
+      data={{
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        name,
+        description,
+        thumbnailUrl: [abs(thumbnail)],
+        contentUrl: abs(contentUrl),
+        uploadDate,
+        duration,
+        encodingFormat: "video/mp4",
+        inLanguage: "fr-CA",
+        ...(pageUrl ? { url: abs(pageUrl) } : {}),
+        publisher: { "@type": "Organization", name: company.name, url: BASE },
+      }}
+    />
+  );
+}
+
 export function ServiceJsonLd({ service, areaServed, urlPath }) {
   if (!service) return null;
   return (
