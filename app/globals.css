@@ -2187,6 +2187,32 @@ section:has(> .offre--cadre) { overflow: clip; }
   .offre--cadre .offre-prix strong { margin: 2px 0 4px; }
 }
 
+/* Téléphone, « Ce qui est compris » (page commerciale, Vieux-Montréal) — 2026-11-24 :
+   la liste y est plus longue que sur l'accueil et le bloc prix plus court ; l'ampoule,
+   calée au bas de la cellule de la liste, remontait sur le texte des dernières lignes
+   (robot QA, page commerciale à 360, 390 et 430 px). Ici l'ampoule a SA rangée, à droite
+   du prix et du bouton, SOUS la liste : elle ne touche plus jamais le texte. Si elle est
+   plus haute que le prix et le bouton, la section grandit d'autant (rangée 1fr à la fin). */
+@media (max-width: 900px) {
+  .offre--cadre.offre--cadre-bas {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "intro intro" "liste liste" "prix cadre" "bouton cadre" "vide cadre";
+    grid-template-rows: auto auto auto auto 1fr;
+    column-gap: var(--air);
+    row-gap: 0;
+  }
+  .offre--cadre-bas > .offre-intro { margin-bottom: 22px; }
+  .offre--cadre-bas > .offre-colonne { display: contents; }
+  .offre--cadre-bas .offre-liste {
+    grid-area: liste;
+    border-top: 1px solid rgba(240, 234, 222, 0.18);
+    padding-top: 14px;
+  }
+  .offre--cadre-bas .offre-prix { grid-area: prix; }
+  .offre--cadre-bas .offre-colonne > a { grid-area: bouton; justify-self: start; align-self: start; }
+  .offre--cadre-bas > .offre-cadre { grid-area: cadre; align-self: end; justify-self: end; }
+}
+
 @media (max-width: 640px) {
   .section-entete { margin-bottom: 34px; }
   .section-phrase { font-size: 17px; }
