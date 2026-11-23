@@ -160,7 +160,7 @@ export function CeQuiEstCompris({ compris, titre = "Ce qui est compris", tag = "
           lignes de la liste et toucherait leur texte (mesuré à 390 et 430).
           46 % plafonnés à 180 px : la plus grande taille sans chevauchement. */}
       <div
-        className={`container offre${photoCadre ? " offre--cadre" : ""}`}
+        className={`container offre${photoCadre ? " offre--cadre offre--cadre-bas" : ""}`}
         style={photoCadre ? { "--ampoule-mobile": "min(46vw, 180px)" } : undefined}
       >
         <div className="offre-intro">
