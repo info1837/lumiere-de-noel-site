@@ -21,6 +21,10 @@ import Image from "next/image";
 // `secondesParItem` n'a plus d'effet ; le paramètre reste accepté.
 // Suit `.defile-item { width: clamp(240px, 38vw, 420px) }`.
 export const TAILLES_VITRINE = "(max-width: 631px) 240px, (max-width: 1105px) 38vw, 420px";
+// La VEDETTE (`vedette: true`, la première photo) : au téléphone, une carte de
+// la bande comme les autres ; à partir de 769 px, toute la rangée, puis la
+// moitié gauche de la grille (deux colonnes × deux rangées) à partir de 1024.
+export const TAILLES_VEDETTE = "(max-width: 631px) 240px, (max-width: 768px) 38vw, (max-width: 1023px) 100vw, 590px";
 
 export default function VitrineDefilante({ items = [] }) {
   const bande = useRef(null);
@@ -56,10 +60,10 @@ export default function VitrineDefilante({ items = [] }) {
       onPointerCancel={relacher}
       onPointerLeave={relacher}
     >
-      <div className="defile-piste">
+      <div className={`defile-piste${items[0]?.vedette ? " defile-piste--vedette" : ""}`}>
         {items.map((p, i) => (
           <figure className="defile-item" key={`${i}-${p.image}`}>
-            <Image src={p.image} alt={p.alt} fill sizes={TAILLES_VITRINE}
+            <Image src={p.image} alt={p.alt} fill sizes={i === 0 && p.vedette ? TAILLES_VEDETTE : TAILLES_VITRINE}
               draggable={false} style={{ objectFit: "cover" }} />
             <figcaption>{p.caption}</figcaption>
           </figure>

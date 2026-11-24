@@ -70,7 +70,7 @@ export default function ServicePage({ params }) {
       <ServiceJsonLd service={s} areaServed={serviceArea} urlPath={`/services/${s.slug}`} />
 
       <HeroPage
-        photo={{ src: s.heroImage, alt: s.heroImageAlt }}
+        photo={s.heroPhoto || { src: s.heroImage, alt: s.heroImageAlt }}
         kicker={s.kicker}
         titre={s.h1 || s.title}
         phrase={s.intro}

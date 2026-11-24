@@ -2893,6 +2893,22 @@ a[class*="cta"], button[class*="cta"], .sim-cta {
 .chantier--ambiances .chantier__etiquette { z-index: 1; }
 .ambiances--plein .ambiances__barre { top: auto; bottom: 12px; justify-content: center; }
 
+/* Les groupes de /realisations : « Saison 2026 », puis le reste. */
+.galerie__groupe + .galerie__groupe { margin-top: 48px; }
+.galerie__titre {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px;
+  margin: 0 0 16px; color: #F0EADE;
+  font-family: 'Bebas Neue', 'Bebas Repli', sans-serif;
+  font-size: clamp(27px, 3.2vw, 36px); letter-spacing: 0.04em; line-height: 1;
+}
+.galerie__titre em {
+  font-style: normal; font-family: 'Nunito Sans', 'Nunito Repli', sans-serif;
+  font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #F0BA54;
+}
+/* Nombre impair de cartes : la première prend la rangée, en 16:9. */
+.galerie--vedette > .galerie__item:first-child { grid-column: 1 / -1; }
+.galerie--vedette > .galerie__item:first-child .chantier { aspect-ratio: 16 / 9; }
+
 /* Hors de la galerie (page du permanent) : une carte autonome. */
 .carte-ambiances { position: relative; aspect-ratio: 3 / 2; border-radius: 18px; overflow: hidden; background: #060E18; }
 
@@ -2900,6 +2916,15 @@ a[class*="cta"], button[class*="cta"], .sim-cta {
   .galerie { gap: 10px; }
   .galerie__item:nth-child(3n + 1) { grid-column: 1 / -1; }
   .galerie__item:not(:nth-child(3n + 1)) .chantier { aspect-ratio: 1 / 1; }
+  /* Le groupe à vedette : la première en hauteur (le 4:5 de la photo), les
+     autres deux par deux, en carré — la règle 3n + 1 ne s'y applique pas. */
+  .galerie--vedette > .galerie__item:not(:first-child) { grid-column: auto; }
+  .galerie--vedette > .galerie__item:not(:first-child) .chantier { aspect-ratio: 1 / 1; }
+  .galerie--vedette > .galerie__item:first-child .chantier { aspect-ratio: 4 / 5; }
+  .galerie__groupe + .galerie__groupe { margin-top: 34px; }
+  /* Carte carrée à plusieurs photos : les points ont leur rangée, sous
+     l'étiquette — sinon ils recouvrent « 3 photos » (carte de ~165 px). */
+  .chantier--plusieurs[data-forme="carre"] .chantier__etiquette { padding-bottom: 34px; }
   .chantier { border-radius: 12px; }
   .chantier__etiquette { font-size: 16px; padding: 30px 10px 9px; }
   .chantier__points { right: 2px; bottom: 2px; }
@@ -3186,6 +3211,8 @@ section.concours-reglement { background: #060E18; padding: clamp(48px, 8vw, 80px
   .defile { overflow: visible; -webkit-mask-image: none; mask-image: none; cursor: auto; }
   .defile-piste { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); width: auto; padding-inline: 0; }
   .defile-item { width: auto; }
+  /* La vedette (saison 2026) : toute la rangée, au-dessus des quatre autres. */
+  .defile-piste--vedette > :first-child { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
 
   /* 6 · Les vidéos de Yahir : affiche propre et UN bouton lecture ; les
      contrôles du navigateur seulement une fois lancée (VideoParlee.jsx). */
@@ -3220,6 +3247,9 @@ section.concours-reglement { background: #060E18; padding: clamp(48px, 8vw, 80px
 }
 @media (min-width: 1024px) {
   .defile-piste { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  /* …puis la moitié gauche : deux colonnes, deux rangées, à côté du carré
+     des quatre photos situées (qui gardent leur taille). */
+  .defile-piste--vedette > :first-child { grid-column: span 2; grid-row: span 2; aspect-ratio: auto; height: 100%; }
 }
 @media (min-width: 769px) {
   /* 6 · La vidéo du fondateur s'aligne sur la grille de la page (bord

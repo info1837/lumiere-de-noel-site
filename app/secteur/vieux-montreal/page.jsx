@@ -41,7 +41,11 @@ const DESCRIPTION =
   "Décoration des Fêtes pour hôtels, restaurants et boutiques du Vieux-Montréal et du Vieux-Port : guirlandes, mini-lumières, jardinières. Sur soumission.";
 
 export const metadata = {
-  title: "Décoration des Fêtes — commerces du Vieux-Montréal",
+  // ≤ 60 caractères, suffixe compris (2026-11-23) : avec le gabarit
+  // « … | Solution Lumière de Noël », le titre faisait 77 caractères et
+  // Google le coupait. `absolute` : les 50 caractères qui comptent, comme
+  // les pages ville × service. scripts/check-seo.mjs mesure tous les titres.
+  title: { absolute: "Décoration des Fêtes — commerces du Vieux-Montréal" },
   description: DESCRIPTION,
   alternates: { canonical: "/secteur/vieux-montreal" },
   openGraph: {

@@ -62,7 +62,7 @@ export const textMuted = "#5A5A5A";
 // L'origine du site (baseUrl) est résolue via lib/site-url.js pour supporter
 // les previews Vercel et un override par variable d'environnement.
 import { getSiteUrl } from "@/lib/site-url";
-import { PHOTOS, cityVisuel, legendeVisuel, servicePhoto } from "@/components/photos";
+import { PHOTOS, cityVisuel, legendeVisuel, servicePhoto, cadre } from "@/components/photos";
 import { lireUtm } from "@/lib/utm";
 import { lireGoogleAds } from "@/lib/google-ads";
 
@@ -139,7 +139,7 @@ export const serviceCards = [
     title: "Résidentiel",
     // Générique : l'accueil n'est pas une page de ville. La photo de
     // Terrebonne est réservée à Terrebonne.
-    image: servicePhoto("lumieres-de-noel-residentiel").src,
+    image: cadre(servicePhoto("lumieres-de-noel-residentiel")).src,
     imageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     // DRAFT COPY — reconstruite dans la voix de marque
     bullets: [
@@ -289,7 +289,11 @@ export const services = [
     seoTitle: "Lumières de Noël résidentielles",
     h1: "Installation de lumières de Noël résidentielles",
     kicker: "Service résidentiel clé en main",
-    heroImage: servicePhoto("lumieres-de-noel-residentiel").src,
+    // La maison aux trois pignons (saison 2026). `heroPhoto` porte ses
+    // recadrages : 16:9 sur écran large, 4:5 sur téléphone. `heroImage`
+    // (Open Graph, JSON-LD) est le 16:9.
+    heroPhoto: servicePhoto("lumieres-de-noel-residentiel"),
+    heroImage: cadre(servicePhoto("lumieres-de-noel-residentiel")).src,
     heroImageAlt: servicePhoto("lumieres-de-noel-residentiel").alt,
     metaDescription:
       "Conception, pose, entretien et retrait de vos lumières de Noël, matériel DEL commercial fourni. À partir de 1 000 $, prix ferme avant l'installation.",
@@ -307,7 +311,10 @@ export const services = [
     // Gabarit de service (partie 3) : la bande de 3 photos réelles, ce qui
     // est compris, la paire avant/après quand une VRAIE existe pour ce
     // service, et une FAQ de 5 questions au plus.
-    bande: ["blainville-01", "montreal-01", "mercier-01"],
+    // 2026-11-23 : les colonnes et les détails (03), puis les rampes, la
+    // guirlande et le décor (01) — leur légende le dit —, et une maison
+    // située. Blainville et Mercier, déjà sur 8 pages ou plus, en sortent.
+    bande: ["s26-pignons-colonnes", "s26-escalier", "montreal-01"],
     paire: "avant-ste-julienne",
     compris: {
       texte: "On fournit le matériel professionnel, on l'installe en sécurité, on l'entretient pendant la saison et on le retire après les Fêtes.",
@@ -638,8 +645,11 @@ export const blogPosts = [
       "Tarifs réels par type de propriété, ce qui fait varier le prix, et quand réserver pour économiser. Guide pratique pour résidences et commerces.",
     metaDescription:
       "Combien coûte l'installation de lumières de Noël au Québec ? Tarifs par type de propriété, ce qui fait varier le prix, et quand réserver.",
-    image: PHOTOS["blainville-01"].src,
-    imageAlt: PHOTOS["blainville-01"].alt,
+    // Photos de la saison 2026 (génériques) : `photo` porte les recadrages
+    // du hero, `image` est le 16:9 (carte du blog, Open Graph, JSON-LD).
+    photo: PHOTOS["s26-pignons-facade"],
+    image: cadre(PHOTOS["s26-pignons-facade"]).src,
+    imageAlt: PHOTOS["s26-pignons-facade"].alt,
     date: "2026-08-01",
     readingTime: "6 min",
     tags: ["Tarifs", "Résidentiel", "Commercial"],
@@ -652,8 +662,9 @@ export const blogPosts = [
       "Pourquoi octobre est le meilleur moment, ce qui se passe quand vous attendez trop, et comment garantir votre date avant les premières neiges.",
     metaDescription:
       "Quand réserver ses lumières de Noël ? Pourquoi octobre est le bon moment et comment garantir sa date avant les premières neiges.",
-    image: PHOTOS["terrebonne-01"].src,
-    imageAlt: PHOTOS["terrebonne-01"].alt,
+    photo: PHOTOS["s26-ferme-facade"],
+    image: cadre(PHOTOS["s26-ferme-facade"]).src,
+    imageAlt: PHOTOS["s26-ferme-facade"].alt,
     date: "2026-07-15",
     readingTime: "4 min",
     tags: ["Planification", "Saison"],
@@ -694,8 +705,10 @@ export const noelPage = {
   navLabel: "Lumière de Noël",
   // « cette saison » était faux dès la saison suivante : les photos sont
   // de 2025. Une phrase qui reste vraie.
+  // « Chaque photo indique sa ville » n'est plus vrai depuis la saison 2026
+  // (les villes de ces cinq maisons viendront plus tard).
   intro:
-    "Des installations réalisées par notre équipe, photographiées sur place. Chaque photo indique sa ville.",
+    "Des installations réalisées par notre équipe, photographiées sur place. Les plus récentes d'abord.",
   // Vraies réalisations, saison 2025. Ces photos-là PEUVENT nommer leur
   // ville : ce sont de vrais chantiers. Une image générée ne le pourrait
   // jamais — scripts/check-photos.mjs casse le build si ça arrive.
@@ -714,6 +727,10 @@ export const noelPage = {
     { image: PHOTOS["commercial-02"].src,   alt: PHOTOS["commercial-02"].alt,   caption: "Commercial" },
     { image: PHOTOS["arbres-01"].src,       alt: PHOTOS["arbres-01"].alt,       caption: "Arbres et arbustes" },
     { image: PHOTOS["arbres-02"].src,       alt: PHOTOS["arbres-02"].alt,       caption: "Arbres et arbustes" },
+    // 14 — saison 2026, la maison à l'escalier (16:9). Pas de ville : la
+    // légende dit ce qu'on a installé. Ajoutée À LA FIN : les indices
+    // ci-dessus ne bougent pas.
+    { image: PHOTOS["s26-escalier"].paysage, alt: PHOTOS["s26-escalier"].alt, caption: PHOTOS["s26-escalier"].legende, vedette: true },
   ],
 };
 
@@ -737,7 +754,13 @@ export const homePortfolio = HOME_PORTFOLIO_INDICES.map((i) => noelPage.gallery[
 // Sainte-Julienne est exclue aussi — c'est elle qui tient le curseur de la
 // section du simulateur.
 //   0 Blainville · 2 Saint-Jérôme · 9 Mercier · 10 Montréal
-const HOME_VITRINE_INDICES = [0, 2, 10, 9];
+//
+// 2026-11-23 : la maison à l'escalier (14, saison 2026 — la meilleure photo
+// de la série) ouvre la bande, EN VEDETTE : sur ordinateur elle occupe la
+// moitié gauche (deux colonnes, deux rangées) et les quatre photos situées
+// forment un carré à sa droite — elles gardent leur taille et leur ville ;
+// elle n'en nomme aucune. Quatre + la vedette : toujours pas six.
+const HOME_VITRINE_INDICES = [14, 0, 2, 10, 9];
 export const homeVitrine = HOME_VITRINE_INDICES.map((i) => noelPage.gallery[i]);
 
 // --- Formulaire de soumission (7 champs, incl. groupe radio budget) ----------

@@ -56,7 +56,7 @@ export default function BlogPost({ params }) {
           18 px, ~68 caractères — l'encadré de réservation APRÈS l'article,
           et « À lire ensuite » dessous, à toutes les largeurs. */}
       <HeroPage
-        photo={{ src: p.image, alt: p.imageAlt }}
+        photo={p.photo || { src: p.image, alt: p.imageAlt }}
         kicker={`${p.tags?.[0] ? `${p.tags[0]} · ` : ""}${p.readingTime} · ${fmtDate(p.date)}`}
         titre={p.title}
         reserver="/soumission"

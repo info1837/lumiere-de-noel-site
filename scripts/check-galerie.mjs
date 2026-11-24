@@ -15,7 +15,9 @@
 //      carte est à l'écran, un point choisit la couleur (fondu de 250 ms)
 //      et l'étiquette suit ;
 //   5. /secteur : chaque carte a une image, et celle de Laval ne nomme pas
-//      Laval.
+//      Laval ;
+//   6. (2026-11-23) le groupe « Saison 2026 » ouvre la page, chaque image de
+//      la galerie a un vrai alt, la visionneuse montre la photo entière.
 // =============================================================================
 import { chromium } from "playwright";
 
@@ -62,7 +64,8 @@ const { ctx, page, toucher, glisser, centrer } = await ouvrirPage();
 
 console.log("\n--- 1. Une carte = un chantier ---");
 const nombre = async (f) => Number((await page.locator(".filtre", { hasText: f }).locator(".filtre__n").innerText()).trim());
-const attendus = { Tout: 18, "Résidentiel": 11, Commercial: 1, Arbres: 3, Permanent: 3 };
+// 2026-11-23 : + 5 chantiers résidentiels de la saison 2026 (18 → 23, 11 → 16).
+const attendus = { Tout: 23, "Résidentiel": 16, Commercial: 1, Arbres: 3, Permanent: 3 };
 for (const [f, n] of Object.entries(attendus)) {
   const annonce = await nombre(f);
   await page.locator(".filtre", { hasText: f }).click();
@@ -74,9 +77,46 @@ await page.locator(".filtre", { hasText: "Tout" }).click();
 await attendre(150);
 const srcs = await page.evaluate(() => [...document.querySelectorAll(".chantier img")].map((i) => new URL(i.currentSrc || i.src).searchParams.get("url") || i.src));
 t("🚨 aucune photo dans deux cartes", new Set(srcs).size === srcs.length, `${srcs.length} images, ${new Set(srcs).size} distinctes`);
-for (const [id, n] of [["chocolaterie", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3]]) {
+for (const [id, n] of [["chocolaterie", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3],
+  ["s26-trois-pignons", 3], ["s26-ferme-moderne", 2], ["s26-contemporaine", 2]]) {
   const k = await page.locator(`[data-chantier="${id}"] img`).count();
   t(`« ${id} » réunit ${n} photos`, k === n, `${k}`);
+}
+
+console.log("\n--- 1b. La saison 2026 en tête, et un alt sur chaque photo ---");
+{
+  const groupes = await page.evaluate(() => [...document.querySelectorAll(".galerie__groupe")].map((g) => ({
+    titre: g.querySelector(".galerie__titre")?.childNodes[0]?.textContent?.trim() || null,
+    ids: [...g.querySelectorAll("[data-chantier]")].map((c) => c.dataset.chantier),
+  })));
+  t("🚨 le premier groupe est « Saison 2026 »", groupes[0]?.titre === "Saison 2026", groupes.map((g) => g.titre).join(" | "));
+  t("🚨 …avec ses 5 chantiers, dans l'ordre",
+    groupes[0]?.ids.join() === "s26-escalier,s26-trois-pignons,s26-ferme-moderne,s26-contemporaine,s26-balcon", groupes[0]?.ids.join());
+  t("le reste suit, sous son propre titre", groupes.length === 2 && groupes[1].ids.length === 18 && !!groupes[1].titre, `${groupes[1]?.ids.length} — ${groupes[1]?.titre}`);
+  const etiquettes = await page.evaluate(() => [...document.querySelectorAll('[data-groupe="saison"] .chantier__etiquette')].map((e) => e.childNodes[0].textContent));
+  const VILLES = /Blainville|Terrebonne|Saint-Jérôme|Laval|Montréal|Rive-Sud|Mirabel|Mercier|Léry|Lorraine|Rosemère|Boisbriand/;
+  t("aucune ville dans les étiquettes de la saison (elles viendront)", etiquettes.length === 5 && etiquettes.every((e) => !VILLES.test(e)), etiquettes.join(" | "));
+  // Chaque <img> de la galerie décrit l'installation : ni vide, ni générique.
+  const alts = await page.evaluate(() => [...document.querySelectorAll(".galerie img")].map((i) => i.getAttribute("alt") || ""));
+  const vides = alts.filter((a) => a.length < 25);
+  t("🚨 chaque photo de la galerie a un vrai alt", alts.length === 32 && vides.length === 0, `${alts.length} images, ${vides.length} sans alt`);
+  t("…aucun alt « illuminée pour les Fêtes » sans dire ce qui est posé", alts.every((a) => !/illuminée? pour les Fêtes/.test(a)), alts.filter((a) => /illuminée? pour les Fêtes/.test(a)).join(" | "));
+  t("…et aucun alt en double", new Set(alts).size === alts.length, `${alts.length - new Set(alts).size} doublon(s)`);
+  // Un filtre sans chantier de la saison : aucun titre, la grille d'avant.
+  await page.locator(".filtre", { hasText: "Permanent" }).click();
+  await attendre(150);
+  t("« Permanent » : aucun titre de groupe", await page.locator(".galerie__titre").count() === 0);
+  await page.locator(".filtre", { hasText: "Tout" }).click();
+  await attendre(150);
+  // La visionneuse montre la photo ENTIÈRE, pas le recadrage de la carte.
+  await page.locator('[data-chantier="s26-ferme-moderne"] .chantier__photo').focus();
+  await page.keyboard.press("Enter");
+  await attendre(400);
+  const grande = await page.evaluate(() => { const i = document.querySelector(".visionneuse img"); return i ? decodeURIComponent(i.currentSrc || i.src) : ""; });
+  t("🚨 la visionneuse montre l'entière (ni -16x9 ni -4x5)", /05-ferme-moderne-facade\.jpg/.test(grande), grande.slice(-70));
+  t("…avec le compte du chantier", /^Photo 1\/2 · Chantier 3 \/ 23/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
+  await page.keyboard.press("Escape");
+  await attendre(200);
 }
 
 console.log("\n--- 2. Feuilleter dans la carte, au doigt ---");
@@ -167,7 +207,9 @@ console.log("\n--- 4. /secteur : une image sur chaque carte ---");
       const i = a.querySelector("img");
       return { nom: a.querySelector("h2").textContent, img: !!i, w: i?.getBoundingClientRect().width || 0, alt: i?.alt || "" };
     }));
-  t("six cartes", cartes.length === 6, `${cartes.length}`);
+  // Sept depuis la page du Vieux-Montréal (2026-11-12) : les six zones de
+  // `cities`, plus la carte des commerces. La garde en attendait encore six.
+  t("sept cartes : six zones + les commerces du Vieux-Montréal", cartes.length === 7 && cartes.filter((c) => /Vieux-Montréal/.test(c.nom)).length === 1, `${cartes.length}`);
   for (const c of cartes) t(`🚨 ${c.nom} a une image`, c.img && c.w > 100 && c.alt.length > 10, c.alt.slice(0, 70));
   const laval = cartes.find((c) => /Laval/.test(c.nom));
   t("🚨 l'image de Laval ne nomme pas Laval", laval && !/Laval/.test(laval.alt), laval?.alt);

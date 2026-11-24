@@ -32,6 +32,9 @@ export default function AmbiancesPermanent({
   onChange = null,
   libelleOuvrir = "Agrandir",
   className = "",
+  // /realisations : chaque ambiance garde son alt (ce sont trois vraies
+  // photos), même masquée — elle reste `aria-hidden` tant qu'elle l'est.
+  toutDecrire = false,
 }) {
   const [i, setI] = useState(depart);
 
@@ -50,7 +53,7 @@ export default function AmbiancesPermanent({
         <Image
           key={p.cle}
           src={p.src}
-          alt={n === i ? p.alt : ""}
+          alt={n === i || toutDecrire ? p.alt : ""}
           aria-hidden={n === i ? undefined : true}
           fill
           sizes={sizes}

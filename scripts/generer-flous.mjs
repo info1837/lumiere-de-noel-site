@@ -22,7 +22,9 @@ import sharp from "sharp";
 const ROOT = path.join(path.dirname(new URL(import.meta.url).pathname), "..");
 const { PHOTOS } = await import(path.join(ROOT, "components/photos.js"));
 
-const sources = [...new Set(Object.values(PHOTOS).map((p) => p.src))]
+// Les recadrages (`paysage` 16:9, `portrait` 4:5) ont chacun le leur : un
+// flou tiré de l'entière n'aurait pas la forme de la boîte.
+const sources = [...new Set(Object.values(PHOTOS).flatMap((p) => [p.src, p.paysage, p.portrait].filter(Boolean)))]
   .filter((src) => fs.existsSync(path.join(ROOT, "public", src)))
   .sort();
 

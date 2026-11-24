@@ -25,7 +25,8 @@ const PUBLIC = join(RACINE, "public");
 const erreurs = [];
 
 const { PHOTOS, CITY_PHOTO, CITY_VISUEL, REEL_PREFIX, PHOTOS_MANQUANTES, CLES_GENERIQUES,
-        PREFIXES_OPTIONNELS, cityPhoto, cityVisuel, cityHeroPhoto, servicePhoto } =
+        PREFIXES_OPTIONNELS, cityPhoto, cityVisuel, cityHeroPhoto, servicePhoto,
+        RESIDENTIEL_PAR_VILLE, carteServiceVille, heroVilleService } =
   await import(join(RACINE, "components/photos.js"));
 const { CHANTIERS } = await import(join(RACINE, "components/realisations.js"));
 
@@ -89,6 +90,30 @@ for (const [cle, p] of Object.entries(PHOTOS)) {
     erreurs.push(`PHOTOS["${cle}"] pointe sur un fichier absent : ${p.src}`);
 }
 
+// --- 2b. Les recadrages et les formats d'une photo existent ------------------
+// Une photo peut porter `paysage` (16:9) et `portrait` (4:5). Chacun doit
+// exister, vivre sous le même préfixe que l'entière, et — dans le dossier de
+// la saison 2026 — avoir son WebP et son AVIF à côté du JPEG.
+for (const [cle, p] of Object.entries(PHOTOS)) {
+  for (const format of ["paysage", "portrait"]) {
+    const v = p[format];
+    if (!v) continue;
+    if (!existsSync(join(PUBLIC, v))) erreurs.push(`PHOTOS["${cle}"].${format} pointe sur un fichier absent : ${v}`);
+    if (p.src.startsWith(REEL_PREFIX) !== v.startsWith(REEL_PREFIX))
+      erreurs.push(`PHOTOS["${cle}"].${format} n'est pas rangé avec son entière (${v}).`);
+  }
+  for (const f of [p.src, p.paysage, p.portrait].filter((x) => x && x.includes("/reel/2026/"))) {
+    for (const ext of ["webp", "avif"]) {
+      const frere = f.replace(/\.jpg$/, `.${ext}`);
+      if (!existsSync(join(PUBLIC, frere))) erreurs.push(`${f} n'a pas son ${ext.toUpperCase()} (${frere}) — \`npm run images:2026\`.`);
+    }
+  }
+  // L'alt dit ce qu'on a installé (2026-11-23) : plus de « maison illuminée
+  // pour les Fêtes », qui vaut pour toutes les photos du site.
+  if (!p.simulation && (!p.alt || p.alt.length < 40 || /illuminée?s? pour les Fêtes/.test(p.alt)))
+    erreurs.push(`PHOTOS["${cle}"] : l'alt doit décrire l'installation (ligne de toit, colonnes, arbres…) — « ${p.alt} ».`);
+}
+
 // --- 3. Seule une photo réelle peut nommer une ville -------------------------
 for (const [cle, p] of Object.entries(PHOTOS)) {
   const reelle = p.src.startsWith(REEL_PREFIX);
@@ -132,6 +157,29 @@ for (const slug of Object.keys(CITY_PHOTO)) {
   };
   verifier(cityHeroPhoto(slug), "L'en-tête");
   for (const sv of SERVICES) verifier(servicePhoto(sv, slug), `La carte « ${sv} »`);
+  // Les cartes de service de la page de ville, et le hero de ses pages
+  // ville × service (components/photos.js → carteServiceVille).
+  for (const cle of ["residentiel", "commercial", "permanent"]) {
+    const p = carteServiceVille(cle, slug);
+    if (!p) erreurs.push(`La carte « ${cle} » de « ${slug} » n'a aucune photo.`);
+    verifier(p, `La carte de service « ${cle} »`);
+  }
+  for (const sv of SERVICES) verifier(heroVilleService(sv, slug), `Le hero ville × « ${sv} »`);
+}
+
+// --- 5b. Résidentiel : une photo DIFFÉRENTE par ville ------------------------
+// Les six pages de ville (et leurs six pages ville × résidentiel) montraient
+// la même maison de pierre. Chaque ville a maintenant la sienne.
+{
+  const vues = new Map();
+  for (const slug of Object.keys(CITY_PHOTO)) {
+    const cle = RESIDENTIEL_PAR_VILLE[slug];
+    if (!cle || !PHOTOS[cle]) { erreurs.push(`RESIDENTIEL_PAR_VILLE["${slug}"] manque ou pointe sur une clé inconnue (${cle}).`); continue; }
+    if (vues.has(cle)) erreurs.push(`« ${cle} » est la carte résidentielle de ${vues.get(cle)} ET de ${slug} — une photo par ville.`);
+    else vues.set(cle, slug);
+    const sienne = cityPhoto(slug);
+    if (sienne && sienne.src === PHOTOS[cle].src) erreurs.push(`« ${slug} » : la carte résidentielle répète la photo de « À propos ».`);
+  }
 }
 
 // --- 6. Une photo générique ne revendique aucun lieu ------------------------
