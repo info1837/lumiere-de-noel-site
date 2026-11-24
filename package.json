@@ -36,7 +36,9 @@
     "dry-run:lead": "node --preserve-symlinks scripts/dry-run-lead.mjs && node --no-warnings --import ./scripts/next-alias-register.mjs scripts/dry-run-formulaires.mjs",
     "captures:vie": "node scripts/captures-vie.mjs",
     "check:telephone": "node scripts/check-telephone.mjs",
-    "check:assurance": "node scripts/check-assurance.mjs"
+    "check:assurance": "node scripts/check-assurance.mjs",
+    "images:2026": "node scripts/preparer-photos-2026.mjs",
+    "check:usage": "node scripts/check-usage-photos.mjs"
   },
   "dependencies": {
     "@vercel/analytics": "^2.0.1",

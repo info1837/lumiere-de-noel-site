@@ -6,7 +6,7 @@ import { SectionTag, SectionTitle, CTAButton, Breadcrumb } from "@/components/ui
 import { BreadcrumbJsonLd } from "@/components/jsonld";
 import { services, navy, offWhite, ivory, gold, charcoal, goldText } from "@/components/data";
 import { PHOTOS } from "@/components/photos";
-import { servicePhoto } from "@/components/photos";
+import { carteService, cadre } from "@/components/photos";
 
 export const metadata = {
   title: "Nos services",
@@ -52,7 +52,7 @@ export default function ServicesIndex() {
                 border: "1px solid rgba(233,220,192,0.16)",
               }}>
                 <div style={{ position: "relative", aspectRatio: "16 / 9", background: "#0b1b2b" }}>
-                  {(() => { const ph = servicePhoto(s.slug); return ph && (
+                  {(() => { const ph = cadre(carteService(s.slug)); return ph && (
                     <Image src={ph.src} alt={ph.alt} fill sizes="(max-width: 900px) 100vw, 580px"
                       placeholder="blur" blurDataURL={flouDe(ph.src)} style={{ objectFit: "cover" }} />); })()}
                 </div>

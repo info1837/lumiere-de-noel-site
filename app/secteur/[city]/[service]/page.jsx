@@ -4,7 +4,7 @@ import {
   HeroPage, AProposVille, CeQuiEstCompris, Parcours, FaqCourte, Reservation, PucesVilles,
   MARINE_PROFOND,
 } from "@/components/sections";
-import { servicePhoto } from "@/components/photos";
+import { servicePhoto, heroVilleService, cadre } from "@/components/photos";
 import {
   services, cities, findCity, findService, inCity, cleService, faqVilleService, serviceOptions,
 } from "@/components/data";
@@ -39,7 +39,7 @@ export function generateMetadata({ params }) {
       title: `${title} | Solution Lumière de Noël`,
       description: `Lumières de Noël ${cityIn} — pose, entretien et retrait inclus. Un nombre limité de propriétés chaque saison.`,
       url: `/secteur/${c.slug}/${s.slug}`,
-      images: [servicePhoto(s.slug, c.slug)?.src].filter(Boolean),
+      images: [cadre(servicePhoto(s.slug, c.slug))?.src].filter(Boolean),
     },
   };
 }
@@ -48,7 +48,9 @@ export function generateMetadata({ params }) {
 // LE GABARIT VILLE × SERVICE (partie 3)
 // =============================================================================
 // Le gabarit de service, appliqué à une ville : hero (photo GÉNÉRIQUE du
-// service — la photo de la ville est dans « À propos »), ce qui est compris,
+// service — la photo de la ville est dans « À propos » ; pour le résidentiel,
+// la générique de CETTE ville, la même que sa carte sur /secteur/{ville} :
+// six pages, six photos), ce qui est compris,
 // « À propos de {ville} », le parcours, la FAQ (deux questions de la ville,
 // une du service), les autres villes pour CE service, le formulaire.
 // =============================================================================
@@ -59,7 +61,7 @@ export default function CityServicePage({ params }) {
 
   const faqs = faqVilleService(c, s);
   const cle = cleService(s.slug);
-  const heroPhoto = servicePhoto(s.slug);   // sans ville : la générique du service
+  const heroPhoto = heroVilleService(s.slug, c.slug);   // jamais la photo d'une autre ville
   const serviceInitial = serviceOptions.find((o) =>
     (cle === "commercial" ? /commercial/i : cle === "permanent" ? /permanent|architectural/i : /résidentiel|residentiel/i).test(o)) || null;
 

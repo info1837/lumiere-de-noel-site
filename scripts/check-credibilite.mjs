@@ -48,7 +48,12 @@ console.log('\n--- 2. 🚨 Elle est plus GRANDE ---');
   t('🚨 deux colonnes', /\.vitrine \{[\s\S]{0,120}grid-template-columns: 1fr 1fr;/.test(css));
   t('une seule colonne sur téléphone',
     /max-width: 640px[\s\S]{0,400}\.vitrine \{ grid-template-columns: 1fr/.test(css));
-  t('🚨 QUATRE photos, pas six', /HOME_VITRINE_INDICES = \[0, 2, 10, 9\]/.test(lire('components/data.js')));
+  // 2026-11-23 : la maison à l'escalier (saison 2026) ouvre la bande, en
+  // vedette ; les QUATRE photos situées restent, dans le même ordre.
+  t('🚨 QUATRE photos situées + la vedette, pas six', /HOME_VITRINE_INDICES = \[14, 0, 2, 10, 9\]/.test(lire('components/data.js')));
+  t('🚨 la vedette ne casse pas la grille (2 colonnes × 2 rangées à côté du carré)',
+    /\.defile-piste--vedette > :first-child \{ grid-column: span 2; grid-row: span 2;/.test(css)
+    && /vedette: true \}/.test(lire('components/data.js')));
   // Passe « effets sobres » (2026-10-26) : la bande ne boucle plus, il n'y
   // a donc plus de clones — chaque photo apparaît une fois, avec son alt.
   t('🚨 chacune nomme sa ville',

@@ -25,14 +25,15 @@ import Image, { getImageProps } from "next/image";
 import Link from "next/link";
 import { CTAButton, SectionTag, SectionTitle, FaqAccordion, Breadcrumb } from "@/components/ui";
 import HeroVideo from "@/components/HeroVideo";
-import { MEDIA_PORTRAIT, HERO_MONTAGES } from "@/lib/hero-media";
+import { MEDIA_PORTRAIT, MEDIA_PAYSAGE, HERO_MONTAGES } from "@/lib/hero-media";
 import QuoteForm from "@/components/QuoteForm";
 import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 import HowItWorks from "@/components/HowItWorks";
 import RevelationLumiere from "@/components/RevelationLumiere";
 import { CadreAmpouleOffre } from "@/components/CadreAmpoule";
-import { PHOTOS, paireAvantApres } from "@/components/photos";
+import { PHOTOS, paireAvantApres, carteServiceVille } from "@/components/photos";
 import { flouDe } from "@/components/photos-flou";
+import PhotoCadree from "@/components/PhotoCadree";
 import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } from "@/components/data";
 
 export const MARINE = "#0A1524";
@@ -51,7 +52,9 @@ export const MARINE_PROFOND = "#060E18";
 // Chaque format a son affiche (image LCP, <picture>) puis sa vidéo après
 // `load` (HeroVideo.jsx) — une seule vidéo par visiteur. `photo` ne sert
 // alors plus à l'écran (seulement à l'OG de la page).
-// Sans `montage`, rien ne change (blog, ville × service, services sans vidéo).
+// Sans `montage`, rien ne change (blog, ville × service, services sans vidéo)
+// — sauf qu'une photo qui a ses recadrages (saison 2026) montre son 16:9 sur
+// un écran large et son 4:5 sur un écran vertical (PhotoCadree).
 export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reserver = "#reserver", preuve = true, montage = false, boutons = null }) {
   let affiches = null;
   const m = montage === true ? HERO_MONTAGES : montage || null;
@@ -74,16 +77,12 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
     <section className="hero-section hero-section--page">
       {affiches}
       {photo && !affiches && (
-        <Image
-          src={photo.src}
-          alt={photo.alt}
-          fill
-          priority
-          sizes="100vw"
-          placeholder={flouDe(photo.src) ? "blur" : "empty"}
-          blurDataURL={flouDe(photo.src)}
-          style={{ objectFit: "cover" }}
-        />
+        // Le hero est sous un voile sombre : qualité 65, et au téléphone
+        // 85vw (un écran de 390 px à densité 3 reçoit la variante de
+        // 1 080 px au lieu de 1 440) — l'image LCP pèse moins que celle
+        // qu'elle remplace, sans différence visible sous le voile.
+        <PhotoCadree photo={photo} priority sizes="100vw" quality={photo.portrait ? 65 : undefined}
+          portraitSi={MEDIA_PORTRAIT} paysageSi={MEDIA_PAYSAGE} sizesPortrait="85vw" />
       )}
       <div className="hero-voile" aria-hidden="true" />
       <div className="hero-container" style={{ position: "relative", width: "100%" }}>
@@ -117,7 +116,8 @@ export function HeroPage({ photo, kicker, titre, phrase, filAriane = null, reser
 
 // ── 2 · La bande de photos ───────────────────────────────────────────────
 // Trois VRAIES photos du service. Une légende de ville seulement si la
-// photo est située (elle seule a le droit de nommer un lieu).
+// photo est située (elle seule a le droit de nommer un lieu) ; une photo
+// générique peut porter sa `legende` — ce qu'on y a installé, jamais un lieu.
 export function BandePhotos({ cles, legende = true, fond = MARINE }) {
   const photos = cles.map((k) => ({ cle: k, ...PHOTOS[k] })).filter((p) => p.src);
   if (!photos.length) return null;
@@ -125,18 +125,12 @@ export function BandePhotos({ cles, legende = true, fond = MARINE }) {
     <section className="section-bande" style={{ background: fond }}>
       <div className="container">
         <div className={`bande-photos bande-photos--${photos.length}`}>
-          {photos.map((p) => (
+          {photos.map((p, i) => (
             <figure key={p.cle} className="bande-photo">
-              <Image
-                src={p.src}
-                alt={p.alt}
-                fill
-                sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 400px"
-                placeholder={flouDe(p.src) ? "blur" : "empty"}
-                blurDataURL={flouDe(p.src)}
-                style={{ objectFit: "cover" }}
-              />
-              {legende && p.ville && <figcaption>{p.ville}</figcaption>}
+              {/* Téléphone : la première en pleine largeur, les suivantes
+                  côte à côte (50vw) — elles demandaient 100vw elles aussi. */}
+              <PhotoCadree photo={p} sizes={`(max-width: 640px) ${i === 0 ? "100vw" : "50vw"}, (max-width: 1100px) 50vw, 400px`} />
+              {legende && (p.ville || p.legende) && <figcaption>{p.ville || p.legende}</figcaption>}
             </figure>
           ))}
         </div>
@@ -347,13 +341,14 @@ export function AProposVille({ ville, fond = MARINE }) {
 
 // ── 10 · Les trois services d'une ville, en cartes compactes ─────────────
 // Remplace « Nos services à {ville} » en grande liste empilée. Les photos
-// sont les GÉNÉRIQUES des services : la photo de la ville est déjà dans
-// « À propos », et celle d'une autre ville n'a rien à faire ici.
-const PHOTO_CARTE = {
-  residentiel: "residentiel-01",
-  commercial: "commercial-01",
-  permanent: "permanent-hero",
-};
+// sont des GÉNÉRIQUES : la photo de la ville est déjà dans « À propos », et
+// celle d'une autre ville n'a rien à faire ici. Elles CHANGENT d'une ville à
+// l'autre (components/photos.js → carteServiceVille) : les six pages
+// montraient les trois mêmes.
+// L'alt décrit la photo : le texte de la carte parle du service dans la
+// ville, pas de la maison qu'on voit.
+// Téléphone : la photo est une colonne étroite et haute à gauche du texte —
+// c'est le 4:5 qui s'y loge, à 34 % de la largeur.
 export function CartesServices({ ville, fond = MARINE_PROFOND }) {
   return (
     <section style={{ background: fond }}>
@@ -365,14 +360,13 @@ export function CartesServices({ ville, fond = MARINE_PROFOND }) {
         <ul className="cartes-services">
           {services.map((s) => {
             const cle = cleService(s.slug);
-            const ph = PHOTOS[PHOTO_CARTE[cle]];
+            const ph = carteServiceVille(cle, ville.slug);
             return (
               <li key={s.slug}>
                 <Link href={`/secteur/${ville.slug}/${s.slug}`} className="carte-service">
                   <span className="carte-service__photo">
-                    <Image src={ph.src} alt="" fill sizes="(max-width: 640px) 100vw, 380px"
-                      placeholder={flouDe(ph.src) ? "blur" : "empty"} blurDataURL={flouDe(ph.src)}
-                      style={{ objectFit: "cover" }} />
+                    <PhotoCadree photo={ph} portraitSi="(max-width: 900px)"
+                      sizes="(max-width: 900px) 34vw, 380px" />
                   </span>
                   <span className="carte-service__corps">
                     <span className="carte-service__titre">{s.seoTitle || s.title}</span>

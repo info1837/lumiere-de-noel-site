@@ -21,6 +21,15 @@
 //   2. L'ajouter à PHOTOS — avec `ville` si le chantier est identifié,
 //      SANS `ville` si la photo doit pouvoir servir n'importe où
 //   3. Pointer la ville vers sa clé dans CITY_PHOTO
+//
+// TROIS RÈGLES DEPUIS LE 2026-11-23 (photos « Saison 2026 ») :
+//   · l'alt DÉCRIT CE QU'ON A INSTALLÉ (ligne de toit, colonnes, arbres…),
+//     jamais « maison illuminée pour les Fêtes » ;
+//   · une photo peut porter deux RECADRAGES en plus de l'entière : `paysage`
+//     (16:9 — cartes, heros) et `portrait` (4:5 — téléphone, galeries). Les
+//     composants passent par `cadre()` / `PhotoCadree` ; la visionneuse de
+//     /realisations montre toujours l'entière ;
+//   · AUCUNE PHOTO SUR PLUS DE 8 PAGES (`npm run check:usage`).
 // =============================================================================
 
 /** Toute photo dont le src commence par ceci est réelle. */
@@ -37,47 +46,47 @@ const SITUEES = {
   "blainville-01": {
     src: `${REEL_PREFIX}noel-blainville-01.jpg`,
     ville: "Blainville",
-    alt: "Maison contemporaine à toit plat illuminée pour les Fêtes à Blainville — ligne de toit, colonnes et arbre en façade",
+    alt: "Maison contemporaine à toit plat à Blainville : bordure de toit en ampoules blanc chaud, colonne de pierre enrubannée et arbre illuminé en façade",
   },
   "terrebonne-01": {
     src: `${REEL_PREFIX}noel-terrebonne.jpg`,
     ville: "Terrebonne",
-    alt: "Résidence illuminée pour les Fêtes à Terrebonne, sous la neige",
+    alt: "Résidence de pierre à Terrebonne, sous la neige : ligne de toit et pignon en blanc chaud, balcon et arbustes illuminés",
   },
   "st-jerome-01": {
     src: `${REEL_PREFIX}noel-st-jerome-01.jpg`,
     ville: "Saint-Jérôme",
-    alt: "Résidence illuminée pour les Fêtes à Saint-Jérôme",
+    alt: "Maison à Saint-Jérôme : ligne de toit en ampoules ambrées, avant-toit et contour du garage en bleu et blanc chaud, colonne enrubannée",
   },
   "mirabel-01": {
     src: `${REEL_PREFIX}noel-mirabel-01.jpg`,
     ville: "Mirabel",
-    alt: "Maison illuminée pour les Fêtes à Mirabel",
+    alt: "Maison contemporaine à Mirabel : bordures de toit sur deux niveaux en blanc chaud et petits conifères illuminés devant la façade",
   },
   "ste-julienne-01": {
     src: `${REEL_PREFIX}noel-ste-julienne-01.jpg`,
     ville: "Sainte-Julienne",
-    alt: "Résidence illuminée à l'heure bleue à Sainte-Julienne, guirlande blanc-chaud",
+    alt: "Résidence contemporaine à Sainte-Julienne, à l'heure bleue : bordure de toit en blanc chaud, poteaux de la galerie enrubannés, couronne et guirlande au-dessus des portes de garage",
   },
   "ste-anne-01": {
     src: `${REEL_PREFIX}noel-ste-anne.jpg`,
     ville: "Sainte-Anne-des-Plaines",
-    alt: "Maison illuminée pour les Fêtes à Sainte-Anne-des-Plaines",
+    alt: "Maison de style ferme à Sainte-Anne-des-Plaines : pignons et lignes de toit soulignés en blanc chaud, sous la première neige",
   },
   "st-donat-01": {
     src: `${REEL_PREFIX}noel-st-donat-01.jpg`,
     ville: "Saint-Donat",
-    alt: "Résidence illuminée pour les Fêtes à Saint-Donat",
+    alt: "Allée bordée de petits conifères illuminés en blanc chaud à Saint-Donat, de nuit",
   },
   "st-donat-02": {
     src: `${REEL_PREFIX}noel-st-donat-02.jpg`,
     ville: "Saint-Donat",
-    alt: "Maison illuminée pour les Fêtes à Saint-Donat, en soirée",
+    alt: "Épinettes enneigées illuminées en blanc chaud devant un chalet à Saint-Donat, en soirée",
   },
   "lery-01": {
     src: `${REEL_PREFIX}noel-lery-01.jpg`,
     ville: "Léry",
-    alt: "Grande maison illuminée pour les Fêtes à Léry — chaque pignon souligné, colonnes de pierre enrubannées et arbustes éclairés",
+    alt: "Grande maison à Léry : chaque pignon souligné en blanc chaud, colonnes de pierre enrubannées et arbustes illuminés",
   },
   "mercier-01": {
     src: `${REEL_PREFIX}noel-mercier-01.jpg`,
@@ -85,12 +94,12 @@ const SITUEES = {
     // Mercier est SUR la Rive-Sud : la photo peut porter la page de la zone
     // (CITY_VISUEL), et son alt peut le dire.
     zone: "rive-sud",
-    alt: "Installation de lumières de Noël à Mercier, Rive-Sud — résidence illuminée pour les Fêtes",
+    alt: "Maison à Mercier, sur la Rive-Sud : lignes de toit des deux étages et avant-toit du garage en blanc froid, sous la neige",
   },
   "montreal-01": {
     src: `${REEL_PREFIX}noel-montreal-01.jpg`,
     ville: "Montréal",
-    alt: "Maison illuminée pour les Fêtes à Montréal — ligne de toit, galerie et colonnes enrubannées, sous la neige",
+    alt: "Maison à Montréal, sous la neige : ligne de toit et avant-toit de la galerie en blanc chaud, colonnes enrubannées et arbre illuminé",
   },
   // L'équipe au travail (2026-11-11) : sert au cadre « ampoule »
   // (components/CadreAmpoule.jsx). Portrait 1170×1685. Aucun nom de client
@@ -121,7 +130,7 @@ const SITUEES = {
   "stratford-01": {
     src: `${REEL_PREFIX}noel-stratford-01.jpg`,
     ville: "Stratford",
-    alt: "Maison anguleuse illuminée pour les Fêtes à Stratford — ligne de toit multicolore sur la neige",
+    alt: "Maison contemporaine à Stratford : lignes de toit en ampoules multicolores, sur la neige à l'heure bleue",
   },
 };
 
@@ -131,14 +140,75 @@ const SITUEES = {
 // utilisables partout, y compris sur la page d'une ville qu'on n'a pas
 // encore photographiée. Ne jamais leur ajouter `ville`.
 // -----------------------------------------------------------------------------
+// ── Saison 2026 (2026-11-23) ─────────────────────────────────────────────
+// Neuf photos, cinq maisons. GÉNÉRIQUES pour l'instant : Yahir ajoutera les
+// villes plus tard — d'ici là aucun alt, aucune légende ne nomme un lieu, et
+// elles peuvent donc servir sur n'importe quelle page de ville.
+// Préparées par scripts/preparer-photos-2026.mjs (numéros civiques floutés,
+// recadrages, 07 et 08 éclaircies ; rien de généré, aucune lumière ajoutée).
+// `legende` : ce qu'on y a installé, en trois mots, pour une bande ou la
+// vitrine — jamais un lieu.
+const S26 = `${REEL_PREFIX}2026/`;
+const s26 = (nom, reste) => ({
+  src: `${S26}${nom}.jpg`,
+  paysage: `${S26}${nom}-16x9.jpg`,
+  portrait: `${S26}${nom}-4x5.jpg`,
+  saison: 2026,
+  ...reste,
+});
+const SAISON_2026 = {
+  // A — maison de brique, escalier en fer forgé. La meilleure de la série.
+  "s26-escalier": s26("01-brique-escalier-guirlande", {
+    legende: "Rampes, guirlande et fenêtres",
+    alt: "Maison de brique : escalier en fer forgé illuminé, arche de guirlande au nœud rouge à l'entrée, contours des fenêtres et ligne de toit en blanc chaud",
+  }),
+  // B — maison de brique à trois pignons (façade, colonnes, vue de côté).
+  "s26-pignons-facade": s26("02-brique-3-pignons-facade", {
+    legende: "Trois pignons en C9",
+    alt: "Maison de brique à trois pignons : lignes de toit en ampoules C9 blanc chaud, avant-toit du porche et colonnes enrubannées",
+  }),
+  "s26-pignons-colonnes": s26("03-brique-3-pignons-colonnes", {
+    legende: "Colonnes enrubannées",
+    alt: "Détail de l'entrée : deux colonnes enrubannées de mini-lumières et avant-toit du porche bordé d'ampoules C9",
+  }),
+  "s26-pignons-angle": s26("04-brique-3-pignons-angle", {
+    legende: "Pignons en C9",
+    alt: "La même maison de brique vue de côté : les trois pignons soulignés en ampoules C9 blanc chaud, colonnes du porche enrubannées",
+  }),
+  // C — ferme moderne blanche (façade, galerie).
+  "s26-ferme-facade": s26("05-ferme-moderne-facade", {
+    legende: "Toit et galerie",
+    alt: "Maison blanche de style ferme moderne : pignons, lucarne et avant-toits en blanc chaud, guirlandes suspendues sous la galerie et poteaux enrubannés",
+  }),
+  "s26-ferme-galerie": s26("06-ferme-moderne-galerie", {
+    legende: "Galerie et poteaux",
+    alt: "Galerie de la même maison : guirlandes suspendues, poteaux enrubannés de mini-lumières et lignes de toit en blanc chaud",
+  }),
+  // D — maison contemporaine en pierre (façade, vue de côté).
+  "s26-contemporaine-facade": s26("07-contemporaine-pierre-facade", {
+    legende: "Toits sur plusieurs niveaux",
+    alt: "Maison contemporaine en pierre : bordures de toit sur plusieurs niveaux soulignées d'ampoules blanc chaud",
+  }),
+  "s26-contemporaine-angle": s26("08-contemporaine-pierre-angle", {
+    legende: "Bordures de toit",
+    alt: "La même maison contemporaine vue de côté : deux niveaux de bordures de toit en ampoules blanc chaud au-dessus du garage",
+  }),
+  // E — maison de pierre, balcon en fer forgé.
+  "s26-balcon": s26("09-pierre-balcon-lanternes", {
+    legende: "Balcon et pignon",
+    alt: "Maison de pierre : balcon en fer forgé enrubanné de mini-lumières, pignon et corniches soulignés d'ampoules C9 blanc chaud",
+  }),
+};
+
 const GENERIQUES = {
+  ...SAISON_2026,
   "arbre-enrubanne": {
     src: `${REEL_PREFIX}noel-arbre-enrubanne.jpg`,
-    alt: "Arbre dénudé entièrement enrubanné de lumières blanches au-dessus de la neige",
+    alt: "Grand arbre dénudé enrubanné de lumières blanc chaud, du tronc jusqu'aux branches, devant une maison de brique",
   },
   "residentiel-01": {
     src: `${REEL_PREFIX}noel-residentiel-01.jpg`,
-    alt: "Maison de pierre illuminée pour les Fêtes, grand conifère décoré en façade",
+    alt: "Maison de pierre : pignons et ligne de toit en blanc chaud, grand conifère illuminé de la base à la cime",
   },
   // La chocolaterie, photos ENTIÈRES (2026-11-13, demande de Yahir) : le
   // camion, la remorque, la vitrine et l'enseigne sur pylône restent dans
@@ -148,21 +218,21 @@ const GENERIQUES = {
   // cache ne remontre l'ancienne version.
   "commercial-01": {
     src: `${REEL_PREFIX}noel-commercial-entiere.jpg`,
-    alt: "Chocolaterie illuminée pour les Fêtes — ligne de toit, vitrine et enseigne sur pylône éclairées",
+    alt: "Chocolaterie : bordures de toit en blanc chaud sur deux niveaux et pylône de l'enseigne enrubanné de lumières",
   },
   "commercial-02": {
     src: `${REEL_PREFIX}noel-commercial-02-entiere.jpg`,
-    alt: "La même chocolaterie illuminée pour les Fêtes, autre angle",
+    alt: "La même chocolaterie sous un autre angle : bordures de toit et pylône de l'enseigne illuminés, à la tombée du jour",
   },
   "arbres-01": {
     src: `${REEL_PREFIX}noel-trees-01.jpg`,
     // Sert de visuel à /secteur/laval, qui n'a aucun chantier photographié :
     // l'alt ne nomme donc AUCUNE ville (check-photos §6).
-    alt: "Conifères illuminés en blanc chaud — installation résidentielle",
+    alt: "Conifères enneigés illuminés en blanc chaud au bord d'un terrain résidentiel",
   },
   "arbres-02": {
     src: `${REEL_PREFIX}noel-trees-02.jpg`,
-    alt: "Arbres décorés de lumières des Fêtes en soirée",
+    alt: "Bosquet d'épinettes illuminées devant un chalet, à l'heure bleue",
   },
   // ⚠️ permanent-hero, -01 et -02 sont LA MÊME MAISON, en trois ambiances
   // (vues sur les photos). /realisations en fait UNE carte qui passe de
@@ -170,23 +240,23 @@ const GENERIQUES = {
   // couleur, puisque c'est la seule chose qui change.
   "permanent-hero": {
     src: `${REEL_PREFIX}perm-led1.jpg`,
-    alt: "Maison en éclairage architectural permanent, ambiance bleu, blanc, rouge",
+    alt: "Maison en éclairage architectural permanent : pastilles DEL sous les soffites et le fronton, ambiance bleu, blanc, rouge",
   },
   "permanent-detail": {
     src: `${REEL_PREFIX}perm-led-02.jpg`,
-    alt: "Gros plan de pastilles DEL RGB d'éclairage permanent sous un soffite",
+    alt: "Gros plan des pastilles DEL RGB de l'éclairage permanent, alignées dans leur rail",
   },
   "permanent-01": {
     src: `${REEL_PREFIX}perm-led.jpg`,
-    alt: "La même maison en éclairage permanent, ambiance rose et rouge",
+    alt: "La même maison, pastilles DEL permanentes réglées en rose et rouge",
   },
   "permanent-02": {
     src: `${REEL_PREFIX}perm-led2.jpg`,
-    alt: "La même maison en éclairage permanent, ambiance multicolore",
+    alt: "La même maison, pastilles DEL permanentes réglées en multicolore",
   },
   "permanent-03": {
     src: `${REEL_PREFIX}perm-led3.jpg`,
-    alt: "Autre maison en éclairage permanent blanc chaud, pose en cours, échelle appuyée sur la façade",
+    alt: "Pose de l'éclairage permanent en blanc chaud sous les soffites d'une maison à pignons, échelle appuyée sur la façade",
   },
 };
 
@@ -289,6 +359,14 @@ export const PREFIXES_OPTIONNELS = [
 /** Une photo par clé, ou null. */
 export const photo = (cle) => (cle && PHOTOS[cle]) || null;
 
+/**
+ * La même photo, dans le cadrage demandé : "paysage" (16:9), "portrait"
+ * (4:5) ou l'entière. Une photo sans recadrage rend son fichier unique —
+ * on peut donc l'appeler sur n'importe quelle photo du registre.
+ */
+export const cadre = (p, format = "paysage") =>
+  p ? { ...p, src: (format === "paysage" ? p.paysage : format === "portrait" ? p.portrait : null) || p.src } : null;
+
 /** La photo propre à une ville, ou null si on n'en a pas. */
 export const cityPhoto = (slug) => photo(CITY_PHOTO[slug]);
 
@@ -341,9 +419,57 @@ export const cityHeroPhoto = (slug) =>
  */
 export function servicePhoto(serviceSlug, citySlug = null) {
   if (serviceSlug === "lumieres-de-noel-residentiel") {
-    return (citySlug && cityPhoto(citySlug)) || photo("residentiel-01");
+    // Sans ville (page du service, /services) : la maison aux trois pignons.
+    return (citySlug && cityPhoto(citySlug)) || photo("s26-pignons-facade");
   }
   if (serviceSlug === "lumieres-de-noel-commercial") return photo("commercial-01");
   if (serviceSlug === "eclairage-architectural-permanent") return photo("permanent-hero");
   return null; // service inconnu — aucune photo plutôt qu'une image au hasard
+}
+
+// -----------------------------------------------------------------------------
+// LES CARTES DE SERVICE D'UNE PAGE DE VILLE — une photo DIFFÉRENTE par ville
+// -----------------------------------------------------------------------------
+// Les six pages de ville montraient les trois mêmes photos (la maison de
+// pierre, la chocolaterie, la maison du permanent) : 14 à 16 pages chacune.
+// Toutes sont GÉNÉRIQUES (check-photos §5) : la photo de la ville, elle,
+// reste dans « À propos ».
+//
+// Résidentiel : la répartition est celle de Yahir (2026-11-23). La page
+// ville × résidentiel reprend la MÊME photo en hero (`heroVilleService`).
+export const RESIDENTIEL_PAR_VILLE = {
+  blainville: "s26-pignons-facade",
+  terrebonne: "s26-ferme-facade",
+  "saint-jerome": "s26-pignons-angle",
+  laval: "s26-escalier",
+  montreal: "s26-balcon",
+  "rive-sud": "s26-ferme-galerie",
+};
+// Commercial et permanent : leurs pages (service, ville × service) gardent
+// commercial-01 et permanent-hero en hero. Pour que ces deux-là ne dépassent
+// pas 8 pages, les CARTES des pages de ville montrent l'autre angle de la
+// chocolaterie, et une autre ambiance de la maison du permanent (en
+// alternance d'une ville à l'autre).
+const PERMANENT_PAR_VILLE = {
+  blainville: "permanent-01", terrebonne: "permanent-02",
+  "saint-jerome": "permanent-01", laval: "permanent-02",
+  montreal: "permanent-01", "rive-sud": "permanent-02",
+};
+/** `cle` : "residentiel" | "commercial" | "permanent" (data.js → cleService). */
+export function carteServiceVille(cle, citySlug) {
+  if (cle === "residentiel") return photo(RESIDENTIEL_PAR_VILLE[citySlug]) || servicePhoto("lumieres-de-noel-residentiel");
+  if (cle === "commercial") return photo("commercial-02");
+  if (cle === "permanent") return photo(PERMANENT_PAR_VILLE[citySlug] || "permanent-01");
+  return null;
+}
+/** Le hero d'une page ville × service. Jamais la photo d'une autre ville. */
+export function heroVilleService(serviceSlug, citySlug) {
+  if (serviceSlug === "lumieres-de-noel-residentiel") return carteServiceVille("residentiel", citySlug);
+  return servicePhoto(serviceSlug);
+}
+/** La carte d'un service sur /services (sans ville). */
+export function carteService(serviceSlug) {
+  // Le permanent : une autre ambiance que le hero de sa page (règle des 8 pages).
+  if (serviceSlug === "eclairage-architectural-permanent") return photo("permanent-02");
+  return servicePhoto(serviceSlug);
 }

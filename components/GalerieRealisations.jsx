@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { flouDe } from "@/components/photos-flou";
 import AmbiancesPermanent from "@/components/AmbiancesPermanent";
+import PhotoCadree from "@/components/PhotoCadree";
 
 // =============================================================================
 // /realisations — la galerie, PAR CHANTIER (components/realisations.js)
@@ -16,7 +17,26 @@ import AmbiancesPermanent from "@/components/AmbiancesPermanent";
 //
 // Visionneuse : glisser ou ← → passe à la photo suivante du chantier, puis
 // au chantier suivant ; Échap ferme et le focus revient à la carte.
+//
+// DEUX GROUPES (2026-11-23) : les chantiers de la dernière saison d'abord,
+// sous leur titre (« Saison 2026 »), puis tous les autres. Un filtre qui ne
+// garde aucun chantier de la saison n'affiche aucun titre — la page d'avant.
+// Quand le groupe de la saison compte un nombre impair de cartes, la première
+// prend toute la largeur (la « vedette ») : pas de trou dans la grille.
+//
+// CADRAGES : une photo qui a ses recadrages montre le 16:9 dans une carte
+// large et le 4:5 dans une carte carrée ou haute (téléphone) ; la visionneuse
+// montre toujours la photo ENTIÈRE. Chaque image porte son alt — ce qu'on a
+// installé — et plus un alt vide.
 // =============================================================================
+const TELEPHONE = "(max-width: 640px)";
+const PLUS_LARGE = "(min-width: 641px)";   // son complément (préchargement)
+// La forme de la carte dit le cadrage et la largeur demandée à l'optimiseur.
+const TAILLES = {
+  vedette: "(max-width: 1180px) 100vw, 1132px",
+  large: "(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 580px",
+  carre: "(max-width: 1100px) 50vw, 580px",
+};
 const SEUIL_GLISSE = 40;
 
 // Un geste horizontal sur un élément : `fin(dx)` reçoit le déplacement si
@@ -37,7 +57,7 @@ function useGeste({ glisse, toucher }) {
   };
 }
 
-function CarteChantier({ chantier, rang, onOuvrir }) {
+function CarteChantier({ chantier, rang, forme = "large", onOuvrir }) {
   const [p, setP] = useState(0);
   const n = chantier.photos.length;
   const geste = useGeste({
@@ -50,14 +70,14 @@ function CarteChantier({ chantier, rang, onOuvrir }) {
     return (
       <div className="chantier chantier--ambiances" data-chantier={chantier.id}>
         <AmbiancesPermanent photos={chantier.photos} onOuvrir={onOuvrir}
-          sizes="(max-width: 640px) 100vw, 580px" libelleOuvrir="Agrandir" />
+          sizes="(max-width: 640px) 100vw, 580px" libelleOuvrir="Agrandir" toutDecrire />
         <span className="chantier__etiquette">{chantier.etiquette}{compte && <em>{compte}</em>}</span>
       </div>
     );
   }
 
   return (
-    <div className="chantier" data-chantier={chantier.id}>
+    <div className={`chantier${n > 1 ? " chantier--plusieurs" : ""}`} data-chantier={chantier.id} data-forme={forme}>
       {/* La photo est un VRAI bouton (clavier : Entrée ouvre). Au doigt, le
           clic est remplacé par le geste : un toucher ouvre, un glissement
           feuillette — sinon chaque glissement ouvrirait aussi la
@@ -65,14 +85,15 @@ function CarteChantier({ chantier, rang, onOuvrir }) {
       <button type="button" className="chantier__photo" {...(n > 1 ? geste : {})}
         onClick={(e) => { if (n === 1 || e.detail === 0) onOuvrir(p); }}
         aria-label={`Agrandir : ${chantier.photos[p].alt}`}>
+        {/* Les photos suivantes d'un chantier se chargent quand la carte
+            approche de l'écran (elles sont empilées dans la même boîte) :
+            feuilleter est immédiat, sans les télécharger dès l'ouverture. */}
         {chantier.photos.map((ph, k) => (
-          <Image key={ph.cle} src={ph.src} alt="" fill
-            sizes="(max-width: 640px) 50vw, (max-width: 1100px) 50vw, 580px"
+          <PhotoCadree key={ph.cle} photo={ph} alt={ph.alt}
+            sizes={TAILLES[forme]}
+            portraitSi={forme === "large" ? null : TELEPHONE} paysageSi={PLUS_LARGE}
             priority={rang < 2 && k === 0}
-            loading={k === 0 ? undefined : "eager"}
-            placeholder={flouDe(ph.src) ? "blur" : "empty"} blurDataURL={flouDe(ph.src)}
-            className={`chantier__img${k === p ? " est-active" : ""}`}
-            style={{ objectFit: "cover" }} />
+            className={`chantier__img${k === p ? " est-active" : ""}`} />
         ))}
       </button>
       {n > 1 && (
@@ -94,7 +115,17 @@ export default function GalerieRealisations({ chantiers, categories }) {
   const declencheur = useRef(null);
   const fermer = useRef(null);
 
-  const visibles = filtre === "Tout" ? chantiers : chantiers.filter((c) => c.categorie === filtre);
+  const filtres = filtre === "Tout" ? chantiers : chantiers.filter((c) => c.categorie === filtre);
+  // La dernière saison d'abord, sous son titre ; le reste ensuite. `visibles`
+  // est l'ordre d'affichage : la visionneuse et le retour du focus s'y fient.
+  const saison = Math.max(0, ...chantiers.map((c) => c.saison || 0));
+  const recents = saison ? filtres.filter((c) => c.saison === saison) : [];
+  const anciens = filtres.filter((c) => !saison || c.saison !== saison);
+  const visibles = [...recents, ...anciens];
+  const groupes = recents.length
+    ? [{ cle: "saison", titre: `Saison ${saison}`, items: recents, debut: 0 },
+       { cle: "avant", titre: anciens.length ? "Réalisations précédentes" : null, items: anciens, debut: recents.length }]
+    : [{ cle: "tout", titre: null, items: visibles, debut: 0 }];
 
   // Suivante / précédente : d'abord les photos du chantier, puis le chantier
   // voisin. La maison du permanent change de couleur par ses points : la
@@ -174,13 +205,33 @@ export default function GalerieRealisations({ chantiers, categories }) {
         ))}
       </div>
 
-      <ul className="galerie">
-        {visibles.map((c, k) => (
-          <li key={c.id} className="galerie__item">
-            <CarteChantier chantier={c} rang={k} onOuvrir={(p) => ouvrir(k, p)} />
-          </li>
-        ))}
-      </ul>
+      {groupes.filter((g) => g.items.length).map((g) => {
+        // Nombre impair dans le groupe de la saison : la première en vedette.
+        const vedette = g.cle === "saison" && g.items.length % 2 === 1;
+        return (
+          // Un <div>, pas une <section> : la feuille de style donne à toute
+          // <section> la marge d'une bande de page.
+          <div key={g.cle} className="galerie__groupe" data-groupe={g.cle}>
+            {g.titre && (
+              <h2 className="galerie__titre">
+                {g.titre}
+                <em>{g.items.length} chantier{g.items.length > 1 ? "s" : ""}</em>
+              </h2>
+            )}
+            <ul className={`galerie${vedette ? " galerie--vedette" : ""}`}>
+              {g.items.map((c, i) => {
+                const k = g.debut + i;
+                const forme = vedette ? (i === 0 ? "vedette" : "carre") : i % 3 === 0 ? "large" : "carre";
+                return (
+                  <li key={c.id} className="galerie__item">
+                    <CarteChantier chantier={c} rang={k} forme={forme} onOuvrir={(p) => ouvrir(k, p)} />
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        );
+      })}
 
       {ch && (
         <div className="visionneuse" role="dialog" aria-modal="true" aria-label={`Réalisation — ${ch.etiquette}`}>

@@ -3,7 +3,7 @@
 ## Pile
 - Next.js 14 (App Router), JSX simple (pas de TypeScript), styles en ligne + `app/globals.css`, **pas de Tailwind**.
 - Couleurs, coordonnées (`company`), services, villes : `components/data.js` (source unique). Domaine canonique : `lib/site-url.js` (`https://www.lumieredenoelinc.com`, override `NEXT_PUBLIC_SITE_URL`).
-- `npm run build` = `check-photos` → `next build` → `check-pixel-lead`. Autres garde-fous : `npm run check:*` (ex. `check:seo` contre un serveur lancé : description ≤ 155 c., canonical www, un seul H1, titres uniques).
+- `npm run build` = `check-photos` → `check-assurance` → `next build` → `check-pixel-lead`. Autres garde-fous : `npm run check:*` (ex. `check:seo` contre un serveur lancé : description ≤ 155 c., canonical www, un seul H1, titres uniques).
 
 ## Cohérence site ↔ CRM ↔ Sophie ↔ pubs (règle permanente)
 - **Source unique** pour le téléphone, le courriel, les réseaux sociaux, le prix d'entrée et la région : `company` dans `components/data.js`. Jamais un numéro, un courriel ou un prix écrit en dur dans une page, une meta, l'OG ou le JSON-LD.
@@ -28,6 +28,28 @@
 - **Micro-interactions** : survols 150 à 200 ms ; le comparateur avant/après suit le doigt. Aucune boucle `infinite` sauf la démo des DEL (`.led--*`) et la lueur lente du cadre « ampoule » (`.cadre-ampoule__lueur`, demandée par Yahir le 2026-11-11).
 - **`prefers-reduced-motion`** : aucune animation (garde global en fin de `globals.css`).
 - **Perf** : images en `next/image` avec `sizes`, une seule image `priority` par page (l'image LCP), polices locales (`public/fonts`, préchargées, replis calibrés `Bebas Repli` / `Nunito Repli` à garder dans chaque `font-family`), Meta Pixel différé (stub + chargement après `load`). Garde : `node scripts/check-animations.mjs`. Objectif Lighthouse mobile ≥ 90, CLS < 0,1.
+
+## Photos : où vit chacune, et la règle des 8 pages (2026-11-23)
+- **AUCUNE PHOTO SUR PLUS DE 8 PAGES.** Garde : `npm run check:usage` (contre un serveur lancé ; `-- --table` imprime tout le tableau). Elle compte les pages du sitemap, chaque `<img>` / `<source>` rendu, et ramène les recadrages et les formats d'une photo à UNE photo ; l'image Open Graph n'est pas comptée. Avant ce jour : la maison de pierre sur 16 pages, la maison du permanent sur 15, la chocolaterie sur 14, Blainville sur 11. Avant d'ajouter une photo à une page, relancer la garde : `commercial-01`, `commercial-02`, `permanent-hero`, `blainville-01`, `montreal-01` et `st-jerome-01` sont DÉJÀ à 8.
+- **Registre** : `components/photos.js` (une clé par photo). Trois familles : SITUÉES (`ville`, ne servent que dans leur ville), GÉNÉRIQUES (aucune ville dans l'alt, servent partout), simulations « avant ». **L'alt décrit ce qu'on a installé** (ligne de toit, colonnes, arbres…), jamais « maison illuminée pour les Fêtes » — `check-photos` §2b le refuse.
+- **Saison 2026** — `public/images/reel/2026/`, 9 photos, 5 maisons, GÉNÉRIQUES tant que Yahir n'a pas donné les villes (aucune ville dans l'alt, l'étiquette ou la légende). Chaque photo existe en trois cadrages — l'entière (`NN-nom`), `-16x9`, `-4x5` — et trois formats (`.jpg`, `.webp`, `.avif`) ; le site référence les JPEG, `next/image` sert l'AVIF/WebP. Préparation : `npm run images:2026 -- <dossier des originaux>` (`scripts/preparer-photos-2026.mjs` : numéros civiques floutés, recadrages, 07 et 08 éclaircies par une courbe qui ne touche pas aux ampoules, métadonnées retirées, ≤ 2 400 px). Vraies photos : rien de généré, aucune lumière ajoutée ni déplacée. Puis `npm run images:flous`.
+
+  | Clé | Fichier | Maison | Où elle est |
+  |---|---|---|---|
+  | `s26-escalier` | 01 | A — brique, escalier en fer forgé, guirlande | /realisations (vedette) · accueil (vedette de la bande) · bande du service résidentiel · Laval (carte + hero ville × résidentiel) |
+  | `s26-pignons-facade` | 02 | B — brique, trois pignons | /realisations · hero du service résidentiel · carte de /services · Blainville (carte + hero) · article « coût » (+ /blog) |
+  | `s26-pignons-colonnes` | 03 | B | /realisations · bande du service résidentiel (colonnes, détails) |
+  | `s26-pignons-angle` | 04 | B | /realisations · Saint-Jérôme (carte + hero) |
+  | `s26-ferme-facade` | 05 | C — ferme moderne blanche | /realisations · Terrebonne (carte + hero) · article « quand réserver » (+ /blog) |
+  | `s26-ferme-galerie` | 06 | C | /realisations · Rive-Sud (carte + hero) |
+  | `s26-contemporaine-facade` | 07 | D — contemporaine en pierre | /realisations |
+  | `s26-contemporaine-angle` | 08 | D | /realisations |
+  | `s26-balcon` | 09 | E — pierre, balcon en fer forgé | /realisations · Montréal (carte + hero) |
+
+- **Pages de ville** (`/secteur/<ville>`) : « À propos » garde la photo DE la ville (`CITY_PHOTO` / `CITY_VISUEL`) ; les trois cartes de service viennent de `carteServiceVille()` — résidentiel : `RESIDENTIEL_PAR_VILLE` (une photo différente par ville, répartition de Yahir) ; commercial : `commercial-02` ; permanent : `permanent-01` / `permanent-02` en alternance. La page `/secteur/<ville>/lumieres-de-noel-residentiel` reprend en hero la photo de la carte résidentielle de SA ville (`heroVilleService`). Les pages commerciales et du permanent (service et ville × service) gardent `commercial-01` et `permanent-hero` en hero ; la carte du permanent sur /services montre `permanent-02`.
+- **Cadrages** : `components/PhotoCadree.jsx` — 16:9 dans une boîte large, 4:5 quand la boîte devient haute (téléphone : `portraitSi`), l'entière seulement dans la visionneuse de /realisations. Un hero à deux cadrages écrit lui-même ses deux `<link rel="preload" media>` (React ne précharge jamais une image dans un `<picture>`) : sans eux le LCP du service résidentiel passait de 2,75 s à 3,97 s au téléphone. Mesuré après (4G lente simulée) : 2,0 s au téléphone, 0,5 s à l'ordinateur ; accueil inchangé.
+- **/realisations** : `components/realisations.js` (une carte = un chantier). Les chantiers `saison: 2026` forment le groupe « Saison 2026 » en tête ; nombre impair de cartes = la première en vedette (pleine largeur). Ajouter une ville plus tard : `ville` sur la photo (elle devient SITUÉE et ne peut plus servir sur la page d'une autre ville — changer alors `RESIDENTIEL_PAR_VILLE`), puis l'étiquette du chantier.
+- **Accueil** : la bande « Réalisations » = la vedette 2026 (01) + les QUATRE photos situées (Blainville, Saint-Jérôme, Montréal, Mercier). Pas six : `check-credibilite`.
 
 ## Vidéos de hero (2026-11-11, paysage et Vieux-Montréal le 2026-11-12)
 - **Principe** : un hero vidéo = un MONTAGE par format, monté à part (`MONTAGES` dans `lib/hero-media.js`) — portrait pour téléphone / écran vertical, paysage pour le reste (`MEDIA_PORTRAIT`). **Ne jamais recadrer un format dans l'autre.** Chaque format : vidéo H.264 sans piste audio, faststart, < ~3 Mo, + affiche = image du montage (`debut` = l'instant d'où elle est tirée, la vidéo démarre là). L'affiche est l'image LCP (`<picture>`, `priority`) ; `HeroVideo` ne demande la vidéo qu'après `load`, UNE seule par visiteur (le format du chargement ; une rotation ne télécharge rien de plus), rien sous `prefers-reduced-motion` ou économie de données.

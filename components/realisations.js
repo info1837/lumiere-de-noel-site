@@ -17,6 +17,11 @@
 //   · un chantier `ambiances` n'a que des photos de la même maison, chacune
 //     avec le nom de la couleur VUE sur la photo.
 //
+// SAISON 2026 (2026-11-23) : cinq maisons, en tête de page, dans leur propre
+// groupe (`saison: 2026`). Aucune ville dans l'étiquette — Yahir les ajoutera ;
+// l'étiquette dit ce qu'on a installé. La première photo de chaque chantier
+// est sa couverture.
+//
 // Ce fichier n'importe que le registre des photos : la garde de build peut
 // le lire sans l'alias `@/`.
 // =============================================================================
@@ -25,6 +30,13 @@ import { PHOTOS } from "./photos.js";
 export const CATEGORIES_CHANTIERS = ["Résidentiel", "Commercial", "Arbres", "Permanent"];
 
 const BRUTS = [
+  // ── Saison 2026 — résidentiel ────────────────────────────────────────────
+  { id: "s26-escalier", saison: 2026, categorie: "Résidentiel", etiquette: "Escalier, guirlande et fenêtres", photos: ["s26-escalier"] },
+  { id: "s26-trois-pignons", saison: 2026, categorie: "Résidentiel", etiquette: "Trois pignons et colonnes", photos: ["s26-pignons-facade", "s26-pignons-colonnes", "s26-pignons-angle"] },
+  { id: "s26-ferme-moderne", saison: 2026, categorie: "Résidentiel", etiquette: "Ferme moderne : toit et galerie", photos: ["s26-ferme-facade", "s26-ferme-galerie"] },
+  { id: "s26-contemporaine", saison: 2026, categorie: "Résidentiel", etiquette: "Contemporaine en pierre", photos: ["s26-contemporaine-facade", "s26-contemporaine-angle"] },
+  { id: "s26-balcon", saison: 2026, categorie: "Résidentiel", etiquette: "Balcon et pignon de pierre", photos: ["s26-balcon"] },
+
   // ── Résidentiel ──────────────────────────────────────────────────────────
   { id: "blainville", categorie: "Résidentiel", etiquette: "Blainville", photos: ["blainville-01"] },
   { id: "terrebonne", categorie: "Résidentiel", etiquette: "Terrebonne", photos: ["terrebonne-01"] },
@@ -70,6 +82,10 @@ export const CHANTIERS = BRUTS.map((c) => ({
   photos: c.photos.map((cle, i) => ({
     cle,
     src: PHOTOS[cle]?.src,
+    // Les recadrages, quand la photo en a : la carte montre le 16:9 (le 4:5
+    // dans une carte carrée ou haute), la visionneuse l'entière.
+    paysage: PHOTOS[cle]?.paysage || null,
+    portrait: PHOTOS[cle]?.portrait || null,
     alt: PHOTOS[cle]?.alt,
     ville: PHOTOS[cle]?.ville || null,
     ...(c.couleurs ? { couleur: c.couleurs[i] } : {}),

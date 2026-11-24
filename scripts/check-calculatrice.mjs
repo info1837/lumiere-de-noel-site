@@ -92,8 +92,16 @@ console.log('\n--- 5. 🚨 Les pieds linéaires vont au CRM, jamais à l\'écran
 
 console.log('\n--- 6. Sophie prend le relais ---');
 {
+  // ⚠️ Depuis l'attribution Google Ads (#70), la source passe par
+  // sourceAvecGoogleAds('Calculatrice toiture — site Lumière', gads), qui
+  // n'ajoute qu'un SUFFIXE (« — Google Ads »). Cette garde cherchait encore
+  // l'ancienne écriture littérale et échouait sur main alors que le préfixe
+  // n'avait pas bougé. On accepte les deux écritures, et on vérifie que la
+  // fonction ne peut pas toucher au début de la chaîne.
   t('🚨 la source déclenche l\'enrôlement (préfixe « Calculatrice »)',
-    /source: 'Calculatrice toiture — site Lumière'/.test(route));
+    /source: (?:sourceAvecGoogleAds\()?'Calculatrice toiture — site Lumière'/.test(route));
+  t('🚨 le suffixe Google Ads garde le préfixe',
+    /return attribution \? `\$\{source\} — Google Ads`/.test(lire('lib/google-ads.js')));
   t('l\'écran annonce le texto', /Vous recevez un texto dans la minute/.test(calc));
   t('🚨 le pixel est relayé tel quel (dédup CAPI)', /meta_pixel/.test(route));
   t('le honeypot est intact', /body\.website/.test(route));
