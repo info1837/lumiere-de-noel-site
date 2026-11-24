@@ -64,8 +64,10 @@ const { ctx, page, toucher, glisser, centrer } = await ouvrirPage();
 
 console.log("\n--- 1. Une carte = un chantier ---");
 const nombre = async (f) => Number((await page.locator(".filtre", { hasText: f }).locator(".filtre__n").innerText()).trim());
-// 2026-11-23 : + 5 chantiers résidentiels de la saison 2026 (18 → 23, 11 → 16).
-const attendus = { Tout: 23, "Résidentiel": 16, Commercial: 1, Arbres: 3, Permanent: 3 };
+// 2026-11-23 : + 5 chantiers résidentiels de la saison 2026 (18 → 23, 11 → 16),
+// puis Terrebonne et Sainte-Anne-des-Plaines rejoignent la carte 2026 de LEUR
+// maison (une maison = une carte) : 23 → 21, 16 → 14.
+const attendus = { Tout: 21, "Résidentiel": 14, Commercial: 1, Arbres: 3, Permanent: 3 };
 for (const [f, n] of Object.entries(attendus)) {
   const annonce = await nombre(f);
   await page.locator(".filtre", { hasText: f }).click();
@@ -78,7 +80,7 @@ await attendre(150);
 const srcs = await page.evaluate(() => [...document.querySelectorAll(".chantier img")].map((i) => new URL(i.currentSrc || i.src).searchParams.get("url") || i.src));
 t("🚨 aucune photo dans deux cartes", new Set(srcs).size === srcs.length, `${srcs.length} images, ${new Set(srcs).size} distinctes`);
 for (const [id, n] of [["chocolaterie", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3],
-  ["s26-trois-pignons", 3], ["s26-ferme-moderne", 2], ["s26-contemporaine", 2]]) {
+  ["s26-trois-pignons", 3], ["s26-ferme-moderne", 3], ["s26-contemporaine", 2], ["s26-balcon", 2]]) {
   const k = await page.locator(`[data-chantier="${id}"] img`).count();
   t(`« ${id} » réunit ${n} photos`, k === n, `${k}`);
 }
@@ -92,10 +94,26 @@ console.log("\n--- 1b. La saison 2026 en tête, et un alt sur chaque photo ---")
   t("🚨 le premier groupe est « Saison 2026 »", groupes[0]?.titre === "Saison 2026", groupes.map((g) => g.titre).join(" | "));
   t("🚨 …avec ses 5 chantiers, dans l'ordre",
     groupes[0]?.ids.join() === "s26-escalier,s26-trois-pignons,s26-ferme-moderne,s26-contemporaine,s26-balcon", groupes[0]?.ids.join());
-  t("le reste suit, sous son propre titre", groupes.length === 2 && groupes[1].ids.length === 18 && !!groupes[1].titre, `${groupes[1]?.ids.length} — ${groupes[1]?.titre}`);
-  const etiquettes = await page.evaluate(() => [...document.querySelectorAll('[data-groupe="saison"] .chantier__etiquette')].map((e) => e.childNodes[0].textContent));
-  const VILLES = /Blainville|Terrebonne|Saint-Jérôme|Laval|Montréal|Rive-Sud|Mirabel|Mercier|Léry|Lorraine|Rosemère|Boisbriand/;
-  t("aucune ville dans les étiquettes de la saison (elles viendront)", etiquettes.length === 5 && etiquettes.every((e) => !VILLES.test(e)), etiquettes.join(" | "));
+  t("le reste suit, sous son propre titre", groupes.length === 2 && groupes[1].ids.length === 16 && !!groupes[1].titre, `${groupes[1]?.ids.length} — ${groupes[1]?.titre}`);
+  const etiquettes = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll('[data-groupe="saison"] [data-chantier]')]
+    .map((c) => [c.dataset.chantier, c.querySelector(".chantier__etiquette").childNodes[0].textContent])));
+  const VILLES = /Blainville|Terrebonne|Saint-Jérôme|Sainte-Anne|Laval|Montréal|Rive-Sud|Mirabel|Mercier|Léry|Lorraine|Rosemère|Boisbriand/;
+  // Une ville seulement là où Yahir l'a donnée (la maison était déjà sur la
+  // page, avec sa photo située) ; les trois autres disent ce qu'on a installé.
+  t("🚨 les deux maisons connues nomment leur ville", /Terrebonne/.test(etiquettes["s26-balcon"]) && /Sainte-Anne-des-Plaines/.test(etiquettes["s26-ferme-moderne"]),
+    `${etiquettes["s26-balcon"]} | ${etiquettes["s26-ferme-moderne"]}`);
+  t("…les trois autres n'en nomment aucune (elles viendront)",
+    ["s26-escalier", "s26-trois-pignons", "s26-contemporaine"].every((id) => etiquettes[id] && !VILLES.test(etiquettes[id])), Object.values(etiquettes).join(" | "));
+  // 🚨 Une maison = une carte : la photo de l'an dernier est DANS la carte
+  // 2026 de sa maison, et plus aucune carte « Terrebonne » / « Sainte-Anne ».
+  const maisons = await page.evaluate(() => ({
+    balcon: [...document.querySelectorAll('[data-chantier="s26-balcon"] img')].map((i) => decodeURIComponent(i.currentSrc || i.src)),
+    ferme: [...document.querySelectorAll('[data-chantier="s26-ferme-moderne"] img')].map((i) => decodeURIComponent(i.currentSrc || i.src)),
+    anciennes: document.querySelectorAll('[data-chantier="terrebonne"], [data-chantier="sainte-anne"]').length,
+  }));
+  t("🚨 Terrebonne : la photo de l'an dernier est dans la carte du balcon", maisons.balcon.some((u) => /noel-terrebonne/.test(u)) && /09-pierre-balcon/.test(maisons.balcon[0]), maisons.balcon.map((u) => u.slice(-48)).join(" | "));
+  t("🚨 Sainte-Anne-des-Plaines : la photo de l'an dernier est dans la carte de la ferme moderne", maisons.ferme.some((u) => /noel-ste-anne/.test(u)) && /05-ferme-moderne/.test(maisons.ferme[0]), maisons.ferme.map((u) => u.slice(-48)).join(" | "));
+  t("…et leurs anciennes cartes ont disparu (une maison = une carte)", maisons.anciennes === 0, `${maisons.anciennes}`);
   // Chaque <img> de la galerie décrit l'installation : ni vide, ni générique.
   const alts = await page.evaluate(() => [...document.querySelectorAll(".galerie img")].map((i) => i.getAttribute("alt") || ""));
   const vides = alts.filter((a) => a.length < 25);
@@ -114,7 +132,7 @@ console.log("\n--- 1b. La saison 2026 en tête, et un alt sur chaque photo ---")
   await attendre(400);
   const grande = await page.evaluate(() => { const i = document.querySelector(".visionneuse img"); return i ? decodeURIComponent(i.currentSrc || i.src) : ""; });
   t("🚨 la visionneuse montre l'entière (ni -16x9 ni -4x5)", /05-ferme-moderne-facade\.jpg/.test(grande), grande.slice(-70));
-  t("…avec le compte du chantier", /^Photo 1\/2 · Chantier 3 \/ 23/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
+  t("…avec le compte du chantier", /^Photo 1\/3 · Chantier 3 \/ 21/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
   await page.keyboard.press("Escape");
   await attendre(200);
 }
