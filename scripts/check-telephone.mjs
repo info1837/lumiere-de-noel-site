@@ -1,4 +1,4 @@
-// Le numéro en lettres — (438) 812-NOEL (2026-11-11, demande de Yahir).
+// Le numéro en lettres — 450 400-NOEL (2026-11-24; avant : (438) 812-NOEL, 2026-11-11).
 //
 //   node scripts/check-telephone.mjs
 //
@@ -38,7 +38,8 @@ const fichiers = [];
   }
 })(".");
 const sansData = fichiers.filter((f) => !f.endsWith(path.join("components", "data.js")));
-const enDur = sansData.filter((f) => /812[- ]?6635|812-NOEL|tel:\+?1?438/.test(lire(f)));
+const enDur = sansData.filter((f) => /812[- ]?6635|812-NOEL|400[- ]?6635|400-NOEL|tel:\+?1?(438|450)/.test(lire(f)));
+t("🚨 aucun vieux numéro (438) 812 dans le dépôt", !fichiers.some((f) => /812[- ]?(6635|NOEL)/.test(lire(f))));
 t("🚨 aucun numéro écrit en dur (tout vient de company)", enDur.length === 0, enDur.join(", "));
 const liensSansAria = [];
 for (const f of sansData) {

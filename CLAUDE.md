@@ -83,8 +83,13 @@
 - **« Ce qui est compris » au téléphone (2026-11-24, robot QA)** : `offre--cadre-bas` (`CeQuiEstCompris`, page commerciale et Vieux-Montréal) — l'ampoule a SA rangée à droite du prix et du bouton, SOUS la liste (la colonne devient `display: contents`, filet du haut sur la liste) : la liste y est trop longue pour qu'elle monte à côté (elle touchait « Installation hors des heures… » et « Entretien inclus… » à 360 / 390 / 430). La section grandit d'environ 150 px au téléphone ; l'accueil et l'ordinateur ne changent pas. Contrôle local : `node scripts/check-cadre-ampoule.mjs` (BASE_URL d'un serveur lancé ; 3 pages × 360 / 390 / 430 / 1440, même mesure que le robot).
 - **Placements de la photo** (`ampoule`, `ampouleMobile` dans `components/photos.js`) : CALCULÉS par recherche (la photo couvre le verre, tête et mains à distance du contour, corps centré), pas au jugé. Nouvelle photo ou nouvelle taille = recalculer, puis vérifier à 360, 390, 430 et 1440 qu'aucun texte ne touche le contour.
 
-## Téléphone en lettres (2026-11-11)
-- Boutons et liens : `company.phoneVanity` « (438) 812-NOEL » ; le lien compose toujours `phoneHref` (+14388126635) et porte `aria-label={company.phoneAria}` (les chiffres). Pied de page et textes légaux : les lettres PUIS les chiffres. JSON-LD, meta et phrases sans lien : `phoneDisplay` seulement. Composant `components/LienTelephone.jsx`, garde `npm run check:telephone`.
+## Téléphone en lettres (2026-11-11, numéro changé le 2026-11-24)
+- Boutons et liens : `company.phoneVanity` « 450 400-NOEL » ; le lien compose toujours `phoneHref` (+14504006635) et porte `aria-label={company.phoneAria}` (les chiffres). Pied de page et textes légaux : les lettres PUIS les chiffres. JSON-LD, meta et phrases sans lien : `phoneDisplay` seulement. Composant `components/LienTelephone.jsx`, garde `npm run check:telephone`.
+
+## SEO positioning (Nov 2026)
+- **Un seul numéro partout : 450 400-NOEL** (chiffres : 450 400-6635, lien `tel:+14504006635`). L'ancien (438) 812-NOEL / 438-812-6635 ne doit plus apparaître nulle part (en-tête, pied de page, pages secteur, CTA, meta, JSON-LD). Source unique : `company` dans `components/data.js` ; `npm run check:telephone` refuse tout « 812-6635 / 812-NOEL » dans le code.
+- JSON-LD (`telephone`) et balises meta : les chiffres seulement (« 450 400-6635 » / `+14504006635`), jamais les lettres — les moteurs ne lisent pas « NOEL ».
+- **Courriel unique : info@lumieredenoelinc.com** (site et schema), dérivé de `DOMAIN`. Plus aucun « lumieredenoelinc.ca ».
 
 ## Concours 2026 : terminé
 - `/concours` montre l'état « terminé » (plus de compte à rebours, de formulaire ni de 15 %), garde le règlement et la mention Meta. Le pied de page n'a plus aucun lien du concours. Garde : `node scripts/check-concours.mjs <url>`.

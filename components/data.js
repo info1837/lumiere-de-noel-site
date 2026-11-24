@@ -82,13 +82,14 @@ export const company = {
   // Sert à la fois de numéro public sur le site ET de numéro à Sophie B.
   // Ce n'est PAS celui de Palencia — les deux entreprises ont chacune le
   // leur, et ils ne doivent jamais se croiser.
-  phoneDisplay: "(438) 812-6635",
-  phoneHref: "tel:+14388126635",
+  phoneDisplay: "450 400-6635",
+  phoneHref: "tel:+14504006635",
+  // Numéro unique 450 400-NOEL depuis le 2026-11-24 (remplace l'ancien 438).
   // Le même numéro, en lettres, pour les boutons et liens (2026-11-11) :
   // N-O-E-L = 6-6-3-5. Le lien compose toujours les chiffres ; JSON-LD,
   // meta et phrases sans lien gardent phoneDisplay. Voir LienTelephone.
-  phoneVanity: "(438) 812-NOEL",
-  phoneAria: "Appeler le (438) 812-6635",
+  phoneVanity: "450 400-NOEL",
+  phoneAria: "Appeler le 450 400-6635",
   // ── DOMAINE — UNE SEULE VALEUR ────────────────────────────────────
   // Tout ce qui suit en dérive : courriel, mailto, affichage, baseUrl,
   // sitemap, robots.txt, JSON-LD, canonicals. Passer de .ca à .com se

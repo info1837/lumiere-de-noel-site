@@ -866,7 +866,7 @@ textarea:focus-visible,
 .snowy > * { position: relative; z-index: 1; }
 
 
-/* Le numéro se coupait après le trait d'union sur mobile — « (438) 812- »
+/* Le numéro se coupait après le trait d'union sur mobile — « (438) 812- » (ancien numéro)
    puis « 6635 » — ce qui doublait la hauteur de l'en-tête fixe et aggravait
    le chevauchement du hero. Un numéro de téléphone ne se coupe jamais. */
 .phone-label { white-space: nowrap; }

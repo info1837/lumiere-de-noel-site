@@ -8,7 +8,7 @@
 // Mesuré en vrai navigateur sur la production le 2026-09-28 : depuis
 // www.lumieredenoelinc.com, api.web3forms.com est bloqué par CORS. Le
 // lead arrivait bien au CRM (HTTP 200) et pourtant le visiteur lisait
-// « Erreur d'envoi. Appelez-nous au (438) 812-6635. », la page ne
+// « Erreur d'envoi. Appelez-nous au 450 400-6635. », la page ne
 // redirigeait pas vers /merci, et AUCUN événement Lead ne partait vers
 // Meta — parce que les formulaires ne tirent le pixel que sur `ok`.
 //
