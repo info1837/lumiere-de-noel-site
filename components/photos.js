@@ -141,9 +141,15 @@ const SITUEES = {
 // encore photographiée. Ne jamais leur ajouter `ville`.
 // -----------------------------------------------------------------------------
 // ── Saison 2026 (2026-11-23) ─────────────────────────────────────────────
-// Neuf photos, cinq maisons. GÉNÉRIQUES pour l'instant : Yahir ajoutera les
-// villes plus tard — d'ici là aucun alt, aucune légende ne nomme un lieu, et
-// elles peuvent donc servir sur n'importe quelle page de ville.
+// Neuf photos, cinq maisons. GÉNÉRIQUES : aucun alt, aucune légende ne nomme
+// un lieu, et elles peuvent donc servir sur n'importe quelle page de ville.
+// Deux maisons sont connues (Yahir, 2026-11-23) : C est la maison de
+// Sainte-Anne-des-Plaines (`ste-anne-01`), E celle de Terrebonne
+// (`terrebonne-01`). Sur /realisations elles partagent UNE carte avec la
+// photo de l'an dernier, et c'est cette photo située qui porte la ville
+// (components/realisations.js). Ne PAS leur donner `ville` tant qu'elles
+// illustrent d'autres pages de ville (RESIDENTIEL_PAR_VILLE) : check-photos
+// le refuserait, à raison.
 // Préparées par scripts/preparer-photos-2026.mjs (numéros civiques floutés,
 // recadrages, 07 et 08 éclaircies ; rien de généré, aucune lumière ajoutée).
 // `legende` : ce qu'on y a installé, en trois mots, pour une bande ou la
@@ -175,7 +181,7 @@ const SAISON_2026 = {
     legende: "Pignons en C9",
     alt: "La même maison de brique vue de côté : les trois pignons soulignés en ampoules C9 blanc chaud, colonnes du porche enrubannées",
   }),
-  // C — ferme moderne blanche (façade, galerie).
+  // C — ferme moderne blanche (façade, galerie). La maison de `ste-anne-01`.
   "s26-ferme-facade": s26("05-ferme-moderne-facade", {
     legende: "Toit et galerie",
     alt: "Maison blanche de style ferme moderne : pignons, lucarne et avant-toits en blanc chaud, guirlandes suspendues sous la galerie et poteaux enrubannés",
@@ -193,7 +199,7 @@ const SAISON_2026 = {
     legende: "Bordures de toit",
     alt: "La même maison contemporaine vue de côté : deux niveaux de bordures de toit en ampoules blanc chaud au-dessus du garage",
   }),
-  // E — maison de pierre, balcon en fer forgé.
+  // E — maison de pierre, balcon en fer forgé. La maison de `terrebonne-01`.
   "s26-balcon": s26("09-pierre-balcon-lanternes", {
     legende: "Balcon et pignon",
     alt: "Maison de pierre : balcon en fer forgé enrubanné de mini-lumières, pignon et corniches soulignés d'ampoules C9 blanc chaud",

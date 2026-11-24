@@ -40,14 +40,15 @@
   | `s26-pignons-facade` | 02 | B — brique, trois pignons | /realisations · hero du service résidentiel · carte de /services · Blainville (carte + hero) · article « coût » (+ /blog) |
   | `s26-pignons-colonnes` | 03 | B | /realisations · bande du service résidentiel (colonnes, détails) |
   | `s26-pignons-angle` | 04 | B | /realisations · Saint-Jérôme (carte + hero) |
-  | `s26-ferme-facade` | 05 | C — ferme moderne blanche | /realisations · Terrebonne (carte + hero) · article « quand réserver » (+ /blog) |
+  | `s26-ferme-facade` | 05 | C — ferme moderne blanche (Sainte-Anne-des-Plaines) | /realisations · Terrebonne (carte + hero) · article « quand réserver » (+ /blog) |
   | `s26-ferme-galerie` | 06 | C | /realisations · Rive-Sud (carte + hero) |
   | `s26-contemporaine-facade` | 07 | D — contemporaine en pierre | /realisations |
   | `s26-contemporaine-angle` | 08 | D | /realisations |
-  | `s26-balcon` | 09 | E — pierre, balcon en fer forgé | /realisations · Montréal (carte + hero) |
+  | `s26-balcon` | 09 | E — pierre, balcon en fer forgé (Terrebonne) | /realisations · Montréal (carte + hero) |
 
 - **Pages de ville** (`/secteur/<ville>`) : « À propos » garde la photo DE la ville (`CITY_PHOTO` / `CITY_VISUEL`) ; les trois cartes de service viennent de `carteServiceVille()` — résidentiel : `RESIDENTIEL_PAR_VILLE` (une photo différente par ville, répartition de Yahir) ; commercial : `commercial-02` ; permanent : `permanent-01` / `permanent-02` en alternance. La page `/secteur/<ville>/lumieres-de-noel-residentiel` reprend en hero la photo de la carte résidentielle de SA ville (`heroVilleService`). Les pages commerciales et du permanent (service et ville × service) gardent `commercial-01` et `permanent-hero` en hero ; la carte du permanent sur /services montre `permanent-02`.
 - **Cadrages** : `components/PhotoCadree.jsx` — 16:9 dans une boîte large, 4:5 quand la boîte devient haute (téléphone : `portraitSi`), l'entière seulement dans la visionneuse de /realisations. Un hero à deux cadrages écrit lui-même ses deux `<link rel="preload" media>` (React ne précharge jamais une image dans un `<picture>`) : sans eux le LCP du service résidentiel passait de 2,75 s à 3,97 s au téléphone. Mesuré après (4G lente simulée) : 2,0 s au téléphone, 0,5 s à l'ordinateur ; accueil inchangé.
+- **Une maison = une carte, même d'une saison à l'autre** (Yahir, 2026-11-23) : la maison E (balcon) est celle de Terrebonne, la maison C (ferme moderne) celle de Sainte-Anne-des-Plaines. Leur photo de l'an dernier (`terrebonne-01`, `ste-anne-01`) vit dans la carte 2026 de la maison, après les photos de cette année, et donne sa ville à l'étiquette ; plus de carte « Terrebonne » ni « Sainte-Anne-des-Plaines » à part. Avant d'ajouter une photo à /realisations, vérifier que la maison n'y est pas déjà. Les photos 2026 de ces deux maisons restent génériques (elles illustrent d'autres pages de ville).
 - **/realisations** : `components/realisations.js` (une carte = un chantier). Les chantiers `saison: 2026` forment le groupe « Saison 2026 » en tête ; nombre impair de cartes = la première en vedette (pleine largeur). Ajouter une ville plus tard : `ville` sur la photo (elle devient SITUÉE et ne peut plus servir sur la page d'une autre ville — changer alors `RESIDENTIEL_PAR_VILLE`), puis l'étiquette du chantier.
 - **Accueil** : la bande « Réalisations » = la vedette 2026 (01) + les QUATRE photos situées (Blainville, Saint-Jérôme, Montréal, Mercier). Pas six : `check-credibilite`.
 

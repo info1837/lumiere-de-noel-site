@@ -18,9 +18,19 @@
 //     avec le nom de la couleur VUE sur la photo.
 //
 // SAISON 2026 (2026-11-23) : cinq maisons, en tête de page, dans leur propre
-// groupe (`saison: 2026`). Aucune ville dans l'étiquette — Yahir les ajoutera ;
-// l'étiquette dit ce qu'on a installé. La première photo de chaque chantier
+// groupe (`saison: 2026`). L'étiquette dit ce qu'on a installé ; la ville
+// n'y figure que quand Yahir l'a donnée. La première photo de chaque chantier
 // est sa couverture.
+//
+// ⚠️ UNE MAISON = UNE CARTE, MÊME D'UNE SAISON À L'AUTRE (Yahir, 2026-11-23).
+// Deux des cinq maisons étaient DÉJÀ sur la page avec leur photo de l'an
+// dernier, dans une carte à elles : la maison de pierre au balcon est celle
+// de Terrebonne, la ferme moderne celle de Sainte-Anne-des-Plaines. La même
+// maison dans deux cartes, c'est un chantier compté deux fois. La photo de
+// l'an dernier vit donc dans la carte de la saison 2026, après les photos de
+// cette année — et c'est elle (photo SITUÉE) qui donne sa ville à
+// l'étiquette, comme « Saint-Donat » plus bas. Les photos de 2026 restent
+// génériques (alt sans ville) : elles servent aussi sur des pages de ville.
 //
 // Ce fichier n'importe que le registre des photos : la garde de build peut
 // le lire sans l'alias `@/`.
@@ -33,17 +43,15 @@ const BRUTS = [
   // ── Saison 2026 — résidentiel ────────────────────────────────────────────
   { id: "s26-escalier", saison: 2026, categorie: "Résidentiel", etiquette: "Escalier, guirlande et fenêtres", photos: ["s26-escalier"] },
   { id: "s26-trois-pignons", saison: 2026, categorie: "Résidentiel", etiquette: "Trois pignons et colonnes", photos: ["s26-pignons-facade", "s26-pignons-colonnes", "s26-pignons-angle"] },
-  { id: "s26-ferme-moderne", saison: 2026, categorie: "Résidentiel", etiquette: "Ferme moderne : toit et galerie", photos: ["s26-ferme-facade", "s26-ferme-galerie"] },
+  { id: "s26-ferme-moderne", saison: 2026, categorie: "Résidentiel", etiquette: "Ferme moderne — Sainte-Anne-des-Plaines", photos: ["s26-ferme-facade", "s26-ferme-galerie", "ste-anne-01"] },
   { id: "s26-contemporaine", saison: 2026, categorie: "Résidentiel", etiquette: "Contemporaine en pierre", photos: ["s26-contemporaine-facade", "s26-contemporaine-angle"] },
-  { id: "s26-balcon", saison: 2026, categorie: "Résidentiel", etiquette: "Balcon et pignon de pierre", photos: ["s26-balcon"] },
+  { id: "s26-balcon", saison: 2026, categorie: "Résidentiel", etiquette: "Balcon et pignon de pierre — Terrebonne", photos: ["s26-balcon", "terrebonne-01"] },
 
   // ── Résidentiel ──────────────────────────────────────────────────────────
   { id: "blainville", categorie: "Résidentiel", etiquette: "Blainville", photos: ["blainville-01"] },
-  { id: "terrebonne", categorie: "Résidentiel", etiquette: "Terrebonne", photos: ["terrebonne-01"] },
   { id: "saint-jerome", categorie: "Résidentiel", etiquette: "Saint-Jérôme", photos: ["st-jerome-01"] },
   { id: "mirabel", categorie: "Résidentiel", etiquette: "Mirabel", photos: ["mirabel-01"] },
   { id: "sainte-julienne", categorie: "Résidentiel", etiquette: "Sainte-Julienne", photos: ["ste-julienne-01"] },
-  { id: "sainte-anne", categorie: "Résidentiel", etiquette: "Sainte-Anne-des-Plaines", photos: ["ste-anne-01"] },
   { id: "stratford", categorie: "Résidentiel", etiquette: "Stratford", photos: ["stratford-01"] },
   { id: "lery", categorie: "Résidentiel", etiquette: "Léry", photos: ["lery-01"] },
   { id: "mercier", categorie: "Résidentiel", etiquette: "Mercier", photos: ["mercier-01"] },
