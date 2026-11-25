@@ -20,6 +20,12 @@ export function generateStaticParams() {
   return params;
 }
 
+function metaVilleService(court, cityIn, phrase) {
+  const p = phrase.charAt(0).toLowerCase() + phrase.slice(1);
+  const d = `${court} ${cityIn} : ${p}`;
+  return d.length <= 155 ? d : d.slice(0, 154).replace(/[\s,;:—-]+\S*$/, "") + "…";
+}
+
 export function generateMetadata({ params }) {
   const c = findCity(params.city);
   const s = findService(params.service);
@@ -32,8 +38,9 @@ export function generateMetadata({ params }) {
   const title = `${court} ${cityIn}`;
   return {
     title: { absolute: title },
-    description:
-      `${court} ${cityIn} : pose, entretien et retrait inclus, matériel DEL commercial fourni. Projets à partir de 1 000 $.`,
+    // 2026-11-24 : la phrase locale de la ville pour CE service (parService),
+    // donc une meta propre à chaque page — plus un gabarit où seul le nom change.
+    description: metaVilleService(court, cityIn, c.parService[cleService(s.slug)]),
     alternates: { canonical: `/secteur/${c.slug}/${s.slug}` },
     openGraph: {
       title: `${title} | Solution Lumière de Noël`,
@@ -76,8 +83,11 @@ export default function CityServicePage({ params }) {
       />
       <ServiceJsonLd service={s} areaServed={[c.name]} urlPath={`/secteur/${c.slug}/${s.slug}`} />
 
+      {/* Sans photo libre (permanent des villes ajoutées le 2026-11-24, règle
+          des 8 pages) : le montage vidéo des pages de ville. */}
       <HeroPage
-        photo={heroPhoto}
+        photo={heroPhoto || undefined}
+        montage={!heroPhoto}
         kicker={`${c.regionLabel} — ${c.name}`}
         titre={`${s.seoTitle || s.title} ${inCity(c.name)}`}
         phrase={c.parService[cle]}

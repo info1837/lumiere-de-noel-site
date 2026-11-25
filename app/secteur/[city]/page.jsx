@@ -4,7 +4,10 @@ import {
   HeroPage, AProposVille, CartesServices, CeQuiEstCompris, Parcours, FaqCourte,
   Reservation, PucesVilles, LienVieuxMontreal,
 } from "@/components/sections";
-import { PHOTOS, cityHeroPhoto } from "@/components/photos";
+import { PHOTOS, cityHeroPhoto, photosDeVille } from "@/components/photos";
+import GaleriePhotos from "@/components/GaleriePhotos";
+import { SectionTag, SectionTitle } from "@/components/ui";
+import { MARINE_PROFOND } from "@/components/sections";
 import { cities, findCity, inCity, findService } from "@/components/data";
 
 export function generateStaticParams() {
@@ -64,6 +67,24 @@ export default function CityPage({ params }) {
       />
 
       <AProposVille ville={c} />
+
+      {/* Saison 2026 (2026-11-24) : les vraies images tournées DANS cette
+          ville (drone et appareil photo), au format naturel. Rien quand on n'a
+          rien tourné ici — jamais les images d'une autre ville. */}
+      {photosDeVille(c.slug).length > 0 && (
+        <section style={{ background: MARINE_PROFOND }} aria-labelledby="saison-ville">
+          <div className="container">
+            <div className="section-entete">
+              <SectionTag dark>Saison 2026 — {c.name}</SectionTag>
+              <SectionTitle light id="saison-ville" style={{ margin: "0 auto 14px" }}>Nos installations {inCity(c.name)}</SectionTitle>
+              <p className="section-phrase" style={{ margin: "0 auto" }}>
+                Images tournées cet automne, au drone et à l&apos;appareil photo, sur des propriétés que nous avons décorées {inCity(c.name)}.
+              </p>
+            </div>
+            <GaleriePhotos photos={photosDeVille(c.slug)} colonnes={4} />
+          </div>
+        </section>
+      )}
 
       {/* Montréal : les commerces du Vieux-Montréal ont leur page. */}
       {c.slug === "montreal" && (

@@ -275,6 +275,10 @@ export const serviceArea = [
   "Laval",
   "Montréal",
   "Rive-Sud",
+  // 2026-11-24
+  "Lorraine", "Sainte-Anne-des-Plaines", "Saint-Valentin", "Beaconsfield", "Léry",
+  "Sainte-Thérèse", "Rosemère", "Boisbriand", "Mirabel", "Saint-Eustache",
+  "Longueuil", "Brossard", "Boucherville",
 ];
 
 // =============================================================================
@@ -586,6 +590,326 @@ const villesBrutes = [
       { q: "Combien coûte une maison sur la Rive-Sud?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Le prix varie avec la hauteur, la longueur de toiture et le nombre d'arbres, et il est confirmé après un court appel." },
       { q: "Si une lumière brûle, vous traversez le pont?", a: "Oui. Les rappels sont sans frais et illimités de la pose au retrait, sur la Rive-Sud comme ailleurs." },
       { q: "Mon commerce est sur le boulevard Taschereau. Vous installez la nuit?", a: "Oui, hors des heures d'ouverture, pour que vos clients ne voient que le résultat." },
+    ],
+  },
+  // ── Villes ajoutées le 2026-11-24 (médias de la saison 2026, SEO local) ──
+  // Même forme que les six premières. Contexte local vérifiable seulement ;
+  // aucun client, chiffre, avis ni date inventés, aucune installation
+  // affirmée dans le texte : les vraies photos s'affichent à part
+  // (components/photos.js → PHOTOS_VILLE).
+  {
+    slug: "lorraine",
+    name: "Lorraine",
+    regionLabel: "Thérèse-De Blainville — Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Lorraine : grands terrains boisés près de la rivière des Mille Îles. Pose, entretien et retrait inclus.",
+    intro:
+      "Lorraine est une petite ville résidentielle entre Bois-des-Filion, Rosemère et Blainville, bordée par la rivière des Mille Îles. Ici, la forêt entre jusque dans les cours : grands pins, érables matures, terrains profonds.",
+    body: "Sous un couvert d'arbres aussi dense, l'éclairage se pense en deux étages : la ligne de toit d'abord, puis les troncs et les branches basses qui encadrent l'allée. On regarde votre propriété avec vous au téléphone, sur une vue aérienne, avant de proposer quoi que ce soit.",
+    local: [
+      "Lorraine compte surtout des maisons unifamiliales sur de grands lots, souvent installées au milieu des arbres plutôt qu'en façade dégagée ; plusieurs rues portent des noms de villes de la Lorraine française.",
+      "Avec autant de feuillus et de conifères, la maison se voit parfois moins de la rue que ses arbres : ce sont eux qui donnent l'effet d'ensemble.",
+    ],
+    parService: {
+      residentiel: "Maison nichée sous les pins : la guirlande souligne le toit, et quelques troncs enrubannés dessinent l'entrée depuis la rue.",
+      commercial: "Pour les quelques commerces et bureaux de Lorraine, la pose se fait en dehors de vos heures, prix sur soumission.",
+      permanent: "Sous un toit entouré d'arbres, les pastilles permanentes restent à l'abri dans le soffite et ne craignent pas les aiguilles qui tombent.",
+    },
+    faq: [
+      { q: "Lorraine est petite. Est-ce qu'elle fait partie de votre territoire?", a: "Oui. Lorraine se trouve entre Rosemère, Blainville et Bois-des-Filion, en plein dans notre couronne nord : toutes ses rues sont couvertes." },
+      { q: "Combien coûte une maison à Lorraine?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Sur les terrains boisés de Lorraine, c'est surtout le nombre d'arbres à habiller qui fait monter le montant. Le prix exact est confirmé après un court appel." },
+      { q: "Mes arbres sont très hauts. Jusqu'où montez-vous dans les branches?", a: "On habille le tronc et les branches qu'on peut atteindre en sécurité, à l'échelle ou à la nacelle au besoin. On vous dit d'avance ce qui est faisable sur chaque arbre." },
+      { q: "Les aiguilles de pin et les branches qui tombent, ça abîme les lumières?", a: "Le matériel est fait pour l'extérieur. Si une branche arrache une section pendant la saison, on revient la réparer : c'est compris jusqu'au retrait en janvier." },
+    ],
+  },
+  {
+    slug: "sainte-anne-des-plaines",
+    name: "Sainte-Anne-des-Plaines",
+    regionLabel: "Thérèse-De Blainville — Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Sainte-Anne-des-Plaines : fermettes, rangs agricoles et noyau villageois. Pose et retrait inclus.",
+    intro:
+      "Sainte-Anne-des-Plaines, c'est la partie la plus agricole de la MRC de Thérèse-De Blainville : des rangs bordés de champs, des fermettes, et un noyau villageois où se mêlent maisons anciennes et quartiers plus récents.",
+    body: "Sur une propriété de campagne, la maison est souvent loin du chemin. L'éclairage doit donc porter : une ligne de toit nette qu'on voit de loin, la galerie, et parfois une grange ou un bâtiment secondaire. On en discute d'abord par téléphone, photos aériennes à l'appui.",
+    local: [
+      "Le territoire est en grande partie zoné agricole : terres en culture, maisons de ferme, fermettes avec écurie ou remise, et des développements résidentiels autour du centre.",
+    ],
+    parService: {
+      residentiel: "Maison de ferme avec grande galerie ou résidence récente près du village : on éclaire ce qui se voit depuis le rang.",
+      commercial: "Commerces du centre et entreprises agricoles qui veulent une façade visible de la route : soumission sur mesure, pose hors des heures d'ouverture.",
+      permanent: "Sur une longue maison de campagne, un éclairage permanent évite de remonter dans l'échelle chaque automne, tout en restant invisible le jour.",
+    },
+    faq: [
+      { q: "Vous rendez-vous dans les rangs de Sainte-Anne-des-Plaines, loin du village?", a: "Oui. Le village comme les rangs agricoles font partie de notre territoire de la couronne nord." },
+      { q: "Combien coûte une maison à Sainte-Anne-des-Plaines?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison de ferme avec une longue galerie ou un bâtiment secondaire demande plus de matériel qu'un bungalow du village. Le prix exact est confirmé après un court appel." },
+      { q: "Pouvez-vous éclairer ma grange en plus de la maison?", a: "Oui, une grange, une écurie ou un garage détaché peuvent s'ajouter. On regarde ensemble la hauteur et l'accès avant de vous donner un prix ferme écrit." },
+      { q: "Il vente fort en plein champ. Les lumières vont-elles tenir?", a: "Sur un terrain dégagé, on fixe la guirlande avec plus de points d'attache. Si le vent déplace une section en cours de saison, on revient la replacer sans frais." },
+    ],
+  },
+  {
+    slug: "saint-valentin",
+    name: "Saint-Valentin",
+    regionLabel: "Haut-Richelieu — Montérégie",
+    metaDescription:
+      "Lumières de Noël à Saint-Valentin, dans le Haut-Richelieu : grandes terres et maisons rurales. À partir de 1 000 $, retrait inclus.",
+    intro:
+      "Saint-Valentin est une municipalité rurale du Haut-Richelieu, au sud de Saint-Jean-sur-Richelieu. Ses rangs traversent des terres en culture, et beaucoup de maisons sont plantées au milieu de grands terrains.",
+    body: "C'est loin de notre couronne nord : un déplacement dans le Haut-Richelieu se planifie à l'avance, et on regroupe les adresses du secteur pour en faire une seule journée. Raison de plus pour communiquer avec nous en octobre, quand les places de la saison sont encore ouvertes.",
+    local: [
+      "Ici, on parle surtout de maisons de ferme, de résidences sur de grandes terres et de bâtiments agricoles, souvent visibles de loin dans un paysage plat et ouvert.",
+    ],
+    parService: {
+      residentiel: "Sur une grande terre, on éclaire la maison, l'allée et parfois la clôture pour que l'ensemble se lise depuis le rang.",
+      commercial: "Entreprises agricoles et commerces de la municipalité : soumission adaptée au déplacement, installation hors de vos heures.",
+      permanent: "Pour une maison rurale éloignée, un système permanent évite de planifier une pose et un retrait chaque année.",
+    },
+    faq: [
+      { q: "Saint-Valentin, c'est loin. Vous vous déplacez vraiment jusque-là?", a: "Oui, mais un déplacement dans le Haut-Richelieu se planifie : on groupe les propriétés du secteur. Plus vous nous écrivez tôt, plus c'est simple à organiser." },
+      { q: "Combien coûte une maison à Saint-Valentin?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Sur une terre, la longueur de l'allée ou de la clôture à éclairer peut compter autant que la maison. Le prix exact est confirmé après un court appel." },
+      { q: "J'ai une terre agricole : pouvez-vous éclairer l'entrée au bout du rang?", a: "Oui, une entrée, des piliers ou une clôture peuvent être éclairés, tant qu'on a une source de courant à proximité. On le vérifie avec vous avant de fixer le prix." },
+      { q: "Si une section s'éteint en décembre, devez-vous refaire tout le trajet?", a: "Oui, on revient : l'entretien est compris jusqu'au retrait, même en campagne. On planifie le passage le plus vite possible." },
+    ],
+  },
+  {
+    slug: "beaconsfield",
+    name: "Beaconsfield",
+    regionLabel: "Ouest-de-l'Île — Montréal",
+    metaDescription:
+      "Lumières de Noël à Beaconsfield : maisons du Lakeshore et rues boisées de l'Ouest-de-l'Île. Pose, entretien et retrait inclus.",
+    intro:
+      "Beaconsfield s'étire le long du lac Saint-Louis, dans l'Ouest-de-l'Île. Entre le chemin du Bord-du-Lac et l'autoroute 20, on y trouve de grandes maisons sur des terrains plantés d'arbres matures, et le vieux secteur de Beaurepaire.",
+    body: "Les maisons à deux niveaux décalés et les cottages des années 1950 et 1960 demandent un tracé qui suit chaque décrochement de toit.",
+    local: [
+      "Le bâti est surtout unifamilial : maisons à niveaux décalés, bungalows élargis et cottages sur des lots généreux, souvent ombragés par de grands arbres.",
+      "Près du lac, certaines propriétés ont une façade sur la rue et une autre sur l'eau : on choisit avec vous laquelle mettre en valeur.",
+    ],
+    parService: {
+      residentiel: "Maison à niveaux décalés ou cottage près du lac : la guirlande suit chaque palier du toit, sans trou ni chevauchement.",
+      commercial: "Commerces du boulevard Saint-Charles et du village de Beaurepaire : pose en dehors de vos heures, prix sur soumission.",
+      permanent: "Sur un toit à plusieurs paliers, les pastilles permanentes suivent chaque niveau et se programment par zone.",
+    },
+    faq: [
+      { q: "Ma maison à niveaux décalés a plusieurs bouts de toit. Est-ce plus compliqué?", a: "Un peu plus de travail, pas plus compliqué : la guirlande suit chaque décrochement, avec ses propres points d'attache. On en tient compte dans le prix, que vous recevez par écrit après un court appel." },
+      { q: "Combien coûte une maison à Beaconsfield?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison à niveaux décalés compte plus de sections de toit qu'un bungalow, ce qui change le montant. Le prix exact est confirmé après un court appel." },
+      { q: "Ma maison donne sur le lac Saint-Louis. Faut-il éclairer les deux côtés?", a: "Pas forcément. On peut éclairer seulement la façade sur rue, seulement le côté du lac, ou les deux : on en parle avant de vous remettre un prix ferme." },
+      { q: "J'ai de grands érables en façade. Est-ce qu'on les habille aussi?", a: "Oui, les arbres font partie du service. Sur une rue boisée comme on en voit à Beaconsfield, un ou deux troncs enrubannés suffisent souvent à changer l'allure de la maison." },
+    ],
+  },
+  {
+    slug: "lery",
+    name: "Léry",
+    regionLabel: "Roussillon — Rive-Sud",
+    metaDescription:
+      "Lumières de Noël à Léry, sur les rives du lac Saint-Louis : pose solide face au vent du lac, entretien et retrait inclus.",
+    intro:
+      "Léry est une petite ville du Roussillon, voisine de Châteauguay, posée sur la rive sud du lac Saint-Louis. Une bonne partie des maisons longe l'eau ou s'en trouve à quelques rues, sur des terrains larges et arborés.",
+    body: "Au bord d'un lac, le vent n'a rien pour le freiner. On prévoit donc des attaches plus serrées sur les façades exposées et on évite les éléments qui battent au vent. Le reste du travail ne change pas : conception, pose, réparations pendant la saison et retrait en janvier.",
+    local: [
+      "Léry est surtout résidentielle : maisons riveraines face au lac Saint-Louis, propriétés boisées en retrait, et une vie de quartier tranquille à côté de Châteauguay.",
+    ],
+    parService: {
+      residentiel: "Maison riveraine ou propriété boisée en retrait du lac : on renforce les attaches là où le vent du large frappe la façade.",
+      commercial: "Pour les commerces et organismes de Léry, la pose se fait hors de vos heures, prix sur soumission.",
+      permanent: "Face au lac, des pastilles encastrées dans le soffite n'offrent aucune prise au vent, saison après saison.",
+    },
+    faq: [
+      { q: "Est-ce que vous traversez jusqu'à Léry, près de Châteauguay?", a: "Oui. Léry fait partie de notre territoire de la Rive-Sud, comme le reste du Roussillon que nous desservons." },
+      { q: "Combien coûte une maison à Léry?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison riveraine très exposée peut demander plus d'attaches et de temps qu'une maison abritée par les arbres. Le prix exact est confirmé après un court appel." },
+      { q: "Le vent du lac Saint-Louis est fort l'hiver. Comment les lumières tiennent-elles?", a: "On multiplie les points d'attache sur les côtés exposés et on choisit un tracé qui ne laisse pas de fil libre. Si une section bouge quand même, on revient la fixer." },
+      { q: "Ma façade principale donne sur l'eau. Peut-on éclairer ce côté-là?", a: "Oui. Bien des maisons de Léry se regardent surtout depuis le lac : on peut privilégier ce côté, ou la rue, selon ce que vous préférez." },
+    ],
+  },
+  {
+    slug: "sainte-therese",
+    name: "Sainte-Thérèse",
+    regionLabel: "Thérèse-De Blainville — Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Sainte-Thérèse : maisons anciennes du centre près de la rue Turgeon et quartiers résidentiels. Retrait inclus.",
+    intro:
+      "Sainte-Thérèse est la ville-centre de la MRC qui porte son nom. Autour de la rue Turgeon et du Collège Lionel-Groulx, le centre garde des maisons anciennes aux galeries et aux lucarnes ; plus loin, les rues résidentielles alignent bungalows et cottages.",
+    body: "Une maison ancienne n'a pas les mêmes lignes qu'une maison de banlieue : corniches, lucarnes, galeries à colonnes. On les souligne une à une plutôt que de tout couvrir d'une même guirlande. Nos places étant limitées chaque saison, octobre reste le meilleur moment pour nous appeler.",
+    local: [
+      "Le centre de Sainte-Thérèse, près de la rue Turgeon, réunit des maisons plus anciennes, collées sur la rue, avec galeries et lucarnes ; les quartiers autour sont surtout faits de bungalows et de cottages.",
+    ],
+    parService: {
+      residentiel: "Maison ancienne à lucarnes du centre ou bungalow d'un quartier résidentiel : on trace la guirlande selon les lignes propres à votre façade.",
+      commercial: "Restaurants et boutiques de la rue Turgeon, commerces du boulevard du Curé-Labelle : pose le soir ou tôt le matin, soumission sur mesure.",
+      permanent: "Sur un cottage aux soffites continus, les pastilles s'alignent sous le toit et ne se voient pas en plein jour.",
+    },
+    faq: [
+      { q: "Est-ce que vous travaillez au centre-ville de Sainte-Thérèse, où les maisons sont collées sur la rue?", a: "Oui. Le centre, près de la rue Turgeon, comme les quartiers résidentiels plus récents : toute la ville est couverte, et l'accès dans les rues étroites se prévoit d'avance." },
+      { q: "Combien coûte une maison à Sainte-Thérèse?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison ancienne avec lucarnes et galerie demande un tracé plus détaillé qu'un bungalow. Le prix exact est confirmé après un court appel." },
+      { q: "Ma maison a des lucarnes et une galerie à colonnes. Vous pouvez les souligner?", a: "Oui. On peut suivre chaque lucarne, enrouler les colonnes de la galerie ou souligner seulement la corniche : on choisit ensemble ce qui met le mieux la maison en valeur." },
+      { q: "J'ai un commerce sur la rue Turgeon. Pouvez-vous éclairer la vitrine sans fermer?", a: "Oui. La pose se fait en dehors de vos heures d'ouverture, et le prix d'un commerce est établi sur soumission." },
+    ],
+  },
+  {
+    slug: "rosemere",
+    name: "Rosemère",
+    regionLabel: "Thérèse-De Blainville — Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Rosemère : grandes propriétés boisées le long de la rivière des Mille Îles et du chemin de la Grande-Côte.",
+    intro:
+      "Rosemère longe la rivière des Mille Îles, en face de Laval. Le chemin de la Grande-Côte suit l'eau, bordé de grandes maisons sur des terrains plantés d'arbres matures ; plus au nord, le boulevard Labelle et Place Rosemère concentrent les commerces.",
+    body: "Sur une grande propriété, l'éclairage se joue sur la profondeur : la façade, les arbres de la cour avant, parfois une haie ou une clôture le long de la rue. On compose l'ensemble avec vous, pour un rendu qui reste élégant plutôt que chargé.",
+    local: [
+      "Rosemère est réputée pour ses rues ombragées et ses grands lots : maisons à étages, propriétés en retrait de la rue, et de nombreux arbres centenaires près de la rivière.",
+    ],
+    parService: {
+      residentiel: "Grande maison en retrait sur la Grande-Côte : la ligne de toit, les arbres et l'allée forment un seul tableau vu de la rue.",
+      commercial: "Commerces du boulevard Labelle et des environs de Place Rosemère : installation hors des heures d'achalandage, prix sur soumission.",
+      permanent: "Sur une maison à étages aux longs soffites, l'éclairage permanent dessine toute la silhouette et change de couleur selon l'occasion.",
+    },
+    faq: [
+      { q: "Ma maison est sur le chemin de la Grande-Côte, près de la rivière. C'est dans votre zone?", a: "Oui. Toute Rosemère est couverte, des propriétés riveraines de la Grande-Côte jusqu'aux rues près du boulevard Labelle." },
+      { q: "Combien coûte une maison à Rosemère?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Sur les grands terrains de Rosemère, les arbres matures et la longueur de l'allée pèsent souvent plus que la maison elle-même. Le prix exact est confirmé après un court appel." },
+      { q: "Ma maison est loin de la rue, derrière les arbres. Est-ce qu'on va la voir?", a: "On travaille justement pour ça : en éclairant l'allée et les premiers arbres, on guide le regard jusqu'à la façade, même quand elle est en retrait." },
+      { q: "Je veux quelque chose de sobre, pas un spectacle. C'est possible?", a: "Tout à fait. Une seule couleur de blanc chaud, la ligne de toit et deux ou trois arbres : c'est souvent le choix qui va le mieux aux grandes maisons." },
+    ],
+  },
+  {
+    slug: "boisbriand",
+    name: "Boisbriand",
+    regionLabel: "Thérèse-De Blainville — Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Boisbriand : quartiers du Faubourg, Grande-Côte et rives des Mille Îles. Pose et retrait inclus.",
+    intro:
+      "Boisbriand s'étend de la rivière des Mille Îles jusqu'aux autoroutes 15 et 640. On y trouve des secteurs établis le long du chemin de la Grande-Côte et des quartiers bâtis plus récemment, comme ceux du Faubourg Boisbriand.",
+    body: "Dans un quartier récent, les maisons se ressemblent souvent : c'est l'éclairage qui donne sa signature à la vôtre. On travaille la ligne de toit, l'entrée et les plantations encore jeunes, et on vous présente une proposition écrite avant toute pose.",
+    local: [
+      "Boisbriand mêle bungalows et cottages des secteurs plus anciens, près de la rivière, et maisons de ville et unifamiliales récentes autour du Faubourg Boisbriand.",
+    ],
+    parService: {
+      residentiel: "Maison de ville du Faubourg ou bungalow près de la Grande-Côte : un tracé pensé pour se distinguer des voisins.",
+      commercial: "Commerces du Faubourg Boisbriand et des abords de l'autoroute 15 : pose en dehors des heures d'ouverture, soumission sur mesure.",
+      permanent: "Dans les rangées de maisons de ville récentes, un éclairage permanent bien aligné souligne chaque unité sans déborder chez le voisin.",
+    },
+    faq: [
+      { q: "Mon quartier est récent, près du Faubourg Boisbriand. Vous y allez?", a: "Oui. Les quartiers récents du Faubourg comme les secteurs plus anciens près de la rivière des Mille Îles font partie de notre territoire." },
+      { q: "Combien coûte une maison à Boisbriand?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison de ville à façade simple reste généralement près de ce montant de départ ; un cottage plus large demande davantage de matériel. Le prix exact est confirmé après un court appel." },
+      { q: "J'habite une maison de ville jumelée. Peut-on éclairer seulement mon côté?", a: "Oui. On s'arrête net à la limite de votre unité, pour un résultat propre. Si votre voisin veut la même chose, on peut harmoniser les deux." },
+      { q: "Mes arbres sont encore jeunes. Ça vaut la peine de les éclairer?", a: "Souvent, oui : un jeune arbre enrubanné de près donne un point lumineux bien net. On vous dira franchement si ça vaut la dépense." },
+    ],
+  },
+  {
+    slug: "mirabel",
+    name: "Mirabel",
+    regionLabel: "Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Mirabel : Saint-Janvier, Saint-Augustin, Domaine-Vert et secteurs agricoles. À partir de 1 000 $.",
+    intro:
+      "Mirabel couvre un territoire immense, fait de secteurs qui étaient autrefois des villages : Saint-Janvier, Saint-Augustin, Saint-Canut, Sainte-Scholastique, Saint-Benoît, Saint-Hermas, Domaine-Vert. Entre eux, beaucoup de terres agricoles.",
+    body: "D'un secteur à l'autre, tout change : des quartiers neufs à Saint-Janvier ou Domaine-Vert, des maisons de village à Saint-Benoît, des fermes le long des rangs. On regroupe les adresses par secteur pour limiter les déplacements, d'où l'intérêt de nous joindre dès octobre.",
+    local: [
+      "Mirabel a connu une forte croissance résidentielle, surtout autour de Saint-Janvier, Saint-Canut et Domaine-Vert, alors que ses secteurs de l'ouest, comme Saint-Hermas et Saint-Benoît, restent très agricoles.",
+      "Une même ville, donc, avec des maisons neuves aux soffites continus et des maisons de ferme sur de grandes terres.",
+    ],
+    parService: {
+      residentiel: "Maison neuve de Saint-Janvier ou ferme de Saint-Hermas : le design s'adapte au secteur autant qu'à la façade.",
+      commercial: "Commerces des secteurs en croissance et entreprises près de l'autoroute 15 : soumission sur mesure, pose hors des heures.",
+      permanent: "Dans les quartiers neufs de Mirabel, les soffites continus sont idéaux pour un éclairage permanent posé une fois pour toutes.",
+    },
+    faq: [
+      { q: "Mirabel est grande. Couvrez-vous les secteurs agricoles comme Saint-Hermas ou Saint-Benoît?", a: "Oui. Les quartiers résidentiels de Saint-Janvier, Saint-Canut ou Domaine-Vert comme les secteurs plus ruraux de l'ouest font partie de notre territoire." },
+      { q: "Combien coûte une maison à Mirabel?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison neuve de quartier et une ferme sur une grande terre n'ont pas du tout les mêmes besoins. Le prix exact est confirmé après un court appel." },
+      { q: "Ma maison est neuve : le terrassement n'est pas fini. Peut-on quand même installer?", a: "Oui, la ligne de toit ne dépend pas du terrassement. On en tient compte pour l'accès des échelles, et on peut ajouter les arbres une autre année." },
+      { q: "Les maisons neuves de Mirabel ont des soffites en aluminium. Vos attaches les abîment-elles?", a: "Non. Les attaches se clipsent sur la gouttière et le rebord du toit, sans vis dans le soffite ni dans le revêtement, et partent sans laisser de trace au retrait en janvier." },
+    ],
+  },
+  {
+    slug: "saint-eustache",
+    name: "Saint-Eustache",
+    regionLabel: "Deux-Montagnes — Basses-Laurentides",
+    metaDescription:
+      "Lumières de Noël à Saint-Eustache : maisons du Vieux-Saint-Eustache et quartiers près de la rivière des Mille Îles. Retrait inclus.",
+    intro:
+      "Saint-Eustache se trouve au confluent de la rivière des Mille Îles et de la rivière du Chêne, dans la MRC de Deux-Montagnes. Son vieux secteur, autour de l'église historique et du moulin Légaré, garde des maisons anciennes ; le reste de la ville s'est bâti en quartiers résidentiels.",
+    body: "Sur une maison patrimoniale, on souligne l'architecture au lieu de la cacher : toit à deux versants, lucarnes, galerie. Dans les quartiers plus récents, c'est la ligne de toit continue qui fait le travail. Les places de la saison étant limitées, octobre est le moment idéal pour réserver.",
+    local: [
+      "Le Vieux-Saint-Eustache, sur la rue Saint-Eustache, compte plusieurs bâtiments anciens ; autour, la ville aligne bungalows, cottages et maisons à paliers, jusqu'au boulevard Arthur-Sauvé.",
+    ],
+    parService: {
+      residentiel: "Maison ancienne du vieux secteur ou cottage d'un quartier récent : la guirlande épouse le toit, les lucarnes et la galerie.",
+      commercial: "Commerces du boulevard Arthur-Sauvé et boutiques du Vieux-Saint-Eustache : installation en dehors des heures, prix sur soumission.",
+      permanent: "Sur une maison à paliers, l'éclairage permanent suit chaque niveau et se commande depuis votre téléphone.",
+    },
+    faq: [
+      { q: "Allez-vous aussi dans les quartiers près de la rivière du Chêne?", a: "Oui. Le Vieux-Saint-Eustache, les quartiers riverains et les secteurs proches du boulevard Arthur-Sauvé sont tous couverts." },
+      { q: "Combien coûte une maison à Saint-Eustache?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison patrimoniale à lucarnes demande un tracé plus fin qu'un bungalow à toit simple. Le prix exact est confirmé après un court appel." },
+      { q: "Ma maison est dans le vieux secteur. Les fixations vont-elles abîmer le revêtement?", a: "On utilise des attaches qui se posent sur les gouttières et les rebords, sans percer le revêtement d'une maison ancienne. On vous montre la méthode avant de commencer." },
+      { q: "Pouvez-vous éclairer le boisé au fond de ma cour, côté rivière?", a: "Oui, si on peut l'alimenter en courant sans danger. On regarde la distance et l'accès avec vous avant de l'inclure au prix." },
+    ],
+  },
+  {
+    slug: "longueuil",
+    name: "Longueuil",
+    regionLabel: "Agglomération de Longueuil — Rive-Sud",
+    metaDescription:
+      "Lumières de Noël à Longueuil : Vieux-Longueuil, Saint-Hubert et Greenfield Park. Pose, entretien et retrait inclus.",
+    intro:
+      "Longueuil réunit trois arrondissements très différents : le Vieux-Longueuil, au bord du fleuve, avec ses maisons anciennes autour de la rue Saint-Charles ; Saint-Hubert, plus étendu et résidentiel ; et Greenfield Park, aux rues bordées d'arbres.",
+    body: "Une maison ancienne du vieux quartier, un bungalow de Saint-Hubert et un cottage de Greenfield Park n'appellent pas le même tracé. On part de votre façade et de ce que vous voulez voir de la rue, puis on vous remet un prix ferme écrit.",
+    local: [
+      "Le Vieux-Longueuil garde un noyau de maisons anciennes et de commerces sur la rue Saint-Charles ; Saint-Hubert et Greenfield Park sont surtout faits de bungalows, de cottages et de duplex sur des rues résidentielles.",
+    ],
+    parService: {
+      residentiel: "Maison ancienne de la rue Saint-Charles, bungalow de Saint-Hubert ou cottage de Greenfield Park : chaque façade a son tracé.",
+      commercial: "Restaurants et boutiques de la rue Saint-Charles, commerces du chemin de Chambly : pose hors des heures, prix sur soumission.",
+      permanent: "Sur un bungalow de Saint-Hubert, une seule ligne de pastilles permanentes suffit à souligner tout le toit, été comme hiver.",
+    },
+    faq: [
+      { q: "Couvrez-vous Saint-Hubert et Greenfield Park, ou seulement le Vieux-Longueuil?", a: "Les trois arrondissements : le Vieux-Longueuil, Saint-Hubert et Greenfield Park font partie de notre territoire de la Rive-Sud." },
+      { q: "Combien coûte une maison à Longueuil?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Un bungalow de Saint-Hubert reste souvent près de ce montant ; une maison ancienne à deux étages du vieux quartier demande plus de hauteur et de détail. Le prix exact est confirmé après un court appel." },
+      { q: "J'habite un duplex à Longueuil. Le propriétaire du haut doit-il être d'accord?", a: "Si la façade est partagée, c'est préférable. On peut éclairer seulement votre étage, ou tout le bâtiment avec l'accord des deux." },
+      { q: "Mon commerce est sur la rue Saint-Charles. Pouvez-vous éclairer la devanture pour les Fêtes?", a: "Oui. On installe en dehors de vos heures d'ouverture, et le prix d'un commerce se fait sur soumission." },
+    ],
+  },
+  {
+    slug: "brossard",
+    name: "Brossard",
+    regionLabel: "Agglomération de Longueuil — Rive-Sud",
+    metaDescription:
+      "Lumières de Noël à Brossard : maisons des secteurs établis et nouveaux développements près du DIX30 et de Solar Uniquartier.",
+    intro:
+      "Brossard est l'une des villes les plus construites de la Rive-Sud ces dernières années. Aux secteurs établis, faits de bungalows et de cottages, s'ajoutent des développements neufs près du Quartier DIX30 et de Solar Uniquartier, avec maisons de ville et condos.",
+    body: "Dans un développement récent, l'éclairage extérieur est parfois encadré par une déclaration de copropriété ou des règles de quartier : on vérifie avec vous ce qui est permis avant de concevoir quoi que ce soit. Les places de la saison étant limitées, mieux vaut s'y prendre en octobre.",
+    local: [
+      "Les secteurs plus anciens de Brossard, désignés par des lettres, comptent surtout des bungalows et des cottages ; les quartiers neufs du sud et de l'est ajoutent maisons de ville, jumelés et immeubles en copropriété.",
+    ],
+    parService: {
+      residentiel: "Cottage d'un secteur établi ou maison de ville d'un quartier neuf : le tracé respecte vos règles de copropriété, s'il y en a.",
+      commercial: "Commerces du boulevard Taschereau, du boulevard de Rome et des environs du DIX30 : pose hors des heures d'ouverture, soumission sur mesure.",
+      permanent: "Les façades contemporaines des nouveaux quartiers de Brossard se prêtent bien à des pastilles permanentes encastrées et discrètes.",
+    },
+    faq: [
+      { q: "Je viens d'emménager dans un quartier neuf de Brossard. Êtes-vous dans le secteur?", a: "Oui. Les nouveaux développements comme les secteurs établis de Brossard font partie de notre territoire de la Rive-Sud." },
+      { q: "Combien coûte une maison à Brossard?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison de ville en rangée et un cottage détaché sur un grand terrain n'ont pas la même longueur de toit à couvrir. Le prix exact est confirmé après un court appel." },
+      { q: "Mon syndicat de copropriété a des règles sur l'éclairage extérieur. Comment faites-vous?", a: "On lit les règles avec vous avant de concevoir : couleurs, heures ou endroits permis. Si une approbation du syndicat est nécessaire, on vous fournit la description écrite du projet à lui présenter." },
+      { q: "Peut-on harmoniser l'éclairage de plusieurs maisons de ville d'une même rangée?", a: "Oui. Si plusieurs voisins d'une rangée veulent le même style, on peut concevoir un ensemble cohérent ; chaque propriétaire garde son propre prix." },
+    ],
+  },
+  {
+    slug: "boucherville",
+    name: "Boucherville",
+    regionLabel: "Agglomération de Longueuil — Rive-Sud",
+    metaDescription:
+      "Lumières de Noël à Boucherville : maisons du Vieux-Boucherville et quartiers en bordure du fleuve, face aux îles. Retrait inclus.",
+    intro:
+      "Boucherville longe le fleuve Saint-Laurent, face aux îles du parc national. Le Vieux-Boucherville conserve des maisons anciennes, certaines parmi les plus vieilles de la Rive-Sud ; les quartiers qui l'entourent sont faits de cottages et de maisons à étages sur des rues calmes.",
+    body: "Près du fleuve, les façades prennent le vent de plein fouet : on adapte les attaches en conséquence. Dans le vieux secteur, on souligne la pierre, les toits pentus et les lucarnes sans rien percer. On vous présente le projet par écrit, prix ferme compris.",
+    local: [
+      "Le Vieux-Boucherville réunit des maisons anciennes en pierre et en bois près du fleuve ; ailleurs, la ville est surtout composée de quartiers résidentiels de cottages et de maisons à étages, entre l'autoroute 20 et le boulevard de Mortagne.",
+    ],
+    parService: {
+      residentiel: "Maison ancienne du vieux secteur ou cottage d'un quartier résidentiel : la guirlande suit le toit pentu, les lucarnes ou la ligne simple.",
+      commercial: "Commerces du boulevard de Mortagne et boutiques du Vieux-Boucherville : installation en dehors des heures, prix sur soumission.",
+      permanent: "Sur un cottage à étages, l'éclairage permanent dessine le toit toute l'année et reste invisible quand il est éteint.",
+    },
+    faq: [
+      { q: "Ma maison est dans le Vieux-Boucherville, près du fleuve. Vous y installez?", a: "Oui. Le vieux secteur comme les quartiers résidentiels plus récents de Boucherville font partie de notre territoire." },
+      { q: "Combien coûte une maison à Boucherville?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison ancienne aux toits pentus et aux lucarnes demande plus de temps qu'un cottage à ligne de toit simple. Le prix exact est confirmé après un court appel." },
+      { q: "Ma maison est en pierre. Faut-il percer pour poser les lumières?", a: "Non. Sur la pierre, on fixe la guirlande aux gouttières, aux bordures de toit et aux rebords, avec des attaches qui ne laissent aucune trace au retrait." },
+      { q: "Est-ce que le vent du fleuve risque d'arracher les lumières?", a: "On en tient compte à la pose, avec des attaches plus rapprochées sur les côtés exposés. Si une section se déplace pendant la saison, on revient la remettre en place." },
     ],
   },
 ];
