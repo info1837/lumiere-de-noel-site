@@ -13,7 +13,7 @@ const TITRE = "Réalisations — vraies installations | Solution Lumière de No�
 export const metadata = {
   title: { absolute: TITRE },
   description:
-    "Nos installations de lumières de Noël en photos : Blainville, Saint-Jérôme, Mirabel, Mercier, Léry, Montréal. Résidentiel et commercial.",
+    "Saison 2026 en photos, par ville : Vieux-Montréal (Kyo, Modavie, Hôtel Place d'Armes), Blainville, Terrebonne, Lorraine, Beaconsfield, Léry et plus.",
   alternates: { canonical: "/realisations" },
   openGraph: {
     title: TITRE,

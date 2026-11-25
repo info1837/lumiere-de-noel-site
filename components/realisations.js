@@ -36,6 +36,7 @@
 // le lire sans l'alias `@/`.
 // =============================================================================
 import { PHOTOS } from "./photos.js";
+import { CHANTIERS_2026, AJOUTS_2026, GROUPES_EXISTANTS_2026 } from "./medias-2026.js";
 
 export const CATEGORIES_CHANTIERS = ["Résidentiel", "Commercial", "Arbres", "Permanent"];
 
@@ -84,8 +85,31 @@ const BRUTS = [
   { id: "pastilles", categorie: "Permanent", etiquette: "Le détail : pastilles DEL dans le rail", photos: ["permanent-detail"] },
 ];
 
+// SAISON 2026, PAR VILLE / SITE (2026-11-24) — components/medias-2026.js.
+// Les maisons déjà sur la page reçoivent leurs images 2026 dans LEUR carte :
+// photos 2026 d'abord (la couverture reste celle de la carte), la photo de
+// l'an dernier en dernier. L'ordre du tableau fixe l'ordre des groupes.
+const avecAjouts = (c) => {
+  const plus = AJOUTS_2026[c.id];
+  if (!plus) return c;
+  const anciennes = c.photos.filter((k) => !k.startsWith("s26-"));
+  const recentes = c.photos.filter((k) => k.startsWith("s26-"));
+  return { ...c, saison: 2026, groupe: GROUPES_EXISTANTS_2026[c.id], photos: [...recentes, ...plus, ...anciennes] };
+};
+const parId = Object.fromEntries(BRUTS.map((c) => [c.id, avecAjouts(c)]));
+const ORDRE_2026 = [
+  "vm-kyo", "vm-modavie", "vm-hotel-place-d-armes", "blainville-2026",
+  "s26-balcon", "terrebonne-sapin", "lorraine-2026", "s26-ferme-moderne",
+  "saint-valentin-2026", "beaconsfield-2026", "lery",
+];
+const nouveaux = Object.fromEntries(CHANTIERS_2026.map((c) => [c.id, c]));
+const ORDONNES = [
+  ...ORDRE_2026.map((id) => nouveaux[id] || parId[id]),
+  ...BRUTS.map((c) => parId[c.id]).filter((c) => !ORDRE_2026.includes(c.id)),
+];
+
 /** Les chantiers, chaque photo résolue depuis le registre. */
-export const CHANTIERS = BRUTS.map((c) => ({
+export const CHANTIERS = ORDONNES.map((c) => ({
   ...c,
   photos: c.photos.map((cle, i) => ({
     cle,

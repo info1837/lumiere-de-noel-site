@@ -18,8 +18,8 @@ import PhotoCadree from "@/components/PhotoCadree";
 // Visionneuse : glisser ou ← → passe à la photo suivante du chantier, puis
 // au chantier suivant ; Échap ferme et le focus revient à la carte.
 //
-// DEUX GROUPES (2026-11-23) : les chantiers de la dernière saison d'abord,
-// sous leur titre (« Saison 2026 »), puis tous les autres. Un filtre qui ne
+// GROUPES PAR VILLE / SITE (2026-11-24, avant : « Saison 2026 » puis le reste) :
+// voir le calcul de `groupes` plus bas. Un filtre qui ne
 // garde aucun chantier de la saison n'affiche aucun titre — la page d'avant.
 // Quand le groupe de la saison compte un nombre impair de cartes, la première
 // prend toute la largeur (la « vedette ») : pas de trou dans la grille.
@@ -116,16 +116,28 @@ export default function GalerieRealisations({ chantiers, categories }) {
   const fermer = useRef(null);
 
   const filtres = filtre === "Tout" ? chantiers : chantiers.filter((c) => c.categorie === filtre);
-  // La dernière saison d'abord, sous son titre ; le reste ensuite. `visibles`
-  // est l'ordre d'affichage : la visionneuse et le retour du focus s'y fient.
+  // PAR VILLE / PAR SITE (2026-11-24) : chaque chantier de la saison porte
+  // un `groupe` (« Vieux-Montréal », « Lorraine »…) ; un groupe = un titre,
+  // dans l'ordre de components/realisations.js. Les chantiers de la saison
+  // sans lieu forment « Saison 2026 — autres propriétés » ; les plus anciens
+  // restent sous « Réalisations précédentes ». `visibles` est l'ordre
+  // d'affichage : la visionneuse et le retour du focus s'y fient.
   const saison = Math.max(0, ...chantiers.map((c) => c.saison || 0));
-  const recents = saison ? filtres.filter((c) => c.saison === saison) : [];
-  const anciens = filtres.filter((c) => !saison || c.saison !== saison);
-  const visibles = [...recents, ...anciens];
-  const groupes = recents.length
-    ? [{ cle: "saison", titre: `Saison ${saison}`, items: recents, debut: 0 },
-       { cle: "avant", titre: anciens.length ? "Réalisations précédentes" : null, items: anciens, debut: recents.length }]
-    : [{ cle: "tout", titre: null, items: visibles, debut: 0 }];
+  const groupes = [];
+  for (const c of filtres) {
+    const titre = c.groupe || (saison && c.saison === saison ? `Saison ${saison} — autres propriétés` : "Réalisations précédentes");
+    let g = groupes.find((x) => x.titre === titre);
+    if (!g) groupes.push((g = { cle: titre, titre, items: [] }));
+    g.items.push(c);
+  }
+  // Les anciens toujours en dernier, quel que soit l'ordre du fichier.
+  groupes.sort((a, b) => (a.titre === "Réalisations précédentes") - (b.titre === "Réalisations précédentes"));
+  let debut = 0;
+  for (const g of groupes) { g.debut = debut; debut += g.items.length; }
+  // Un filtre sans aucun chantier de la saison (ex. « Permanent ») : aucun
+  // titre, la grille d'avant.
+  if (groupes.length === 1 && groupes[0].titre === "Réalisations précédentes") groupes[0].titre = null;
+  const visibles = groupes.flatMap((g) => g.items);
 
   // Suivante / précédente : d'abord les photos du chantier, puis le chantier
   // voisin. La maison du permanent change de couleur par ses points : la
@@ -206,8 +218,8 @@ export default function GalerieRealisations({ chantiers, categories }) {
       </div>
 
       {groupes.filter((g) => g.items.length).map((g) => {
-        // Nombre impair dans le groupe de la saison : la première en vedette.
-        const vedette = g.cle === "saison" && g.items.length % 2 === 1;
+        // Nombre impair dans un groupe de la saison : la première en vedette.
+        const vedette = !!g.titre && g.titre !== "Réalisations précédentes" && g.items.length % 2 === 1;
         return (
           // Un <div>, pas une <section> : la feuille de style donne à toute
           // <section> la marge d'une bande de page.
