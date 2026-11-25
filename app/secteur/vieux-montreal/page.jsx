@@ -2,8 +2,12 @@ import { CTAButton, SectionTag, SectionTitle, Gallery } from "@/components/ui";
 import { BreadcrumbJsonLd, VideoObjectJsonLd } from "@/components/jsonld";
 import VideoParlee from "@/components/VideoParlee";
 import LienTelephone from "@/components/LienTelephone";
-import { HeroPage, CeQuiEstCompris, FaqCourte, MARINE } from "@/components/sections";
+import { HeroPage, CeQuiEstCompris, FaqCourte, Reservation, MARINE, MARINE_PROFOND } from "@/components/sections";
 import { GALERIE_VIEUX_MONTREAL } from "@/components/vieux-montreal";
+import { CAS_VIEUX_MONTREAL } from "@/components/medias-2026";
+import { PHOTOS } from "@/components/photos";
+import GaleriePhotos from "@/components/GaleriePhotos";
+import { company } from "@/components/data";
 import { MONTAGES } from "@/lib/hero-media";
 
 // =============================================================================
@@ -15,10 +19,13 @@ import { MONTAGES } from "@/lib/hero-media";
 // cadre « ampoule », la galerie, la FAQ (JSON-LD FAQPage) et le fil d'Ariane
 // (JSON-LD BreadcrumbList), comme /secteur/<ville>.
 //
-// ⚠️ AUCUN NOM DE CLIENT. Ni dans le texte, ni dans les alt, ni dans le
-// JSON-LD, ni dans les fichiers publics. Les clients : « hôtels,
-// restaurants et boutiques du Vieux-Montréal », sans les compter. Pas de
-// prix (sur soumission), pas de chiffre ni de témoignage inventés.
+// VITRINE COMMERCIALE (2026-11-24, demande de Yahir) : trois études de cas
+// NOMMÉES — Kyo, Modavie, Hôtel Place d'Armes et Brasserie 701
+// (components/medias-2026.js → CAS_VIEUX_MONTREAL). Chaque cas ne décrit
+// que ce qui se voit sur les images : aucune citation, aucun chiffre,
+// aucune date. Pas de prix (sur soumission), aucune assurance.
+// JSON-LD : LocalBusiness (le même @id que le layout) + Service + une
+// ImageObject par image des études de cas.
 // =============================================================================
 
 const SOUMISSION = "/soumission?service=commercial";
@@ -38,7 +45,9 @@ const PROMO = {
 };
 const TITRE = "Décoration des Fêtes pour les commerces du Vieux-Montréal";
 const DESCRIPTION =
-  "Décoration des Fêtes pour hôtels, restaurants et boutiques du Vieux-Montréal et du Vieux-Port : guirlandes, mini-lumières, jardinières. Sur soumission.";
+  "Décors des Fêtes du Kyo, du Modavie et de l'Hôtel Place d'Armes : guirlandes, mini-lumières et jardinières pour les commerces du Vieux-Montréal.";
+const BASE = company.baseUrl;
+const IMAGES_CAS = CAS_VIEUX_MONTREAL.map((c) => ({ ...c, images: c.photos.map((k) => ({ cle: k, ...PHOTOS[k] })) }));
 
 export const metadata = {
   // ≤ 60 caractères, suffixe compris (2026-11-23) : avec le gabarit
@@ -52,7 +61,7 @@ export const metadata = {
     title: `${TITRE} | Solution Lumière de Noël inc.`,
     description: DESCRIPTION,
     url: "/secteur/vieux-montreal",
-    images: [GALERIE_VIEUX_MONTREAL[0].image],
+    images: [IMAGES_CAS[0].images[0].src],
   },
 };
 
@@ -98,6 +107,46 @@ export default function VieuxMontreal() {
         pageUrl="/secteur/vieux-montreal"
       />
 
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org",
+          "@graph": [
+            {
+              "@type": ["LocalBusiness", "HomeAndConstructionBusiness"],
+              "@id": `${BASE}/#business`,
+              name: company.name,
+              telephone: company.phoneHref.replace("tel:", ""),
+              email: company.email,
+              url: `${BASE}/`,
+              areaServed: [{ "@type": "Place", name: "Vieux-Montréal" }, { "@type": "City", name: "Montréal" }],
+            },
+            {
+              "@type": "Service",
+              "@id": `${BASE}/secteur/vieux-montreal#service`,
+              serviceType: "Décoration des Fêtes et installation de lumières de Noël commerciales",
+              name: TITRE,
+              description: DESCRIPTION,
+              provider: { "@id": `${BASE}/#business` },
+              areaServed: { "@type": "Place", name: "Vieux-Montréal" },
+              url: `${BASE}/secteur/vieux-montreal`,
+              offers: { "@type": "Offer", priceCurrency: "CAD", description: "Sur soumission, prix ferme écrit." },
+              image: IMAGES_CAS.flatMap((c) => c.images.map((i) => `${BASE}${i.src}`)),
+            },
+            ...IMAGES_CAS.flatMap((c) => c.images.map((i) => ({
+              "@type": "ImageObject",
+              contentUrl: `${BASE}${i.src}`,
+              url: `${BASE}${i.src}`,
+              width: i.largeur,
+              height: i.hauteur,
+              caption: i.alt,
+              contentLocation: { "@type": "Place", name: `${c.nom}, ${c.lieu}` },
+              creator: { "@id": `${BASE}/#business` },
+            }))),
+          ],
+        }) }}
+      />
+
       <HeroPage
         kicker="Fier partenaire des commerces du Vieux-Montréal"
         titre={TITRE}
@@ -138,15 +187,33 @@ export default function VieuxMontreal() {
         bouton={{ href: SOUMISSION, texte: "Réserver ma date" }}
       />
 
-      <section id="installations" style={{ background: MARINE }}>
+      <section id="installations" style={{ background: MARINE }} aria-labelledby="cas-titre">
         <div className="container">
           <div className="section-entete">
-            <SectionTag dark>Nos installations</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto 14px" }}>Dans le Vieux-Montréal, cette saison</SectionTitle>
+            <SectionTag dark>Études de cas — saison 2026</SectionTag>
+            <SectionTitle light id="cas-titre" style={{ margin: "0 auto 14px" }}>Trois façades du Vieux-Montréal</SectionTitle>
             <p className="section-phrase" style={{ margin: "0 auto" }}>
-              Des rues pavées du Vieux-Montréal jusqu&apos;au Vieux-Port : quelques-unes
-              des entrées et des vitrines que nous avons décorées.
+              Ce qu&apos;on a installé cette saison, tel qu&apos;on le voit sur les images tournées sur place.
             </p>
+          </div>
+          {IMAGES_CAS.map((c) => (
+            <article key={c.id} className="etude-cas" id={`cas-${c.id}`}>
+              <header className="etude-cas__entete">
+                <SectionTag dark>{c.lieu}</SectionTag>
+                <h3>{c.nom}</h3>
+                <p>{c.description}</p>
+              </header>
+              <GaleriePhotos photos={c.images} />
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ background: MARINE_PROFOND }}>
+        <div className="container">
+          <div className="section-entete">
+            <SectionTag dark>Ailleurs dans le Vieux-Montréal</SectionTag>
+            <SectionTitle light style={{ margin: "0 auto 14px" }}>D&apos;autres entrées et vitrines</SectionTitle>
           </div>
           <Gallery items={GALERIE_VIEUX_MONTREAL} prechargees={0} />
         </div>
@@ -156,17 +223,20 @@ export default function VieuxMontreal() {
 
       <section style={{ background: MARINE }}>
         <div className="container bloc-etroit">
-          <SectionTag dark>Soumission</SectionTag>
+          <SectionTag dark>Commerces du Vieux-Montréal</SectionTag>
           <SectionTitle light style={{ margin: "0 auto 16px" }}>Parlons de votre façade</SectionTitle>
           <p className="section-phrase" style={{ margin: "0 auto 28px" }}>
-            Décrivez-nous votre commerce : on vous rappelle pour préparer une soumission écrite.
+            Hôtel, restaurant ou boutique : appelez-nous ou remplissez le formulaire ci-dessous,
+            et on prépare une soumission écrite pour votre vitrine. Les places de la saison sont limitées.
           </p>
-          <CTAButton href={SOUMISSION} variant="creme">Demander une soumission</CTAButton>
-          <p className="section-phrase" style={{ margin: "22px auto 0" }}>
-            Vous préférez parler à quelqu&apos;un ? <LienTelephone style={{ color: "#F0BA54", fontWeight: 700, textDecoration: "none" }} />
+          <p className="section-phrase" style={{ margin: "0 auto 22px", fontSize: 22 }}>
+            <LienTelephone style={{ color: "#F0BA54", fontWeight: 700, textDecoration: "none" }} />
           </p>
+          <CTAButton href="#reserver" variant="creme">Remplir le formulaire</CTAButton>
         </div>
       </section>
+
+      <Reservation source="Page Vieux-Montréal — commerces" redirectSrc="ville" serviceInitial="Lumière de Noël (commercial / municipal)" titre="Soumission pour votre commerce" />
     </>
   );
 }

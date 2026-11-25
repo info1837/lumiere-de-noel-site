@@ -6,7 +6,11 @@
 // commune des montages). Une entrée = une image ; la page les affiche dans
 // cet ordre.
 //
-// ⚠️ AUCUN NOM DE CLIENT, NULLE PART. Ni dans `alt`, ni dans le nom du
+// Cette galerie-ci reste ANONYME (« Ailleurs dans le Vieux-Montréal »). Les
+// études de cas NOMMÉES (Kyo, Modavie, Hôtel Place d'Armes) vivent dans
+// components/medias-2026.js → CAS_VIEUX_MONTREAL (permis le 2026-11-24).
+//
+// ⚠️ AUCUN NOM DE CLIENT dans CETTE galerie. Ni dans `alt`, ni dans le nom du
 // fichier (vieux-montreal-NN.jpg, numéroté), ni dans une légende. Une image
 // où une enseigne est le sujet, ou dont le nom est lisible à l'écran, n'entre
 // pas. Les clients se décrivent comme « hôtels, restaurants et boutiques du
