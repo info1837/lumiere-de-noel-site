@@ -18,7 +18,8 @@
 //     /_next/image?url=… ;
 //   · une photo = un chantier photographié : ses recadrages (-16x9, -4x5) et
 //     ses formats (.jpg, .webp, .avif) comptent pour la MÊME photo ;
-//   · seulement les photos de chantier (/images/reel/, /images/vieux-montreal/).
+//   · seulement les photos de chantier (/images/reel/, /images/vieux-montreal/,
+//     /realisations/ — saison 2026).
 //     Les affiches des vidéos, les simulations « avant » et les logos n'en
 //     sont pas. L'image Open Graph d'une page (une balise, pas une image à
 //     l'écran) n'est pas comptée non plus.
@@ -27,7 +28,7 @@ import fs from "node:fs";
 
 const BASE = (process.env.BASE_URL || "http://127.0.0.1:3000").replace(/\/$/, "");
 export const MAX_PAGES = 8;
-const PREFIXES = ["/images/reel/", "/images/vieux-montreal/"];
+const PREFIXES = ["/images/reel/", "/images/vieux-montreal/", "/realisations/"];
 const tout = process.argv.includes("--table");
 const iJson = process.argv.indexOf("--json");
 

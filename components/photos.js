@@ -32,11 +32,23 @@
 //   · AUCUNE PHOTO SUR PLUS DE 8 PAGES (`npm run check:usage`).
 // =============================================================================
 
+import {
+  SITUEES_2026, GENERIQUES_2026, CITY_PHOTO_2026, CITY_VISUEL_2026, RESIDENTIEL_PAR_VILLE_2026,
+  PERMANENT_PAR_VILLE_2026, COMMERCIAL_PAR_VILLE_2026, PHOTOS_VILLE_2026,
+} from "./medias-2026.js";
+
 /** Toute photo dont le src commence par ceci est réelle. */
 export const REEL_PREFIX = "/images/reel/";
+/**
+ * Les dossiers de vraies photos. `/realisations/` (2026-11-24) : les images
+ * tirées des tournages de la saison 2026 (drone, caméra, Vieux-Port), rangées
+ * par lieu — voir components/medias-2026.js.
+ */
+export const REEL_PREFIXES = [REEL_PREFIX, "/realisations/"];
+export const sousReel = (src) => !!src && REEL_PREFIXES.some((x) => src.startsWith(x));
 
 /** Vrai si cette photo est un vrai chantier (et peut donc nommer sa ville). */
-export const estReelle = (p) => !!p && p.src.startsWith(REEL_PREFIX);
+export const estReelle = (p) => !!p && sousReel(p.src);
 
 // -----------------------------------------------------------------------------
 // Photos SITUÉES — un chantier identifié. `ville` autorise l'alt à la nommer,
@@ -208,6 +220,7 @@ const SAISON_2026 = {
 
 const GENERIQUES = {
   ...SAISON_2026,
+  ...GENERIQUES_2026,
   "arbre-enrubanne": {
     src: `${REEL_PREFIX}noel-arbre-enrubanne.jpg`,
     alt: "Grand arbre dénudé enrubanné de lumières blanc chaud, du tronc jusqu'aux branches, devant une maison de brique",
@@ -303,7 +316,7 @@ const AVANT = {
   },
 };
 
-export const PHOTOS = { ...SITUEES, ...GENERIQUES, ...AVANT };
+export const PHOTOS = { ...SITUEES, ...SITUEES_2026, ...GENERIQUES, ...AVANT };
 
 /** Les clés qui sont des simulations, pas des photos de chantier. */
 export const CLES_SIMULATION = Object.keys(AVANT);
@@ -339,6 +352,9 @@ export const CITY_PHOTO = {
   // Laval ». La page garde donc une générique. À basculer sur "lery-01" si
   // Yahir considère Léry comme faisant partie du territoire Rive-Sud.
   "rive-sud": null,
+  // 2026-11-24 — les villes tournées cette saison ont leur photo ; les autres
+  // n'en ont aucune (null) et montrent un VISUEL générique (CITY_VISUEL).
+  ...CITY_PHOTO_2026,
 };
 
 // -----------------------------------------------------------------------------
@@ -387,6 +403,7 @@ export const cityPhoto = (slug) => photo(CITY_PHOTO[slug]);
 export const CITY_VISUEL = {
   laval: "arbres-01",
   "rive-sud": "mercier-01",
+  ...CITY_VISUEL_2026,
 };
 
 /** Ce que montre une zone : sa photo, sinon son visuel. Jamais null. */
@@ -450,6 +467,7 @@ export const RESIDENTIEL_PAR_VILLE = {
   laval: "s26-escalier",
   montreal: "s26-balcon",
   "rive-sud": "s26-ferme-galerie",
+  ...RESIDENTIEL_PAR_VILLE_2026,
 };
 // Commercial et permanent : leurs pages (service, ville × service) gardent
 // commercial-01 et permanent-hero en hero. Pour que ces deux-là ne dépassent
@@ -460,19 +478,33 @@ const PERMANENT_PAR_VILLE = {
   blainville: "permanent-01", terrebonne: "permanent-02",
   "saint-jerome": "permanent-01", laval: "permanent-02",
   montreal: "permanent-01", "rive-sud": "permanent-02",
+  // 2026-11-24 — les 13 nouvelles villes se partagent les photos du permanent
+  // qui avaient encore de la place sous la règle des 8 pages.
+  ...PERMANENT_PAR_VILLE_2026,
 };
 /** `cle` : "residentiel" | "commercial" | "permanent" (data.js → cleService). */
 export function carteServiceVille(cle, citySlug) {
   if (cle === "residentiel") return photo(RESIDENTIEL_PAR_VILLE[citySlug]) || servicePhoto("lumieres-de-noel-residentiel");
-  if (cle === "commercial") return photo("commercial-02");
+  if (cle === "commercial") return photo(COMMERCIAL_PAR_VILLE_2026[citySlug] || "commercial-02");
   if (cle === "permanent") return photo(PERMANENT_PAR_VILLE[citySlug] || "permanent-01");
   return null;
 }
 /** Le hero d'une page ville × service. Jamais la photo d'une autre ville. */
 export function heroVilleService(serviceSlug, citySlug) {
   if (serviceSlug === "lumieres-de-noel-residentiel") return carteServiceVille("residentiel", citySlug);
+  // Nouvelles villes (2026-11-24) : commercial-01 et permanent-hero sont déjà
+  // sur 8 pages. Le commercial montre une image générique du Vieux-Port (sans
+  // enseigne, sans nom) ; le permanent n'a plus de photo libre : null, et la
+  // page passe au montage vidéo du hero (HeroPage montage).
+  if (citySlug in RESIDENTIEL_PAR_VILLE_2026) {
+    if (serviceSlug === "lumieres-de-noel-commercial") return photo(COMMERCIAL_PAR_VILLE_2026[citySlug]);
+    if (serviceSlug === "eclairage-architectural-permanent") return null;
+  }
   return servicePhoto(serviceSlug);
 }
+
+/** Les vraies photos de la saison 2026 prises DANS cette ville (galerie de la page). */
+export const photosDeVille = (citySlug) => (PHOTOS_VILLE_2026[citySlug] || []).map((cle) => ({ cle, ...PHOTOS[cle] }));
 /** La carte d'un service sur /services (sans ville). */
 export function carteService(serviceSlug) {
   // Le permanent : une autre ambiance que le hero de sa page (règle des 8 pages).

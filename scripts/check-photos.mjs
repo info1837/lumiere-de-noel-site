@@ -24,7 +24,7 @@ const RACINE = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC = join(RACINE, "public");
 const erreurs = [];
 
-const { PHOTOS, CITY_PHOTO, CITY_VISUEL, REEL_PREFIX, PHOTOS_MANQUANTES, CLES_GENERIQUES,
+const { PHOTOS, CITY_PHOTO, CITY_VISUEL, REEL_PREFIX, sousReel, PHOTOS_MANQUANTES, CLES_GENERIQUES,
         PREFIXES_OPTIONNELS, cityPhoto, cityVisuel, cityHeroPhoto, servicePhoto,
         RESIDENTIEL_PAR_VILLE, carteServiceVille, heroVilleService } =
   await import(join(RACINE, "components/photos.js"));
@@ -116,7 +116,7 @@ for (const [cle, p] of Object.entries(PHOTOS)) {
 
 // --- 3. Seule une photo réelle peut nommer une ville -------------------------
 for (const [cle, p] of Object.entries(PHOTOS)) {
-  const reelle = p.src.startsWith(REEL_PREFIX);
+  const reelle = sousReel(p.src);
   if (reelle) continue;
   if (p.ville)
     erreurs.push(`PHOTOS["${cle}"] n'est pas sous ${REEL_PREFIX} et porte pourtant ville="${p.ville}".`);
@@ -302,7 +302,7 @@ for (const cle of CLES_GENERIQUES) {
   // se retrouver côte à côte dans le comparateur.
   const compte = new Map();
   for (const u of usages) {
-    if (!u.src || !u.src.startsWith(REEL_PREFIX)) continue;
+    if (!u.src || !sousReel(u.src)) continue;
     if (!compte.has(u.src)) compte.set(u.src, []);
     compte.get(u.src).push(u.ou);
   }
@@ -350,7 +350,7 @@ for (const cle of CLES_GENERIQUES) {
     if (!c.photos.length) erreurs.push(`Chantier « ${c.id} » sans photo.`);
     for (const ph of c.photos) {
       if (!PHOTOS[ph.cle]) { erreurs.push(`Chantier « ${c.id} » → photo inconnue "${ph.cle}".`); continue; }
-      if (!ph.src.startsWith(REEL_PREFIX)) erreurs.push(`Chantier « ${c.id} » : ${ph.cle} n'est pas une vraie photo (${ph.src}).`);
+      if (!sousReel(ph.src)) erreurs.push(`Chantier « ${c.id} » : ${ph.cle} n'est pas une vraie photo (${ph.src}).`);
       if (vue.has(ph.cle))
         erreurs.push(`La photo "${ph.cle}" est dans DEUX chantiers : « ${vue.get(ph.cle)} » et « ${c.id} ».\n` +
                      `    Une photo = un chantier. Si c'est la même propriété, fusionnez les cartes.`);
@@ -438,7 +438,7 @@ console.log(
   // ⚠️ Les SIMULATIONS ne sont pas des photos réelles, et ce compteur
   // disait le contraire dès qu'on en a ajouté deux. C'est le genre de
   // ligne qu'on relit en diagonale et qui finit par servir de preuve.
-  `✓ check-photos : ${Object.keys(PHOTOS).filter((k) => PHOTOS[k].src.startsWith(REEL_PREFIX)).length} photos réelles, ` +
+  `✓ check-photos : ${Object.keys(PHOTOS).filter((k) => sousReel(PHOTOS[k].src)).length} photos réelles, ` +
   `${Object.keys(PHOTOS).filter((k) => PHOTOS[k].simulation).length} simulation(s) avant/après, ` +
   `${refs.size} image(s) littérale(s) vérifiée(s), ${avecPhoto} ville(s) illustrée(s), ` +
   `${sansPhoto} sans photo (générique), ${CLES_GENERIQUES.length} générique(s), ` +
