@@ -111,6 +111,11 @@ export const company = {
   },
   // Tarif d'entrée réel fourni par le client.
   priceFrom: "1 000 $",
+  // Confirmé par Yahir le 2026-11-25 : service en français ET en anglais.
+  // Une seule ligne, affichée telle quelle (pied de page, « À propos » des
+  // zones `langues: true`, Vieux-Montréal). JSON-LD : availableLanguage.
+  serviceLangues: "Service offert en français et en anglais / Service available in English",
+  langues: ["fr", "en"],
 };
 
 // --- Navigation ---------------------------------------------------------------
@@ -546,6 +551,7 @@ const villesBrutes = [
   },
   {
     slug: "montreal",
+    langues: true, // ligne « Service offert en français et en anglais » (2026-11-25)
     name: "Montréal",
     regionLabel: "Île de Montréal",
     metaDescription:
@@ -570,6 +576,7 @@ const villesBrutes = [
   },
   {
     slug: "rive-sud",
+    langues: true, // ligne « Service offert en français et en anglais » (2026-11-25)
     name: "Rive-Sud",
     regionLabel: "Rive-Sud de Montréal",
     metaDescription:
@@ -672,13 +679,14 @@ const villesBrutes = [
   },
   {
     slug: "beaconsfield",
+    langues: true, // ligne « Service offert en français et en anglais » (2026-11-25)
     name: "Beaconsfield",
     regionLabel: "Ouest-de-l'Île — Montréal",
     metaDescription:
-      "Lumières de Noël à Beaconsfield : maisons du Lakeshore et rues boisées de l'Ouest-de-l'Île. Pose, entretien et retrait inclus.",
+      "Lumières de Noël à Beaconsfield : maisons du Lakeshore et rues boisées de l'Ouest-de-l'Île. Service en français et en anglais.",
     intro:
       "Beaconsfield s'étire le long du lac Saint-Louis, dans l'Ouest-de-l'Île. Entre le chemin du Bord-du-Lac et l'autoroute 20, on y trouve de grandes maisons sur des terrains plantés d'arbres matures, et le vieux secteur de Beaurepaire.",
-    body: "Les maisons à deux niveaux décalés et les cottages des années 1950 et 1960 demandent un tracé qui suit chaque décrochement de toit.",
+    body: "Une bonne partie de la population est anglophone : l'appel, la proposition écrite et le suivi se font en anglais comme en français. Les maisons à deux niveaux décalés et les cottages des années 1950 et 1960 demandent un tracé qui suit chaque décrochement de toit.",
     local: [
       "Le bâti est surtout unifamilial : maisons à niveaux décalés, bungalows élargis et cottages sur des lots généreux, souvent ombragés par de grands arbres.",
       "Près du lac, certaines propriétés ont une façade sur la rue et une autre sur l'eau : on choisit avec vous laquelle mettre en valeur.",
@@ -689,6 +697,7 @@ const villesBrutes = [
       permanent: "Sur un toit à plusieurs paliers, les pastilles permanentes suivent chaque niveau et se programment par zone.",
     },
     faq: [
+      { q: "Pouvez-vous tout faire en anglais avec moi à Beaconsfield?", a: "Oui. L'appel, la proposition écrite et le suivi se font en anglais ou en français, selon votre préférence." },
       { q: "Ma maison à niveaux décalés a plusieurs bouts de toit. Est-ce plus compliqué?", a: "Un peu plus de travail, pas plus compliqué : la guirlande suit chaque décrochement, avec ses propres points d'attache. On en tient compte dans le prix, que vous recevez par écrit après un court appel." },
       { q: "Combien coûte une maison à Beaconsfield?", a: "À partir de 1 000 $, pose, entretien et retrait inclus. Une maison à niveaux décalés compte plus de sections de toit qu'un bungalow, ce qui change le montant. Le prix exact est confirmé après un court appel." },
       { q: "Ma maison donne sur le lac Saint-Louis. Faut-il éclairer les deux côtés?", a: "Pas forcément. On peut éclairer seulement la façade sur rue, seulement le côté du lac, ou les deux : on en parle avant de vous remettre un prix ferme." },

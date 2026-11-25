@@ -132,6 +132,7 @@ export default async function RootLayout({ children }) {
                 "Installation clé en main de lumières de Noël et d'éclairage architectural permanent au Québec — résidentiel et commercial.",
               slogan: "Votre propriété, illuminée — sans le tracas.",
               knowsLanguage: ["fr-CA", "en"],
+              availableLanguage: company.langues, // ["fr", "en"] — confirmé par Yahir le 2026-11-25
               currenciesAccepted: "CAD",
               paymentAccepted: "Comptant, Carte de crédit, Virement Interac",
               address: {

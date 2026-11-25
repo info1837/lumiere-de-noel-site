@@ -20,6 +20,7 @@ export function ServerFooter() {
             <p style={{ fontSize: 14, lineHeight: 1.7, maxWidth: 340, marginBottom: 18 }}>
               Installation clé en main de lumières de Noël et d'éclairage architectural permanent —
               résidentiel et commercial. {company.region}.
+              <br /><span className="service-langues">{company.serviceLangues}</span>
             </p>
             <div style={{ display: "flex", flexDirection: "column", gap: 6, fontSize: 14 }}>
               {/* Les lettres, puis les chiffres juste après (2026-11-11). */}

@@ -323,6 +323,7 @@ export function AProposVille({ ville, fond = MARINE }) {
           <SectionTitle light style={{ margin: "0 0 20px" }}>À propos de {ville.name}</SectionTitle>
           {ville.local.map((l, i) => <p key={i} className="offre-texte">{l}</p>)}
           <p className="offre-texte">{ville.body}</p>
+          {ville.langues && <p className="offre-texte service-langues" lang="fr">{company.serviceLangues}</p>}
         </div>
         {ph && (
           <figure className="apropos-photo">

@@ -119,6 +119,7 @@ export default function VieuxMontreal() {
               telephone: company.phoneHref.replace("tel:", ""),
               email: company.email,
               url: `${BASE}/`,
+              availableLanguage: company.langues,
               areaServed: [{ "@type": "Place", name: "Vieux-Montréal" }, { "@type": "City", name: "Montréal" }],
             },
             {
@@ -233,6 +234,7 @@ export default function VieuxMontreal() {
             <LienTelephone style={{ color: "#F0BA54", fontWeight: 700, textDecoration: "none" }} />
           </p>
           <CTAButton href="#reserver" variant="creme">Remplir le formulaire</CTAButton>
+          <p className="section-phrase service-langues" style={{ margin: "22px auto 0" }}>{company.serviceLangues}</p>
         </div>
       </section>
 

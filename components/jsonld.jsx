@@ -96,6 +96,7 @@ export function ServiceJsonLd({ service, areaServed, urlPath }) {
           telephone: company.phoneHref ? company.phoneHref.replace("tel:", "") : undefined,
           email: company.email,
           url: BASE,
+          availableLanguage: company.langues,
         },
         areaServed: (areaServed || []).map((c) => ({ "@type": "City", name: c })),
         url: `${BASE}${urlPath || ""}`,
