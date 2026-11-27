@@ -33,6 +33,7 @@ import RevelationLumiere from "@/components/RevelationLumiere";
 import { CadreAmpouleOffre } from "@/components/CadreAmpoule";
 import { PHOTOS, paireAvantApres, carteServiceVille } from "@/components/photos";
 import { flouDe } from "@/components/photos-flou";
+import ApresChargement from "@/components/ApresChargement";
 import PhotoCadree from "@/components/PhotoCadree";
 import { company, cities, services, inCity, cleService, AMBIANCES_PERMANENT } from "@/components/data";
 
@@ -129,7 +130,11 @@ export function BandePhotos({ cles, legende = true, fond = MARINE }) {
             <figure key={p.cle} className="bande-photo">
               {/* Téléphone : la première en pleine largeur, les suivantes
                   côte à côte (50vw) — elles demandaient 100vw elles aussi. */}
-              <PhotoCadree photo={p} sizes={`(max-width: 640px) ${i === 0 ? "100vw" : "50vw"}, (max-width: 1100px) 50vw, 400px`} />
+              {/* Après `load` : la bande est sous le hero, elle ne doit pas
+                  disputer la bande passante à l'image LCP (ApresChargement). */}
+              <ApresChargement reserve={<noscript><img src={p.paysage || p.src} alt={p.alt} loading="lazy" style={{ width: "100%", height: "100%", objectFit: "cover" }} /></noscript>}>
+                <PhotoCadree photo={p} sizes={`(max-width: 640px) ${i === 0 ? "100vw" : "50vw"}, (max-width: 1100px) 50vw, 400px`} />
+              </ApresChargement>
               {legende && (p.ville || p.legende) && <figcaption>{p.ville || p.legende}</figcaption>}
             </figure>
           ))}

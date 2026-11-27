@@ -89,7 +89,7 @@ export default function ServicePage({ params }) {
       {s.galerie?.length > 0 && (
         <section className="section-bande section-galerie-service" style={{ background: MARINE }}>
           <div className="container">
-            <GaleriePhotos legendes colonnes={3}
+            <GaleriePhotos legendes differe colonnes={3}
               photos={s.galerie.map((k) => PHOTOS[k]).filter(Boolean).map((p) => ({ ...p, legende: p.nom ? `${p.nom} — Vieux-Montréal` : p.legende }))} />
           </div>
         </section>

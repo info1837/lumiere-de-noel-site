@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { flouDe } from "@/components/photos-flou";
+import ApresChargement from "@/components/ApresChargement";
 
 // =============================================================================
 // Galerie au format NATUREL (2026-11-24) — pages de ville et études de cas
@@ -15,22 +16,43 @@ import { flouDe } from "@/components/photos-flou";
 // =============================================================================
 // `legendes` (2026-11-26) : une légende sous chaque image, `p.legende`
 // (la page commerciale y met le nom du commerce).
-export default function GaleriePhotos({ photos, colonnes = 3, legendes = false }) {
+// `differe` : les images ne partent qu'après `load` (galerie juste sous le
+// hero de la page commerciale) — voir components/ApresChargement.jsx.
+export default function GaleriePhotos({ photos, colonnes = 3, legendes = false, differe = false }) {
   if (!photos?.length) return null;
   return (
     <ul className="galerie-photos" style={{ "--colonnes": colonnes }}>
       {photos.map((p) => (
         <li key={p.src}>
-          <Image
-            src={p.src}
-            alt={p.alt}
-            width={p.largeur}
-            height={p.hauteur}
-            sizes={`(max-width: 640px) 100vw, (max-width: 1100px) 50vw, ${Math.round(1180 / colonnes)}px`}
-            placeholder={flouDe(p.src) ? "blur" : "empty"}
-            blurDataURL={flouDe(p.src)}
-            style={{ width: "100%", height: "auto", display: "block" }}
-          />
+          {differe ? (
+            <ApresChargement reserve={
+              <div style={{ aspectRatio: `${p.largeur} / ${p.hauteur}` }}>
+                <noscript><img src={p.src} alt={p.alt} loading="lazy" style={{ width: "100%", height: "auto", display: "block" }} /></noscript>
+              </div>
+            }>
+            <Image
+              src={p.src}
+              alt={p.alt}
+              width={p.largeur}
+              height={p.hauteur}
+              sizes={`(max-width: 640px) 100vw, (max-width: 1100px) 50vw, ${Math.round(1180 / colonnes)}px`}
+              placeholder={flouDe(p.src) ? "blur" : "empty"}
+              blurDataURL={flouDe(p.src)}
+              style={{ width: "100%", height: "auto", display: "block" }}
+            />
+            </ApresChargement>
+          ) : (
+            <Image
+              src={p.src}
+              alt={p.alt}
+              width={p.largeur}
+              height={p.hauteur}
+              sizes={`(max-width: 640px) 100vw, (max-width: 1100px) 50vw, ${Math.round(1180 / colonnes)}px`}
+              placeholder={flouDe(p.src) ? "blur" : "empty"}
+              blurDataURL={flouDe(p.src)}
+              style={{ width: "100%", height: "auto", display: "block" }}
+            />
+          )}
           {legendes && p.legende && <p className="galerie-photos__legende">{p.legende}</p>}
         </li>
       ))}
