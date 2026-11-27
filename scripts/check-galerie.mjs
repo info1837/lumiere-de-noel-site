@@ -71,7 +71,8 @@ const nombre = async (f) => Number((await page.locator(".filtre", { hasText: f }
 // 2026-11-26 (lot 2) : + Hôtel Nelligan, Mama C (commerce) et la victorienne
 // (résidentiel) : 29 → 32, 19 → 20, 4 → 6. c03 et c04 rejoignent les cartes
 // Place d'Armes et Modavie (même commerce = même carte).
-const attendus = { Tout: 32, "Résidentiel": 20, Commercial: 6, Arbres: 3, Permanent: 3 };
+// 2026-11-27 : maison B = Blainville, maison D = Lorraine (une maison = une carte) : 32 → 30, 20 → 18.
+const attendus = { Tout: 30, "Résidentiel": 18, Commercial: 6, Arbres: 3, Permanent: 3 };
 for (const [f, n] of Object.entries(attendus)) {
   const annonce = await nombre(f);
   await page.locator(".filtre", { hasText: f }).click();
@@ -84,7 +85,7 @@ await attendre(150);
 const srcs = await page.evaluate(() => [...document.querySelectorAll(".chantier img")].map((i) => new URL(i.currentSrc || i.src).searchParams.get("url") || i.src));
 t("🚨 aucune photo dans deux cartes", new Set(srcs).size === srcs.length, `${srcs.length} images, ${new Set(srcs).size} distinctes`);
 for (const [id, n] of [["chocolaterie", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3],
-  ["s26-trois-pignons", 3], ["s26-ferme-moderne", 9], ["s26-contemporaine", 2], ["s26-balcon", 8],
+  ["blainville-2026", 9], ["s26-ferme-moderne", 9], ["lorraine-2026", 9], ["s26-balcon", 8],
   ["lery", 7], ["vm-kyo", 5], ["vm-modavie", 7], ["vm-hotel-place-d-armes", 5],
   ["vm-nelligan", 2], ["vm-mama-c", 2], ["s26-victorienne", 1]]) {
   const k = await page.locator(`[data-chantier="${id}"] img`).count();
@@ -129,7 +130,7 @@ console.log("\n--- 1b. Par ville / site (2026-11-24), et un alt sur chaque photo
   await attendre(400);
   const grande = await page.evaluate(() => { const i = document.querySelector(".visionneuse img"); return i ? decodeURIComponent(i.currentSrc || i.src) : ""; });
   t("🚨 la visionneuse montre l'entière (ni -16x9 ni -4x5)", /05-ferme-moderne-facade\.jpg/.test(grande), grande.slice(-70));
-  t("…avec le compte du chantier", /^Photo 1\/9 · Chantier 10 \/ 32/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
+  t("…avec le compte du chantier", /^Photo 1\/9 · Chantier 10 \/ 30/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
   await page.keyboard.press("Escape");
   await attendre(200);
 }

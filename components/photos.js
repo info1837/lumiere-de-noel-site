@@ -181,6 +181,8 @@ const SAISON_2026 = {
     alt: "Maison de brique : escalier en fer forgé illuminé, arche de guirlande au nœud rouge à l'entrée, contours des fenêtres et ligne de toit en blanc chaud",
   }),
   // B — maison de brique à trois pignons (façade, colonnes, vue de côté).
+  // C'est la maison de Blainville (Yahir, 2026-11-27) : sur /realisations, dans
+  // la carte « Brique et trois pignons — Blainville ». Reste générique (alt sans ville).
   "s26-pignons-facade": s26("02-brique-3-pignons-facade", {
     legende: "Trois pignons en C9",
     alt: "Maison de brique à trois pignons : lignes de toit en ampoules C9 blanc chaud, avant-toit du porche et colonnes enrubannées",
@@ -203,6 +205,8 @@ const SAISON_2026 = {
     alt: "Galerie de la même maison : guirlandes suspendues, poteaux enrubannés de mini-lumières et lignes de toit en blanc chaud",
   }),
   // D — maison contemporaine en pierre (façade, vue de côté).
+  // C'est la maison de Lorraine (Yahir, 2026-11-27) : sur /realisations, dans
+  // la carte « Maison contemporaine — Lorraine ». Reste générique.
   "s26-contemporaine-facade": s26("07-contemporaine-pierre-facade", {
     legende: "Toits sur plusieurs niveaux",
     alt: "Maison contemporaine en pierre : bordures de toit sur plusieurs niveaux soulignées d'ampoules blanc chaud",

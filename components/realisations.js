@@ -52,9 +52,7 @@ const BRUTS = [
   // du groupe, « Vieux-Montréal », qui la porte (check-photos §9).
   { id: "vm-nelligan", saison: 2026, groupe: "Vieux-Montréal", categorie: "Commercial", etiquette: "Hôtel Nelligan — entrée et jardinières", photos: ["s26-nelligan-face", "s26-nelligan-angle"] },
   { id: "vm-mama-c", saison: 2026, groupe: "Vieux-Montréal", categorie: "Commercial", etiquette: "Mama C, cuisine grecque — jardinières de fenêtres", photos: ["s26-mama-c-facade", "s26-mama-c-jardiniere"] },
-  { id: "s26-trois-pignons", saison: 2026, categorie: "Résidentiel", etiquette: "Trois pignons et colonnes", photos: ["s26-pignons-facade", "s26-pignons-colonnes", "s26-pignons-angle"] },
   { id: "s26-ferme-moderne", saison: 2026, categorie: "Résidentiel", etiquette: "Ferme moderne — Sainte-Anne-des-Plaines", photos: ["s26-ferme-facade", "s26-ferme-galerie", "ste-anne-01"] },
-  { id: "s26-contemporaine", saison: 2026, categorie: "Résidentiel", etiquette: "Contemporaine en pierre", photos: ["s26-contemporaine-facade", "s26-contemporaine-angle"] },
   { id: "s26-balcon", saison: 2026, categorie: "Résidentiel", etiquette: "Balcon et pignon de pierre — Terrebonne", photos: ["s26-balcon", "terrebonne-01"] },
 
   // ── Résidentiel ──────────────────────────────────────────────────────────
@@ -113,10 +111,23 @@ const ORDRE_2026 = [
   "s26-balcon", "terrebonne-sapin", "lorraine-2026", "s26-ferme-moderne",
   "saint-valentin-2026", "beaconsfield-2026", "lery",
 ];
-// Lot 2 (2026-11-26) : la vraie photo de chaque commerce déjà présent passe
-// EN TÊTE de sa carte (couverture), devant les images tirées des vidéos.
-const LOT2_EN_TETE = { "vm-hotel-place-d-armes": ["s26-place-darmes"], "vm-modavie": ["s26-modavie"] };
-const nouveaux = Object.fromEntries(CHANTIERS_2026.map((c) => [c.id, LOT2_EN_TETE[c.id] ? { ...c, photos: [...LOT2_EN_TETE[c.id], ...c.photos] } : c]));
+// Photos d'appareil EN TÊTE d'une carte 2026 (couverture), devant les images
+// tirées des vidéos et du drone :
+//   · lot 2 (2026-11-26) : la vraie photo de chaque commerce déjà présent ;
+//   · UNE MAISON = UNE CARTE (Yahir, 2026-11-27) : la maison B (brique, trois
+//     pignons : 02, 03, 04) EST celle de Blainville, la maison D (contemporaine
+//     en pierre : 07, 08) celle de Lorraine. Leurs cartes « Trois pignons et
+//     colonnes » et « Contemporaine en pierre » sont fondues dans celles de la
+//     ville. Les photos restent GÉNÉRIQUES (elles portent les cartes
+//     résidentielles d'autres villes) : c'est l'étiquette de la carte, et ses
+//     photos de drone situées, qui portent la ville.
+const PHOTOS_EN_TETE = {
+  "vm-hotel-place-d-armes": ["s26-place-darmes"],
+  "vm-modavie": ["s26-modavie"],
+  "blainville-2026": ["s26-pignons-facade", "s26-pignons-colonnes", "s26-pignons-angle"],
+  "lorraine-2026": ["s26-contemporaine-facade", "s26-contemporaine-angle"],
+};
+const nouveaux = Object.fromEntries(CHANTIERS_2026.map((c) => [c.id, PHOTOS_EN_TETE[c.id] ? { ...c, photos: [...PHOTOS_EN_TETE[c.id], ...c.photos] } : c]));
 const ORDONNES = [
   ...ORDRE_2026.map((id) => nouveaux[id] || parId[id]),
   ...BRUTS.map((c) => parId[c.id]).filter((c) => !ORDRE_2026.includes(c.id)),
