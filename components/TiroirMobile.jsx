@@ -112,8 +112,10 @@ export function TiroirMobile({ ouvert, onFermer, declencheurRef }) {
     };
   }, [ouvert]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // Un nom trop long pour une demi-colonne à 390 px (« Sainte-Anne-des-Plaines »)
+  // prend toute la rangée au lieu de déborder du tiroir (2026-11-26).
   const sousLien = (l) => (
-    <li key={l.href}>
+    <li key={l.href} data-long={l.label.length > 18 ? "" : undefined}>
       <Link href={l.href} onClick={onFermer} className="tiroir__sous-lien"
         aria-current={estCourant(l.href, pathname) ? "page" : undefined}>
         {l.label}

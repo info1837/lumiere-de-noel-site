@@ -68,7 +68,10 @@ const nombre = async (f) => Number((await page.locator(".filtre", { hasText: f }
 // puis Terrebonne et Sainte-Anne-des-Plaines rejoignent la carte 2026 de LEUR
 // maison (une maison = une carte) : 23 → 21, 16 → 14.
 // 2026-11-24 : + 8 chantiers de la saison (3 commerces du Vieux-Montréal, 5 maisons).
-const attendus = { Tout: 29, "Résidentiel": 19, Commercial: 4, Arbres: 3, Permanent: 3 };
+// 2026-11-26 (lot 2) : + Hôtel Nelligan, Mama C (commerce) et la victorienne
+// (résidentiel) : 29 → 32, 19 → 20, 4 → 6. c03 et c04 rejoignent les cartes
+// Place d'Armes et Modavie (même commerce = même carte).
+const attendus = { Tout: 32, "Résidentiel": 20, Commercial: 6, Arbres: 3, Permanent: 3 };
 for (const [f, n] of Object.entries(attendus)) {
   const annonce = await nombre(f);
   await page.locator(".filtre", { hasText: f }).click();
@@ -82,7 +85,8 @@ const srcs = await page.evaluate(() => [...document.querySelectorAll(".chantier 
 t("🚨 aucune photo dans deux cartes", new Set(srcs).size === srcs.length, `${srcs.length} images, ${new Set(srcs).size} distinctes`);
 for (const [id, n] of [["chocolaterie", 2], ["saint-donat", 3], ["toutes-les-ambiances", 3],
   ["s26-trois-pignons", 3], ["s26-ferme-moderne", 9], ["s26-contemporaine", 2], ["s26-balcon", 8],
-  ["lery", 7], ["vm-kyo", 5], ["vm-modavie", 6], ["vm-hotel-place-d-armes", 4]]) {
+  ["lery", 7], ["vm-kyo", 5], ["vm-modavie", 7], ["vm-hotel-place-d-armes", 5],
+  ["vm-nelligan", 2], ["vm-mama-c", 2], ["s26-victorienne", 1]]) {
   const k = await page.locator(`[data-chantier="${id}"] img`).count();
   t(`« ${id} » réunit ${n} photos`, k === n, `${k}`);
 }
@@ -94,7 +98,7 @@ console.log("\n--- 1b. Par ville / site (2026-11-24), et un alt sur chaque photo
     ids: [...g.querySelectorAll("[data-chantier]")].map((c) => c.dataset.chantier),
   })));
   const titres = groupes.map((g) => g.titre);
-  t("🚨 le premier groupe est « Vieux-Montréal », avec ses trois commerces", titres[0] === "Vieux-Montréal" && groupes[0].ids.join() === "vm-kyo,vm-modavie,vm-hotel-place-d-armes", `${titres[0]} — ${groupes[0]?.ids.join()}`);
+  t("🚨 le premier groupe est « Vieux-Montréal », avec ses cinq commerces", titres[0] === "Vieux-Montréal" && groupes[0].ids.join() === "vm-nelligan,vm-hotel-place-d-armes,vm-modavie,vm-mama-c,vm-kyo", `${titres[0]} — ${groupes[0]?.ids.join()}`);
   t("🚨 les villes tournées cette saison ont chacune leur groupe",
     ["Blainville", "Terrebonne", "Lorraine", "Sainte-Anne-des-Plaines", "Saint-Valentin", "Beaconsfield", "Léry"].every((v) => titres.includes(v)), titres.join(" | "));
   t("…les maisons 2026 sans lieu, puis les réalisations précédentes, en dernier",
@@ -110,7 +114,7 @@ console.log("\n--- 1b. Par ville / site (2026-11-24), et un alt sur chaque photo
   // Chaque <img> de la galerie décrit l'installation : ni vide, ni générique.
   const alts = await page.evaluate(() => [...document.querySelectorAll(".galerie img")].map((i) => i.getAttribute("alt") || ""));
   const vides = alts.filter((a) => a.length < 25);
-  t("🚨 chaque photo de la galerie a un vrai alt", alts.length === 100 && vides.length === 0, `${alts.length} images, ${vides.length} sans alt`);
+  t("🚨 chaque photo de la galerie a un vrai alt", alts.length === 107 && vides.length === 0, `${alts.length} images, ${vides.length} sans alt`);
   t("…aucun alt « illuminée pour les Fêtes » sans dire ce qui est posé", alts.every((a) => !/illuminée? pour les Fêtes/.test(a)), alts.filter((a) => /illuminée? pour les Fêtes/.test(a)).join(" | "));
   t("…et aucun alt en double", new Set(alts).size === alts.length, `${alts.length - new Set(alts).size} doublon(s)`);
   // Un filtre sans chantier de la saison : aucun titre, la grille d'avant.
@@ -125,7 +129,7 @@ console.log("\n--- 1b. Par ville / site (2026-11-24), et un alt sur chaque photo
   await attendre(400);
   const grande = await page.evaluate(() => { const i = document.querySelector(".visionneuse img"); return i ? decodeURIComponent(i.currentSrc || i.src) : ""; });
   t("🚨 la visionneuse montre l'entière (ni -16x9 ni -4x5)", /05-ferme-moderne-facade\.jpg/.test(grande), grande.slice(-70));
-  t("…avec le compte du chantier", /^Photo 1\/9 · Chantier 8 \/ 29/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
+  t("…avec le compte du chantier", /^Photo 1\/9 · Chantier 10 \/ 32/.test(await page.locator(".visionneuse__compte").innerText()), await page.locator(".visionneuse__compte").innerText());
   await page.keyboard.press("Escape");
   await attendre(200);
 }

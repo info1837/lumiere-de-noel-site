@@ -3,6 +3,7 @@
 // =============================================================================
 //   node scripts/preparer-photos-2026.mjs <dossier des originaux> [--apercu <dossier>]
 //   (npm run images:2026 -- ~/Downloads/lumiere-header/photos/nouvelles)
+//   lot 2 : npm run images:2026 -- ~/Downloads/lumiere-header/photos/nouvelles-2 --lot 2
 //
 // Les originaux (JPEG de l'appareil, 2 576 px) ne sont PAS dans le dépôt.
 // Ce script est la trace exacte de ce qu'on leur a fait, et rien d'autre :
@@ -105,6 +106,70 @@ export const PHOTOS_2026 = [
   },
 ];
 
+
+// ── LOT 2 (2026-11-26) : ~/Downloads/lumiere-header/photos/nouvelles-2 ─────
+//   node scripts/preparer-photos-2026.mjs <dossier nouvelles-2> --lot 2
+// Originaux iPhone 1 932 × 2 576 ; les passants ont été retirés AVANT nous
+// (fichiers « _sans-personnes ») — on n'y retouche rien d'autre.
+//   · numéros civiques FLOUTÉS : « 106 » sur la porte du Nelligan (c01, c02),
+//     « 55 » sur l'auvent de la Place d'Armes (c03), « 1 SAINT-PAUL OUEST »
+//     sur l'auvent du Modavie (c04, quatre boîtes qui suivent la pente du
+//     lettrage), « 36 » à côté de la porte de la victorienne (r10) ;
+//   · c04 RECADRÉE à droite du panneau orange de chantier et du cône : auvent,
+//     couronne et tableau du menu gardés ; l'enseigne ronde du bistro sort du
+//     cadre (pas de cadre qui la garde sans le panneau) ;
+//   · c05 : le bas (pavés vides) retiré de l'entière.
+// Les noms de commerces restent : commerces publics photographiés de la rue.
+export const PHOTOS_2026_LOT2 = [
+  {
+    n: "c01", nom: "c01-nelligan-facade-angle",
+    flous: [[955, 1288, 72, 38]],
+    entiere: null,
+    paysage: [0, 500, 1932, h169(1932)],
+    portrait: [0, 100, 1932, h45(1932)],
+  },
+  {
+    n: "c02", nom: "c02-nelligan-facade-face",
+    flous: [[965, 1332, 70, 38]],
+    entiere: null,
+    paysage: [0, 494, 1932, h169(1932)],
+    portrait: [0, 100, 1932, h45(1932)],
+  },
+  {
+    n: "c03", nom: "c03-place-darmes-sapins",
+    flous: [[952, 592, 78, 62]],
+    entiere: null,
+    paysage: [0, 760, 1932, h169(1932)],
+    portrait: [0, 80, 1932, h45(1932)],
+  },
+  {
+    n: "c04", nom: "c04-modavie-saint-paul",
+    flous: [[851, 1108, 92, 69], [936, 1060, 98, 75], [1027, 1014, 98, 75], [1118, 975, 101, 72]],
+    entiere: [790, 215, 1142, 1932],
+    paysage: [790, 1000, 1142, h169(1142)],
+    portrait: [790, 730, 1142, h45(1142)],
+  },
+  {
+    n: "c05", nom: "c05-mama-c-facade",
+    entiere: [0, 0, 1932, 2200],
+    paysage: [0, 644, 1932, h169(1932)],
+    portrait: [532, 300, 1400, h45(1400)],
+  },
+  {
+    n: "c06", nom: "c06-mama-c-jardiniere",
+    entiere: null,
+    paysage: [0, 815, 1932, h169(1932)],
+    portrait: [0, 80, 1932, h45(1932)],
+  },
+  {
+    n: "r10", nom: "r10-victorienne-boucle-rouge",
+    flous: [[1020, 1474, 40, 30]],
+    entiere: null,
+    paysage: [0, 780, 1932, h169(1932)],
+    portrait: [0, 161, 1932, h45(1932)],
+  },
+];
+
 // ── La courbe de 07 et 08 ────────────────────────────────────────────────
 // y = x + a · x · (1 − x)^4 · pied(x), sur la LUMINANCE (0..1).
 //   · (1 − x)^4 : le gain s'éteint dans les hautes lumières — une ampoule à
@@ -182,7 +247,9 @@ if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(im
   const dossier = iAp > 0 ? process.argv[iAp + 1] : SORTIE;
   fs.mkdirSync(dossier, { recursive: true });
   const fichiers = fs.readdirSync(source);
-  for (const p of PHOTOS_2026) {
+  const iLot = process.argv.indexOf("--lot");
+  const liste = iLot > 0 && process.argv[iLot + 1] === "2" ? PHOTOS_2026_LOT2 : PHOTOS_2026;
+  for (const p of liste) {
     const f = fichiers.find((x) => x.startsWith(`${p.n}-`) && /\.jpe?g$/i.test(x));
     if (!f) { console.error(`✖ original introuvable pour ${p.nom}`); process.exit(1); }
     // `rotate()` applique l'orientation EXIF ; la sortie brute est en sRGB.

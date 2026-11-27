@@ -3,10 +3,12 @@ import { ServiceJsonLd, BreadcrumbJsonLd } from "@/components/jsonld";
 import AppDemo from "@/components/AppDemo";
 import {
   HeroPage, BandePhotos, CeQuiEstCompris, AvantApres, Parcours, FaqCourte,
-  Reservation, PucesVilles, SectionAmbiances, LienVieuxMontreal, MARINE_PROFOND,
+  Reservation, PucesVilles, SectionAmbiances, LienVieuxMontreal, MARINE, MARINE_PROFOND,
 } from "@/components/sections";
 import { services, findService, serviceArea, serviceOptions } from "@/components/data";
 import { MONTAGES } from "@/lib/hero-media";
+import GaleriePhotos from "@/components/GaleriePhotos";
+import { PHOTOS } from "@/components/photos";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -81,6 +83,17 @@ export default function ServicePage({ params }) {
       {s.ambiances && <SectionAmbiances />}
 
       <BandePhotos cles={s.bande || []} />
+
+      {/* Galerie au format naturel sous la bande (page commerciale, 2026-11-26) :
+          chaque image légendée du nom du commerce, chargement différé. */}
+      {s.galerie?.length > 0 && (
+        <section className="section-bande section-galerie-service" style={{ background: MARINE }}>
+          <div className="container">
+            <GaleriePhotos legendes colonnes={3}
+              photos={s.galerie.map((k) => PHOTOS[k]).filter(Boolean).map((p) => ({ ...p, legende: p.nom ? `${p.nom} — Vieux-Montréal` : p.legende }))} />
+          </div>
+        </section>
+      )}
 
       {commercial && (
         <LienVieuxMontreal

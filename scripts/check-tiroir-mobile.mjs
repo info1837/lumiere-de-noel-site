@@ -23,6 +23,10 @@
 import { chromium, webkit } from 'playwright';
 
 const url = (process.argv.find(a => a.startsWith('--url=')) || '').slice(6) || 'http://localhost:3000';
+// Les zones du menu = les pages /secteur/<ville> du sitemap (sans le
+// Vieux-Montréal, hors de `cities`). Plus de chiffre écrit en dur.
+const NB_ZONES = [...new Set([...(await (await fetch(`${url.replace(/\/$/, '')}/sitemap.xml`)).text())
+  .matchAll(/\/secteur\/([a-z0-9-]+)<\/loc>/g)].map(m => m[1]))].filter(v => v !== 'vieux-montreal').length;
 const SHOTS = process.env.SHOTS || '';
 // Previews Vercel (SSO) : VERCEL_AUTOMATION_BYPASS_SECRET → en-tête de
 // contournement sur chaque requête, jamais x-vercel-set-bypass-cookie.
@@ -96,7 +100,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     const ctx = await b.newContext({ viewport: { width: vp.width, height: vp.height }, hasTouch: true, isMobile: true, extraHTTPHeaders: ENTETES });
     const p = await ctx.newPage();
     const t = `${nomM} ${vp.nom}`;
-    await p.goto(url, { waitUntil: 'domcontentloaded' });
+    await p.goto(url, { waitUntil: 'load' }); // 'load' : sous charge, un tap avant l'hydratation de React se perd (2026-11-26)
     await p.waitForSelector('#tiroir-mobile', { state: 'attached' });
 
     const tiroir = p.locator('#tiroir-mobile');
@@ -211,6 +215,12 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
 
     // ── Services ────────────────────────────────────────────────────────
     await p.locator('#tiroir-mobile button[aria-controls="tiroir-services"]').tap();
+    // Sous charge, React peut répondre après 300 ms : on attend l'ÉTAT
+    // (aria-expanded), puis la transition du chevron.
+    await p.waitForFunction(() => document.querySelector('#tiroir-mobile button[aria-controls="tiroir-services"]')?.getAttribute('aria-expanded') === 'true', null, { timeout: 3000 }).catch(() => {});
+    // Le chevron tourne en 220 ms ; sous charge, Chromium peut encore rendre
+    // la valeur de départ à 300 ms. On mesure l'état FINAL (2 s au plus).
+    await p.waitForFunction(() => { const t = getComputedStyle(document.querySelector('#tiroir-mobile button[aria-controls="tiroir-services"] svg')).transform; return t !== 'none' && t !== 'matrix(1, 0, 0, 1, 0, 0)'; }, null, { timeout: 2000 }).catch(() => {});
     await p.waitForTimeout(300);
     const sv = await p.locator('#tiroir-mobile').evaluate(e => {
       const btn = e.querySelector('button[aria-controls="tiroir-services"]');
@@ -248,7 +258,8 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     });
     ok(sc.servExp === 'false' && sc.servCache, `${t} Secteurs : Services encore ouvert (expanded=${sc.servExp}, hidden=${sc.servCache})`);
     ok(sc.sectExp === 'true', `${t} Secteurs : aria-expanded=${sc.sectExp}`);
-    ok(sc.liens.length === 6, `${t} Secteurs : ${sc.liens.length} zones (attendu 6)`);
+    // 19 zones depuis le 2026-11-24 (13 villes ajoutées) : le compte vient de `cities`.
+    ok(sc.liens.length === NB_ZONES, `${t} Secteurs : ${sc.liens.length} zones (attendu ${NB_ZONES})`);
     ok(new Set(sc.liens.map(l => l.x)).size === 2, `${t} Secteurs : ${new Set(sc.liens.map(l => l.x)).size} colonne(s) (attendu 2)`);
     ok(sc.liens.every(l => l.h === 48), `${t} Secteurs : hauteurs ${[...new Set(sc.liens.map(l => l.h))].join(',')}`);
     ok(sc.liens.every(l => l.droite <= sc.bordDroit), `${t} Secteurs : une ville déborde du tiroir`);
@@ -278,7 +289,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     // ── Voile ferme ─────────────────────────────────────────────────────
     await burger.tap(); await p.waitForTimeout(300);
     await p.touchscreen.tap(8, vp.height / 2);
-    await p.waitForTimeout(350);
+    await p.waitForFunction(() => getComputedStyle(document.querySelector('#tiroir-mobile')).visibility === 'hidden', null, { timeout: 3000 }).catch(() => {});
     ok(await tiroir.evaluate(e => getComputedStyle(e).visibility) === 'hidden', `${t} voile : le tap ne ferme pas`);
 
     // ── × ferme ─────────────────────────────────────────────────────────
@@ -294,7 +305,7 @@ for (const [nomM, M] of [['chromium', chromium], ['webkit', webkit]]) {
     await p.emulateMedia({ reducedMotion: 'no-preference' });
 
     // ── Page courante en doré ───────────────────────────────────────────
-    await p.goto(url.replace(/\/$/, '') + '/services/lumieres-de-noel-commercial', { waitUntil: 'domcontentloaded' });
+    await p.goto(url.replace(/\/$/, '') + '/services/lumieres-de-noel-commercial', { waitUntil: 'load' }); // 'load' : sous charge, un tap avant l'hydratation de React se perd (2026-11-26)
     await p.waitForSelector('#tiroir-mobile', { state: 'attached' });
     await burger.tap(); await p.waitForTimeout(300);
     await p.locator('#tiroir-mobile button[aria-controls="tiroir-services"]').tap(); await p.waitForTimeout(300);

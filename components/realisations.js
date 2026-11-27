@@ -43,6 +43,15 @@ export const CATEGORIES_CHANTIERS = ["Résidentiel", "Commercial", "Arbres", "Pe
 const BRUTS = [
   // ── Saison 2026 — résidentiel ────────────────────────────────────────────
   { id: "s26-escalier", saison: 2026, categorie: "Résidentiel", etiquette: "Escalier, guirlande et fenêtres", photos: ["s26-escalier"] },
+  // LOT 2 (2026-11-26) — la victorienne au nœud rouge (aucune ville donnée).
+  { id: "s26-victorienne", saison: 2026, categorie: "Résidentiel", etiquette: "Nœud géant, galerie et escalier", photos: ["s26-victorienne"] },
+
+  // ── Saison 2026 — commerces du Vieux-Montréal, lot 2 (2026-11-26) ────────
+  // Photos GÉNÉRIQUES (elles portent les cartes commerciales de pages de
+  // ville) : l'étiquette nomme le commerce mais pas la ville — c'est le titre
+  // du groupe, « Vieux-Montréal », qui la porte (check-photos §9).
+  { id: "vm-nelligan", saison: 2026, groupe: "Vieux-Montréal", categorie: "Commercial", etiquette: "Hôtel Nelligan — entrée et jardinières", photos: ["s26-nelligan-face", "s26-nelligan-angle"] },
+  { id: "vm-mama-c", saison: 2026, groupe: "Vieux-Montréal", categorie: "Commercial", etiquette: "Mama C, cuisine grecque — jardinières de fenêtres", photos: ["s26-mama-c-facade", "s26-mama-c-jardiniere"] },
   { id: "s26-trois-pignons", saison: 2026, categorie: "Résidentiel", etiquette: "Trois pignons et colonnes", photos: ["s26-pignons-facade", "s26-pignons-colonnes", "s26-pignons-angle"] },
   { id: "s26-ferme-moderne", saison: 2026, categorie: "Résidentiel", etiquette: "Ferme moderne — Sainte-Anne-des-Plaines", photos: ["s26-ferme-facade", "s26-ferme-galerie", "ste-anne-01"] },
   { id: "s26-contemporaine", saison: 2026, categorie: "Résidentiel", etiquette: "Contemporaine en pierre", photos: ["s26-contemporaine-facade", "s26-contemporaine-angle"] },
@@ -97,12 +106,17 @@ const avecAjouts = (c) => {
   return { ...c, saison: 2026, groupe: GROUPES_EXISTANTS_2026[c.id], photos: [...recentes, ...plus, ...anciennes] };
 };
 const parId = Object.fromEntries(BRUTS.map((c) => [c.id, avecAjouts(c)]));
+// Vieux-Montréal (2026-11-26) : Nelligan, Place d'Armes, Modavie, Mama C,
+// puis Kyo. Cinq cartes : le Nelligan en vedette.
 const ORDRE_2026 = [
-  "vm-kyo", "vm-modavie", "vm-hotel-place-d-armes", "blainville-2026",
+  "vm-nelligan", "vm-hotel-place-d-armes", "vm-modavie", "vm-mama-c", "vm-kyo", "blainville-2026",
   "s26-balcon", "terrebonne-sapin", "lorraine-2026", "s26-ferme-moderne",
   "saint-valentin-2026", "beaconsfield-2026", "lery",
 ];
-const nouveaux = Object.fromEntries(CHANTIERS_2026.map((c) => [c.id, c]));
+// Lot 2 (2026-11-26) : la vraie photo de chaque commerce déjà présent passe
+// EN TÊTE de sa carte (couverture), devant les images tirées des vidéos.
+const LOT2_EN_TETE = { "vm-hotel-place-d-armes": ["s26-place-darmes"], "vm-modavie": ["s26-modavie"] };
+const nouveaux = Object.fromEntries(CHANTIERS_2026.map((c) => [c.id, LOT2_EN_TETE[c.id] ? { ...c, photos: [...LOT2_EN_TETE[c.id], ...c.photos] } : c]));
 const ORDONNES = [
   ...ORDRE_2026.map((id) => nouveaux[id] || parId[id]),
   ...BRUTS.map((c) => parId[c.id]).filter((c) => !ORDRE_2026.includes(c.id)),

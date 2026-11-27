@@ -45,7 +45,7 @@ const PROMO = {
 };
 const TITRE = "Décoration des Fêtes pour les commerces du Vieux-Montréal";
 const DESCRIPTION =
-  "Décors des Fêtes du Kyo, du Modavie et de l'Hôtel Place d'Armes : guirlandes, mini-lumières et jardinières pour les commerces du Vieux-Montréal.";
+  "Décors des Fêtes de l'Hôtel Nelligan, de l'Hôtel Place d'Armes, du Modavie, du Kyo et de Mama C : guirlandes, mini-lumières et jardinières.";
 const BASE = company.baseUrl;
 const IMAGES_CAS = CAS_VIEUX_MONTREAL.map((c) => ({ ...c, images: c.photos.map((k) => ({ cle: k, ...PHOTOS[k] })) }));
 
@@ -213,8 +213,8 @@ export default function VieuxMontreal() {
       <section style={{ background: MARINE_PROFOND }}>
         <div className="container">
           <div className="section-entete">
-            <SectionTag dark>Ailleurs dans le Vieux-Montréal</SectionTag>
-            <SectionTitle light style={{ margin: "0 auto 14px" }}>D&apos;autres entrées et vitrines</SectionTitle>
+            <SectionTag dark>Saison 2026 — en photos</SectionTag>
+            <SectionTitle light style={{ margin: "0 auto 14px" }}>Hôtels, restaurants et vitrines du quartier</SectionTitle>
           </div>
           <Gallery items={GALERIE_VIEUX_MONTREAL} prechargees={0} />
         </div>

@@ -324,7 +324,9 @@ export const services = [
     // 2026-11-23 : les colonnes et les détails (03), puis les rampes, la
     // guirlande et le décor (01) — leur légende le dit —, et une maison
     // située. Blainville et Mercier, déjà sur 8 pages ou plus, en sortent.
-    bande: ["s26-pignons-colonnes", "s26-escalier", "montreal-01"],
+    // 2026-11-26 : la victorienne au nœud rouge (r10) à côté de l'escalier (01) ;
+    // montreal-01 (8 pages) en sort.
+    bande: ["s26-pignons-colonnes", "s26-escalier", "s26-victorienne"],
     paire: "avant-ste-julienne",
     compris: {
       texte: "On fournit le matériel professionnel, on l'installe en sécurité, on l'entretient pendant la saison et on le retire après les Fêtes.",
@@ -351,11 +353,13 @@ export const services = [
     // le nom du commerce et son numéro de téléphone en pleine page. Léry :
     // une installation de nuit, sans enseigne, plaque ni numéro (vérifié à
     // la loupe). Blainville écartée : une pancarte de pelouse « Palencia »
-    // et un numéro y sont lisibles. Le HERO seulement : servicePhoto()
-    // nourrit aussi les cartes des pages de ville, qui exigent une photo
-    // générique (check-photos), et garde donc commercial-01.
-    heroImage: PHOTOS["lery-01"].src,
-    heroImageAlt: PHOTOS["lery-01"].alt,
+    // et un numéro y sont lisibles. (Remplacée le 2026-11-26 par c02, plus bas.)
+    // 2026-11-26 : la PHOTO de tête est la façade de l'Hôtel Nelligan (c02) —
+    // Open Graph, JSON-LD et première photo de la bande. Le hero reste le
+    // montage vidéo du Vieux-Montréal (son affiche est l'image LCP).
+    heroPhoto: PHOTOS["s26-nelligan-face"],
+    heroImage: cadre(PHOTOS["s26-nelligan-face"]).src,
+    heroImageAlt: PHOTOS["s26-nelligan-face"].alt,
     metaDescription:
       "Façades, vitrines et entrées illuminées pour les Fêtes. Installation hors des heures d'ouverture, entretien inclus, retrait en janvier. Sur soumission.",
     intro:
@@ -370,7 +374,10 @@ export const services = [
     // La chocolaterie du hero, sous un autre angle. Les conifères qui
     // complétaient la bande sont des chantiers RÉSIDENTIELS (l'un est à
     // Saint-Donat) : ils n'ont rien à faire sur la page commerciale.
-    bande: ["commercial-02"],
+    bande: ["s26-nelligan-face", "commercial-02"],
+    // Galerie (format naturel, légende = le commerce) sous la bande :
+    // les commerces du Vieux-Montréal de la saison 2026 (lot 2).
+    galerie: ["s26-nelligan-angle", "s26-place-darmes", "s26-modavie", "s26-mama-c-facade", "s26-mama-c-jardiniere"],
     // Le cadre « ampoule » dans « Ce qui est compris » : un vrai chantier
     // commercial, notre installateur sur nacelle (2026-11-11).
     cadre: "installateur-vieux-montreal",

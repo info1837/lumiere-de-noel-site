@@ -216,6 +216,51 @@ const SAISON_2026 = {
     legende: "Balcon et pignon",
     alt: "Maison de pierre : balcon en fer forgé enrubanné de mini-lumières, pignon et corniches soulignés d'ampoules C9 blanc chaud",
   }),
+  // ── LOT 2 (2026-11-26) — public/images/reel/2026/cNN-*, r10-* ──────────
+  // Commerces du Vieux-Montréal (Hôtel Nelligan, Hôtel Place d'Armes,
+  // Modavie, Mama C) et une maison victorienne. GÉNÉRIQUES comme les autres :
+  // elles portent les cartes commerciales de six pages de ville, donc l'alt ne
+  // nomme NI la ville NI le commerce. Le nom du commerce vit dans l'étiquette
+  // du chantier (/realisations), la légende de la galerie du Vieux-Montréal et
+  // celle de la page commerciale (`nom`). Numéros civiques floutés (106, 55,
+  // 1 Saint-Paul Ouest, 36) ; passants retirés avant nous.
+  // `largeur` / `hauteur` : l'entière (GaleriePhotos, format naturel).
+  "s26-nelligan-angle": s26("c01-nelligan-facade-angle", {
+    largeur: 1800, hauteur: 2400, nom: "Hôtel Nelligan",
+    legende: "Entrée et jardinières",
+    alt: "Entrée d'hôtel en pierre grise vue de biais : colonnes de verdure enrubannées de mini-lumières blanc chaud, guirlande de boules en arche sous la marquise et jardinières de conifères illuminées aux fenêtres",
+  }),
+  "s26-nelligan-face": s26("c02-nelligan-facade-face", {
+    largeur: 1800, hauteur: 2400, nom: "Hôtel Nelligan",
+    legende: "Entrée d'hôtel",
+    alt: "Façade d'hôtel en pierre grise : entrée encadrée de guirlandes de verdure et de mini-lumières blanc chaud, guirlande de boules sous la marquise, trois jardinières de conifères illuminées aux fenêtres de l'étage",
+  }),
+  "s26-place-darmes": s26("c03-place-darmes-sapins", {
+    largeur: 1800, hauteur: 2400, nom: "Hôtel Place d'Armes",
+    legende: "Sapins d'entrée",
+    alt: "Entrée d'hôtel sur tapis rouge : deux grands sapins dans des jardinières noires, couverts de mini-lumières blanc chaud de la base à la cime",
+  }),
+  "s26-modavie": s26("c04-modavie-saint-paul", {
+    largeur: 1142, hauteur: 1932, nom: "Bistro Modavie, rue Saint-Paul Ouest",
+    legende: "Vitrine et couronne",
+    alt: "Vitrine de bistro sous un auvent vert : lumières en glaçons blanc chaud tout autour du vitrage, couronne de sapin aux baies rouges illuminée et guirlande de verdure sur l'auvent",
+  }),
+  "s26-mama-c-facade": s26("c05-mama-c-facade", {
+    largeur: 1932, hauteur: 2200, nom: "Mama C, cuisine grecque",
+    legende: "Jardinières de fenêtres",
+    alt: "Façade de restaurant en pierre : jardinières de verdure illuminées de mini-lumières blanc chaud sous les vitrines et guirlandes de verdure autour des fenêtres",
+  }),
+  "s26-mama-c-jardiniere": s26("c06-mama-c-jardiniere", {
+    largeur: 1800, hauteur: 2400, nom: "Mama C, cuisine grecque",
+    legende: "Jardinière illuminée",
+    alt: "Gros plan d'une jardinière de fenêtre : branches de pin, feuilles de magnolia et mini-lumières blanc chaud",
+  }),
+  // Maison victorienne en brique (r10). Aucune ville donnée.
+  "s26-victorienne": s26("r10-victorienne-boucle-rouge", {
+    largeur: 1800, hauteur: 2400,
+    legende: "Nœud géant et rampes",
+    alt: "Maison victorienne en brique : grand nœud rouge illuminé au balcon, guirlandes de verdure et de lumières sur les rampes de la galerie et de l'escalier",
+  }),
 };
 
 const GENERIQUES = {
@@ -445,7 +490,9 @@ export function servicePhoto(serviceSlug, citySlug = null) {
     // Sans ville (page du service, /services) : la maison aux trois pignons.
     return (citySlug && cityPhoto(citySlug)) || photo("s26-pignons-facade");
   }
-  if (serviceSlug === "lumieres-de-noel-commercial") return photo("commercial-01");
+  // 2026-11-26 : la façade du Nelligan (c02) — la chocolaterie passe à la
+  // Rive-Sud seulement (COMMERCIAL_PAR_VILLE).
+  if (serviceSlug === "lumieres-de-noel-commercial") return photo("s26-nelligan-face");
   if (serviceSlug === "eclairage-architectural-permanent") return photo("permanent-hero");
   return null; // service inconnu — aucune photo plutôt qu'une image au hasard
 }
@@ -482,16 +529,30 @@ const PERMANENT_PAR_VILLE = {
   // qui avaient encore de la place sous la règle des 8 pages.
   ...PERMANENT_PAR_VILLE_2026,
 };
+// Commercial des six premières villes (Yahir, 2026-11-26) : un commerce du
+// Vieux-Montréal différent par ville (lot 2), la chocolaterie gardée à la
+// Rive-Sud. Même photo en hero de la page ville × commercial.
+export const COMMERCIAL_PAR_VILLE = {
+  blainville: "s26-place-darmes",
+  terrebonne: "s26-mama-c-facade",
+  "saint-jerome": "s26-modavie",
+  laval: "s26-nelligan-angle",
+  montreal: "s26-nelligan-face",
+  "rive-sud": "commercial-01",
+  ...COMMERCIAL_PAR_VILLE_2026,
+};
 /** `cle` : "residentiel" | "commercial" | "permanent" (data.js → cleService). */
 export function carteServiceVille(cle, citySlug) {
   if (cle === "residentiel") return photo(RESIDENTIEL_PAR_VILLE[citySlug]) || servicePhoto("lumieres-de-noel-residentiel");
-  if (cle === "commercial") return photo(COMMERCIAL_PAR_VILLE_2026[citySlug] || "commercial-02");
+  if (cle === "commercial") return photo(COMMERCIAL_PAR_VILLE[citySlug] || "commercial-02");
   if (cle === "permanent") return photo(PERMANENT_PAR_VILLE[citySlug] || "permanent-01");
   return null;
 }
 /** Le hero d'une page ville × service. Jamais la photo d'une autre ville. */
 export function heroVilleService(serviceSlug, citySlug) {
   if (serviceSlug === "lumieres-de-noel-residentiel") return carteServiceVille("residentiel", citySlug);
+  // Commercial : la photo de la carte commerciale de la ville (toutes les villes).
+  if (serviceSlug === "lumieres-de-noel-commercial") return carteServiceVille("commercial", citySlug);
   // Nouvelles villes (2026-11-24) : commercial-01 et permanent-hero sont déjà
   // sur 8 pages. Le commercial montre une image générique du Vieux-Port (sans
   // enseigne, sans nom) ; le permanent n'a plus de photo libre : null, et la

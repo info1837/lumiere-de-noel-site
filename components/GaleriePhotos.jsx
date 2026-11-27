@@ -13,7 +13,9 @@ import { flouDe } from "@/components/photos-flou";
 // L'alt vient du registre (components/medias-2026.js) : ce qu'on a installé,
 // et la ville quand la photo est située.
 // =============================================================================
-export default function GaleriePhotos({ photos, colonnes = 3 }) {
+// `legendes` (2026-11-26) : une légende sous chaque image, `p.legende`
+// (la page commerciale y met le nom du commerce).
+export default function GaleriePhotos({ photos, colonnes = 3, legendes = false }) {
   if (!photos?.length) return null;
   return (
     <ul className="galerie-photos" style={{ "--colonnes": colonnes }}>
@@ -29,6 +31,7 @@ export default function GaleriePhotos({ photos, colonnes = 3 }) {
             blurDataURL={flouDe(p.src)}
             style={{ width: "100%", height: "auto", display: "block" }}
           />
+          {legendes && p.legende && <p className="galerie-photos__legende">{p.legende}</p>}
         </li>
       ))}
     </ul>
